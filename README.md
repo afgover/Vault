@@ -41,8 +41,10 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
 
 ## Kurulum
 
-1. Projeyi Android Studio ile aç (veya `gradle assembleRelease`)
-2. Oluşan APK'yı telefonuna kur (bilinmeyen kaynaklara izin vermen gerekir)
+1. Projeyi Android Studio ile aç ve "Run" ile telefonuna yükle
+   (veya komut satırından `./gradlew assembleDebug` → APK:
+   `app/build/outputs/apk/debug/app-debug.apk`)
+2. APK'yı elle kuruyorsan bilinmeyen kaynaklara izin vermen gerekir
 3. İlk açılışta ana parolanı belirle (en az 8 karakter; unutma!)
 
 ### Klavyeyi etkinleştirme
