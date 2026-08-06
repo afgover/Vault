@@ -14,6 +14,10 @@ Tamamen çevrimdışı çalışır; hiçbir veri internete gönderilmez.
   ile tüm veriler geri yüklenir
 - **Vault Klavyesi**: Klavye eklentisi ile herhangi bir uygulamada şifre, kart no
   vb. bilgileri doğrudan ilgili alana yazdır (panoya kopyalamadan)
+- **Bilgisayara yazma (Bluetooth klavye)**: Telefon, bilgisayara Bluetooth
+  klavye olarak bağlanır ve seçtiğin şifreyi/alanı tuş basımları halinde
+  doğrudan bilgisayardaki imlecin olduğu alana yazar. Bilgisayara hiçbir
+  yazılım kurulmaz; Windows/Mac/Linux fark etmez (Android 9+ gerektirir)
 - **Şifre üretici**: Kriptografik rastgelelikle (SecureRandom) 8–64 karakter
   şifre üretimi; karakter sınıfı seçimi, karışan karakterleri eleme ve entropi
   (bit) göstergesi. Ana ekrandaki 🎲 simgesinden ya da kayıt düzenlerken şifre
@@ -62,6 +66,21 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
 > Not: Klavyenin bilgileri yazabilmesi için kasanın kilidinin açık olması gerekir
 > (uygulamayı açıp kilidini açman yeterli; otomatik kilitlenme süresi ayarlardan
 > değiştirilebilir).
+
+### Bilgisayara yazma (Bluetooth klavye)
+
+1. Telefonu bilgisayarla Bluetooth'tan **bir kez eşleştir** (normal klavye
+   eşleştirir gibi; telefon Bluetooth ayarlarından)
+2. Vault'ta kaydı aç → ilgili alanın yanındaki 💻 simgesine dokun
+3. Listeden bilgisayarını seç → bağlanınca bilgisayarın klavye düzenini seç
+   (Türkçe Q / US)
+4. Bilgisayarda imleci şifre kutusuna getir → telefonda **Yaz**'a bas →
+   3 saniyelik geri sayımdan sonra değer tuş tuş yazılır
+
+> Değer panodan veya ağdan geçmez; Bluetooth bağlantısının kendi şifrelemesi
+> içinde iletilir. Türkçe Q düzeninde birkaç nadir özel karakter yazılamazsa
+> uygulama uyarır — o durumda US düzenini seçip bilgisayarı da geçici olarak
+> İngilizce düzene almak yeterlidir.
 
 ## Yedekleme / Geri yükleme
 

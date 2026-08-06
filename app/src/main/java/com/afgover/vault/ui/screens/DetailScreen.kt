@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Visibility
@@ -47,6 +48,7 @@ fun DetailScreen(
     onBack: () -> Unit
 ) {
     var entry by remember { mutableStateOf<DecryptedEntry?>(null) }
+    var btField by remember { mutableStateOf<Pair<String, String>?>(null) }
 
     LaunchedEffect(id) {
         entry = viewModel.loadEntry(id)
@@ -85,11 +87,20 @@ fun DetailScreen(
                     label = label,
                     value = value,
                     hiddenByDefault = label in HIDDEN_LABELS,
-                    onCopy = { viewModel.copyToClipboard(label, value) }
+                    onCopy = { viewModel.copyToClipboard(label, value) },
+                    onTypeToPc = { btField = label to value }
                 )
                 Spacer(Modifier.padding(4.dp))
             }
         }
+    }
+
+    btField?.let { (label, value) ->
+        BtTypeDialog(
+            label = label,
+            value = value,
+            onDismiss = { btField = null }
+        )
     }
 }
 
@@ -98,7 +109,8 @@ private fun FieldCard(
     label: String,
     value: String,
     hiddenByDefault: Boolean,
-    onCopy: () -> Unit
+    onCopy: () -> Unit,
+    onTypeToPc: () -> Unit
 ) {
     var visible by remember { mutableStateOf(!hiddenByDefault) }
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -128,6 +140,9 @@ private fun FieldCard(
             }
             IconButton(onClick = onCopy) {
                 Icon(Icons.Filled.ContentCopy, contentDescription = "Kopyala")
+            }
+            IconButton(onClick = onTypeToPc) {
+                Icon(Icons.Filled.Computer, contentDescription = "Bilgisayara yaz")
             }
         }
     }
