@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -54,6 +55,7 @@ fun EditScreen(
     var notes by remember { mutableStateOf("") }
     var loaded by remember { mutableStateOf(id == 0L) }
     var confirmDelete by remember { mutableStateOf(false) }
+    var showGenerator by remember { mutableStateOf(false) }
 
     LaunchedEffect(id) {
         if (id != 0L) {
@@ -118,6 +120,11 @@ fun EditScreen(
                     OutlinedTextField(
                         value = password, onValueChange = { password = it },
                         label = { Text("Şifre") }, singleLine = true,
+                        trailingIcon = {
+                            IconButton(onClick = { showGenerator = true }) {
+                                Icon(Icons.Filled.Casino, contentDescription = "Şifre üret")
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
@@ -200,6 +207,14 @@ fun EditScreen(
             }
             Spacer(Modifier.height(48.dp))
         }
+    }
+
+    if (showGenerator) {
+        GeneratorDialog(
+            onDismiss = { showGenerator = false },
+            onCopy = { viewModel.copyToClipboard("Şifre", it) },
+            onUse = { password = it }
+        )
     }
 
     if (confirmDelete) {

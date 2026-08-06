@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Key
@@ -66,6 +67,7 @@ fun HomeScreen(
     val entries by viewModel.entries.collectAsState()
     var query by remember { mutableStateOf("") }
     var addMenuOpen by remember { mutableStateOf(false) }
+    var showGenerator by remember { mutableStateOf(false) }
 
     val filtered = if (query.isBlank()) entries
     else entries.filter { it.title.contains(query, ignoreCase = true) }
@@ -75,6 +77,9 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("Vault") },
                 actions = {
+                    IconButton(onClick = { showGenerator = true }) {
+                        Icon(Icons.Filled.Casino, contentDescription = "Şifre üretici")
+                    }
                     IconButton(onClick = { viewModel.lock() }) {
                         Icon(Icons.Filled.Lock, contentDescription = "Kilitle")
                     }
@@ -164,5 +169,12 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (showGenerator) {
+        GeneratorDialog(
+            onDismiss = { showGenerator = false },
+            onCopy = { viewModel.copyToClipboard("Şifre", it) }
+        )
     }
 }
