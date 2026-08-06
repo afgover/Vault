@@ -61,7 +61,9 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
 ### Otomatik doldurmayı etkinleştirme
 
 1. Vault → Ayarlar → **Otomatik doldurmayı etkinleştir** → açılan sistem
-   ekranında Vault'u seç (Android 8.0+)
+   listesinden Vault'u seç (Android 8.0+). Listenin adı cihaza göre değişir:
+   Samsung/Android 14+ cihazlarda *Şifreler, parolalar ve otomatik doldurma →
+   **Tercih edilen servis***, saf Android'de *Otomatik doldurma servisi*
 2. Herhangi bir uygulamada/tarayıcıda kullanıcı adı, şifre veya kart alanına
    dokun → klavyenin üstünde Vault kayıtların çıkar → birine dokun, alanlar dolar
 3. Kasa kilitliyse önce **"Doldurmak için kilidi aç"** çıkar; parola ya da

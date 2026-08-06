@@ -182,7 +182,11 @@ fun SettingsScreen(
                 } else {
                     "Etkinleştirirsen uygulama ve tarayıcılardaki giriş/kart formlarına " +
                         "dokununca Vault kayıtların doğrudan doldurma seçeneği olarak çıkar. " +
-                        "Ayrıca yeni girdiğin bilgileri Vault'a kaydetmeyi teklif eder."
+                        "Ayrıca yeni girdiğin bilgileri Vault'a kaydetmeyi teklif eder.\n\n" +
+                        "Aşağıdaki düğme sistem ayarlarını açar. Açılan listenin adı " +
+                        "cihaza göre değişir (\"Tercih edilen servis\", \"Otomatik doldurma " +
+                        "servisi\" ya da \"Şifreler, parolalar ve otomatik doldurma\"); " +
+                        "o listeden Vault'u seçmen yeterli."
                 },
                 style = MaterialTheme.typography.bodySmall
             )
