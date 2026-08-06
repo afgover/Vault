@@ -3,6 +3,7 @@ package com.afgover.vault.ui.screens
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.view.autofill.AutofillManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -67,6 +68,15 @@ fun SettingsScreen(
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri -> if (uri != null) importUri = uri }
+
+    fun autofillIsEnabled(): Boolean =
+        context.getSystemService(AutofillManager::class.java)
+            ?.let { it.isAutofillSupported && it.hasEnabledAutofillServices() } ?: false
+
+    var autofillEnabled by remember { mutableStateOf(autofillIsEnabled()) }
+    val autofillLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { autofillEnabled = autofillIsEnabled() }
 
     Scaffold(
         topBar = {
@@ -157,6 +167,41 @@ fun SettingsScreen(
                 onClick = { showChangePassword = true },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Ana parolayı değiştir") }
+
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+
+            Text("Otomatik doldurma", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                if (autofillEnabled) {
+                    "Etkin. Uygulama ve tarayıcılardaki giriş/kart formlarına dokununca " +
+                        "Vault kayıtların doldurma seçeneği olarak çıkar. Kasa kilitliyse " +
+                        "önce kilit açma ekranı gelir; hiçbir değer kilitliyken sisteme verilmez."
+                } else {
+                    "Etkinleştirirsen uygulama ve tarayıcılardaki giriş/kart formlarına " +
+                        "dokununca Vault kayıtların doğrudan doldurma seçeneği olarak çıkar. " +
+                        "Ayrıca yeni girdiğin bilgileri Vault'a kaydetmeyi teklif eder."
+                },
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {
+                    val intent = Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE)
+                        .setData(Uri.parse("package:${context.packageName}"))
+                    runCatching { autofillLauncher.launch(intent) }.onFailure {
+                        context.startActivity(Intent(Settings.ACTION_SETTINGS))
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    if (autofillEnabled) "Otomatik doldurma ayarlarını aç"
+                    else "Otomatik doldurmayı etkinleştir"
+                )
+            }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()

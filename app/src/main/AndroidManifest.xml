@@ -31,6 +31,28 @@
             </intent-filter>
         </activity>
 
+        <!-- Otomatik doldurma kimlik doğrulaması: kilit açma ekranı.
+             Son uygulamalar listesinde görünmez, kendi görevinde çalışır. -->
+        <activity
+            android:name=".autofill.AutofillUnlockActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity=".autofill"
+            android:windowSoftInputMode="adjustResize" />
+
+        <service
+            android:name=".autofill.VaultAutofillService"
+            android:exported="true"
+            android:label="@string/autofill_label"
+            android:permission="android.permission.BIND_AUTOFILL_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.autofill.AutofillService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.autofill"
+                android:resource="@xml/autofill_service" />
+        </service>
+
         <service
             android:name=".ime.VaultImeService"
             android:exported="true"

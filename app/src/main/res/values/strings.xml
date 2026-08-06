@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Vault</string>
     <string name="ime_label">Vault Klavyesi</string>
+    <string name="autofill_label">Vault</string>
 </resources>

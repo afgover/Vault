@@ -55,30 +55,10 @@ class MainActivity : FragmentActivity() {
         viewModel.touch()
     }
 
-    private fun canUseBiometric(): Boolean =
-        BiometricManager.from(this).canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_STRONG
-        ) == BiometricManager.BIOMETRIC_SUCCESS
+    private fun canUseBiometric(): Boolean = BiometricAuth.canUse(this)
 
     private fun biometricUnlock() {
-        val cipher = viewModel.keyManager.biometricDecryptCipher() ?: return
-        val prompt = BiometricPrompt(
-            this,
-            ContextCompat.getMainExecutor(this),
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    val c = result.cryptoObject?.cipher ?: return
-                    val key = viewModel.keyManager.unlockWithBiometricCipher(c) ?: return
-                    viewModel.onBiometricUnlocked(key)
-                }
-            }
-        )
-        val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Vault kilidini aç")
-            .setNegativeButtonText("Parola kullan")
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-            .build()
-        prompt.authenticate(info, BiometricPrompt.CryptoObject(cipher))
+        BiometricAuth.unlock(this, viewModel.keyManager) { viewModel.onBiometricUnlocked(it) }
     }
 
     private fun biometricEnable() {

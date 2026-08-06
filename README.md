@@ -12,6 +12,9 @@ Tamamen çevrimdışı çalışır; hiçbir veri internete gönderilmez.
 - **Şifreli yedekleme**: `.vaultbak` dosyası olarak istediğin yere (Drive, SD kart,
   USB...) kaydet; **telefon sıfırlansa veya değişse bile** dosya + yedek parolası
   ile tüm veriler geri yüklenir
+- **Otomatik doldurma**: Android'in otomatik doldurma servisi olarak çalışır;
+  uygulama ve tarayıcılardaki giriş/kart formlarına dokununca kayıtların
+  doldurma seçeneği olarak çıkar, yeni girdiğin bilgileri kaydetmeyi teklif eder
 - **Vault Klavyesi**: Klavye eklentisi ile herhangi bir uygulamada şifre, kart no
   vb. bilgileri doğrudan ilgili alana yazdır (panoya kopyalamadan)
 - **Bilgisayara yazma (Bluetooth klavye)**: Telefon, bilgisayara Bluetooth
@@ -54,6 +57,22 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
    `app/build/outputs/apk/debug/app-debug.apk`)
 2. APK'yı elle kuruyorsan bilinmeyen kaynaklara izin vermen gerekir
 3. İlk açılışta ana parolanı belirle (en az 8 karakter; unutma!)
+
+### Otomatik doldurmayı etkinleştirme
+
+1. Vault → Ayarlar → **Otomatik doldurmayı etkinleştir** → açılan sistem
+   ekranında Vault'u seç (Android 8.0+)
+2. Herhangi bir uygulamada/tarayıcıda kullanıcı adı, şifre veya kart alanına
+   dokun → klavyenin üstünde Vault kayıtların çıkar → birine dokun, alanlar dolar
+3. Kasa kilitliyse önce **"Doldurmak için kilidi aç"** çıkar; parola ya da
+   parmak izi ile açtıktan sonra seçenekler listelenir
+4. Bir sitede yeni kullanıcı adı/şifre girip gönderdiğinde Android
+   "Vault'a kaydedilsin mi?" diye sorar (kasa açıkken)
+
+> Alanlar `autofillHints` ile beyan edilmemişse alan adı/ipucu metni ve klavye
+> türünden tahmin edilir (Türkçe ve İngilizce anahtar kelimeler). Kasa kilitliyken
+> sisteme hiçbir kayıt verilmez — kilit açma ekranı doldurma seçeneklerini ancak
+> kilit açıldıktan sonra üretir.
 
 ### Klavyeyi etkinleştirme
 
