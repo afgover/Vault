@@ -1,0 +1,67 @@
+package com.afgover.vault.core
+
+import java.security.SecureRandom
+import javax.crypto.AEADBadTagException
+import javax.crypto.Cipher
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.spec.SecretKeySpec
+
+/**
+ * Tüm şifreleme burada: AES-256-GCM + PBKDF2-HMAC-SHA256.
+ * Anahtar hiyerarşisi Android Keystore'a bağımlı DEĞİLDİR; ana parola ile
+ * türetilir. Böylece yedek dosyası cihaz sıfırlansa bile sadece ana parola
+ * ile geri yüklenebilir.
+ */
+object Crypto {
+
+    const val KDF_ITERATIONS = 310_000
+    const val KEY_BITS = 256
+    private const val GCM_IV_BYTES = 12
+    private const val GCM_TAG_BITS = 128
+
+    private val random = SecureRandom()
+
+    fun randomBytes(count: Int): ByteArray = ByteArray(count).also { random.nextBytes(it) }
+
+    fun randomKey(): SecretKey = SecretKeySpec(randomBytes(KEY_BITS / 8), "AES")
+
+    fun deriveKey(password: CharArray, salt: ByteArray, iterations: Int = KDF_ITERATIONS): SecretKey {
+        val spec = PBEKeySpec(password, salt, iterations, KEY_BITS)
+        try {
+            val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            return SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+        } finally {
+            spec.clearPassword()
+        }
+    }
+
+    /** Çıktı: iv(12 bayt) || şifreli veri+tag */
+    fun encrypt(key: SecretKey, plaintext: ByteArray): ByteArray {
+        val iv = randomBytes(GCM_IV_BYTES)
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(GCM_TAG_BITS, iv))
+        val ct = cipher.doFinal(plaintext)
+        return iv + ct
+    }
+
+    /** Girdi: iv(12 bayt) || şifreli veri+tag. Yanlış anahtar/veri bozuksa null döner. */
+    fun decrypt(key: SecretKey, blob: ByteArray): ByteArray? {
+        if (blob.size <= GCM_IV_BYTES) return null
+        return try {
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(
+                Cipher.DECRYPT_MODE,
+                key,
+                GCMParameterSpec(GCM_TAG_BITS, blob.copyOfRange(0, GCM_IV_BYTES))
+            )
+            cipher.doFinal(blob.copyOfRange(GCM_IV_BYTES, blob.size))
+        } catch (e: AEADBadTagException) {
+            null
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
