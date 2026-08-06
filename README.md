@@ -16,7 +16,9 @@ Tamamen çevrimdışı çalışır; hiçbir veri internete gönderilmez.
   uygulama ve tarayıcılardaki giriş/kart formlarına dokununca kayıtların
   doldurma seçeneği olarak çıkar, yeni girdiğin bilgileri kaydetmeyi teklif eder
 - **Vault Klavyesi**: Klavye eklentisi ile herhangi bir uygulamada şifre, kart no
-  vb. bilgileri doğrudan ilgili alana yazdır (panoya kopyalamadan)
+  vb. bilgileri doğrudan ilgili alana yazdır (panoya kopyalamadan). Son
+  kullandığın kayıtlar en üstte durur; 🔍 ile başlık, kullanıcı adı ve adres
+  üzerinde arama yapılır (Türkçe harfler ASCII karşılığıyla eşleşir)
 - **Bilgisayara yazma (Bluetooth klavye)**: Telefon, bilgisayara Bluetooth
   klavye olarak bağlanır ve seçtiğin şifreyi/alanı tuş basımları halinde
   doğrudan bilgisayardaki imlecin olduğu alana yazar. Bilgisayara hiçbir
