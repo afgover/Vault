@@ -55,4 +55,23 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.biometric)
+    // biometric 1.1.0 geçişli olarak fragment 1.2.5'i getirir. O sürümdeki
+    // FragmentActivity.startActivityForResult, requestCode'un yalnızca alt 16 biti
+    // kullanmasını şart koşar; ActivityResultRegistry ise her zaman 0x10000'den büyük
+    // kod üretir. Sonuç: rememberLauncherForActivityResult ile açılan her ekran
+    // (yedek al / geri yükle / otomatik doldurma ayarı / Bluetooth izni) çöker.
+    // Bu yüzden fragment sürümü açıkça yükseltiliyor — kaldırma.
+    // (MainActivity zaten FragmentActivity'den türediği için doğrudan bağımlılık doğru.)
+    implementation(libs.androidx.fragment)
+
+    constraints {
+        // Doğrudan bağımlılık ileride kaldırılsa bile hiçbir geçişli bağımlılık
+        // fragment'i 1.7.1'in altına düşüremesin.
+        implementation(libs.androidx.fragment) {
+            because(
+                "fragment 1.7.1'den eskisi ActivityResultRegistry'nin ürettiği " +
+                    "requestCode'ları reddediyor (Can only use lower 16 bits for requestCode)"
+            )
+        }
+    }
 }

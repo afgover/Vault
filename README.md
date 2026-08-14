@@ -124,3 +124,38 @@ yerde (ör. Drive + fiziksel ortam) sakla.
 - Kotlin, Jetpack Compose (Material 3), Room, androidx.biometric
 - minSdk 26 (Android 8.0), targetSdk 35
 - Üçüncü taraf ağ/analitik kütüphanesi yok; `INTERNET` izni bile yok
+
+## Geliştirme notları
+
+### Derleme JDK'sı
+
+Kotlin 2.0.21, JDK 25 sürüm numarasını çözemiyor (`IllegalArgumentException: 25.0.2`).
+**JDK 17–21 ile derle.** Android Studio kendi JBR'ını (21) kullandığı için "Run"
+sorunsuz çalışır; komut satırında JDK'yı elle vermek gerekebilir:
+
+```
+JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew assembleDebug
+```
+
+SDK yolu için depoda olmayan (`.gitignore`'da) `local.properties` gerekir:
+`sdk.dir=/Users/<kullanıcı>/Library/Android/sdk`
+
+### Bağımlılık tuzağı: androidx.fragment
+
+`androidx.biometric:1.1.0` geçişli olarak `fragment:1.2.5` getirir. O sürümdeki
+`FragmentActivity`, `ActivityResultRegistry`'nin ürettiği requestCode'ları reddeder
+ve dosya seçici / izin ekranı açan **her** buton `Can only use lower 16 bits for
+requestCode` ile çöker. `app/build.gradle.kts` içinde fragment sürümü açıkça
+pinlenmiş ve `constraints` ile alt sınır konmuştur — kaldırma.
+
+### Commit öncesi cihaz duman testi
+
+Bu sınıf hatalar derlemede değil, yalnızca cihazda tıklayınca ortaya çıkar.
+Yeni bir özellik commit'lemeden önce:
+
+```
+adb logcat -b crash -c                 # tamponu temizle
+# uygulamada sistem ekranı açan akışları dene:
+# yedek al, geri yükle, otomatik doldurma ayarı, Bluetooth ile yaz
+adb logcat -b crash -d                 # tampon boş kalmalı
+```
