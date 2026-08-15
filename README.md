@@ -143,6 +143,24 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
 💡 Öneri: Önemli bir değişiklikten sonra yeni bir yedek al ve en az iki farklı
 yerde (ör. Drive + fiziksel ortam) sakla.
 
+### Mac'ten aktarım (panodaki bilgiyi kasaya alma)
+
+`tools/vault-clip.py` Mac panosundaki metni tek kayıtlık şifreli yedeğe çevirir
+ve telefona kopyalar; sen de uygulamadan "Mevcuta ekle" ile içeri alırsın:
+
+```
+tools/vault-clip.py "Ev adresi" --tur gundelik --push
+tools/vault-clip.py "Banka" --tur hesap --alan sifre --push
+tools/vault-clip.py "Sunucu" --tur hesap --ek "API anahtarı" --push
+```
+
+Pano içeriği diske düz metin olarak hiç yazılmaz, yalnızca şifreli dosya oluşur;
+yedek parolası sorulur ve saklanmaz. Yedek parolası **ASCII olmalı** (Android'in
+PBKDF2 sağlayıcısı ASCII dışında farklı bayt dönüşümü yapabiliyor).
+
+Neden dosya yoluyla: uygulamanın ağ izni yok, `adb shell cmd clipboard` bu
+cihazlarda yok ve `adb shell input text` özel karakterlerde güvenilmez.
+
 ## Teknik
 
 - Kotlin, Jetpack Compose (Material 3), Room, androidx.biometric
