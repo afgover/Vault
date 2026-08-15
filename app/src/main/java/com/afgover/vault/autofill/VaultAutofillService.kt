@@ -64,7 +64,6 @@ class VaultAutofillService : AutofillService() {
         var cancelled = false
         cancellationSignal.setOnCancelListener { cancelled = true }
 
-        VaultSession.touch()
         scope.launch {
             val entries = withContext(Dispatchers.IO) {
                 VaultApp.from(this@VaultAutofillService).repository.getAllDecrypted(key)
@@ -119,7 +118,6 @@ class VaultAutofillService : AutofillService() {
             )
         }
 
-        VaultSession.touch()
         scope.launch {
             withContext(Dispatchers.IO) {
                 VaultApp.from(this@VaultAutofillService).repository.save(
@@ -127,6 +125,8 @@ class VaultAutofillService : AutofillService() {
                     type = if (isCard) EntryType.CARD else EntryType.LOGIN,
                     title = sourceLabel(parsed),
                     data = data,
+                    // Otomatik doldurmadan gelen kayıtlar korumalı başlar.
+                    quick = false,
                     key = key
                 )
             }

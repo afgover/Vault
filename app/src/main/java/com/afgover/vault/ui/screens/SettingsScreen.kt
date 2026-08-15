@@ -135,18 +135,17 @@ fun SettingsScreen(
             Text("Güvenlik", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
 
-            Text("Otomatik kilitlenme", style = MaterialTheme.typography.bodyMedium)
-            Row {
-                listOf(1 to "1 dk", 5 to "5 dk", 15 to "15 dk", 0 to "Kapalı").forEach { (min, label) ->
-                    FilterChip(
-                        selected = viewModel.autoLockMinutes == min,
-                        onClick = { viewModel.autoLockMinutes = min },
-                        label = { Text(label) },
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
-            }
-            Spacer(Modifier.height(8.dp))
+            Text("Kilitlenme", style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "Kasa, ekran kapandığı anda kilitlenir; anahtar bellekten silinir. " +
+                    "Ekran açık kaldığı sürece parola veya parmak izi tekrar sorulmaz.\n\n" +
+                    "Klavyede \"parolasız kullan\" işaretli kayıtlar kasa kilitliyken de " +
+                    "kullanılabilir; işaretlemeyi her kaydın kendi ekranından açıp " +
+                    "kapatabilirsin.",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(12.dp))
 
             if (canUseBiometric) {
                 if (viewModel.keyManager.isBiometricEnabled) {

@@ -1,35 +1,44 @@
 package com.afgover.vault.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.data.CustomField
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.ui.VaultViewModel
@@ -53,6 +62,13 @@ fun EditScreen(
     var cvv by remember { mutableStateOf("") }
     var iban by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+    var fullName by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    val customFields = remember { mutableStateListOf<CustomField>() }
+    // Gündelik bilgiler klavyede parolasız kullanılsın diye açık başlar.
+    var quick by remember { mutableStateOf(id == 0L && type == EntryType.EVERYDAY) }
     var loaded by remember { mutableStateOf(id == 0L) }
     var confirmDelete by remember { mutableStateOf(false) }
     var showGenerator by remember { mutableStateOf(false) }
@@ -70,6 +86,13 @@ fun EditScreen(
                 cvv = e.data.cvv
                 iban = e.data.iban
                 notes = e.data.notes
+                fullName = e.data.fullName
+                phone = e.data.phone
+                email = e.data.email
+                address = e.data.address
+                customFields.clear()
+                customFields.addAll(e.data.custom)
+                quick = e.quick
             }
             loaded = true
         }
@@ -167,7 +190,66 @@ fun EditScreen(
                     )
                 }
 
+                EntryType.EVERYDAY -> {
+                    OutlinedTextField(
+                        value = fullName, onValueChange = { fullName = it },
+                        label = { Text("Ad Soyad") }, singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = phone, onValueChange = { phone = it },
+                        label = { Text("Telefon") }, singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = email, onValueChange = { email = it },
+                        label = { Text("E-posta") }, singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = address, onValueChange = { address = it },
+                        label = { Text("Adres") }, minLines = 2,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
                 EntryType.NOTE -> Unit
+            }
+
+            // Serbest alanlar: hesap/şifre ve gündelik kayıtlarda istenildiği
+            // kadar "alan adı + değer" çifti eklenebilir.
+            if (type == EntryType.LOGIN || type == EntryType.EVERYDAY) {
+                Spacer(Modifier.height(16.dp))
+                Text("Ek alanlar", style = MaterialTheme.typography.titleSmall)
+                customFields.forEachIndexed { index, field ->
+                    Spacer(Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedTextField(
+                            value = field.label,
+                            onValueChange = { customFields[index] = field.copy(label = it) },
+                            label = { Text("Alan adı") }, singleLine = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedTextField(
+                            value = field.value,
+                            onValueChange = { customFields[index] = field.copy(value = it) },
+                            label = { Text("Değer") }, singleLine = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                        IconButton(onClick = { customFields.removeAt(index) }) {
+                            Icon(Icons.Filled.Close, contentDescription = "Alanı kaldır")
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { customFields.add(CustomField("", "")) },
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("+ Alan ekle") }
             }
 
             Spacer(Modifier.height(8.dp))
@@ -177,6 +259,23 @@ fun EditScreen(
                 minLines = if (type == EntryType.NOTE) 6 else 2,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(Modifier.height(16.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text("Klavyede parolasız kullan")
+                    Text(
+                        "Açıkken bu kayıt, kasa kilitliyken de Vault Klavyesi'nde çıkar. " +
+                            "Koruması telefonun ekran kilidi kadardır; şifre gibi hassas " +
+                            "bilgiler için kapalı bırak.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Switch(checked = quick, onCheckedChange = { quick = it })
+            }
 
             Spacer(Modifier.height(16.dp))
             Button(
@@ -195,8 +294,16 @@ fun EditScreen(
                             expiry = expiry.trim(),
                             cvv = cvv.trim(),
                             iban = iban.trim(),
-                            notes = notes
+                            notes = notes,
+                            fullName = fullName.trim(),
+                            phone = phone.trim(),
+                            email = email.trim(),
+                            address = address.trim(),
+                            custom = customFields
+                                .map { CustomField(it.label.trim(), it.value.trim()) }
+                                .filter { it.label.isNotEmpty() }
                         ),
+                        quick = quick,
                         onDone = onBack
                     )
                 },

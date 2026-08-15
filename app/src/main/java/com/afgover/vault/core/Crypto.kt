@@ -47,6 +47,17 @@ object Crypto {
         return iv + ct
     }
 
+    /**
+     * Android Keystore anahtarları IV'yi kendileri üretir; dışarıdan IV vermek
+     * yasaktır. Çıktı biçimi [encrypt] ile aynıdır (iv || şifreli veri+tag),
+     * bu yüzden çözme tarafı ortaktır: [decrypt].
+     */
+    fun encryptWithGeneratedIv(key: SecretKey, plaintext: ByteArray): ByteArray {
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, key)
+        return cipher.iv + cipher.doFinal(plaintext)
+    }
+
     /** Girdi: iv(12 bayt) || şifreli veri+tag. Yanlış anahtar/veri bozuksa null döner. */
     fun decrypt(key: SecretKey, blob: ByteArray): ByteArray? {
         if (blob.size <= GCM_IV_BYTES) return null

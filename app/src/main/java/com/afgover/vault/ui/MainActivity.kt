@@ -50,11 +50,6 @@ class MainActivity : FragmentActivity() {
         viewModel.refreshLockState()
     }
 
-    override fun onUserInteraction() {
-        super.onUserInteraction()
-        viewModel.touch()
-    }
-
     private fun canUseBiometric(): Boolean = BiometricAuth.canUse(this)
 
     private fun biometricUnlock() {

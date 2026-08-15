@@ -5,10 +5,15 @@ Tamamen çevrimdışı çalışır; hiçbir veri internete gönderilmez.
 
 ## Özellikler
 
-- **Kayıt türleri**: Hesap/Şifre, Kart (kart no, son kullanma, CVV, IBAN), Güvenli Not
+- **Kayıt türleri**: Hesap/Şifre, **Gündelik** (ad soyad, telefon, e-posta,
+  adres), Kart (kart no, son kullanma, CVV, IBAN), Güvenli Not
+- **Ek alanlar**: Hesap/Şifre ve Gündelik kayıtlarında istediğin kadar
+  "alan adı + değer" çifti ekleyebilirsin; bu alanlar da şifrelenir, detay
+  ekranında ve klavyede diğerleriyle birlikte listelenir
 - **Güçlü şifreleme**: Tüm hassas alanlar AES-256-GCM ile şifrelenir; anahtar ana
   paroladan PBKDF2-HMAC-SHA256 (310.000 tur) ile türetilir
-- **Biyometrik kilit açma** (opsiyonel, parmak izi/yüz) + otomatik kilitlenme
+- **Biyometrik kilit açma** (opsiyonel, parmak izi/yüz). Kasa **ekran kapandığı
+  anda** kilitlenir; ekran açık kaldığı sürece parola/parmak izi tekrar sorulmaz
 - **Şifreli yedekleme**: `.vaultbak` dosyası olarak istediğin yere (Drive, SD kart,
   USB...) kaydet; **telefon sıfırlansa veya değişse bile** dosya + yedek parolası
   ile tüm veriler geri yüklenir
@@ -19,6 +24,11 @@ Tamamen çevrimdışı çalışır; hiçbir veri internete gönderilmez.
   vb. bilgileri doğrudan ilgili alana yazdır (panoya kopyalamadan). Son
   kullandığın kayıtlar en üstte durur; 🔍 ile başlık, kullanıcı adı ve adres
   üzerinde arama yapılır (Türkçe harfler ASCII karşılığıyla eşleşir)
+- **Hızlı erişim (klavyede parolasız kullanım)**: Kasa kilitliyken klavyede
+  yalnızca "parolasız kullan" işaretli kayıtlar görünür; geri kalan her şey için
+  🔓 ile parola/parmak izi istenir. İşaret, her kaydın kendi ekranından tek tek
+  açılıp kapatılır ve varsayılan olarak **kapalıdır** — tek istisna **Gündelik**
+  türünde açtığın yeni kayıtlardır, onlar işaretli başlar (istersen kapatırsın)
 - **Bilgisayara yazma (Bluetooth klavye)**: Telefon, bilgisayara Bluetooth
   klavye olarak bağlanır ve seçtiğin şifreyi/alanı tuş basımları halinde
   doğrudan bilgisayardaki imlecin olduğu alana yazar. Bilgisayara hiçbir
@@ -42,7 +52,17 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
                                           Tüm kayıtlar AES-256-GCM ile şifreli
 ```
 
-- `dataKey` yalnızca kilit açıkken bellekte tutulur; zaman aşımında silinir.
+- `dataKey` yalnızca kilit açıkken bellekte tutulur; **ekran kapandığı anda**
+  silinir (uygulama, klavye ve otomatik doldurma aynı oturumu paylaşır).
+- **Hızlı erişim** işaretli kayıtların bir de ikinci kopyası vardır: aynı içerik,
+  Android Keystore'daki *kimlik doğrulama istemeyen* ayrı bir anahtarla
+  şifrelenir. Klavye kasa kilitliyken yalnızca bu kopyaları okuyabilir; korumalı
+  kayıtlar kilitliyken kriptografik olarak erişilemez durumdadır.
+  Bu kayıtların güvenliği kasa parolasına değil **telefonun kendi ekran kilidine**
+  dayanır — oraya yalnızca düşük değerli bilgiler konmalıdır.
+  Kaydın aslı her zaman `dataKey` ile şifreli kaldığı için, Keystore anahtarı
+  kaybolsa bile (cihaz sıfırlama vb.) veri kaybı olmaz: kopyalar kilit
+  açıldığında yeniden üretilir.
 - Biyometrik açma, `dataKey`'in Android Keystore'daki donanım destekli bir anahtarla
   ikinci kez sarılmasıyla çalışır. Keystore cihaz sıfırlamada kaybolur ama bu sadece
   kolaylık katmanıdır — ana parola her zaman çalışır.
@@ -86,9 +106,13 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
 3. Kaydı seç → hangi alanı yazmak istediğine dokun ("Şifre yaz" vb.)
 4. `ABC` tuşu ile normal klavyene geri dön
 
-> Not: Klavyenin bilgileri yazabilmesi için kasanın kilidinin açık olması gerekir
-> (uygulamayı açıp kilidini açman yeterli; otomatik kilitlenme süresi ayarlardan
-> değiştirilebilir).
+> Not: Kasa kilitliyken klavyede yalnızca **hızlı erişim** işaretli kayıtlar
+> listelenir. Diğerleri için klavyedeki **🔓 Kilidi aç** düğmesine dokun; parola
+> ya da parmak izi sorulur ve kilit, ekran kapanana kadar açık kalır.
+>
+> Bir kaydı hızlı erişime almak için: kaydı aç → **Klavyede parolasız kullan**
+> anahtarını aç. Ana listede bu kayıtlar `⚡ klavyede parolasız` etiketiyle
+> görünür.
 
 ### Bilgisayara yazma (Bluetooth klavye)
 

@@ -40,6 +40,7 @@ object BackupManager {
                         .put("title", e.title)
                         .put("createdAt", e.createdAt)
                         .put("updatedAt", e.updatedAt)
+                        .put("quick", e.quick)
                         .put("data", e.data.toJson())
                 )
             }
@@ -108,7 +109,9 @@ object BackupManager {
                         title = o.optString("title"),
                         data = EntryData.fromJson(o.optJSONObject("data") ?: JSONObject()),
                         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
-                        updatedAt = o.optLong("updatedAt", System.currentTimeMillis())
+                        updatedAt = o.optLong("updatedAt", System.currentTimeMillis()),
+                        // Eski yedeklerde alan yok: korumalı kabul edilir.
+                        quick = o.optBoolean("quick", false)
                     )
                 )
             }

@@ -18,7 +18,6 @@ import com.afgover.vault.R
 import com.afgover.vault.VaultApp
 import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.DecryptedEntry
-import com.afgover.vault.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,8 +30,11 @@ import kotlinx.coroutines.withContext
  * bilgisi vb. alanları doğrudan odaklanılan metin kutusuna yazar.
  *
  * Şifre değerleri ekranda gösterilmez; yalnızca alan etiketleri listelenir.
- * Kasa kilitliyse önce uygulamadan kilidin açılması istenir (uygulama ve
- * klavye aynı süreçte çalıştığı için oturum paylaşılır).
+ *
+ * Kasa kilitliyken listede **yalnızca "hızlı erişim" işaretli kayıtlar** çıkar;
+ * bunlar Keystore'daki ayrı anahtarla çözülür, ana parola gerekmez. Geri kalan
+ * her şey için 🔓 ile kilit açılır (parola/parmak izi) — kilit açık kaldığı
+ * sürece (ekran kapanana kadar) tekrar sorulmaz.
  *
  * Kayıt sayısı arttığında listeyi taramak yerine son kullanılanlar en üstte
  * durur; 🔍 ile de arama yapılır. Klavye kendi metin kutusuna yazamadığı için
@@ -52,6 +54,7 @@ class VaultImeService : InputMethodService() {
     private val recents by lazy { RecentEntries(this) }
 
     private var entries: List<DecryptedEntry> = emptyList()
+    private var locked: Boolean = true
     private var selected: DecryptedEntry? = null
     private var searching: Boolean = false
     private var query: String = ""
@@ -134,49 +137,34 @@ class VaultImeService : InputMethodService() {
         refresh()
     }
 
+    /** Kilit açma ekranından dönüldüğünde liste tazelenir. */
+    override fun onWindowShown() {
+        super.onWindowShown()
+        if (locked && VaultSession.isUnlocked) refresh()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         scope.cancel()
     }
 
+    /**
+     * Kilitliyken yalnızca hızlı erişim kopyaları okunur; ana blob'a
+     * dokunulmaz, yani korumalı kayıtlar kilitliyken çözülemez.
+     */
     private fun refresh() {
         val key = VaultSession.key()
-        if (key == null) {
-            entries = emptyList()
-            renderLocked()
-            return
-        }
-        VaultSession.touch()
+        locked = key == null
         scope.launch {
-            val app = application as VaultApp
+            val repo = (application as VaultApp).repository
             entries = withContext(Dispatchers.IO) {
-                app.repository.getAllDecrypted(key)
+                if (key == null) repo.getQuickDecrypted() else repo.getAllDecrypted(key)
             }
             render()
         }
     }
 
-    private fun renderLocked() {
-        searching = false
-        applySearchVisibility()
-        content.removeAllViews()
-        content.addView(TextView(this).apply {
-            text = "Kasa kilitli. Bilgileri kullanmak için önce Vault uygulamasında kilidi aç."
-            setTextColor(color(R.color.ime_text))
-            setPadding(dp(8), dp(16), dp(8), dp(8))
-        })
-        content.addView(actionButton("Vault'u aç") {
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            })
-        })
-    }
-
     private fun render() {
-        if (VaultSession.key() == null) {
-            renderLocked()
-            return
-        }
         // Kayıt seçiliyken arama satırı ve tuşlar gizlenir
         applySearchVisibility()
         content.removeAllViews()
@@ -186,8 +174,18 @@ class VaultImeService : InputMethodService() {
             return
         }
 
+        if (locked) {
+            content.addView(hint("Kasa kilitli — yalnızca hızlı erişim kayıtları."))
+            content.addView(actionButton("🔓 Kilidi aç (tümü için)") { startUnlock() })
+        }
+
         if (entries.isEmpty()) {
-            content.addView(hint("Kayıt yok."))
+            content.addView(
+                hint(
+                    if (locked) "Hızlı erişim işaretli kayıt yok."
+                    else "Kayıt yok."
+                )
+            )
             return
         }
 
@@ -214,7 +212,6 @@ class VaultImeService : InputMethodService() {
         })
         entry.data.fields().forEach { (label, value) ->
             content.addView(actionButton("$label yaz") {
-                VaultSession.touch()
                 recents.record(entry.id)
                 currentInputConnection?.commitText(value, 1)
             })
@@ -245,11 +242,6 @@ class VaultImeService : InputMethodService() {
     // --- Arama tuşları ---------------------------------------------------
 
     private fun toggleSearch() {
-        // Kilitliyken aranacak bir şey yok; uyarı ekranda kalsın
-        if (VaultSession.key() == null) {
-            renderLocked()
-            return
-        }
         searching = !searching
         query = ""
         applySearchVisibility()
@@ -363,6 +355,16 @@ class VaultImeService : InputMethodService() {
             ).apply { setMargins(0, dp(3), 0, dp(3)) }
             setOnClickListener { onClick() }
         }
+
+    /**
+     * Kilit açma ekranı ayrı bir aktivitede açılır; onaylandıktan sonra
+     * kullanıcı yazdığı uygulamaya döner ve klavye tazelenir ([onWindowShown]).
+     */
+    private fun startUnlock() {
+        startActivity(Intent(this, ImeUnlockActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+    }
 
     private fun switchBackToKeyboard() {
         if (Build.VERSION.SDK_INT >= 28) {

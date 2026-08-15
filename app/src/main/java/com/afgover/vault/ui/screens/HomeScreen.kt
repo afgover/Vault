@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Lock
@@ -46,12 +47,14 @@ import com.afgover.vault.ui.VaultViewModel
 
 fun EntryType.icon(): ImageVector = when (this) {
     EntryType.LOGIN -> Icons.Filled.Key
+    EntryType.EVERYDAY -> Icons.Filled.Badge
     EntryType.CARD -> Icons.Filled.CreditCard
     EntryType.NOTE -> Icons.AutoMirrored.Filled.Note
 }
 
 fun EntryType.label(): String = when (this) {
     EntryType.LOGIN -> "Hesap / Şifre"
+    EntryType.EVERYDAY -> "Gündelik"
     EntryType.CARD -> "Kart"
     EntryType.NOTE -> "Güvenli Not"
 }
@@ -157,7 +160,11 @@ fun HomeScreen(
                                 Column {
                                     Text(item.title, style = MaterialTheme.typography.titleMedium)
                                     Text(
-                                        item.type.label(),
+                                        if (item.quick) {
+                                            "${item.type.label()} · ⚡ klavyede parolasız"
+                                        } else {
+                                            item.type.label()
+                                        },
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                     )

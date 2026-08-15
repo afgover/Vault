@@ -30,7 +30,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-data class EntryListItem(val id: Long, val type: EntryType, val title: String)
+data class EntryListItem(
+    val id: Long,
+    val type: EntryType,
+    val title: String,
+    val quick: Boolean
+)
 
 enum class LockState { NEEDS_SETUP, LOCKED, UNLOCKED }
 
@@ -39,8 +44,6 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as VaultApp
     val keyManager = app.keyManager
     private val repo = app.repository
-    private val settings =
-        application.getSharedPreferences("vault_settings", Context.MODE_PRIVATE)
 
     var lockState by mutableStateOf(
         when {
@@ -62,20 +65,29 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 EntryListItem(
                     id = it.id,
                     type = runCatching { EntryType.valueOf(it.type) }.getOrDefault(EntryType.NOTE),
-                    title = it.title
+                    title = it.title,
+                    quick = it.quick
                 )
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    /** Ekran öne geldiğinde zaman aşımını denetler. */
+    /** Ekran öne geldiğinde: ekran kapanıp kasa kilitlendiyse kilit ekranına dön. */
     fun refreshLockState() {
         if (lockState == LockState.UNLOCKED && !VaultSession.isUnlocked) {
             lockState = LockState.LOCKED
         }
     }
 
-    fun touch() = VaultSession.touch()
+    /**
+     * Kilit açıldığında hızlı erişim kopyaları da tazelenir: Keystore anahtarı
+     * kaybolmuş ya da kopya hiç üretilememişse kaydın aslından yeniden yazılır.
+     */
+    private fun onUnlocked(key: javax.crypto.SecretKey) {
+        VaultSession.unlock(key)
+        lockState = LockState.UNLOCKED
+        viewModelScope.launch(Dispatchers.IO) { repo.repairQuickCopies(key) }
+    }
 
     fun setup(password: String, confirm: String) {
         if (password.length < 8) {
@@ -91,9 +103,8 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             val key = withContext(Dispatchers.Default) {
                 keyManager.setup(password.toCharArray())
             }
-            VaultSession.unlock(key)
             busy = false
-            lockState = LockState.UNLOCKED
+            onUnlocked(key)
         }
     }
 
@@ -107,16 +118,12 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             if (key == null) {
                 error = "Parola yanlış"
             } else {
-                VaultSession.unlock(key)
-                lockState = LockState.UNLOCKED
+                onUnlocked(key)
             }
         }
     }
 
-    fun onBiometricUnlocked(key: javax.crypto.SecretKey) {
-        VaultSession.unlock(key)
-        lockState = LockState.UNLOCKED
-    }
+    fun onBiometricUnlocked(key: javax.crypto.SecretKey) = onUnlocked(key)
 
     fun lock() {
         VaultSession.lock()
@@ -154,10 +161,30 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         return withContext(Dispatchers.IO) { repo.getDecrypted(id, key) }
     }
 
-    fun saveEntry(id: Long, type: EntryType, title: String, data: EntryData, onDone: () -> Unit) {
+    fun saveEntry(
+        id: Long,
+        type: EntryType,
+        title: String,
+        data: EntryData,
+        quick: Boolean,
+        onDone: () -> Unit
+    ) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { repo.save(id, type, title, data, key) }
+            withContext(Dispatchers.IO) { repo.save(id, type, title, data, quick, key) }
+            onDone()
+        }
+    }
+
+    /** Detay ekranındaki hızlı erişim anahtarı; içeriğe dokunmaz. */
+    fun setQuick(id: Long, quick: Boolean, onDone: () -> Unit = {}) {
+        val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { repo.setQuick(id, quick, key) }
+            toast(
+                if (quick) "Klavyede parolasız kullanılabilir"
+                else "Klavyede kilit açmadan görünmez"
+            )
             onDone()
         }
     }
@@ -247,13 +274,6 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // ---- Ayarlar ----
-
-    var autoLockMinutes: Int
-        get() = (VaultSession.autoLockMillis / 60_000L).toInt()
-        set(value) {
-            VaultSession.autoLockMillis = value * 60_000L
-            settings.edit().putLong("auto_lock_millis", value * 60_000L).apply()
-        }
 
     fun disableBiometric() {
         keyManager.clearBiometric()

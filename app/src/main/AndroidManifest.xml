@@ -40,6 +40,14 @@
             android:taskAffinity=".autofill"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Klavyedeki "Kilidi aç" düğmesinin açtığı ekran. -->
+        <activity
+            android:name=".ime.ImeUnlockActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity=".ime"
+            android:windowSoftInputMode="adjustResize" />
+
         <service
             android:name=".autofill.VaultAutofillService"
             android:exported="true"

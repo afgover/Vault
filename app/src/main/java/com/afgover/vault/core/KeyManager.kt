@@ -34,6 +34,7 @@ class KeyManager(context: Context) {
         private const val PREF_BIO_WRAPPED_KEY = "bio_wrapped_data_key"
         private const val PREF_BIO_IV = "bio_iv"
         private const val KEYSTORE_ALIAS = "vault_biometric_key"
+        private const val QUICK_KEYSTORE_ALIAS = "vault_quick_key"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     }
 
@@ -79,6 +80,47 @@ class KeyManager(context: Context) {
     fun rewrap(password: CharArray, dataKey: SecretKey) {
         storeWrappedKey(password, dataKey)
         clearBiometric()
+    }
+
+    // ---- Hızlı erişim ----
+
+    /**
+     * "Hızlı erişim" işaretli kayıtların klavye kopyasını şifreleyen anahtar.
+     * Keystore'da durur ve **kimlik doğrulama istemez** — kasa kilitliyken de
+     * kullanılabilmesinin sebebi budur. Dolayısıyla bu anahtarla korunan
+     * kayıtların güvenliği, kasa parolasına değil telefonun kendi ekran
+     * kilidine dayanır; oraya yalnızca düşük değerli bilgiler konmalıdır.
+     *
+     * Anahtar cihaza bağlıdır (sıfırlamada kaybolur). Kayıtların aslı ana
+     * paroladan türeyen dataKey ile şifreli olduğu için bu bir veri kaybı
+     * yaratmaz: kopyalar kilit açıldığında yeniden üretilir.
+     *
+     * Keystore erişilemiyorsa null döner; bu durumda hızlı erişim çalışmaz,
+     * kayıtlar korumalı gibi davranır.
+     */
+    fun quickKey(): SecretKey? = try {
+        val ks = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+        (ks.getKey(QUICK_KEYSTORE_ALIAS, null) as? SecretKey) ?: generateQuickKey()
+    } catch (e: Exception) {
+        null
+    }
+
+    private fun generateQuickKey(): SecretKey? = try {
+        KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE).apply {
+            init(
+                KeyGenParameterSpec.Builder(
+                    QUICK_KEYSTORE_ALIAS,
+                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+                )
+                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                    .setKeySize(256)
+                    .setUserAuthenticationRequired(false)
+                    .build()
+            )
+        }.generateKey()
+    } catch (e: Exception) {
+        null
     }
 
     // ---- Biyometrik ----

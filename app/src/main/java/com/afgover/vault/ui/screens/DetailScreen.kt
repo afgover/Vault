@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -91,6 +92,38 @@ fun DetailScreen(
                     onTypeToPc = { btField = label to value }
                 )
                 Spacer(Modifier.padding(4.dp))
+            }
+
+            Spacer(Modifier.padding(8.dp))
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            "Klavyede parolasız kullan",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            if (e.quick) {
+                                "Kasa kilitliyken de Vault Klavyesi'nde çıkar; koruması " +
+                                    "telefonun ekran kilidi kadardır."
+                            } else {
+                                "Yalnızca kasa kilidi açıkken kullanılabilir."
+                            },
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    Switch(
+                        checked = e.quick,
+                        onCheckedChange = { value ->
+                            entry = e.copy(quick = value)
+                            viewModel.setQuick(e.id, value)
+                        }
+                    )
+                }
             }
         }
     }

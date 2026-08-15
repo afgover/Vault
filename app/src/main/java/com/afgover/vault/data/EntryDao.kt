@@ -18,6 +18,10 @@ interface EntryDao {
     @Query("SELECT * FROM entries WHERE id = :id")
     suspend fun getById(id: Long): EntryEntity?
 
+    /** Kasa kilitliyken klavyenin görebildiği tek küme. */
+    @Query("SELECT * FROM entries WHERE quick = 1 ORDER BY title COLLATE NOCASE")
+    suspend fun getQuick(): List<EntryEntity>
+
     @Insert
     suspend fun insert(entry: EntryEntity): Long
 
