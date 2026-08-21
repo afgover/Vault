@@ -17,6 +17,29 @@ import javax.crypto.SecretKey
  */
 class VaultRepository(context: Context, private val keys: KeyManager) {
 
+    companion object {
+        /**
+         * Tek kaydın şifrelenmemiş içeriği için üst sınır. Gerçek tavan
+         * Android'in CursorWindow'u (varsayılan 2 MB): satıra sığmayan kayıt
+         * yazılırken değil, SONRAKİ liste sorgusunda "Row too big" ile çöker
+         * ve kayıt erişilmez olur. Hızlı erişim kopyası (quickBlob) satırı
+         * ikiye katladığı için sınır tavanın dörtte birinin de altında
+         * tutuluyor. (vault_takip B-040, A-2026-08-21-004)
+         */
+        const val MAX_PLAIN_BYTES = 256 * 1024
+    }
+
+    /** Kayıt [MAX_PLAIN_BYTES] sınırını aşarsa fırlatılır; mesajı ekrana çıkar. */
+    class EntryTooLargeException(title: String, bytes: Int) : Exception(
+        "\"$title\" kaydı çok büyük: ${bytes / 1024} KB " +
+            "(sınır ${MAX_PLAIN_BYTES / 1024} KB). Uzun içeriği bölerek ya da " +
+            "dosya olarak bilgisayarda saklayarak ekle."
+    )
+
+    private fun checkSize(title: String, plain: ByteArray) {
+        if (plain.size > MAX_PLAIN_BYTES) throw EntryTooLargeException(title, plain.size)
+    }
+
     private val dao = VaultDatabase.get(context).entryDao()
 
     fun observeAll(): Flow<List<EntryEntity>> = dao.observeAll()
@@ -54,6 +77,7 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
         key: SecretKey
     ) {
         val plain = data.bytes()
+        checkSize(title, plain)
         val blob = Crypto.encrypt(key, plain)
         val quickBlob = quickCopy(plain, quick)
         val now = System.currentTimeMillis()
@@ -151,6 +175,7 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
 
     private fun DecryptedEntry.toEntity(key: SecretKey): EntryEntity {
         val plain = data.bytes()
+        checkSize(title, plain)
         return EntryEntity(
             type = type.name,
             title = title,

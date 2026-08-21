@@ -20,6 +20,7 @@ import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
+import com.afgover.vault.data.VaultRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -171,8 +172,13 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     ) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { repo.save(id, type, title, data, quick, key) }
-            onDone()
+            try {
+                withContext(Dispatchers.IO) { repo.save(id, type, title, data, quick, key) }
+                onDone()
+            } catch (e: VaultRepository.EntryTooLargeException) {
+                // Ekran açık kalır, girilenler durur; kullanıcı kısaltıp yeniden dener.
+                toast(e.message ?: "Kayıt çok büyük")
+            }
         }
     }
 
