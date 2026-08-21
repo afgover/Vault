@@ -99,6 +99,17 @@ fun VaultRoot(
     // Basit gezinme: durum bellekte tutulur; süreç yeniden başlarsa Home'a döner.
     var nav by remember { mutableStateOf<Nav>(Nav.Home) }
 
+    // Sistem geri tuşu üst çubuktaki ok ile aynı yere döner; uygulamadan yalnız
+    // Home'dayken çıkılır. (Ok'suz sistem geri'si doğrudan uygulamayı kapatıyordu.)
+    androidx.activity.compose.BackHandler(
+        enabled = viewModel.lockState == LockState.UNLOCKED && nav != Nav.Home
+    ) {
+        nav = when (val screen = nav) {
+            is Nav.Edit -> if (screen.id == 0L) Nav.Home else Nav.Detail(screen.id)
+            else -> Nav.Home
+        }
+    }
+
     when (viewModel.lockState) {
         LockState.NEEDS_SETUP, LockState.LOCKED -> {
             LaunchedEffect(Unit) { nav = Nav.Home }

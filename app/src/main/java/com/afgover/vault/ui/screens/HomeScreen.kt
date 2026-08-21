@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Key
@@ -30,6 +31,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -81,6 +83,7 @@ fun HomeScreen(
     var filterType by remember { mutableStateOf<EntryType?>(null) }
     val filterTagIds = remember { mutableStateListOf<Long>() }
     var manageTags by remember { mutableStateOf(false) }
+    var showPasteImport by remember { mutableStateOf(false) }
 
     // Seçimler daraltarak birleşir: tür VE seçili etiketlerin tamamı.
     val filtered = entries.filter { item ->
@@ -122,6 +125,17 @@ fun HomeScreen(
                             }
                         )
                     }
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text("Metinden içe aktar") },
+                        leadingIcon = {
+                            Icon(Icons.Filled.ContentPaste, contentDescription = null)
+                        },
+                        onClick = {
+                            addMenuOpen = false
+                            showPasteImport = true
+                        }
+                    )
                 }
                 FloatingActionButton(onClick = { addMenuOpen = true }) {
                     Icon(Icons.Filled.Add, contentDescription = "Ekle")
@@ -226,6 +240,10 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (showPasteImport) {
+        PasteImportDialog(viewModel = viewModel, onDismiss = { showPasteImport = false })
     }
 
     if (manageTags) {
