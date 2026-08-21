@@ -23,6 +23,21 @@ object HidLayouts {
             Layout.TR -> TR
         }
 
+    /**
+     * İki düzende FARKLI tuşa düşen (ya da yalnız birinde bulunan) karakterler.
+     * Yanlış düzen seçilirse tam bu karakterler sessizce başka karaktere
+     * dönüşür — harfler ve rakamlar iki düzende aynıdır, tehlike simgelerde.
+     */
+    fun layoutSensitiveChars(text: String): List<Char> =
+        text.toSet().filter { US[it] != TR[it] }.sorted()
+
+    /**
+     * Düzen testi için örnek metin: iki düzende de yazılabilen ama farklı
+     * tuşlara düşen simgelerden seçildi. Bilgisayarda birebir bu çıkıyorsa
+     * seçili düzen doğrudur.
+     */
+    const val LAYOUT_TEST_TEXT = "vault: @ \" ' ( ) = ? - _ ; , ."
+
     private fun MutableMap<Char, KeyStroke>.putLetters(overrides: Map<Char, KeyStroke> = emptyMap()) {
         for (c in 'a'..'z') {
             val usage = 0x04 + (c - 'a')
@@ -97,5 +112,9 @@ object HidLayouts {
         put('}', KeyStroke(0x27, MOD_ALTGR))       // AltGr+0
         put('<', KeyStroke(0x64, MOD_NONE)); put('>', KeyStroke(0x64, MOD_SHIFT))
         put('|', KeyStroke(0x64, MOD_ALTGR))
+        // ISO TR-Q: Enter'ın solundaki tuş (0x32) ',' ve ';'; 1'in solundaki (0x35) '"'.
+        // Eksiklikleri HidLayoutsTest yakaladı: bu karakterler "yazılamaz" sanılıyordu.
+        put(',', KeyStroke(0x32, MOD_NONE)); put(';', KeyStroke(0x32, MOD_SHIFT))
+        put('"', KeyStroke(0x35, MOD_NONE))
     }
 }

@@ -107,6 +107,8 @@ fun BtTypeDialog(
     var countdown by remember { mutableIntStateOf(0) }
     var typing by remember { mutableStateOf(false) }
     var untypedWarning by remember { mutableStateOf<String?>(null) }
+    var testTyped by remember { mutableStateOf(false) }
+    var pendingIsTest by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = { if (!typing) onDismiss() },
@@ -154,23 +156,58 @@ fun BtTypeDialog(
 
                     is BtHidManager.State.Connected -> {
                         Text("✓ ${s.name} bağlı", color = MaterialTheme.colorScheme.primary)
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(12.dp))
                         Text(
-                            "Bilgisayarın klavye düzeni:",
-                            style = MaterialTheme.typography.bodySmall
+                            "BİLGİSAYARIN klavye düzeni (telefonun değil):",
+                            style = MaterialTheme.typography.titleSmall
                         )
+                        Text(
+                            "Tuş kodlarını bilgisayar yorumlar — yanlış düzen seçersen " +
+                                "@ \" ? gibi karakterler SESSİZCE başka karaktere dönüşür.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(Modifier.height(4.dp))
                         Row {
                             HidLayouts.Layout.entries.forEach { l ->
                                 FilterChip(
                                     selected = layout == l,
                                     onClick = {
                                         layout = l
+                                        testTyped = false
                                         prefs.edit().putString("pc_layout", l.name).apply()
                                     },
                                     label = { Text(l.label) },
                                     modifier = Modifier.padding(end = 8.dp)
                                 )
                             }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        val riskli = remember(value, layout) {
+                            HidLayouts.layoutSensitiveChars(value)
+                        }
+                        if (riskli.isNotEmpty() && !testTyped) {
+                            Text(
+                                "Bu metinde düzene duyarlı karakterler var: " +
+                                    riskli.joinToString(" ") +
+                                    " — göndermeden önce test yazmanı öneririm.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                            Spacer(Modifier.height(4.dp))
+                        }
+                        OutlinedButton(
+                            enabled = !typing && countdown == 0,
+                            onClick = { pendingIsTest = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) { Text(if (testTyped) "✓ Test yazıldı — tekrar dene" else "🧪 Önce test yaz (önerilir)") }
+                        if (testTyped) {
+                            Text(
+                                "Bilgisayarda TAM OLARAK şu çıkmış olmalı:\n" +
+                                    HidLayouts.LAYOUT_TEST_TEXT +
+                                    "\nFarklıysa üstteki diğer düzeni seç ve testi tekrarla.",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                         Spacer(Modifier.height(8.dp))
                         when {
@@ -181,8 +218,8 @@ fun BtTypeDialog(
                                 color = MaterialTheme.colorScheme.primary
                             )
                             else -> Text(
-                                "Bilgisayarda imleci yazılacak alana getir, sonra aşağıdaki " +
-                                    "butona bas. 3 saniye sonra yazma başlar.",
+                                "Bilgisayarda imleci yazılacak alana getir, sonra düğmeye " +
+                                    "bas. 3 saniye sonra yazma başlar.",
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -201,6 +238,20 @@ fun BtTypeDialog(
         },
         confirmButton = {
             if (state is BtHidManager.State.Connected) {
+                // Test isteği de aynı geri sayım akışından geçer.
+                LaunchedEffect(pendingIsTest) {
+                    if (!pendingIsTest) return@LaunchedEffect
+                    untypedWarning = null
+                    for (i in 3 downTo 1) { countdown = i; delay(1000) }
+                    countdown = 0
+                    typing = true
+                    withContext(Dispatchers.IO) {
+                        BtHidManager.typeText(HidLayouts.LAYOUT_TEST_TEXT, layout)
+                    }
+                    typing = false
+                    testTyped = true
+                    pendingIsTest = false
+                }
                 Button(
                     enabled = !typing && countdown == 0,
                     onClick = {
@@ -222,7 +273,7 @@ fun BtTypeDialog(
                                 untypedWarning =
                                     "Şu karakterler bu düzende yazılamadı: " +
                                         untyped.distinct().joinToString(" ") +
-                                        " — US düzenini deneyebilirsin."
+                                        " — diğer düzeni deneyebilirsin."
                             }
                         }
                     }
