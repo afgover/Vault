@@ -243,7 +243,25 @@ def main():
         args.hizli = args.tur == "gundelik"
 
     value = clipboard_text()
-    print(f"Panodan alınan: {len(value)} karakter")
+    # Önizleme bilinçli bir takas: kısa bir baş kısmı ekrana yazmak, yanlış
+    # içeriği şifreleyip aktarmayı (yaşandı: komutun kendisi aktarıldı)
+    # önler; bedeli, o baş kısmın terminal geçmişinde görünmesidir.
+    ilk = value.strip().splitlines()[0] if value.strip() else ""
+    onizleme = ilk[:32] + ("…" if len(ilk) > 32 or "\n" in value.strip() else "")
+    print(f"Panodan alınan: {len(value)} karakter · başı: \u201c{onizleme}\u201d")
+    if "vault-clip" in value:
+        print(
+            "\nUYARI: Panodaki metin bu betiğin KOMUTU gibi görünüyor.\n"
+            "Komutu panoya kopyalamak, aktarmak istediğin asıl metni siler.\n"
+            "Doğrusu: önce aktarılacak metni kopyala, komutu elle yaz ya da\n"
+            "terminalin geçmişinden çağır."
+        )
+        try:
+            cevap = input("Yine de bunu aktarayım mı? [e/H] ")
+        except EOFError:
+            die("panoda komut var; onay alınamadı, iptal edildi")
+        if cevap.strip().lower() != "e":
+            die("iptal edildi — asıl metni kopyalayıp yeniden dene")
     print(f"Kayıt: \"{args.baslik}\" · {args.tur} · alan: {args.ek or args.alan} · "
           f"{'klavyede parolasız' if args.hizli else 'korumalı'}")
 
