@@ -33,7 +33,7 @@ abstract class VaultDatabase : RoomDatabase() {
          * Etiketler. Mevcut kayıtlar boş etiket listesiyle ("[]") gelir;
          * içerikler olduğu gibi kalır (R-004: yıkıcı geçiş yok).
          */
-        private val MIGRATION_2_3 = object : Migration(2, 3) {
+        internal val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE entries ADD COLUMN tags TEXT NOT NULL DEFAULT '[]'")
                 db.execSQL(

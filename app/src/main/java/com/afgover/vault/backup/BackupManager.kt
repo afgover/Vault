@@ -1,6 +1,6 @@
 package com.afgover.vault.backup
 
-import android.util.Base64
+import java.util.Base64
 import com.afgover.vault.core.Crypto
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryData
@@ -92,10 +92,10 @@ object BackupManager {
                 JSONObject()
                     .put("algo", "PBKDF2WithHmacSHA256")
                     .put("iterations", Crypto.KDF_ITERATIONS)
-                    .put("salt", Base64.encodeToString(salt, Base64.NO_WRAP))
+                    .put("salt", Base64.getEncoder().encodeToString(salt))
             )
             .put("cipher", "AES-256-GCM")
-            .put("data", Base64.encodeToString(blob, Base64.NO_WRAP))
+            .put("data", Base64.getEncoder().encodeToString(blob))
 
         output.use { it.write(envelope.toString(2).toByteArray(Charsets.UTF_8)) }
     }
@@ -111,13 +111,13 @@ object BackupManager {
 
         val kdf = envelope.optJSONObject("kdf") ?: throw InvalidFormatException()
         val salt = try {
-            Base64.decode(kdf.optString("salt"), Base64.NO_WRAP)
+            Base64.getDecoder().decode(kdf.optString("salt"))
         } catch (e: Exception) {
             throw InvalidFormatException()
         }
         val iterations = kdf.optInt("iterations", Crypto.KDF_ITERATIONS)
         val blob = try {
-            Base64.decode(envelope.optString("data"), Base64.NO_WRAP)
+            Base64.getDecoder().decode(envelope.optString("data"))
         } catch (e: Exception) {
             throw InvalidFormatException()
         }
