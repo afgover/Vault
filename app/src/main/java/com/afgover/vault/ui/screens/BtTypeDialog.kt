@@ -36,6 +36,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.afgover.vault.bt.BtHidManager
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.ui.text.font.FontWeight
 import com.afgover.vault.bt.HidLayouts
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -170,18 +176,45 @@ fun BtTypeDialog(
                         Spacer(Modifier.height(4.dp))
                         Row {
                             HidLayouts.Layout.entries.forEach { l ->
+                                val secili = layout == l
                                 FilterChip(
-                                    selected = layout == l,
+                                    selected = secili,
                                     onClick = {
                                         layout = l
                                         testTyped = false
                                         prefs.edit().putString("pc_layout", l.name).apply()
                                     },
-                                    label = { Text(l.label) },
+                                    label = {
+                                        Text(
+                                            l.label,
+                                            fontWeight = if (secili) FontWeight.Bold
+                                            else FontWeight.Normal
+                                        )
+                                    },
+                                    leadingIcon = if (secili) {
+                                        {
+                                            Icon(
+                                                Icons.Filled.Check,
+                                                contentDescription = "Seçili",
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    } else null,
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                        selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
                                     modifier = Modifier.padding(end = 8.dp)
                                 )
                             }
                         }
+                        Text(
+                            "Seçili düzen: ${layout.label}",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                         Spacer(Modifier.height(8.dp))
                         val riskli = remember(value, layout) {
                             HidLayouts.layoutSensitiveChars(value)
