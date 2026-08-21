@@ -5,6 +5,7 @@ import com.afgover.vault.core.Crypto
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
+import com.afgover.vault.data.TagEntity
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
@@ -31,7 +32,25 @@ object BackupManager {
     class WrongPasswordException : Exception("Yedek parolası yanlış")
     class InvalidFormatException : Exception("Geçersiz yedek dosyası")
 
-    fun export(output: OutputStream, password: CharArray, entries: List<DecryptedEntry>) {
+    /** İçe aktarma sonucu: kayıtlar + yedekteki etiket renkleri (ad → ARGB). */
+    data class ImportResult(
+        val entries: List<DecryptedEntry>,
+        val tagColors: Map<String, Int>
+    )
+
+    /**
+     * [tags] cihazdaki etiket tanımlarıdır; kayıtlar etiketleri id ile değil
+     * ADLA yedekler (id cihaza özgüdür) ve renkler `tagDefs` altında taşınır.
+     * Alanlar eklemeli: eski uygulama yeni yedeği (etiketleri atlayarak),
+     * yeni uygulama eski yedeği (etiketsiz) sorunsuz okur; sürüm 1 kalır.
+     */
+    fun export(
+        output: OutputStream,
+        password: CharArray,
+        entries: List<DecryptedEntry>,
+        tags: List<TagEntity> = emptyList()
+    ) {
+        val tagName = tags.associate { it.id to it.name }
         val payload = JSONObject().put("entries", JSONArray().apply {
             entries.forEach { e ->
                 put(
@@ -42,9 +61,24 @@ object BackupManager {
                         .put("updatedAt", e.updatedAt)
                         .put("quick", e.quick)
                         .put("data", e.data.toJson())
+                        .apply {
+                            val names = e.tagIds.mapNotNull(tagName::get)
+                            if (names.isNotEmpty()) {
+                                put("tags", JSONArray().apply { names.forEach(::put) })
+                            }
+                        }
                 )
             }
         })
+        val usedTagIds = entries.flatMap { it.tagIds }.toSet()
+        val usedTags = tags.filter { it.id in usedTagIds }
+        if (usedTags.isNotEmpty()) {
+            payload.put("tagDefs", JSONArray().apply {
+                usedTags.forEach {
+                    put(JSONObject().put("name", it.name).put("color", it.color))
+                }
+            })
+        }
 
         val salt = Crypto.randomBytes(16)
         val key = Crypto.deriveKey(password, salt)
@@ -66,7 +100,7 @@ object BackupManager {
         output.use { it.write(envelope.toString(2).toByteArray(Charsets.UTF_8)) }
     }
 
-    fun import(input: InputStream, password: CharArray): List<DecryptedEntry> {
+    fun import(input: InputStream, password: CharArray): ImportResult {
         val text = input.use { it.readBytes().toString(Charsets.UTF_8) }
         val envelope = try {
             JSONObject(text)
@@ -98,7 +132,7 @@ object BackupManager {
         }
         val array = payload.optJSONArray("entries") ?: throw InvalidFormatException()
 
-        return buildList {
+        val entries = buildList {
             for (i in 0 until array.length()) {
                 val o = array.getJSONObject(i)
                 add(
@@ -111,10 +145,23 @@ object BackupManager {
                         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
                         updatedAt = o.optLong("updatedAt", System.currentTimeMillis()),
                         // Eski yedeklerde alan yok: korumalı kabul edilir.
-                        quick = o.optBoolean("quick", false)
+                        quick = o.optBoolean("quick", false),
+                        tagNames = o.optJSONArray("tags")?.let { arr ->
+                            buildList { for (j in 0 until arr.length()) add(arr.getString(j)) }
+                        } ?: emptyList()
                     )
                 )
             }
         }
+        val tagColors = buildMap {
+            payload.optJSONArray("tagDefs")?.let { defs ->
+                for (i in 0 until defs.length()) {
+                    val d = defs.optJSONObject(i) ?: continue
+                    val name = d.optString("name")
+                    if (name.isNotEmpty() && d.has("color")) put(name, d.getInt("color"))
+                }
+            }
+        }
+        return ImportResult(entries, tagColors)
     }
 }

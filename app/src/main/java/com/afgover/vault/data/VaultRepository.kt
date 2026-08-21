@@ -41,6 +41,7 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
     }
 
     private val dao = VaultDatabase.get(context).entryDao()
+    private val tagDao = VaultDatabase.get(context).tagDao()
 
     fun observeAll(): Flow<List<EntryEntity>> = dao.observeAll()
 
@@ -74,7 +75,8 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
         title: String,
         data: EntryData,
         quick: Boolean,
-        key: SecretKey
+        key: SecretKey,
+        tagIds: List<Long> = emptyList()
     ) {
         val plain = data.bytes()
         checkSize(title, plain)
@@ -90,7 +92,8 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
                     createdAt = now,
                     updatedAt = now,
                     quick = quick,
-                    quickBlob = quickBlob
+                    quickBlob = quickBlob,
+                    tags = TagIds.serialize(tagIds)
                 )
             )
         } else {
@@ -102,7 +105,8 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
                     blob = blob,
                     updatedAt = now,
                     quick = quick,
-                    quickBlob = quickBlob
+                    quickBlob = quickBlob,
+                    tags = TagIds.serialize(tagIds)
                 )
             )
         }
@@ -132,16 +136,62 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
 
     suspend fun delete(id: Long) = dao.deleteById(id)
 
+    // ---- Etiketler ----
+
+    fun observeTags(): Flow<List<TagEntity>> = tagDao.observeAll()
+
+    suspend fun addTag(name: String, color: Int): Long =
+        tagDao.insert(TagEntity(name = name.trim(), color = color))
+
+    suspend fun updateTag(tag: TagEntity) = tagDao.update(tag)
+
+    /** Etiketi siler ve taşıyan her kaydın listesinden düşürür. */
+    suspend fun deleteTag(id: Long) {
+        tagDao.deleteById(id)
+        dao.getAll().forEach { entity ->
+            val ids = TagIds.parse(entity.tags)
+            if (id in ids) {
+                dao.update(entity.copy(tags = TagIds.serialize(ids - id)))
+            }
+        }
+    }
+
     /** İçe aktarma: mevcut kayıtları silip yenilerini yazar. */
-    suspend fun replaceAll(entries: List<DecryptedEntry>, key: SecretKey) {
+    suspend fun replaceAll(entries: List<DecryptedEntry>, key: SecretKey, tagColors: Map<String, Int> = emptyMap()) {
         dao.deleteAll()
-        dao.insertAll(entries.map { it.toEntity(key) })
+        val resolve = tagNameResolver(entries, tagColors)
+        dao.insertAll(entries.map { it.toEntity(key, resolve(it)) })
     }
 
     /** İçe aktarma: yedektekileri mevcut kayıtların yanına ekler. */
-    suspend fun addAll(entries: List<DecryptedEntry>, key: SecretKey) {
-        dao.insertAll(entries.map { it.toEntity(key) })
+    suspend fun addAll(entries: List<DecryptedEntry>, key: SecretKey, tagColors: Map<String, Int> = emptyMap()) {
+        val resolve = tagNameResolver(entries, tagColors)
+        dao.insertAll(entries.map { it.toEntity(key, resolve(it)) })
     }
+
+    /**
+     * Yedekteki etiket ADLARINI bu cihazın id'lerine çözer; olmayan etiket
+     * oluşturulur (id'ler cihaza özgüdür, yedek ad taşır). Renk yedekteki
+     * tanımdan ([BackupManager] tagDefs), yoksa paletten gelir.
+     */
+    private suspend fun tagNameResolver(
+        entries: List<DecryptedEntry>,
+        tagColors: Map<String, Int>
+    ): (DecryptedEntry) -> List<Long> {
+        val wanted = entries.flatMap { it.tagNames }.distinct()
+        if (wanted.isEmpty()) return { it.tagIds }
+        val byName = tagDao.getAll().associateBy { it.name.lowercase() }.toMutableMap()
+        wanted.forEach { name ->
+            if (name.lowercase() !in byName) {
+                val color = tagColors[name] ?: TagPalette.colorFor(byName.size)
+                val id = tagDao.insert(TagEntity(name = name, color = color))
+                byName[name.lowercase()] = TagEntity(id, name, color)
+            }
+        }
+        return { e -> e.tagNames.mapNotNull { byName[it.lowercase()]?.id } }
+    }
+
+    suspend fun getAllTags(): List<TagEntity> = tagDao.getAll()
 
     // ---- Yardımcılar ----
 
@@ -169,11 +219,12 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
             data = data,
             createdAt = createdAt,
             updatedAt = updatedAt,
-            quick = quick
+            quick = quick,
+            tagIds = TagIds.parse(tags)
         )
     }
 
-    private fun DecryptedEntry.toEntity(key: SecretKey): EntryEntity {
+    private fun DecryptedEntry.toEntity(key: SecretKey, resolvedTagIds: List<Long>): EntryEntity {
         val plain = data.bytes()
         checkSize(title, plain)
         return EntryEntity(
@@ -183,7 +234,8 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
             createdAt = createdAt,
             updatedAt = updatedAt,
             quick = quick,
-            quickBlob = quickCopy(plain, quick)
+            quickBlob = quickCopy(plain, quick),
+            tags = TagIds.serialize(resolvedTagIds)
         )
     }
 }

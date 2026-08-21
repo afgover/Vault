@@ -27,7 +27,13 @@ data class EntryData(
     val email: String = "",
     val address: String = "",
     // Kullanıcının eklediği serbest alanlar
-    val custom: List<CustomField> = emptyList()
+    val custom: List<CustomField> = emptyList(),
+    /**
+     * Şifre alanının son değiştiği an (epoch ms); 0 = bilinmiyor (eski kayıt).
+     * Eskiyen parola uyarısının temeli. Şifreli veride durur: yalnız kilit
+     * açıkken okunacak bir bilgidir.
+     */
+    val passwordChangedAt: Long = 0
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
         if (username.isNotEmpty()) put("username", username)
@@ -50,6 +56,7 @@ data class EntryData(
                 }
             })
         }
+        if (passwordChangedAt > 0) put("passwordChangedAt", passwordChangedAt)
     }
 
     /** IME ve detay ekranında gösterilecek (etiket, değer) çiftleri. */
@@ -87,7 +94,8 @@ data class EntryData(
             phone = json.optString("phone"),
             email = json.optString("email"),
             address = json.optString("address"),
-            custom = json.optJSONArray("custom").toCustomFields()
+            custom = json.optJSONArray("custom").toCustomFields(),
+            passwordChangedAt = json.optLong("passwordChangedAt")
         )
 
         private fun JSONArray?.toCustomFields(): List<CustomField> {
@@ -112,5 +120,8 @@ data class DecryptedEntry(
     val createdAt: Long,
     val updatedAt: Long,
     /** Klavyede kasa kilitliyken de kullanılabilir mi? */
-    val quick: Boolean = false
+    val quick: Boolean = false,
+    val tagIds: List<Long> = emptyList(),
+    /** Yalnız yedek içe aktarmada dolu: id'ler cihaza özgüdür, yedek ad taşır. */
+    val tagNames: List<String> = emptyList()
 )

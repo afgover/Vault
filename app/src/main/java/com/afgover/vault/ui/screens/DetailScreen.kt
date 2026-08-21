@@ -1,6 +1,8 @@
 package com.afgover.vault.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +52,7 @@ fun DetailScreen(
     onBack: () -> Unit
 ) {
     var entry by remember { mutableStateOf<DecryptedEntry?>(null) }
+    val tags by viewModel.tags.collectAsState()
     var btField by remember { mutableStateOf<Pair<String, String>?>(null) }
 
     LaunchedEffect(id) {
@@ -83,6 +87,26 @@ fun DetailScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            val entryTags = tags.filter { it.id in e.tagIds }
+            if (entryTags.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(bottom = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    entryTags.forEach { tag ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            TagDot(tag.color)
+                            Spacer(Modifier.padding(2.dp))
+                            Text(tag.name, style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                }
+            }
+
             e.data.fields().forEach { (label, value) ->
                 FieldCard(
                     label = label,
@@ -125,6 +149,21 @@ fun DetailScreen(
                     )
                 }
             }
+
+            Spacer(Modifier.padding(6.dp))
+            val df = remember { java.text.SimpleDateFormat("d MMM yyyy HH:mm", java.util.Locale("tr")) }
+            Text(
+                buildString {
+                    append("Eklendi: ").append(df.format(java.util.Date(e.createdAt)))
+                    append(" · Güncellendi: ").append(df.format(java.util.Date(e.updatedAt)))
+                    if (e.data.passwordChangedAt > 0) {
+                        append("\nŞifre son değişti: ")
+                        append(df.format(java.util.Date(e.data.passwordChangedAt)))
+                    }
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
         }
     }
 

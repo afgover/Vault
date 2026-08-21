@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,6 +32,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -69,6 +72,12 @@ fun EditScreen(
     val customFields = remember { mutableStateListOf<CustomField>() }
     // Gündelik bilgiler klavyede parolasız kullanılsın diye açık başlar.
     var quick by remember { mutableStateOf(id == 0L && type == EntryType.EVERYDAY) }
+    val tags by viewModel.tags.collectAsState()
+    val selectedTagIds = remember { mutableStateListOf<Long>() }
+    var addTagDialog by remember { mutableStateOf(false) }
+    // Şifre alanının yüklendiği andaki değeri: değişirse passwordChangedAt tazelenir.
+    var originalPassword by remember { mutableStateOf("") }
+    var originalPasswordChangedAt by remember { mutableStateOf(0L) }
     var loaded by remember { mutableStateOf(id == 0L) }
     var confirmDelete by remember { mutableStateOf(false) }
     var showGenerator by remember { mutableStateOf(false) }
@@ -93,6 +102,10 @@ fun EditScreen(
                 customFields.clear()
                 customFields.addAll(e.data.custom)
                 quick = e.quick
+                selectedTagIds.clear()
+                selectedTagIds.addAll(e.tagIds)
+                originalPassword = e.data.password
+                originalPasswordChangedAt = e.data.passwordChangedAt
             }
             loaded = true
         }
@@ -278,6 +291,27 @@ fun EditScreen(
             }
 
             Spacer(Modifier.height(16.dp))
+            Text("Etiketler", style = MaterialTheme.typography.titleSmall)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                tags.forEach { tag ->
+                    TagChip(
+                        tag = tag,
+                        selected = tag.id in selectedTagIds,
+                        onToggle = {
+                            if (tag.id in selectedTagIds) selectedTagIds.remove(tag.id)
+                            else selectedTagIds.add(tag.id)
+                        }
+                    )
+                }
+                OutlinedButton(onClick = { addTagDialog = true }) { Text("+ Yeni") }
+            }
+
+            Spacer(Modifier.height(16.dp))
             Button(
                 onClick = {
                     if (title.isBlank()) return@Button
@@ -301,9 +335,17 @@ fun EditScreen(
                             address = address.trim(),
                             custom = customFields
                                 .map { CustomField(it.label.trim(), it.value.trim()) }
-                                .filter { it.label.isNotEmpty() }
+                                .filter { it.label.isNotEmpty() },
+                            passwordChangedAt = when {
+                                password.isEmpty() -> 0L
+                                password != originalPassword -> System.currentTimeMillis()
+                                // Değişmedi: eski damga korunur; damgasız eski
+                                // kayıtta 0 kalır (bilinmeyen tarih uydurulmaz).
+                                else -> originalPasswordChangedAt
+                            }
                         ),
                         quick = quick,
+                        tagIds = selectedTagIds.toList(),
                         onDone = onBack
                     )
                 },
@@ -314,6 +356,17 @@ fun EditScreen(
             }
             Spacer(Modifier.height(48.dp))
         }
+    }
+
+    if (addTagDialog) {
+        TagEditDialog(
+            initial = null,
+            onDismiss = { addTagDialog = false },
+            onSave = { name, color ->
+                viewModel.addTag(name, color) { newId -> selectedTagIds.add(newId) }
+                addTagDialog = false
+            }
+        )
     }
 
     if (showGenerator) {

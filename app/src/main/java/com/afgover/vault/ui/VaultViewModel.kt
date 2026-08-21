@@ -20,6 +20,7 @@ import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
+import com.afgover.vault.data.TagEntity
 import com.afgover.vault.data.VaultRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,7 +36,8 @@ data class EntryListItem(
     val id: Long,
     val type: EntryType,
     val title: String,
-    val quick: Boolean
+    val quick: Boolean,
+    val tagIds: List<Long> = emptyList()
 )
 
 enum class LockState { NEEDS_SETUP, LOCKED, UNLOCKED }
@@ -67,11 +69,32 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     id = it.id,
                     type = runCatching { EntryType.valueOf(it.type) }.getOrDefault(EntryType.NOTE),
                     title = it.title,
-                    quick = it.quick
+                    quick = it.quick,
+                    tagIds = com.afgover.vault.data.TagIds.parse(it.tags)
                 )
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val tags: StateFlow<List<TagEntity>> = repo.observeTags()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun addTag(name: String, color: Int, onDone: (Long) -> Unit = {}) {
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            val id = withContext(Dispatchers.IO) { repo.addTag(name, color) }
+            onDone(id)
+        }
+    }
+
+    fun updateTag(tag: TagEntity) {
+        if (tag.name.isBlank()) return
+        viewModelScope.launch { withContext(Dispatchers.IO) { repo.updateTag(tag) } }
+    }
+
+    fun deleteTag(id: Long) {
+        viewModelScope.launch { withContext(Dispatchers.IO) { repo.deleteTag(id) } }
+    }
 
     /** Ekran öne geldiğinde: ekran kapanıp kasa kilitlendiyse kilit ekranına dön. */
     fun refreshLockState() {
@@ -168,12 +191,13 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         title: String,
         data: EntryData,
         quick: Boolean,
+        tagIds: List<Long> = emptyList(),
         onDone: () -> Unit
     ) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) { repo.save(id, type, title, data, quick, key) }
+                withContext(Dispatchers.IO) { repo.save(id, type, title, data, quick, key, tagIds) }
                 onDone()
             } catch (e: VaultRepository.EntryTooLargeException) {
                 // Ekran açık kalır, girilenler durur; kullanıcı kısaltıp yeniden dener.
@@ -241,9 +265,10 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 withContext(Dispatchers.IO) {
                     val all = repo.getAllDecrypted(key)
+                    val allTags = repo.getAllTags()
                     val out = getApplication<Application>().contentResolver.openOutputStream(uri)
                         ?: throw Exception("Dosya açılamadı")
-                    BackupManager.export(out, password.toCharArray(), all)
+                    BackupManager.export(out, password.toCharArray(), all, allTags)
                 }
                 toast("Yedek kaydedildi")
             } catch (e: Exception) {
@@ -263,8 +288,9 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     val input = getApplication<Application>().contentResolver.openInputStream(uri)
                         ?: throw Exception("Dosya açılamadı")
                     val imported = BackupManager.import(input, password.toCharArray())
-                    if (replace) repo.replaceAll(imported, key) else repo.addAll(imported, key)
-                    imported.size
+                    if (replace) repo.replaceAll(imported.entries, key, imported.tagColors)
+                    else repo.addAll(imported.entries, key, imported.tagColors)
+                    imported.entries.size
                 }
                 toast("$count kayıt geri yüklendi")
             } catch (e: BackupManager.WrongPasswordException) {

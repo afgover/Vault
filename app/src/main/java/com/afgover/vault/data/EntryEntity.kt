@@ -29,7 +29,9 @@ data class EntryEntity(
     val createdAt: Long,
     val updatedAt: Long,
     val quick: Boolean = false,
-    val quickBlob: ByteArray? = null
+    val quickBlob: ByteArray? = null,
+    /** Etiket id'leri, JSON dizi ("[1,3]"). Adlar tags tablosunda (SEC-021). */
+    val tags: String = "[]"
 ) {
     override fun equals(other: Any?): Boolean =
         other is EntryEntity && other.id == id && other.updatedAt == updatedAt

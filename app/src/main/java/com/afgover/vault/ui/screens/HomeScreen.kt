@@ -1,6 +1,8 @@
 package com.afgover.vault.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
@@ -19,11 +22,13 @@ import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +40,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,12 +74,20 @@ fun HomeScreen(
     onSettings: () -> Unit
 ) {
     val entries by viewModel.entries.collectAsState()
+    val tags by viewModel.tags.collectAsState()
     var query by remember { mutableStateOf("") }
     var addMenuOpen by remember { mutableStateOf(false) }
     var showGenerator by remember { mutableStateOf(false) }
+    var filterType by remember { mutableStateOf<EntryType?>(null) }
+    val filterTagIds = remember { mutableStateListOf<Long>() }
+    var manageTags by remember { mutableStateOf(false) }
 
-    val filtered = if (query.isBlank()) entries
-    else entries.filter { it.title.contains(query, ignoreCase = true) }
+    // Seçimler daraltarak birleşir: tür VE seçili etiketlerin tamamı.
+    val filtered = entries.filter { item ->
+        (query.isBlank() || item.title.contains(query, ignoreCase = true)) &&
+            (filterType == null || item.type == filterType) &&
+            filterTagIds.all { it in item.tagIds }
+    }
 
     Scaffold(
         topBar = {
@@ -128,7 +142,35 @@ fun HomeScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EntryType.entries.forEach { t ->
+                    FilterChip(
+                        selected = filterType == t,
+                        onClick = { filterType = if (filterType == t) null else t },
+                        label = { Text(t.label()) }
+                    )
+                }
+                tags.forEach { tag ->
+                    TagChip(
+                        tag = tag,
+                        selected = tag.id in filterTagIds,
+                        onToggle = {
+                            if (tag.id in filterTagIds) filterTagIds.remove(tag.id)
+                            else filterTagIds.add(tag.id)
+                        }
+                    )
+                }
+                IconButton(onClick = { manageTags = true }) {
+                    Icon(Icons.Filled.Sell, contentDescription = "Etiketleri yönet")
+                }
+            }
+            Spacer(Modifier.height(4.dp))
 
             if (filtered.isEmpty()) {
                 Text(
@@ -158,7 +200,15 @@ fun HomeScreen(
                                 )
                                 Spacer(Modifier.width(16.dp))
                                 Column {
-                                    Text(item.title, style = MaterialTheme.typography.titleMedium)
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(item.title, style = MaterialTheme.typography.titleMedium)
+                                        item.tagIds.forEach { tid ->
+                                            tags.find { it.id == tid }?.let {
+                                                Spacer(Modifier.width(6.dp))
+                                                TagDot(it.color)
+                                            }
+                                        }
+                                    }
                                     Text(
                                         if (item.quick) {
                                             "${item.type.label()} · ⚡ klavyede parolasız"
@@ -176,6 +226,10 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (manageTags) {
+        TagManageDialog(viewModel = viewModel, tags = tags, onDismiss = { manageTags = false })
     }
 
     if (showGenerator) {

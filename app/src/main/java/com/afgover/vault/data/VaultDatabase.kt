@@ -7,10 +7,12 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [EntryEntity::class], version = 2, exportSchema = false)
+@Database(entities = [EntryEntity::class, TagEntity::class], version = 3, exportSchema = false)
 abstract class VaultDatabase : RoomDatabase() {
 
     abstract fun entryDao(): EntryDao
+
+    abstract fun tagDao(): TagDao
 
     companion object {
         @Volatile
@@ -27,6 +29,22 @@ abstract class VaultDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Etiketler. Mevcut kayıtlar boş etiket listesiyle ("[]") gelir;
+         * içerikler olduğu gibi kalır (R-004: yıkıcı geçiş yok).
+         */
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE entries ADD COLUMN tags TEXT NOT NULL DEFAULT '[]'")
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `tags` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`name` TEXT NOT NULL, " +
+                        "`color` INTEGER NOT NULL)"
+                )
+            }
+        }
+
         fun get(context: Context): VaultDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -35,7 +53,7 @@ abstract class VaultDatabase : RoomDatabase() {
                     "vault.db"
                 )
                     // Yıkıcı geçiş YOK: şema değişince veriler silinmemeli.
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                     .also { instance = it }
             }
