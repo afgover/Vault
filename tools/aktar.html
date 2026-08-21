@@ -71,6 +71,9 @@
   <textarea id="icerik" placeholder="Aktarılacak şifre / anahtar / metni buraya yapıştır"></textarea>
 </label>
 <div id="onizleme"></div>
+<label>…ya da dosyadan al (.sh, .pem, .env — en çok 256 KB)
+  <input type="file" id="dosya">
+</label>
 
 <div class="satir">
   <div><label>Yedek parolası (ASCII, en az 8)
@@ -156,6 +159,11 @@ function girdiyiKur() {
   const etiket = $("alanEtiketi").value.trim();
   const data = etiket ? { custom:[{ label:etiket, value }] }
                       : { [DEFAULT_FIELD[tur]]: value };
+  if (ikiliDosyaAdi) {
+    data.notes = "İkili dosya base64 olarak saklandı. Geri döndürmek için " +
+      "değeri bir dosyaya koy ve çalıştır: base64 -d giris.txt > " + ikiliDosyaAdi +
+      "  (macOS: base64 -D -i giris.txt -o " + ikiliDosyaAdi + ")";
+  }
   const now = Date.now();
   return JSON.stringify({ entries:[{
     type:TYPES[tur], title:$("baslik").value.trim(),
@@ -164,6 +172,37 @@ function girdiyiKur() {
     data
   }]});
 }
+
+/* Dosyadan alım: metin olduğu gibi (görünür ve düzenlenebilir kalır),
+   ikili base64 + geri dönüştürme notu (SEC-018: büyük dosya kasaya girmez,
+   anahtarı girer — 256 KB kayıt sınırı uygulamadaki B-040 ile aynı). */
+const MAX_PLAIN = 256 * 1024;
+const MAX_ZARF = 64 * 1024;
+let ikiliDosyaAdi = null;
+
+$("dosya").addEventListener("change", async () => {
+  $("hata").textContent = ""; ikiliDosyaAdi = null;
+  const f = $("dosya").files[0];
+  if (!f) return;
+  if (f.size > MAX_PLAIN) {
+    $("hata").textContent =
+      `Dosya ${(f.size/1024).toFixed(0)} KB — kayıt sınırı 256 KB. ` +
+      "Büyük dosyayı şifreli olarak diskte/Drive'da tut, buraya yalnız PAROLASINI koy.";
+    $("dosya").value = ""; return;
+  }
+  const buf = new Uint8Array(await f.arrayBuffer());
+  let metin = null;
+  try { metin = new TextDecoder("utf-8", { fatal:true }).decode(buf); } catch (_) {}
+  if (metin !== null && !metin.includes("\u0000")) {
+    $("icerik").value = metin;
+  } else {
+    $("icerik").value = b64(buf);
+    ikiliDosyaAdi = f.name;
+    if (!$("alanEtiketi").value) $("alanEtiketi").value = f.name + " (base64)";
+  }
+  if (!$("baslik").value) $("baslik").value = f.name;
+  $("icerik").dispatchEvent(new Event("input"));
+});
 
 /* L-009: pano kazası korumaları */
 $("icerik").addEventListener("input", () => {
@@ -211,6 +250,11 @@ $("gonder").addEventListener("click", async () => {
   $("gonder").disabled = true; $("gonder").textContent = "Şifreleniyor…";
   try {
     const zarf = await zarfla(girdiyiKur(), p1);
+    if (zarf.length > MAX_ZARF) {
+      throw new Error(
+        `Şifreli zarf ${(zarf.length/1024).toFixed(0)} KB — relay sınırı 64 KB. ` +
+        "Bu boyut için vault-clip'in dosya yolunu kullan (--cikti / --push).");
+    }
     $("gonder").textContent = "Yükleniyor…";
     const ttl = $("ttl").value;
     const r = await fetch(`${RELAY}/api/b?ttl=${ttl}`, {

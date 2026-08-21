@@ -96,6 +96,38 @@ def clipboard_text():
     return text
 
 
+MAX_PLAIN_BYTES = 256 * 1024  # uygulamadaki kayıt sınırıyla aynı (B-040)
+
+
+def file_value(path):
+    """
+    Dosyayı okur: UTF-8 metinse olduğu gibi, ikiliyse base64 döner.
+    İkincisi için geri dönüştürme komutu not olarak eklenir (SEC-018).
+    Dönen: (değer, not_veya_None)
+    """
+    if not os.path.isfile(path):
+        die(f"dosya bulunamadı: {path}")
+    raw = open(path, "rb").read()
+    if len(raw) > MAX_PLAIN_BYTES:
+        die(
+            f"dosya {len(raw)//1024} KB — kayıt sınırı 256 KB. Büyük dosyayı "
+            "şifreli olarak diskte/Drive'da tut; kasaya yalnız PAROLASINI koy "
+            "(SEC-018: dosya kasaya girmez, anahtarı girer)."
+        )
+    try:
+        text = raw.decode("utf-8")
+        if "\x00" not in text:
+            return text, None
+    except UnicodeDecodeError:
+        pass
+    name = os.path.basename(path)
+    note = (
+        "İkili dosya base64 olarak saklandı. Geri döndür: "
+        f"base64 -d giris.txt > {name}  (macOS: base64 -D -i giris.txt -o {name})"
+    )
+    return base64.b64encode(raw).decode("ascii"), note
+
+
 def ask_password():
     """
     Yedek parolası. Yalnızca ASCII: Android tarafındaki PBKDF2'nin char->bayt
@@ -116,7 +148,7 @@ def ask_password():
         return pw
 
 
-def build_entry(args, value):
+def build_entry(args, value, note=None):
     now = int(time.time() * 1000)
     data = {}
     if args.ek:
@@ -125,6 +157,8 @@ def build_entry(args, value):
         data[FIELDS[args.alan]] = value
     if args.kullanici:
         data["username"] = args.kullanici
+    if note:
+        data["notes"] = note
     return {
         "type": TYPES[args.tur],
         "title": args.baslik,
@@ -228,6 +262,8 @@ def main():
                        help="Kilit açmadan görünmesin (varsayılan)")
     parser.add_argument("--cikti", metavar="DOSYA", help="Çıktı dosyası yolu")
     parser.add_argument("--push", action="store_true", help="Dosyayı telefonun Download klasörüne kopyala")
+    parser.add_argument("--dosya", metavar="YOL",
+                        help="Panodan değil dosyadan oku; metin olduğu gibi, ikili base64 + geri dönüştürme notu")
     parser.add_argument("--yayinla", action="store_true",
                         help=f"Zarfı {RELAY} üzerinden tek kullanımlık URL olarak yayınla ve QR göster")
     parser.add_argument("--ttl", type=int, default=86_400, metavar="SANIYE",
@@ -242,13 +278,20 @@ def main():
         # Uygulamadaki kuralın aynısı: Gündelik kayıtlar hızlı erişimle başlar.
         args.hizli = args.tur == "gundelik"
 
-    value = clipboard_text()
+    note = None
+    if args.dosya:
+        value, note = file_value(args.dosya)
+        print(f"Dosyadan alınan: {os.path.basename(args.dosya)} · {len(value)} karakter"
+              + (" · ikili (base64)" if note else " · metin"))
+    else:
+        value = clipboard_text()
     # Önizleme bilinçli bir takas: kısa bir baş kısmı ekrana yazmak, yanlış
     # içeriği şifreleyip aktarmayı (yaşandı: komutun kendisi aktarıldı)
     # önler; bedeli, o baş kısmın terminal geçmişinde görünmesidir.
     ilk = value.strip().splitlines()[0] if value.strip() else ""
     onizleme = ilk[:32] + ("…" if len(ilk) > 32 or "\n" in value.strip() else "")
-    print(f"Panodan alınan: {len(value)} karakter · başı: \u201c{onizleme}\u201d")
+    if not args.dosya:
+        print(f"Panodan alınan: {len(value)} karakter · başı: \u201c{onizleme}\u201d")
     if "vault-clip" in value:
         print(
             "\nUYARI: Panodaki metin bu betiğin KOMUTU gibi görünüyor.\n"
@@ -266,11 +309,19 @@ def main():
           f"{'klavyede parolasız' if args.hizli else 'korumalı'}")
 
     password = ask_password()
-    payload = json.dumps({"entries": [build_entry(args, value)]}, ensure_ascii=False)
+    payload = json.dumps({"entries": [build_entry(args, value, note)]}, ensure_ascii=False)
+    if len(payload.encode("utf-8")) > MAX_PLAIN_BYTES:
+        die("kayıt 256 KB sınırını aşıyor — içerik kısaltılmalı (B-040 uygulamada da reddeder)")
     envelope = encrypt(payload, password)
 
     if args.yayinla:
-        url = publish(json.dumps(envelope, separators=(",", ":"), ensure_ascii=False), args.ttl)
+        zarf_metni = json.dumps(envelope, separators=(",", ":"), ensure_ascii=False)
+        if len(zarf_metni) > 64 * 1024:
+            die(
+                f"şifreli zarf {len(zarf_metni)//1024} KB — relay sınırı 64 KB. "
+                "Bu boyut için --cikti/--push (dosya yolu) kullan."
+            )
+        url = publish(zarf_metni, args.ttl)
         hours = args.ttl / 3600
         print(f"\nTek kullanımlık bağlantı ({hours:.1f} saat geçerli, ilk açılışta yanar):")
         print(f"  {url}\n")
