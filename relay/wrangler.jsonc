@@ -1,0 +1,14 @@
+{
+  "name": "vault-relay",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-01",
+  "routes": [
+    { "pattern": "vault.gover.us", "custom_domain": true }
+  ],
+  "kv_namespaces": [
+    { "binding": "BLOBS", "id": "5bdede4a620e4a979eef2c97376b0beb" }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

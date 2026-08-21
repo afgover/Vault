@@ -37,9 +37,13 @@ import subprocess
 import sys
 import time
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor"))
+
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 KDF_ITERATIONS = 310_000
+RELAY = "https://vault.gover.us"
+RELAY_KEYCHAIN_SERVICE = "vault.gover.us-relay"
 KEY_BYTES = 32
 IV_BYTES = 12
 PUSH_DIR = "/sdcard/Download"
@@ -149,6 +153,55 @@ def encrypt(payload, password):
     }
 
 
+def relay_token():
+    """Yükleme token'ı yalnız Keychain'de durur; dosyaya/argümana yazılmaz."""
+    result = subprocess.run(
+        ["security", "find-generic-password", "-s", RELAY_KEYCHAIN_SERVICE, "-a", "upload", "-w"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0 or not result.stdout.strip():
+        die(f"relay token'ı Keychain'de bulunamadı (servis: {RELAY_KEYCHAIN_SERVICE})")
+    return result.stdout.strip()
+
+
+def publish(envelope_text, ttl):
+    """
+    Zarfı relay'e yükler, tek kullanımlık URL döner. Token, ps çıktısında
+    görünmesin diye komut satırından değil geçici bir header dosyasından verilir.
+    HTTP'yi curl yapar: bu Mac'teki Python'un kök sertifika deposu eksik.
+    """
+    import tempfile
+    token = relay_token()
+    with tempfile.NamedTemporaryFile("w", suffix=".hdr", delete=False) as hf:
+        os.chmod(hf.name, 0o600)
+        hf.write(f"Authorization: Bearer {token}\n")
+        header_file = hf.name
+    try:
+        result = subprocess.run(
+            ["curl", "-sS", "--fail-with-body", "-X", "POST",
+             "-H", f"@{header_file}", "--data-binary", "@-",
+             f"{RELAY}/api/b?ttl={ttl}"],
+            input=envelope_text, capture_output=True, text=True,
+        )
+    finally:
+        os.unlink(header_file)
+    if result.returncode != 0:
+        die(f"yayınlama başarısız: {result.stderr.strip() or result.stdout.strip()}")
+    try:
+        return json.loads(result.stdout)["url"]
+    except (ValueError, KeyError):
+        die(f"relay beklenmedik cevap verdi: {result.stdout[:200]}")
+
+
+def show_qr(url):
+    try:
+        import segno
+    except ImportError:
+        print("(QR çizilemedi: tools/vendor/segno yok — URL'yi elle aç)")
+        return
+    segno.make(url, error="m").terminal(compact=True, border=2)
+
+
 def push(path):
     if not os.path.exists(ADB):
         die(f"adb bulunamadı: {ADB}")
@@ -175,6 +228,10 @@ def main():
                        help="Kilit açmadan görünmesin (varsayılan)")
     parser.add_argument("--cikti", metavar="DOSYA", help="Çıktı dosyası yolu")
     parser.add_argument("--push", action="store_true", help="Dosyayı telefonun Download klasörüne kopyala")
+    parser.add_argument("--yayinla", action="store_true",
+                        help=f"Zarfı {RELAY} üzerinden tek kullanımlık URL olarak yayınla ve QR göster")
+    parser.add_argument("--ttl", type=int, default=86_400, metavar="SANIYE",
+                        help="--yayinla süresi: blob en geç bu kadar saniye sonra silinir (60-86400, varsayılan 24 saat)")
     args = parser.parse_args()
 
     if args.alan and args.ek:
@@ -193,6 +250,21 @@ def main():
     password = ask_password()
     payload = json.dumps({"entries": [build_entry(args, value)]}, ensure_ascii=False)
     envelope = encrypt(payload, password)
+
+    if args.yayinla:
+        url = publish(json.dumps(envelope, separators=(",", ":"), ensure_ascii=False), args.ttl)
+        hours = args.ttl / 3600
+        print(f"\nTek kullanımlık bağlantı ({hours:.1f} saat geçerli, ilk açılışta yanar):")
+        print(f"  {url}\n")
+        show_qr(url)
+        print(
+            "\nTelefonda: kamerayla QR'ı okut → sayfadaki \"💾 .vaultbak indir\" →\n"
+            "Vault → Ayarlar → Yedekten geri yükle → indirilen dosya → yedek parolası\n"
+            "→ \"Mevcuta ekle\". Sayfa bir kez açılır; yanlışlıkla kapattıysan komutu\n"
+            "yeniden çalıştır. Bittiğinde dosyayı Download'dan sil."
+        )
+        if not args.cikti and not args.push:
+            return
 
     path = args.cikti or os.path.expanduser(
         f"~/Desktop/vault-{time.strftime('%Y%m%d-%H%M%S')}.vaultbak"

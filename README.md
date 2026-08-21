@@ -155,7 +155,23 @@ tools/vault-clip.py "Sunucu" --tur hesap --ek "API anahtarı" --push
 ```
 
 Pano içeriği diske düz metin olarak hiç yazılmaz, yalnızca şifreli dosya oluşur;
-yedek parolası sorulur ve saklanmaz. Yedek parolası **ASCII olmalı** (Android'in
+yedek parolası sorulur ve saklanmaz.
+
+`--yayinla` ile dosya yerine **tek kullanımlık bir bağlantı** üretilir: şifreli
+zarf `vault.gover.us` relay'ine yüklenir, terminalde URL'nin QR'ı çizilir.
+Telefonun kamerası QR'ı okur, sayfadaki "indir" düğmesi `.vaultbak`'ı
+Download'a kaydeder, uygulamadan "Mevcuta ekle" ile içeri alınır:
+
+```
+tools/vault-clip.py "Sunucu SSH" --tur hesap --ek "private key" --yayinla
+tools/vault-clip.py "Banka" --tur hesap --alan sifre --yayinla --ttl 600
+```
+
+Relay'e yalnız **şifreli** zarf gider (başlıklar dahil her şey zarfın içinde);
+sayfa ilk açılışta sunucudan silinir (yak-oku) ve her blob en geç 24 saatte
+kendiliğinden yok olur. Yükleme token'ı Mac Keychain'de durur
+(servis: `vault.gover.us-relay`). Sunucu tarafı `relay/` klasöründedir
+(Cloudflare Worker + KV). Yedek parolası **ASCII olmalı** (Android'in
 PBKDF2 sağlayıcısı ASCII dışında farklı bayt dönüşümü yapabiliyor).
 
 Neden dosya yoluyla: uygulamanın ağ izni yok, `adb shell cmd clipboard` bu
