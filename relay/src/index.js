@@ -15,6 +15,18 @@ const MAX_BODY = 64 * 1024;
 const TTL_MIN = 60;
 const TTL_MAX = 86_400;
 
+/**
+ * Yerel dosya istemcisi (aktar.html, file:// kökeni) POST atabilsin diye
+ * yükleme ucu CORS'a açık. Güvenlik katmanı CORS değil Bearer token'dır;
+ * çerez/oturum olmadığı için "*" ek yüzey açmaz.
+ */
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Authorization, Content-Type",
+  "Access-Control-Max-Age": "86400",
+};
+
 const PAGE_HEADERS = {
   "Content-Type": "text/html; charset=utf-8",
   "Referrer-Policy": "no-referrer",
@@ -73,14 +85,18 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (request.method === "OPTIONS" && url.pathname === "/api/b") {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
     if (request.method === "POST" && url.pathname === "/api/b") {
       const auth = request.headers.get("Authorization") ?? "";
       if (!env.UPLOAD_TOKEN || auth !== `Bearer ${env.UPLOAD_TOKEN}`) {
-        return new Response("unauthorized", { status: 401 });
+        return new Response("unauthorized", { status: 401, headers: CORS_HEADERS });
       }
       const body = await request.text();
       if (!body || body.length > MAX_BODY) {
-        return new Response("bad size", { status: 400 });
+        return new Response("bad size", { status: 400, headers: CORS_HEADERS });
       }
       // Yalnız Vault zarfı kabul edilir — uç, genel amaçlı depo değildir.
       let ok = false;
@@ -88,7 +104,7 @@ export default {
         const j = JSON.parse(body);
         ok = j.app === "vault" && typeof j.data === "string" && typeof j.kdf === "object";
       } catch {}
-      if (!ok) return new Response("bad format", { status: 400 });
+      if (!ok) return new Response("bad format", { status: 400, headers: CORS_HEADERS });
 
       const reqTtl = parseInt(url.searchParams.get("ttl") ?? "", 10);
       const ttl = Math.min(Math.max(Number.isFinite(reqTtl) ? reqTtl : TTL_MAX, TTL_MIN), TTL_MAX);
@@ -96,7 +112,7 @@ export default {
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
       await env.BLOBS.put(id, body, { expirationTtl: ttl });
-      return Response.json({ url: `${url.origin}/b/${id}`, ttl });
+      return Response.json({ url: `${url.origin}/b/${id}`, ttl }, { headers: CORS_HEADERS });
     }
 
     const m = url.pathname.match(/^\/b\/([0-9a-f]{32})$/);
