@@ -60,6 +60,7 @@ fun SettingsScreen(
     var exportUri by remember { mutableStateOf<Uri?>(null) }
     var importUri by remember { mutableStateOf<Uri?>(null) }
     var showChangePassword by remember { mutableStateOf(false) }
+    var showPasteImport by remember { mutableStateOf(false) }
 
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -127,6 +128,11 @@ fun SettingsScreen(
                 onClick = { importLauncher.launch(arrayOf("*/*")) },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Yedekten geri yükle") }
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { showPasteImport = true },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Metinden içe aktar (yapıştır)") }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
@@ -259,6 +265,90 @@ fun SettingsScreen(
             onDismiss = { showChangePassword = false }
         )
     }
+
+    if (showPasteImport) {
+        PasteImportDialog(
+            viewModel = viewModel,
+            onDismiss = { showPasteImport = false }
+        )
+    }
+}
+
+/**
+ * B-032 — Metinden içe aktarma: relay sayfasındaki "Kopyala" ile alınan
+ * şifreli zarf buraya yapıştırılır; dosya indirmeye gerek kalmaz. Aynı
+ * boruya gider ve başarıda pano temizlenir.
+ */
+@Composable
+private fun PasteImportDialog(
+    viewModel: VaultViewModel,
+    onDismiss: () -> Unit
+) {
+    var text by remember { mutableStateOf("") }
+    var pw by remember { mutableStateOf("") }
+    var replace by remember { mutableIntStateOf(0) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Metinden içe aktar") },
+        text = {
+            Column {
+                Text(
+                    "Sayfadaki \"Kopyala\" ile aldığın şifreli metni yapıştır. " +
+                        "Metin şifrelidir; parolasını bir sonraki alana gireceksin.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = text, onValueChange = { text = it },
+                    label = { Text("Şifreli zarf") },
+                    minLines = 3, maxLines = 5,
+                    supportingText = {
+                        if (text.isNotEmpty()) Text("${text.length} karakter")
+                    }
+                )
+                TextButton(onClick = { text = viewModel.clipboardText() }) {
+                    Text("Panodan al")
+                }
+                OutlinedTextField(
+                    value = pw, onValueChange = { pw = it },
+                    label = { Text("Yedek parolası") }, singleLine = true,
+                    visualTransformation = PasswordVisualTransformation()
+                )
+                Spacer(Modifier.height(8.dp))
+                Row {
+                    FilterChip(
+                        selected = replace == 0,
+                        onClick = { replace = 0 },
+                        label = { Text("Mevcuta ekle") },
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    FilterChip(
+                        selected = replace == 1,
+                        onClick = { replace = 1 },
+                        label = { Text("Tümünü değiştir") }
+                    )
+                }
+                if (replace == 1) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "Dikkat: mevcut tüm kayıtlar silinip zarftakiler yazılır.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    viewModel.importBackupText(text, pw, replace == 1)
+                    onDismiss()
+                },
+                enabled = text.isNotBlank() && pw.isNotEmpty()
+            ) { Text("İçe aktar") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
+    )
 }
 
 @Composable

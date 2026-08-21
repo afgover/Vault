@@ -279,6 +279,63 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * B-032: yapıştırılan şifreli zarf metninden içe aktarma. Aynı boru
+     * ([BackupManager.import]); dosya yerine pano. Başarıda pano temizlenir —
+     * şifreli de olsa zarfın klavye geçmişlerinde sürüklenmesine gerek yok.
+     */
+    fun importBackupText(text: String, password: String, replace: Boolean) {
+        val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
+        val kirpik = text.trim()
+        if (kirpik.isEmpty()) { error = "Yapıştırılan metin boş"; return }
+        if (kirpik.length > 1_000_000) { error = "Metin çok büyük — bu bir Vault zarfı olamaz"; return }
+        // Dostça ön-tanı: zarf değilse parola bile sormadan söyle (L-009 ruhu).
+        val zarfGibi = kirpik.startsWith("{") && kirpik.contains("\"app\"") &&
+            kirpik.contains("\"vault\"")
+        if (!zarfGibi) {
+            error = "Bu, şifreli bir Vault zarfı değil. Sayfadaki \"Kopyala\" düğmesini kullandın mı?"
+            return
+        }
+        viewModelScope.launch {
+            busy = true
+            try {
+                val count = withContext(Dispatchers.IO) {
+                    val imported = BackupManager.import(kirpik.byteInputStream(), password.toCharArray())
+                    if (replace) repo.replaceAll(imported.entries, key, imported.tagColors)
+                    else repo.addAll(imported.entries, key, imported.tagColors)
+                    imported.entries.size
+                }
+                clearClipboard()
+                toast("$count kayıt eklendi · pano temizlendi")
+            } catch (e: BackupManager.WrongPasswordException) {
+                error = "Yedek parolası yanlış"
+            } catch (e: BackupManager.InvalidFormatException) {
+                error = "Geçersiz zarf — metin eksik kopyalanmış olabilir"
+            } catch (e: Exception) {
+                error = "İçe aktarma başarısız: ${e.message}"
+            } finally {
+                busy = false
+            }
+        }
+    }
+
+    /** Panodaki metni okur (yalnız ön plandayken çalışır; izin gerekmez). */
+    fun clipboardText(): String {
+        val cm = getApplication<Application>()
+            .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        return cm.primaryClip?.getItemAt(0)?.coerceToText(getApplication()).toString()
+    }
+
+    private fun clearClipboard() {
+        val cm = getApplication<Application>()
+            .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        try {
+            if (Build.VERSION.SDK_INT >= 28) cm.clearPrimaryClip()
+            else cm.setPrimaryClip(ClipData.newPlainText("", ""))
+        } catch (_: Exception) {
+        }
+    }
+
     fun importBackup(uri: Uri, password: String, replace: Boolean) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
         viewModelScope.launch {
