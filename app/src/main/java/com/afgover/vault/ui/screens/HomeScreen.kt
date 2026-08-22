@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -84,6 +85,7 @@ fun HomeScreen(
     val filterTagIds = remember { mutableStateListOf<Long>() }
     var manageTags by remember { mutableStateOf(false) }
     var showPasteImport by remember { mutableStateOf(false) }
+    var showTransferWizard by remember { mutableStateOf(false) }
 
     // Seçimler daraltarak birleşir: tür VE seçili etiketlerin tamamı.
     val filtered = entries.filter { item ->
@@ -97,6 +99,9 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("Vault") },
                 actions = {
+                    IconButton(onClick = { showTransferWizard = true }) {
+                        Icon(Icons.Filled.SwapHoriz, contentDescription = "Bilgisayardan aktar")
+                    }
                     IconButton(onClick = { showGenerator = true }) {
                         Icon(Icons.Filled.Casino, contentDescription = "Şifre üretici")
                     }
@@ -240,6 +245,10 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (showTransferWizard) {
+        TransferWizardDialog(viewModel = viewModel, onDismiss = { showTransferWizard = false })
     }
 
     if (showPasteImport) {

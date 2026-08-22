@@ -284,8 +284,9 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
      * ([BackupManager.import]); dosya yerine pano. Başarıda pano temizlenir —
      * şifreli de olsa zarfın klavye geçmişlerinde sürüklenmesine gerek yok.
      */
-    fun importBackupText(text: String, password: String, replace: Boolean) {
+    fun importBackupText(text: String, password: String, replace: Boolean, onSuccess: () -> Unit = {}) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
+        error = null
         val kirpik = text.trim()
         if (kirpik.isEmpty()) { error = "Yapıştırılan metin boş"; return }
         if (kirpik.length > 1_000_000) { error = "Metin çok büyük — bu bir Vault zarfı olamaz"; return }
@@ -307,6 +308,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 clearClipboard()
                 toast("$count kayıt eklendi · pano temizlendi")
+                onSuccess()
             } catch (e: BackupManager.WrongPasswordException) {
                 error = "Yedek parolası yanlış"
             } catch (e: BackupManager.InvalidFormatException) {

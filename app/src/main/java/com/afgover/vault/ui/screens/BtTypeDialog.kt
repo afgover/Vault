@@ -176,35 +176,14 @@ fun BtTypeDialog(
                         Spacer(Modifier.height(4.dp))
                         Row {
                             HidLayouts.Layout.entries.forEach { l ->
-                                val secili = layout == l
-                                FilterChip(
-                                    selected = secili,
+                                SecimCipi(
+                                    secili = layout == l,
                                     onClick = {
                                         layout = l
                                         testTyped = false
                                         prefs.edit().putString("pc_layout", l.name).apply()
                                     },
-                                    label = {
-                                        Text(
-                                            l.label,
-                                            fontWeight = if (secili) FontWeight.Bold
-                                            else FontWeight.Normal
-                                        )
-                                    },
-                                    leadingIcon = if (secili) {
-                                        {
-                                            Icon(
-                                                Icons.Filled.Check,
-                                                contentDescription = "Seçili",
-                                                modifier = Modifier.size(18.dp)
-                                            )
-                                        }
-                                    } else null,
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                                        selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
-                                    ),
+                                    label = l.label,
                                     modifier = Modifier.padding(end = 8.dp)
                                 )
                             }

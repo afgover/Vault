@@ -39,6 +39,46 @@ import com.afgover.vault.data.TagEntity
 import com.afgover.vault.data.TagPalette
 import com.afgover.vault.ui.VaultViewModel
 
+/**
+ * Belirgin seçim çipi: seçili durum dolgulu birincil renk + ✓ + kalın yazı.
+ * BT düzen seçimi, içe aktarma kipi gibi "yanlış anlaşılmaması gereken"
+ * ikili/az seçenekli seçimlerde kullanılır (B-050 kalıbının genelleşmişi).
+ */
+@Composable
+fun SecimCipi(
+    secili: Boolean,
+    onClick: () -> Unit,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    FilterChip(
+        selected = secili,
+        onClick = onClick,
+        label = {
+            Text(
+                label,
+                fontWeight = if (secili) androidx.compose.ui.text.font.FontWeight.Bold
+                else androidx.compose.ui.text.font.FontWeight.Normal
+            )
+        },
+        leadingIcon = if (secili) {
+            {
+                Icon(
+                    Icons.Filled.Check,
+                    contentDescription = "Seçili",
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        } else null,
+        colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        modifier = modifier
+    )
+}
+
 /** Etiket rengi için küçük yuvarlak nokta. */
 @Composable
 fun TagDot(color: Int, size: Int = 10) {

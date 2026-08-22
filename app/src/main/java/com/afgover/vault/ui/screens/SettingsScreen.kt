@@ -336,16 +336,16 @@ private fun ImportDialog(
                 )
                 Spacer(Modifier.height(8.dp))
                 Row {
-                    FilterChip(
-                        selected = replace == 0,
+                    SecimCipi(
+                        secili = replace == 0,
                         onClick = { replace = 0 },
-                        label = { Text("Mevcuta ekle") },
+                        label = "Mevcuta ekle",
                         modifier = Modifier.padding(end = 8.dp)
                     )
-                    FilterChip(
-                        selected = replace == 1,
+                    SecimCipi(
+                        secili = replace == 1,
                         onClick = { replace = 1 },
-                        label = { Text("Tümünü değiştir") }
+                        label = "Tümünü değiştir"
                     )
                 }
                 if (replace == 1) {

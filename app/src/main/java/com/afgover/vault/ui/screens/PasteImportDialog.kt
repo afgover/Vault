@@ -64,16 +64,16 @@ fun PasteImportDialog(
                 )
                 Spacer(Modifier.height(8.dp))
                 Row {
-                    FilterChip(
-                        selected = replace == 0,
+                    SecimCipi(
+                        secili = replace == 0,
                         onClick = { replace = 0 },
-                        label = { Text("Mevcuta ekle") },
+                        label = "Mevcuta ekle",
                         modifier = Modifier.padding(end = 8.dp)
                     )
-                    FilterChip(
-                        selected = replace == 1,
+                    SecimCipi(
+                        secili = replace == 1,
                         onClick = { replace = 1 },
-                        label = { Text("Tümünü değiştir") }
+                        label = "Tümünü değiştir"
                     )
                 }
                 if (replace == 1) {
@@ -84,16 +84,19 @@ fun PasteImportDialog(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+                viewModel.error?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, color = MaterialTheme.colorScheme.error)
+                }
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    viewModel.importBackupText(text, pw, replace == 1)
-                    onDismiss()
+                    viewModel.importBackupText(text, pw, replace == 1) { onDismiss() }
                 },
-                enabled = text.isNotBlank() && pw.isNotEmpty()
-            ) { Text("İçe aktar") }
+                enabled = text.isNotBlank() && pw.isNotEmpty() && !viewModel.busy
+            ) { Text(if (viewModel.busy) "Aktarılıyor…" else "İçe aktar") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
     )
