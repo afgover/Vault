@@ -193,10 +193,21 @@ tools/dogrula.sh --cipa   # telefondaki kayıtla karşılaştırılacak tek 64 h
    kayıtta** durur. Bilgisayarı ele geçiren bunu değiştiremez: karşılaştırma
    iki ayrı cihaz arasında yapılır.
 
+Masaüstündeki `aktar.html` bir **bağ**dır (kopya değil): tek dosya vardır,
+iki kopyanın sessizce ayrışması diye bir durum yoktur.
+
+`tools/` içindeki bir dosya değiştiğinde `.githooks/pre-commit` commit'i
+durdurur ve referansın yenilenmesini ister; yenilendiğinde de **telefondaki
+çıpayı güncelle** diye yeni değeri yazar. Kanca `git config core.hooksPath
+.githooks` ile etkinleşir (klonlayan bir kez çalıştırır).
+
 Dürüst sınır: tamamen ele geçmiş bir işletim sistemi `shasum`'ın kendisi
-dâhil her şey hakkında yalan söyleyebilir. Bu denetim, kendini denetime
-hazırlamamış kurcalamayı ve olay sonrası incelemeyi hedefler — mutlak kanıt
-değildir.
+dâhil her şey hakkında yalan söyleyebilir; kurcalanmış bir `dogrula.sh` de
+kendi hakkında yalan söyler (bu yüzden betik kendi listesindedir ama
+şüphede ona güvenilmez — iki komutu elle koş: `shasum -a 256 -c
+tools/SHA256SUMS` ve `git fetch && git diff origin/<dal> -- tools/`).
+Bu denetim, kendini denetime hazırlamamış kurcalamayı ve olay sonrası
+incelemeyi hedefler — mutlak kanıt değildir.
 
 Neden dosya yoluyla: uygulamanın ağ izni yok, `adb shell cmd clipboard` bu
 cihazlarda yok ve `adb shell input text` özel karakterlerde güvenilmez.

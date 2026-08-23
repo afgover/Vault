@@ -13,7 +13,7 @@
 set -eu
 
 cd "$(dirname "$0")/.."
-DOSYALAR="tools/aktar.html tools/vault-clip.py tools/vendor/segno/encoder.py tools/vendor/segno/__init__.py"
+DOSYALAR="tools/aktar.html tools/vault-clip.py tools/dogrula.sh tools/vendor/segno/encoder.py tools/vendor/segno/__init__.py"
 MASA="$HOME/Desktop/aktar.html"
 
 case "${1:-}" in
@@ -34,7 +34,7 @@ hata=0
 
 echo "1) Dosyalar → SHA256SUMS"
 if shasum -a 256 -c tools/SHA256SUMS >/dev/null 2>&1; then
-  echo "   ✓ dört dosya da referansla aynı"
+  echo "   ✓ listedeki dosyaların hepsi referansla aynı (bu betik dâhil)"
 else
   echo "   ✗ FARK VAR:"
   shasum -a 256 -c tools/SHA256SUMS 2>&1 | grep -v ': OK$' | sed 's/^/     /'
@@ -42,7 +42,13 @@ else
 fi
 
 echo "2) Masaüstü kopyası → depo kopyası"
-if [ -f "$MASA" ]; then
+if [ -L "$MASA" ]; then
+  hedef=$(readlink "$MASA")
+  case "$hedef" in
+    *tools/aktar.html) echo "   ✓ masaüstündeki bir BAĞ (kopya yok, sürüklenme imkânsız)" ;;
+    *) echo "   ✗ masaüstündeki bağ beklenmedik yeri gösteriyor: $hedef"; hata=1 ;;
+  esac
+elif [ -f "$MASA" ]; then
   a=$(shasum -a 256 "$MASA" | cut -d' ' -f1)
   b=$(shasum -a 256 tools/aktar.html | cut -d' ' -f1)
   if [ "$a" = "$b" ]; then
@@ -71,6 +77,10 @@ else
 fi
 
 echo "4) Çıpa (telefondaki kayıtla elle karşılaştır)"
+echo "   Not: kurcalanmış bir betik kendi hakkında yalan söyleyebilir."
+echo "   Şüphede betiğe hiç güvenme, iki komutu elle koş:"
+echo "     shasum -a 256 -c tools/SHA256SUMS"
+echo "     git fetch -q && git diff --stat origin/$dal -- tools/"
 echo "   $(shasum -a 256 tools/SHA256SUMS | cut -d' ' -f1)"
 
 [ "$hata" -eq 0 ] && echo "SONUÇ: temiz" || echo "SONUÇ: FARK VAR — kullanmadan önce incele"

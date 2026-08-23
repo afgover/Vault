@@ -1,0 +1,22 @@
+#!/bin/sh
+# tools/ değiştiyse referans karma ve telefondaki çıpa da güncellenmeli
+# (vault_takip SEC-024, R-008). Unutulursa denetim sessizce yanlışa döner.
+set -eu
+
+degisen=$(git diff --cached --name-only --diff-filter=ACM | grep '^tools/' | grep -v '^tools/SHA256SUMS$' || true)
+[ -z "$degisen" ] && exit 0
+
+if ! shasum -a 256 -c tools/SHA256SUMS >/dev/null 2>&1; then
+    echo "✗ tools/ değişti ama tools/SHA256SUMS güncel değil."
+    echo "  Şunu çalıştır, çıktıdaki çıpayı NOT ET ve SHA256SUMS'ı da commit'e ekle:"
+    echo "      tools/dogrula.sh --yaz && git add tools/SHA256SUMS"
+    echo "  Ardından telefondaki \"Araç çıpası\" kaydını yeni değerle güncelle."
+    exit 1
+fi
+
+if git diff --cached --name-only | grep -q '^tools/SHA256SUMS$'; then
+    echo "→ HATIRLATMA: tools/ değişti ve referans yenilendi."
+    echo "  Telefondaki \"Araç çıpası\" kaydını bu değerle güncelle:"
+    echo "      $(shasum -a 256 tools/SHA256SUMS | cut -d' ' -f1)"
+fi
+exit 0
