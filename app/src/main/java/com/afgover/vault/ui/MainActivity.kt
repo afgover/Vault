@@ -77,8 +77,23 @@ class MainActivity : FragmentActivity() {
             ContextCompat.getMainExecutor(this),
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    val c = result.cryptoObject?.cipher ?: return
+                    val c = result.cryptoObject?.cipher
+                    if (c == null) {
+                        viewModel.onBiometricRegistered(false)
+                        return
+                    }
                     viewModel.keyManager.storeBiometricWrappedKey(c, payload)
+                    viewModel.onBiometricRegistered(true)
+                }
+
+                override fun onAuthenticationError(code: Int, msg: CharSequence) {
+                    // Kullanıcı vazgeçtiyse sessiz kal; gerçek hatada söyle.
+                    if (code != BiometricPrompt.ERROR_USER_CANCELED &&
+                        code != BiometricPrompt.ERROR_NEGATIVE_BUTTON
+                    ) {
+                        viewModel.error = "Parmak izi etkinleştirilemedi: $msg"
+                    }
+                    viewModel.refreshLockOptions()
                 }
             }
         )

@@ -128,64 +128,6 @@ fun SettingsScreen(
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
 
-            Text("Ek kilit", style = MaterialTheme.typography.titleMedium)
-            if (viewModel.isPinLegacy) {
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    "⚠ Bu PIN kaydı eski sürümde açıldı ve bu sürümle uyumsuz: " +
-                        "kayıtlar açılamaz ve PIN kapatılamaz. Ana parola + PIN ile " +
-                        "onar; PIN'i sonra yeniden açabilirsin.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
-                )
-                Spacer(Modifier.height(6.dp))
-                OutlinedButton(
-                    onClick = { showPinDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("PIN kaydını onar") }
-            }
-            Spacer(Modifier.height(4.dp))
-            Text(
-                if (viewModel.isPinEnabled)
-                    "PIN açık: ana parola ya da parmak izinden sonra PIN sorulur. " +
-                        "PIN kriptografiktir — o olmadan kayıtlar çözülemez."
-                else
-                    "İsteğe bağlı ikinci kapı. Açarsan ana parola/parmak izinden " +
-                        "sonra 4-12 rakamlı PIN sorulur; PIN olmadan kayıtlar " +
-                        "çözülemez. Varsayılan: kapalı.",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = { showPinDialog = true },
-                modifier = Modifier.fillMaxWidth()
-            ) { Text(if (viewModel.isPinEnabled) "PIN'i kapat" else "PIN belirle") }
-
-            Spacer(Modifier.height(16.dp))
-            Text("Ana parola hatırlatıcısı", style = MaterialTheme.typography.titleSmall)
-            Text(
-                "Parmak izi kullanırken ana parola aylarca yazılmaz ve unutulur — " +
-                    "oysa yedekleri açan da odur. Seçtiğin aralıkta bir kez parmak " +
-                    "izi yerine parola istenir. Varsayılan: süresiz.",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(Modifier.height(6.dp))
-            Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                listOf(0 to "Süresiz", 30 to "30 gün", 60 to "60 gün", 90 to "90 gün",
-                    180 to "180 gün").forEach { (gun, etiket) ->
-                    SecimCipi(
-                        secili = viewModel.reminderDays == gun,
-                        onClick = { viewModel.setReminderDays(gun) },
-                        label = etiket,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(24.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
-
             Text("Yedekleme", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
@@ -233,7 +175,7 @@ fun SettingsScreen(
             Spacer(Modifier.height(12.dp))
 
             if (canUseBiometric) {
-                if (viewModel.keyManager.isBiometricEnabled) {
+                if (viewModel.biometricEnabled) {
                     OutlinedButton(
                         onClick = { viewModel.disableBiometric() },
                         modifier = Modifier.fillMaxWidth()
@@ -247,7 +189,65 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Biyometrik kilit açmayı etkinleştir") }
                 }
+                Spacer(Modifier.height(12.dp))
+                // PIN, parmak izi yolunun ikinci kapısıdır — bu yüzden onun
+                // altında duruyor, ayrı bir bölümde değil.
+                Text("PIN (parmak izi için ikinci kapı)", style = MaterialTheme.typography.titleSmall)
+                if (viewModel.isPinLegacy) {
+                    Text(
+                        "⚠ Bu PIN kaydı eski sürümde açıldı ve bu sürümle uyumsuz: " +
+                            "kayıtlar açılamaz ve PIN kapatılamaz. Ana parola + PIN ile onar.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else {
+                    Text(
+                        if (viewModel.isPinEnabled)
+                            "Açık: parmak izini okuttuktan sonra PIN sorulur. Ana parola " +
+                                "ile açarken sorulmaz — parola zaten güçlü sırdır."
+                        else
+                            "İsteğe bağlı. Açarsan parmak izi kaydı PIN ile şifrelenir ve " +
+                                "açılışta parmak izinden sonra PIN sorulur. Varsayılan: kapalı.\n" +
+                                "Sıra önemli: önce PIN belirle, sonra parmak izini etkinleştir.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Spacer(Modifier.height(6.dp))
+                OutlinedButton(
+                    onClick = { showPinDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        when {
+                            viewModel.isPinLegacy -> "PIN kaydını onar"
+                            viewModel.isPinEnabled -> "PIN'i kapat"
+                            else -> "PIN belirle"
+                        }
+                    )
+                }
+
+                Spacer(Modifier.height(12.dp))
+                Text("Ana parola hatırlatıcısı", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    "Parmak izi kullanırken ana parola aylarca yazılmaz ve unutulur — " +
+                        "oysa yedekleri açan da odur. Seçtiğin aralıkta bir kez parmak " +
+                        "izi yerine parola istenir. Varsayılan: süresiz.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(6.dp))
+                Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                    listOf(0 to "Süresiz", 30 to "30 gün", 60 to "60 gün", 90 to "90 gün",
+                        180 to "180 gün").forEach { (gun, etiket) ->
+                        SecimCipi(
+                            secili = viewModel.reminderDays == gun,
+                            onClick = { viewModel.setReminderDays(gun) },
+                            label = etiket,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
+                }
                 Spacer(Modifier.height(8.dp))
+
             }
 
             OutlinedButton(

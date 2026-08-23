@@ -74,7 +74,24 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     /** PIN aşaması için bekleyen iç sargı; PIN doğrulanınca temizlenir. */
     private var pendingInner: ByteArray? = null
 
-    val isPinEnabled: Boolean get() = keyManager.isPinEnabled
+    /**
+     * Biyometrik kaydın durumu Compose'un göreceği bir durumda tutulur.
+     * Doğrudan `keyManager.isBiometricEnabled` okunduğunda ekran, kayıt
+     * değişse bile yeniden çizilmiyordu: kullanıcı parmak izini açıyor ama
+     * düğme "etkinleştir" demeye devam ediyor, açılmamış sanılıyordu.
+     */
+    var biometricEnabled by mutableStateOf(keyManager.isBiometricEnabled)
+        private set
+
+    var pinEnabledState by mutableStateOf(keyManager.isPinEnabled)
+        private set
+
+    fun refreshLockOptions() {
+        biometricEnabled = keyManager.isBiometricEnabled
+        pinEnabledState = keyManager.isPinEnabled
+    }
+
+    val isPinEnabled: Boolean get() = pinEnabledState
     val isPinLegacy: Boolean get() = keyManager.isPinLegacy
 
     /** Eski sürümde açılmış PIN kaydını onarır (parola + PIN ile). */
@@ -85,6 +102,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 keyManager.migrateLegacyPin(password.toCharArray(), pin)
             }
             busy = false
+            refreshLockOptions()
             if (ok) toast("PIN kaydı onarıldı · kasa ana parolayla açılıyor")
             else error = "Onarılamadı: parola ya da PIN yanlış"
             onDone(ok)
@@ -269,6 +287,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 keyManager.enablePin(password.toCharArray(), pin)
             }
             busy = false
+            refreshLockOptions()
             if (!ok) error = "PIN açılamadı: parola yanlış ya da PIN geçersiz (4-12 rakam)"
             else toast("PIN açıldı · parmak izini yeniden etkinleştir")
             onDone(ok)
@@ -282,6 +301,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 keyManager.disablePin(password.toCharArray(), pin)
             }
             busy = false
+            refreshLockOptions()
             if (!ok) error = "PIN kapatılamadı: parola ya da PIN yanlış"
             else toast("PIN kapatıldı · parmak izini yeniden etkinleştir")
             onDone(ok)
@@ -512,6 +532,13 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // ---- Ayarlar ----
+
+    /** Parmak izi kaydı yazıldıktan sonra çağrılır: durum + geri bildirim. */
+    fun onBiometricRegistered(basarili: Boolean) {
+        refreshLockOptions()
+        if (basarili) toast("Parmak izi etkinleştirildi")
+        else error = "Parmak izi etkinleştirilemedi"
+    }
 
     fun disableBiometric() {
         keyManager.clearBiometric()

@@ -51,7 +51,7 @@ fun UnlockScreen(
     // süresiz).
     val hatirlatmaZamani = viewModel.masterPasswordDue
     val biometricAvailable =
-        !isSetup && canUseBiometric && viewModel.keyManager.isBiometricEnabled &&
+        !isSetup && canUseBiometric && viewModel.biometricEnabled &&
             !hatirlatmaZamani
 
     // Kilit ekranı açılır açılmaz biyometrik istemi göster — ama YALNIZ BİR
