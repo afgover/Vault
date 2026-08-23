@@ -76,7 +76,8 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
         data: EntryData,
         quick: Boolean,
         key: SecretKey,
-        tagIds: List<Long> = emptyList()
+        tagIds: List<Long> = emptyList(),
+        noteKind: NoteKind = NoteKind.GENEL
     ) {
         val plain = data.bytes()
         checkSize(title, plain)
@@ -93,7 +94,10 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
                     updatedAt = now,
                     quick = quick,
                     quickBlob = quickBlob,
-                    tags = TagIds.serialize(tagIds)
+                    tags = TagIds.serialize(tagIds),
+                    noteKind = noteKind.name,
+                    // Yeni kayıt kullanıcı sırasında en sona düşer.
+                    sortIndex = (dao.getAll().maxOfOrNull { it.sortIndex } ?: 0) + 1
                 )
             )
         } else {
@@ -106,7 +110,10 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
                     updatedAt = now,
                     quick = quick,
                     quickBlob = quickBlob,
-                    tags = TagIds.serialize(tagIds)
+                    tags = TagIds.serialize(tagIds),
+                    noteKind = noteKind.name,
+                    // Yeni kayıt kullanıcı sırasında en sona düşer.
+                    sortIndex = (dao.getAll().maxOfOrNull { it.sortIndex } ?: 0) + 1
                 )
             )
         }
@@ -135,6 +142,14 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
     }
 
     suspend fun delete(id: Long) = dao.deleteById(id)
+
+    /** Kullanıcı sırasını verilen id dizilimine göre yeniden yazar. */
+    suspend fun applyManualOrder(idsInOrder: List<Long>) {
+        val byId = dao.getAll().associateBy { it.id }
+        idsInOrder.forEachIndexed { index, id ->
+            byId[id]?.let { if (it.sortIndex != index) dao.update(it.copy(sortIndex = index)) }
+        }
+    }
 
     // ---- Etiketler ----
 
@@ -220,7 +235,9 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
             createdAt = createdAt,
             updatedAt = updatedAt,
             quick = quick,
-            tagIds = TagIds.parse(tags)
+            tagIds = TagIds.parse(tags),
+            noteKind = NoteKind.of(noteKind),
+            sortIndex = sortIndex
         )
     }
 
@@ -235,7 +252,9 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
             updatedAt = updatedAt,
             quick = quick,
             quickBlob = quickCopy(plain, quick),
-            tags = TagIds.serialize(resolvedTagIds)
+            tags = TagIds.serialize(resolvedTagIds),
+            noteKind = noteKind.name,
+            sortIndex = sortIndex
         )
     }
 }

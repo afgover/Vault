@@ -15,7 +15,8 @@ enum class EntrySort(val label: String) {
     TITLE_DESC("Başlık (Z→A)"),
     UPDATED_DESC("Son güncellenen"),
     CREATED_DESC("Son eklenen"),
-    TYPE("Türe göre");
+    TYPE("Türe göre"),
+    MANUAL("Kullanıcı sırası (sürükle)");
 
     companion object {
         private const val PREFS = "vault_settings"
@@ -41,4 +42,5 @@ fun List<DecryptedEntry>.sortedBy(sort: EntrySort): List<DecryptedEntry> = when 
     EntrySort.UPDATED_DESC -> sortedByDescending { it.updatedAt }
     EntrySort.CREATED_DESC -> sortedByDescending { it.createdAt }
     EntrySort.TYPE -> sortedWith(compareBy({ it.type.ordinal }, { it.title.lowercase() }))
+    EntrySort.MANUAL -> sortedWith(compareBy({ it.sortIndex }, { it.title.lowercase() }))
 }

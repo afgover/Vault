@@ -20,6 +20,7 @@ import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntrySort
+import com.afgover.vault.data.NoteKind
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.data.TagEntity
 import com.afgover.vault.data.VaultRepository
@@ -40,7 +41,9 @@ data class EntryListItem(
     val quick: Boolean,
     val tagIds: List<Long> = emptyList(),
     val createdAt: Long = 0,
-    val updatedAt: Long = 0
+    val updatedAt: Long = 0,
+    val noteKind: NoteKind = NoteKind.GENEL,
+    val sortIndex: Int = 0
 )
 
 enum class LockState { NEEDS_SETUP, LOCKED, UNLOCKED }
@@ -84,7 +87,9 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     quick = it.quick,
                     tagIds = com.afgover.vault.data.TagIds.parse(it.tags),
                     createdAt = it.createdAt,
-                    updatedAt = it.updatedAt
+                    updatedAt = it.updatedAt,
+                    noteKind = NoteKind.of(it.noteKind),
+                    sortIndex = it.sortIndex
                 )
             }
         }
@@ -206,12 +211,13 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         data: EntryData,
         quick: Boolean,
         tagIds: List<Long> = emptyList(),
+        noteKind: NoteKind = NoteKind.GENEL,
         onDone: () -> Unit
     ) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) { repo.save(id, type, title, data, quick, key, tagIds) }
+                withContext(Dispatchers.IO) { repo.save(id, type, title, data, quick, key, tagIds, noteKind) }
                 onDone()
             } catch (e: VaultRepository.EntryTooLargeException) {
                 // Ekran açık kalır, girilenler durur; kullanıcı kısaltıp yeniden dener.
@@ -230,6 +236,13 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 else "Klavyede kilit açmadan görünmez"
             )
             onDone()
+        }
+    }
+
+    /** Sürükleme bitince yeni kullanıcı sırasını kaydeder. */
+    fun saveManualOrder(idsInOrder: List<Long>) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { repo.applyManualOrder(idsInOrder) }
         }
     }
 

@@ -2,6 +2,7 @@ package com.afgover.vault.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
@@ -41,10 +43,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.afgover.vault.data.CustomField
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
+import com.afgover.vault.data.NoteKind
 import com.afgover.vault.ui.VaultViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,6 +80,7 @@ fun EditScreen(
     val tags by viewModel.tags.collectAsState()
     val selectedTagIds = remember { mutableStateListOf<Long>() }
     var addTagDialog by remember { mutableStateOf(false) }
+    var noteKind by remember { mutableStateOf(NoteKind.GENEL) }
     // Şifre alanının yüklendiği andaki değeri: değişirse passwordChangedAt tazelenir.
     var originalPassword by remember { mutableStateOf("") }
     var originalPasswordChangedAt by remember { mutableStateOf(0L) }
@@ -105,6 +110,7 @@ fun EditScreen(
                 quick = e.quick
                 selectedTagIds.clear()
                 selectedTagIds.addAll(e.tagIds)
+                noteKind = e.noteKind
                 originalPassword = e.data.password
                 originalPasswordChangedAt = e.data.passwordChangedAt
             }
@@ -230,7 +236,60 @@ fun EditScreen(
                     )
                 }
 
-                EntryType.NOTE -> Unit
+                EntryType.NOTE -> {
+                    // Notun ne taşıdığı: ikon ve liste görünümü buna göre
+                    // değişir (araç çıpası, .sh, .pem, kurtarma kodları…).
+                    Text("Not türü", style = MaterialTheme.typography.titleSmall)
+                    Spacer(Modifier.height(6.dp))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                MaterialTheme.colorScheme.surfaceContainerLow,
+                                MaterialTheme.shapes.medium
+                            )
+                            .padding(8.dp)
+                    ) {
+                        NoteKind.entries.chunked(2).forEach { satir ->
+                            Row(Modifier.fillMaxWidth()) {
+                                satir.forEach { k ->
+                                    val secili = noteKind == k
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(4.dp)
+                                            .clip(MaterialTheme.shapes.small)
+                                            .background(
+                                                if (secili) MaterialTheme.colorScheme.primary
+                                                else MaterialTheme.colorScheme.surfaceContainerHigh
+                                            )
+                                            .clickable { noteKind = k }
+                                            .padding(horizontal = 8.dp, vertical = 10.dp)
+                                    ) {
+                                        Icon(
+                                            k.icon(),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp),
+                                            tint = if (secili)
+                                                MaterialTheme.colorScheme.onPrimary
+                                            else MaterialTheme.colorScheme.primary
+                                        )
+                                        Spacer(Modifier.width(6.dp))
+                                        Text(
+                                            k.label,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = if (secili)
+                                                MaterialTheme.colorScheme.onPrimary
+                                            else MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+                                if (satir.size == 1) Spacer(Modifier.weight(1f))
+                            }
+                        }
+                    }
+                }
             }
 
             // Serbest alanlar her türde düzenlenebilir: aktarımla gelen bir
@@ -360,6 +419,7 @@ fun EditScreen(
                         ),
                         quick = quick,
                         tagIds = selectedTagIds.toList(),
+                        noteKind = noteKind,
                         onDone = onBack
                     )
                 },

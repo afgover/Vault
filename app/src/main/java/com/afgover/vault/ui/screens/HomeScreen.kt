@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,12 @@ import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.VpnKey
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.DataObject
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.CreditCard
@@ -47,6 +54,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -56,12 +64,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.data.NoteKind
 import com.afgover.vault.data.EntrySort
 import com.afgover.vault.data.EntryType
+import com.afgover.vault.ui.EntryListItem
 import com.afgover.vault.ui.VaultViewModel
 
 fun EntryType.icon(): ImageVector = when (this) {
@@ -87,9 +98,19 @@ fun EntryType.renk(): Color = when (this) {
     EntryType.NOTE -> Color(0xFFB08FE0)
 }
 
+/** Güvenli not alt türünün ikonu — kartta ne olduğu bir bakışta görünür. */
+fun NoteKind.icon(): ImageVector = when (this) {
+    NoteKind.GENEL -> Icons.AutoMirrored.Filled.Note
+    NoteKind.BETIK -> Icons.Filled.Terminal
+    NoteKind.ANAHTAR -> Icons.Filled.VpnKey
+    NoteKind.PARMAK_IZI -> Icons.Filled.Fingerprint
+    NoteKind.KURTARMA -> Icons.Filled.HealthAndSafety
+    NoteKind.YAPILANDIRMA -> Icons.Filled.DataObject
+}
+
 /** Yumuşak renkli kapsül içinde tür ikonu. */
 @Composable
-fun TypeBadge(type: EntryType, size: Int = 42) {
+fun TypeBadge(type: EntryType, kind: NoteKind = NoteKind.GENEL, size: Int = 42) {
     val renk = type.renk()
     Box(
         modifier = Modifier
@@ -99,7 +120,7 @@ fun TypeBadge(type: EntryType, size: Int = 42) {
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            type.icon(),
+            if (type == EntryType.NOTE) kind.icon() else type.icon(),
             contentDescription = null,
             tint = renk,
             modifier = Modifier.size((size * 0.55).dp)
@@ -141,8 +162,21 @@ fun HomeScreen(
             EntrySort.TYPE -> list.sortedWith(
                 compareBy({ it.type.ordinal }, { it.title.lowercase() })
             )
+            EntrySort.MANUAL -> list.sortedWith(
+                compareBy({ it.sortIndex }, { it.title.lowercase() })
+            )
         }
     }
+
+    // Kullanıcı sırasında satırlar sürüklenebilir: sürükleme boyunca liste
+    // yerelde tutulur (her hareket veritabanına yazılmaz), parmak kalkınca
+    // yeni sıra bir kez kaydedilir.
+    val manuel = viewModel.sort == EntrySort.MANUAL &&
+        query.isBlank() && filterType == null && filterTagIds.isEmpty()
+    var surukleniyor by remember { mutableStateOf<Long?>(null) }
+    var yerelSira by remember { mutableStateOf<List<EntryListItem>>(emptyList()) }
+    LaunchedEffect(filtered, manuel) { if (manuel) yerelSira = filtered }
+    val gosterilen = if (manuel && yerelSira.isNotEmpty()) yerelSira else filtered
 
     Scaffold(
         topBar = {
@@ -247,6 +281,14 @@ fun HomeScreen(
             }
             Spacer(Modifier.height(4.dp))
 
+            if (manuel) {
+                Text(
+                    "Kullanıcı sırası: satırdaki ⠿ kolunu basılı tutup sürükle.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+            }
             if (filtered.isEmpty()) {
                 Column(
                     modifier = Modifier
@@ -271,10 +313,13 @@ fun HomeScreen(
                 }
             } else {
                 LazyColumn {
-                    items(filtered, key = { it.id }) { item ->
+                    items(gosterilen, key = { it.id }) { item ->
+                        val aktif = surukleniyor == item.id
                         Card(
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                                containerColor = if (aktif)
+                                    MaterialTheme.colorScheme.surfaceContainerHighest
+                                else MaterialTheme.colorScheme.surfaceContainer
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -283,10 +328,51 @@ fun HomeScreen(
                                 .clickable { onOpen(item.id) }
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                                modifier = Modifier.padding(
+                                    start = if (manuel) 4.dp else 14.dp,
+                                    end = 14.dp, top = 12.dp, bottom = 12.dp
+                                ),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                TypeBadge(item.type)
+                                if (manuel) {
+                                    Icon(
+                                        Icons.Filled.DragHandle,
+                                        contentDescription = "Sürükle",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier
+                                            .padding(end = 6.dp)
+                                            .size(24.dp)
+                                            .pointerInput(item.id, gosterilen.size) {
+                                                var birikim = 0f
+                                                detectDragGestures(
+                                                    onDragStart = { surukleniyor = item.id },
+                                                    onDragEnd = {
+                                                        surukleniyor = null
+                                                        viewModel.saveManualOrder(
+                                                            yerelSira.map { it.id }
+                                                        )
+                                                    },
+                                                    onDragCancel = { surukleniyor = null }
+                                                ) { change, drag ->
+                                                    change.consume()
+                                                    birikim += drag.y
+                                                    val satir = 76.dp.toPx()
+                                                    if (kotlin.math.abs(birikim) >= satir) {
+                                                        val yon = if (birikim > 0) 1 else -1
+                                                        birikim -= yon * satir
+                                                        val mevcut = yerelSira
+                                                            .indexOfFirst { it.id == item.id }
+                                                        val hedef = mevcut + yon
+                                                        if (mevcut >= 0 && hedef in yerelSira.indices) {
+                                                            yerelSira = yerelSira.toMutableList()
+                                                                .apply { add(hedef, removeAt(mevcut)) }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                    )
+                                }
+                                TypeBadge(item.type, kind = item.noteKind)
                                 Spacer(Modifier.width(14.dp))
                                 Column(Modifier.weight(1f)) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {

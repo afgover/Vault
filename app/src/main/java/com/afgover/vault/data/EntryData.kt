@@ -123,5 +123,7 @@ data class DecryptedEntry(
     val quick: Boolean = false,
     val tagIds: List<Long> = emptyList(),
     /** Yalnız yedek içe aktarmada dolu: id'ler cihaza özgüdür, yedek ad taşır. */
-    val tagNames: List<String> = emptyList()
+    val tagNames: List<String> = emptyList(),
+    val noteKind: NoteKind = NoteKind.GENEL,
+    val sortIndex: Int = 0
 )

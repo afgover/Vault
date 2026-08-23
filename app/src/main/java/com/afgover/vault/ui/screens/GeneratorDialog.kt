@@ -58,11 +58,17 @@ fun GeneratorDialog(
                     shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Sabit yükseklik: uzunluk kaydırılırken satır sayısı
+                    // değiştiği için diyalog boyu zıplıyordu. 64 karakterlik
+                    // en uzun parola bu kutuya sığar; kısa parolada boşluk kalır.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.height(92.dp)
+                    ) {
                         Text(
                             text = password,
                             fontFamily = FontFamily.Monospace,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(12.dp)

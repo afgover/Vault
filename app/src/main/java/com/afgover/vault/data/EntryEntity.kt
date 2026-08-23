@@ -31,10 +31,33 @@ data class EntryEntity(
     val quick: Boolean = false,
     val quickBlob: ByteArray? = null,
     /** Etiket id'leri, JSON dizi ("[1,3]"). Adlar tags tablosunda (SEC-021). */
-    val tags: String = "[]"
+    val tags: String = "[]",
+    /**
+     * Güvenli not alt türü ([NoteKind]); yalnız NOTE kayıtlarında anlamlı.
+     * Türle aynı gerekçeyle şifresiz: liste ikonunu çizmek için kilit
+     * açmadan okunabilmeli (SEC-013/SEC-021 ailesi).
+     */
+    val noteKind: String = NoteKind.GENEL.name,
+    /** Kullanıcı sırası ([EntrySort.MANUAL]); küçükten büyüğe. */
+    val sortIndex: Int = 0
 ) {
     override fun equals(other: Any?): Boolean =
         other is EntryEntity && other.id == id && other.updatedAt == updatedAt
 
     override fun hashCode(): Int = (id * 31 + updatedAt).toInt()
+}
+
+/** Güvenli notun ne taşıdığı — ikon ve düzenleme ipucu bundan türer. */
+enum class NoteKind(val label: String) {
+    GENEL("Genel not"),
+    BETIK("Betik / komut (.sh)"),
+    ANAHTAR("Anahtar / sertifika (.pem)"),
+    PARMAK_IZI("Parmak izi / çıpa"),
+    KURTARMA("Kurtarma kodları"),
+    YAPILANDIRMA("Yapılandırma (.env, json)");
+
+    companion object {
+        fun of(name: String?): NoteKind =
+            runCatching { valueOf(name ?: "") }.getOrDefault(GENEL)
+    }
 }

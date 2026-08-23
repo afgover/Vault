@@ -62,6 +62,11 @@ object BackupManager {
                         .put("quick", e.quick)
                         .put("data", e.data.toJson())
                         .apply {
+                            if (e.noteKind != com.afgover.vault.data.NoteKind.GENEL) {
+                                put("noteKind", e.noteKind.name)
+                            }
+                        }
+                        .apply {
                             val names = e.tagIds.mapNotNull(tagName::get)
                             if (names.isNotEmpty()) {
                                 put("tags", JSONArray().apply { names.forEach(::put) })
@@ -146,6 +151,7 @@ object BackupManager {
                         updatedAt = o.optLong("updatedAt", System.currentTimeMillis()),
                         // Eski yedeklerde alan yok: korumalı kabul edilir.
                         quick = o.optBoolean("quick", false),
+                        noteKind = com.afgover.vault.data.NoteKind.of(o.optString("noteKind")),
                         tagNames = o.optJSONArray("tags")?.let { arr ->
                             buildList { for (j in 0 until arr.length()) add(arr.getString(j)) }
                         } ?: emptyList()

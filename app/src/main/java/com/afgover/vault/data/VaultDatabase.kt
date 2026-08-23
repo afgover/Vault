@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [EntryEntity::class, TagEntity::class], version = 3, exportSchema = false)
+@Database(entities = [EntryEntity::class, TagEntity::class], version = 4, exportSchema = false)
 abstract class VaultDatabase : RoomDatabase() {
 
     abstract fun entryDao(): EntryDao
@@ -45,6 +45,21 @@ abstract class VaultDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Not alt türü ve kullanıcı sırası. İkisi de eklemeli, varsayılanlı:
+         * mevcut kayıtlar "Genel not" ve sıra 0 ile gelir (R-004).
+         */
+        internal val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE entries ADD COLUMN noteKind TEXT NOT NULL DEFAULT 'GENEL'"
+                )
+                db.execSQL(
+                    "ALTER TABLE entries ADD COLUMN sortIndex INTEGER NOT NULL DEFAULT 0"
+                )
+            }
+        }
+
         fun get(context: Context): VaultDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -53,7 +68,7 @@ abstract class VaultDatabase : RoomDatabase() {
                     "vault.db"
                 )
                     // Yıkıcı geçiş YOK: şema değişince veriler silinmemeli.
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                     .also { instance = it }
             }

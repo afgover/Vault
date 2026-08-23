@@ -48,6 +48,11 @@ class VaultImeService : InputMethodService() {
 
     private lateinit var root: LinearLayout
     private lateinit var content: LinearLayout
+    private lateinit var searchRow: LinearLayout
+    private lateinit var searchLabel: TextView
+    private lateinit var keyGrid: LinearLayout
+    private var searching: Boolean = false
+    private var query: String = ""
     private lateinit var scroll: ScrollView
 
 
@@ -82,6 +87,7 @@ class VaultImeService : InputMethodService() {
             textSize = 16f
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
+        header.addView(flatButton("🔍") { toggleSearch() })
         header.addView(flatButton("ABC") { switchBackToKeyboard() })
         // Basılı tutunca sistem klavyesindeki gibi silmeye devam eder.
         header.addView(repeatingButton("⌫") {
@@ -90,6 +96,26 @@ class VaultImeService : InputMethodService() {
         })
         header.addView(flatButton("⌄") { requestHideSelf(0) })
         root.addView(header)
+
+        // Arama satırı (yalnızca arama açıkken görünür)
+        searchLabel = TextView(this).apply {
+            setTextColor(color(R.color.ime_text))
+            textSize = 15f
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        searchRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            visibility = View.GONE
+            setBackgroundColor(color(R.color.ime_surface))
+            setPadding(dp(12), dp(6), dp(6), dp(6))
+            addView(searchLabel)
+            addView(repeatingButton("⌫") { backspaceQuery(); haptic() })
+            addView(flatButton("✕") { toggleSearch() })
+        }
+        root.addView(searchRow, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { setMargins(0, dp(4), 0, dp(4)) })
 
         content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -102,12 +128,18 @@ class VaultImeService : InputMethodService() {
         }
         root.addView(scroll)
 
+        keyGrid = buildKeyGrid()
+        root.addView(keyGrid)
+
         return root
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         selected = null
+        searching = false
+        query = ""
+        applySearchVisibility()
         refresh()
     }
 
@@ -141,6 +173,8 @@ class VaultImeService : InputMethodService() {
     }
 
     private fun render() {
+        // Kayıt seçiliyken arama satırı ve tuşlar gizlenir
+        applySearchVisibility()
         content.removeAllViews()
         val current = selected
         if (current != null) {
@@ -163,7 +197,12 @@ class VaultImeService : InputMethodService() {
             return
         }
 
-        entries.forEach { content.addView(entryButton(it)) }
+        val matches = filtered()
+        if (matches.isEmpty()) {
+            content.addView(hint("\"$query\" ile eşleşen kayıt yok."))
+            return
+        }
+        matches.forEach { content.addView(entryButton(it)) }
     }
 
     private fun renderFields(entry: DecryptedEntry) {
@@ -184,6 +223,95 @@ class VaultImeService : InputMethodService() {
             render()
         }
 
+    /** Başlık, kullanıcı adı ve adres üzerinde arama; Türkçe harfler eşitlenir. */
+    private fun filtered(): List<DecryptedEntry> {
+        if (query.isEmpty()) return entries
+        val needle = normalize(query)
+        return entries.filter { entry ->
+            normalize(entry.title).contains(needle) ||
+                normalize(entry.data.username).contains(needle) ||
+                normalize(entry.data.url).contains(needle)
+        }
+    }
+
+    private fun normalize(text: String): String = text.lowercase()
+        .replace("ı", "i").replace("İ", "i").replace("ş", "s").replace("ğ", "g")
+        .replace("ü", "u").replace("ö", "o").replace("ç", "c")
+
+    // --- Arama tuşları ---------------------------------------------------
+
+    private fun toggleSearch() {
+        searching = !searching
+        query = ""
+        applySearchVisibility()
+        render()
+    }
+
+    private fun applySearchVisibility() {
+        val visible = searching && selected == null
+        searchRow.visibility = if (visible) View.VISIBLE else View.GONE
+        keyGrid.visibility = if (visible) View.VISIBLE else View.GONE
+        scroll.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            if (visible) dp(120) else dp(220)
+        )
+        updateSearchLabel()
+    }
+
+    private fun updateSearchLabel() {
+        searchLabel.text = query.ifEmpty { "Ara…" }
+        searchLabel.alpha = if (query.isEmpty()) 0.6f else 1f
+    }
+
+    private fun appendToQuery(ch: String) {
+        query += ch
+        updateSearchLabel()
+        render()
+    }
+
+    private fun backspaceQuery() {
+        if (query.isEmpty()) return
+        query = query.dropLast(1)
+        updateSearchLabel()
+        render()
+    }
+
+    /**
+     * Aramaya özel küçük tuş ızgarası. Türkçe harfler aramada zaten ASCII
+     * karşılığına indirgendiği için düz QWERTY yeterli.
+     */
+    private fun buildKeyGrid(): LinearLayout {
+        val rows = listOf("1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm")
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            visibility = View.GONE
+            rows.forEach { row ->
+                addView(LinearLayout(this@VaultImeService).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    row.forEach { ch ->
+                        addView(keyButton(ch.toString()), LinearLayout.LayoutParams(
+                            0, dp(38), 1f
+                        ).apply { setMargins(dp(2), dp(2), dp(2), dp(2)) })
+                    }
+                })
+            }
+        }
+    }
+
+    private fun keyButton(ch: String): Button =
+        Button(this).apply {
+            text = ch
+            isAllCaps = false
+            textSize = 14f
+            setPadding(0, 0, 0, 0)
+            minWidth = 0
+            minimumWidth = 0
+            minHeight = 0
+            minimumHeight = 0
+            setTextColor(color(R.color.ime_text))
+            setBackgroundColor(color(R.color.ime_surface))
+            setOnClickListener { appendToQuery(ch); haptic() }
+        }
     // --- Ortak görünümler ------------------------------------------------
 
     private fun hint(text: String): TextView = TextView(this).apply {
