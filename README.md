@@ -174,6 +174,30 @@ kendiliğinden yok olur. Yükleme token'ı Mac Keychain'de durur
 (Cloudflare Worker + KV). Yedek parolası **ASCII olmalı** (Android'in
 PBKDF2 sağlayıcısı ASCII dışında farklı bayt dönüşümü yapabiliyor).
 
+### Araçların bütünlüğü (`tools/dogrula.sh`)
+
+Aktarım araçları düz metne dokunduğu için, ele geçmiş bir bilgisayarda
+**değiştirilmiş olmaları** en gerçekçi sinsi risktir (vault_takip SEC-023).
+Denetim üç halkalı ve her halka bir öncekini doğrular:
+
+```
+tools/dogrula.sh          # denetle (dosyalar → SHA256SUMS → GitHub → çıpa)
+tools/dogrula.sh --yaz    # araçlar bilerek değiştiyse referansı yenile + commit'le
+tools/dogrula.sh --cipa   # telefondaki kayıtla karşılaştırılacak tek 64 haneli değer
+```
+
+1. **Dosyalar → `tools/SHA256SUMS`** — yerel referans (git'te izlenir).
+2. **Yerel → GitHub** — referansı da değiştiren bir saldırgan uzak kopyayı
+   değiştiremez; `git diff origin/<dal> -- tools/` farkı gösterir.
+3. **Çıpa → Vault** — `SHA256SUMS`'ın kendi SHA-256'sı **telefondaki bir
+   kayıtta** durur. Bilgisayarı ele geçiren bunu değiştiremez: karşılaştırma
+   iki ayrı cihaz arasında yapılır.
+
+Dürüst sınır: tamamen ele geçmiş bir işletim sistemi `shasum`'ın kendisi
+dâhil her şey hakkında yalan söyleyebilir. Bu denetim, kendini denetime
+hazırlamamış kurcalamayı ve olay sonrası incelemeyi hedefler — mutlak kanıt
+değildir.
+
 Neden dosya yoluyla: uygulamanın ağ izni yok, `adb shell cmd clipboard` bu
 cihazlarda yok ve `adb shell input text` özel karakterlerde güvenilmez.
 
