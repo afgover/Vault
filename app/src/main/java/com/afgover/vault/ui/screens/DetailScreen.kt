@@ -192,9 +192,15 @@ private fun FieldCard(
 ) {
     var visible by remember { mutableStateOf(!hiddenByDefault) }
     var fullFingerprint by remember { mutableStateOf(false) }
-    // Uzun/çok satırlı değerler (.pem, anahtar) parmak iziyle karşılaştırılır.
+    // Uzun/çok satırlı değerlerde (.pem, anahtar) parmak izi kendiliğinden
+    // görünür; kısa değerlerde istek üzerine — bir SHA-256 özeti, değer
+    // zayıfsa kaba kuvvetle geri çözülebilir (tuzsuz ve hızlı özet).
     val uzun = value.length >= 100 || value.contains('\n')
-    val hex = remember(value) { if (uzun) Fingerprint.sha256Hex(value) else "" }
+    var showShortFp by remember { mutableStateOf(false) }
+    val fpVisible = uzun || showShortFp
+    val hex = remember(value, fpVisible) {
+        if (fpVisible) Fingerprint.sha256Hex(value) else ""
+    }
 
     Card(
         colors = androidx.compose.material3.CardDefaults.cardColors(
@@ -235,7 +241,17 @@ private fun FieldCard(
                     .fillMaxWidth()
                     .padding(top = 2.dp, bottom = if (uzun) 6.dp else 0.dp)
             )
-            if (uzun) {
+            if (!uzun && !showShortFp && visible) {
+                Text(
+                    "SHA-256 parmak izini göster",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .clickable { showShortFp = true }
+                        .padding(top = 6.dp)
+                )
+            }
+            if (fpVisible && visible) {
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -246,7 +262,8 @@ private fun FieldCard(
                 ) {
                     Column(Modifier.weight(1f)) {
                         Text(
-                            "SHA-256 parmak izi · ${value.length} karakter",
+                            if (uzun) "SHA-256 parmak izi · ${value.length} karakter"
+                            else "SHA-256 parmak izi · ${value.length} karakter · kısa değer",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -256,6 +273,15 @@ private fun FieldCard(
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = FontFamily.Monospace
                         )
+                        if (!uzun) {
+                            Text(
+                                "Kısa değerlerin özeti kaba kuvvetle geri çözülebilir — " +
+                                    "bu parmak izini paylaşma.",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                         if (fullFingerprint) {
                             Text(
                                 "Bilgisayarda: shasum -a 256 dosya\n" +

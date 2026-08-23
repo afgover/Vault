@@ -233,9 +233,10 @@ fun EditScreen(
                 EntryType.NOTE -> Unit
             }
 
-            // Serbest alanlar: hesap/şifre ve gündelik kayıtlarda istenildiği
-            // kadar "alan adı + değer" çifti eklenebilir.
-            if (type == EntryType.LOGIN || type == EntryType.EVERYDAY) {
+            // Serbest alanlar her türde düzenlenebilir: aktarımla gelen bir
+            // kaydın içeriği "alan adı + değer" çiftinde olabilir (ör. QR ile
+            // eklenen not), ve o kayıt görünmezse ekran boş sanılır.
+            run {
                 Spacer(Modifier.height(16.dp))
                 Text("Ek alanlar", style = MaterialTheme.typography.titleSmall)
                 customFields.forEachIndexed { index, field ->
