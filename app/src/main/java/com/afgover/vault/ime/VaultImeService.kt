@@ -18,6 +18,8 @@ import com.afgover.vault.R
 import com.afgover.vault.VaultApp
 import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.DecryptedEntry
+import com.afgover.vault.data.EntrySort
+import com.afgover.vault.data.sortedBy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -47,17 +49,14 @@ class VaultImeService : InputMethodService() {
     private lateinit var root: LinearLayout
     private lateinit var content: LinearLayout
     private lateinit var scroll: ScrollView
-    private lateinit var searchRow: LinearLayout
-    private lateinit var searchLabel: TextView
-    private lateinit var keyGrid: LinearLayout
 
-    private val recents by lazy { RecentEntries(this) }
+
+
 
     private var entries: List<DecryptedEntry> = emptyList()
     private var locked: Boolean = true
     private var selected: DecryptedEntry? = null
-    private var searching: Boolean = false
-    private var query: String = ""
+
 
     private fun dp(value: Int): Int =
         (value * resources.displayMetrics.density).toInt()
@@ -83,33 +82,13 @@ class VaultImeService : InputMethodService() {
             textSize = 16f
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
-        header.addView(flatButton("🔍") { toggleSearch() })
         header.addView(flatButton("ABC") { switchBackToKeyboard() })
-        header.addView(flatButton("⌫") {
+        // Basılı tutunca sistem klavyesindeki gibi silmeye devam eder.
+        header.addView(repeatingButton("⌫") {
             currentInputConnection?.deleteSurroundingText(1, 0)
         })
         header.addView(flatButton("⌄") { requestHideSelf(0) })
         root.addView(header)
-
-        // Arama satırı (yalnızca arama açıkken görünür)
-        searchLabel = TextView(this).apply {
-            setTextColor(color(R.color.ime_text))
-            textSize = 15f
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        searchRow = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            visibility = View.GONE
-            setBackgroundColor(color(R.color.ime_surface))
-            setPadding(dp(12), dp(6), dp(6), dp(6))
-            addView(searchLabel)
-            addView(flatButton("⌫") { backspaceQuery() })
-            addView(flatButton("✕") { toggleSearch() })
-        }
-        root.addView(searchRow, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply { setMargins(0, dp(4), 0, dp(4)) })
 
         content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -122,18 +101,12 @@ class VaultImeService : InputMethodService() {
         }
         root.addView(scroll)
 
-        keyGrid = buildKeyGrid()
-        root.addView(keyGrid)
-
         return root
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         selected = null
-        searching = false
-        query = ""
-        applySearchVisibility()
         refresh()
     }
 
@@ -157,16 +130,16 @@ class VaultImeService : InputMethodService() {
         locked = key == null
         scope.launch {
             val repo = (application as VaultApp).repository
+            val sort = EntrySort.read(this@VaultImeService)
             entries = withContext(Dispatchers.IO) {
-                if (key == null) repo.getQuickDecrypted() else repo.getAllDecrypted(key)
+                (if (key == null) repo.getQuickDecrypted() else repo.getAllDecrypted(key))
+                    .sortedBy(sort)
             }
             render()
         }
     }
 
     private fun render() {
-        // Kayıt seçiliyken arama satırı ve tuşlar gizlenir
-        applySearchVisibility()
         content.removeAllViews()
         val current = selected
         if (current != null) {
@@ -189,20 +162,7 @@ class VaultImeService : InputMethodService() {
             return
         }
 
-        val matches = filtered()
-        if (query.isEmpty()) {
-            val recent = recents.ids().mapNotNull { id -> entries.firstOrNull { it.id == id } }
-            if (recent.isNotEmpty()) {
-                content.addView(sectionLabel("Son kullanılanlar"))
-                recent.forEach { content.addView(entryButton(it)) }
-                content.addView(sectionLabel("Tüm kayıtlar"))
-            }
-        }
-        if (matches.isEmpty()) {
-            content.addView(hint("\"$query\" ile eşleşen kayıt yok."))
-            return
-        }
-        matches.forEach { content.addView(entryButton(it)) }
+        entries.forEach { content.addView(entryButton(it)) }
     }
 
     private fun renderFields(entry: DecryptedEntry) {
@@ -212,7 +172,6 @@ class VaultImeService : InputMethodService() {
         })
         entry.data.fields().forEach { (label, value) ->
             content.addView(actionButton("$label yaz") {
-                recents.record(entry.id)
                 currentInputConnection?.commitText(value, 1)
             })
         }
@@ -222,96 +181,6 @@ class VaultImeService : InputMethodService() {
         actionButton(entry.title) {
             selected = entry
             render()
-        }
-
-    /** Başlık, kullanıcı adı ve adres üzerinde arama; Türkçe harfler eşitlenir. */
-    private fun filtered(): List<DecryptedEntry> {
-        if (query.isEmpty()) return entries
-        val needle = normalize(query)
-        return entries.filter { entry ->
-            normalize(entry.title).contains(needle) ||
-                normalize(entry.data.username).contains(needle) ||
-                normalize(entry.data.url).contains(needle)
-        }
-    }
-
-    private fun normalize(text: String): String = text.lowercase()
-        .replace("ı", "i").replace("İ", "i").replace("ş", "s").replace("ğ", "g")
-        .replace("ü", "u").replace("ö", "o").replace("ç", "c")
-
-    // --- Arama tuşları ---------------------------------------------------
-
-    private fun toggleSearch() {
-        searching = !searching
-        query = ""
-        applySearchVisibility()
-        render()
-    }
-
-    private fun applySearchVisibility() {
-        val visible = searching && selected == null
-        searchRow.visibility = if (visible) View.VISIBLE else View.GONE
-        keyGrid.visibility = if (visible) View.VISIBLE else View.GONE
-        scroll.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            if (visible) dp(120) else dp(220)
-        )
-        updateSearchLabel()
-    }
-
-    private fun updateSearchLabel() {
-        searchLabel.text = query.ifEmpty { "Ara…" }
-        searchLabel.alpha = if (query.isEmpty()) 0.6f else 1f
-    }
-
-    private fun appendToQuery(ch: String) {
-        query += ch
-        updateSearchLabel()
-        render()
-    }
-
-    private fun backspaceQuery() {
-        if (query.isEmpty()) return
-        query = query.dropLast(1)
-        updateSearchLabel()
-        render()
-    }
-
-    /**
-     * Aramaya özel küçük tuş ızgarası. Türkçe harfler aramada zaten ASCII
-     * karşılığına indirgendiği için düz QWERTY yeterli.
-     */
-    private fun buildKeyGrid(): LinearLayout {
-        val rows = listOf("1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm")
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            visibility = View.GONE
-            rows.forEach { row ->
-                addView(LinearLayout(this@VaultImeService).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    row.forEach { ch ->
-                        addView(keyButton(ch.toString()), LinearLayout.LayoutParams(
-                            0, dp(38), 1f
-                        ).apply { setMargins(dp(2), dp(2), dp(2), dp(2)) })
-                    }
-                })
-            }
-        }
-    }
-
-    private fun keyButton(ch: String): Button =
-        Button(this).apply {
-            text = ch
-            isAllCaps = false
-            textSize = 14f
-            setPadding(0, 0, 0, 0)
-            minWidth = 0
-            minimumWidth = 0
-            minHeight = 0
-            minimumHeight = 0
-            setTextColor(color(R.color.ime_text))
-            setBackgroundColor(color(R.color.ime_surface))
-            setOnClickListener { appendToQuery(ch) }
         }
 
     // --- Ortak görünümler ------------------------------------------------
@@ -339,6 +208,39 @@ class VaultImeService : InputMethodService() {
             minWidth = dp(48)
             minimumWidth = dp(48)
             setOnClickListener { onClick() }
+        }
+
+    /**
+     * Basılı tutuldukça eylemi tekrarlayan düğme (silme tuşu). Sistem
+     * klavyelerindeki davranış: 400 ms bekle, sonra 55 ms'de bir tekrarla.
+     */
+    private fun repeatingButton(label: String, onAction: () -> Unit): Button =
+        flatButton(label) { onAction() }.apply {
+            val handler = android.os.Handler(android.os.Looper.getMainLooper())
+            var repeater: Runnable? = null
+            setOnTouchListener { view, event ->
+                when (event.actionMasked) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        val r = object : Runnable {
+                            override fun run() {
+                                onAction()
+                                handler.postDelayed(this, 55)
+                            }
+                        }
+                        repeater = r
+                        handler.postDelayed(r, 400)
+                        false // tıklama da normal aksın (tek basış = tek silme)
+                    }
+                    android.view.MotionEvent.ACTION_UP,
+                    android.view.MotionEvent.ACTION_CANCEL -> {
+                        repeater?.let(handler::removeCallbacks)
+                        repeater = null
+                        view.performClick()
+                        false
+                    }
+                    else -> false
+                }
+            }
         }
 
     private fun actionButton(label: String, onClick: () -> Unit): Button =

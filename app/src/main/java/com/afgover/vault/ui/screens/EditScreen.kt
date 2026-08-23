@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
@@ -238,24 +239,36 @@ fun EditScreen(
                 Spacer(Modifier.height(16.dp))
                 Text("Ek alanlar", style = MaterialTheme.typography.titleSmall)
                 customFields.forEachIndexed { index, field ->
-                    Spacer(Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        OutlinedTextField(
-                            value = field.label,
-                            onValueChange = { customFields[index] = field.copy(label = it) },
-                            label = { Text("Alan adı") }, singleLine = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.height(12.dp))
+                    // Alan adı ve değer alt alta: yan yana iken ikisi de dar
+                    // kalıyor ve uzun değerler okunmuyordu.
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                MaterialTheme.colorScheme.surfaceContainerLow,
+                                MaterialTheme.shapes.medium
+                            )
+                            .padding(12.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            OutlinedTextField(
+                                value = field.label,
+                                onValueChange = { customFields[index] = field.copy(label = it) },
+                                label = { Text("Alan adı") }, singleLine = true,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(onClick = { customFields.removeAt(index) }) {
+                                Icon(Icons.Filled.Close, contentDescription = "Alanı kaldır")
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
                         OutlinedTextField(
                             value = field.value,
                             onValueChange = { customFields[index] = field.copy(value = it) },
-                            label = { Text("Değer") }, singleLine = true,
-                            modifier = Modifier.weight(1f)
+                            label = { Text("Değer") },
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        IconButton(onClick = { customFields.removeAt(index) }) {
-                            Icon(Icons.Filled.Close, contentDescription = "Alanı kaldır")
-                        }
                     }
                 }
                 Spacer(Modifier.height(8.dp))

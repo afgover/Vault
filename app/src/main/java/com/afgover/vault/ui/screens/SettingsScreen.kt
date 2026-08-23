@@ -6,7 +6,9 @@ import android.provider.Settings
 import android.view.autofill.AutofillManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,10 +41,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.data.EntrySort
 import com.afgover.vault.ui.VaultViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -106,6 +111,37 @@ fun SettingsScreen(
                 CircularProgressIndicator()
                 Spacer(Modifier.height(8.dp))
             }
+
+            Text("Görünüm", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "Kayıtların hem Vault Klavyesi'nde hem ana listede hangi sırayla " +
+                    "görüneceğini seç.",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(8.dp))
+            Column {
+                EntrySort.entries.forEach { s ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.selectSort(s) }
+                            .padding(vertical = 2.dp)
+                    ) {
+                        RadioButton(
+                            selected = viewModel.sort == s,
+                            onClick = { viewModel.selectSort(s) }
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(s.label, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
 
             Text("Yedekleme", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))

@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.data.EntrySort
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.ui.VaultViewModel
 
@@ -126,10 +127,21 @@ fun HomeScreen(
     var showTransferWizard by remember { mutableStateOf(false) }
 
     // Seçimler daraltarak birleşir: tür VE seçili etiketlerin tamamı.
+    // Sıra kullanıcının seçtiği düzendir (klavyeyle aynı — EntrySort).
     val filtered = entries.filter { item ->
         (query.isBlank() || item.title.contains(query, ignoreCase = true)) &&
             (filterType == null || item.type == filterType) &&
             filterTagIds.all { it in item.tagIds }
+    }.let { list ->
+        when (viewModel.sort) {
+            EntrySort.TITLE_ASC -> list.sortedBy { it.title.lowercase() }
+            EntrySort.TITLE_DESC -> list.sortedByDescending { it.title.lowercase() }
+            EntrySort.UPDATED_DESC -> list.sortedByDescending { it.updatedAt }
+            EntrySort.CREATED_DESC -> list.sortedByDescending { it.createdAt }
+            EntrySort.TYPE -> list.sortedWith(
+                compareBy({ it.type.ordinal }, { it.title.lowercase() })
+            )
+        }
     }
 
     Scaffold(

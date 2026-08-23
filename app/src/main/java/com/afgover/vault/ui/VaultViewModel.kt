@@ -19,6 +19,7 @@ import com.afgover.vault.backup.BackupManager
 import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryData
+import com.afgover.vault.data.EntrySort
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.data.TagEntity
 import com.afgover.vault.data.VaultRepository
@@ -37,7 +38,9 @@ data class EntryListItem(
     val type: EntryType,
     val title: String,
     val quick: Boolean,
-    val tagIds: List<Long> = emptyList()
+    val tagIds: List<Long> = emptyList(),
+    val createdAt: Long = 0,
+    val updatedAt: Long = 0
 )
 
 enum class LockState { NEEDS_SETUP, LOCKED, UNLOCKED }
@@ -62,6 +65,15 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     var error by mutableStateOf<String?>(null)
 
+    /** Kullanıcının seçtiği sıra; klavye ile ana liste aynı düzeni kullanır. */
+    var sort by mutableStateOf(EntrySort.read(application))
+        private set
+
+    fun selectSort(value: EntrySort) {
+        sort = value
+        EntrySort.write(getApplication(), value)
+    }
+
     val entries: StateFlow<List<EntryListItem>> = repo.observeAll()
         .map { list ->
             list.map {
@@ -70,7 +82,9 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     type = runCatching { EntryType.valueOf(it.type) }.getOrDefault(EntryType.NOTE),
                     title = it.title,
                     quick = it.quick,
-                    tagIds = com.afgover.vault.data.TagIds.parse(it.tags)
+                    tagIds = com.afgover.vault.data.TagIds.parse(it.tags),
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt
                 )
             }
         }
