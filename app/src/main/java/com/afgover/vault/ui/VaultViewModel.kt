@@ -452,7 +452,13 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
      * şifreli de olsa zarfın klavye geçmişlerinde sürüklenmesine gerek yok.
      */
     fun importBackupText(text: String, password: String, replace: Boolean, onSuccess: () -> Unit = {}) {
-        val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
+        val key = VaultSession.key() ?: run {
+            // Ekran kapanıp kasa kilitlenmiş olabilir; sessizce dönmek
+            // "düğme çalışmıyor" gibi görünüyordu.
+            error = "Kasa kilitlendi — ana parolanla açıp tekrar dene."
+            lockState = LockState.LOCKED
+            return
+        }
         error = null
         val kirpik = BackupManager.normalize(text)
         if (kirpik.isEmpty()) { error = "Yapıştırılan metin boş"; return }
@@ -479,6 +485,11 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     if (replace) repo.replaceAll(imported.entries, key, imported.tagColors)
                     else repo.addAll(imported.entries, key, imported.tagColors)
                     imported.entries.size
+                }
+                if (count == 0) {
+                    error = "Zarf açıldı ama içinde kayıt yok — gönderen tarafta " +
+                        "alanlar boş kalmış olabilir."
+                    return@launch
                 }
                 clearClipboard()
                 toast("$count kayıt eklendi · pano temizlendi")

@@ -435,6 +435,7 @@ private fun ImportDialog(
     onDismiss: () -> Unit
 ) {
     var pw by remember { mutableStateOf("") }
+    var hata by remember { mutableStateOf<String?>(null) }
     var replace by remember { mutableIntStateOf(0) } // 0 = ekle, 1 = değiştir
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -464,12 +465,18 @@ private fun ImportDialog(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+                hata?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, color = MaterialTheme.colorScheme.error)
+                }
             }
         },
         confirmButton = {
             TextButton(
-                onClick = { onConfirm(pw, replace == 1) },
-                enabled = pw.isNotEmpty()
+                onClick = {
+                    if (pw.isEmpty()) hata = "Yedek parolası girilmedi."
+                    else onConfirm(pw, replace == 1)
+                }
             ) { Text("Geri yükle") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }

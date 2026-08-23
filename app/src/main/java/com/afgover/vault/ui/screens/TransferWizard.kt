@@ -143,9 +143,14 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
             } else {
                 TextButton(
                     onClick = {
-                        viewModel.importBackupText(zarf, parola, replace == 1) { onDismiss() }
+                        if (zarf.isBlank()) {
+                            viewModel.error = "Şifreli zarf alanı boş — " +
+                                "bilgisayarda yayınla, QR'ı okut ve \"Panodan al\"a bas."
+                        } else {
+                            viewModel.importBackupText(zarf, parola, replace == 1) { onDismiss() }
+                        }
                     },
-                    enabled = zarf.isNotBlank() && !viewModel.busy
+                    enabled = !viewModel.busy
                 ) { Text(if (viewModel.busy) "Aktarılıyor…" else "İçe aktar") }
             }
         },

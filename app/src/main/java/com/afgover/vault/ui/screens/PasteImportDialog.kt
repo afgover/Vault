@@ -34,29 +34,39 @@ fun PasteImportDialog(
     onDismiss: () -> Unit
 ) {
     var text by remember { mutableStateOf(initialText) }
+    // QR'dan gelindiğinde zarf hazırdır; ekran yalnız parolayı istemeli.
+    val qrdanGeldi = initialText.isNotEmpty()
     var pw by remember { mutableStateOf("") }
     var replace by remember { mutableIntStateOf(0) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Metinden içe aktar") },
+        title = { Text(if (qrdanGeldi) "QR ile aktar" else "Metinden içe aktar") },
         text = {
             Column {
-                Text(
-                    "Sayfadaki \"Kopyala\" ile aldığın şifreli metni yapıştır. " +
-                        "Metin şifrelidir; parolasını bir sonraki alana gireceksin.",
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = text, onValueChange = { text = it },
-                    label = { Text("Şifreli zarf") },
-                    minLines = 3, maxLines = 5,
-                    supportingText = {
-                        if (text.isNotEmpty()) Text("${text.length} karakter")
+                if (qrdanGeldi) {
+                    Text(
+                        "✓ QR okundu · ${text.length} karakterlik şifreli zarf alındı.\n" +
+                            "Şimdi yalnız **yedek parolasını** gir.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                } else {
+                    Text(
+                        "Sayfadaki metni yapıştır ya da \"Panodan al\"a bas. " +
+                            "Metin şifrelidir; parolasını bir sonraki alana gireceksin.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = text, onValueChange = { text = it },
+                        label = { Text("Şifreli zarf") },
+                        minLines = 3, maxLines = 5,
+                        supportingText = {
+                            if (text.isNotEmpty()) Text("${text.length} karakter")
+                        }
+                    )
+                    TextButton(onClick = { text = viewModel.clipboardText() }) {
+                        Text("Panodan al")
                     }
-                )
-                TextButton(onClick = { text = viewModel.clipboardText() }) {
-                    Text("Panodan al")
                 }
                 SecretField(value = pw, onValueChange = { pw = it }, label = "Yedek parolası")
                 Spacer(Modifier.height(8.dp))
@@ -90,9 +100,22 @@ fun PasteImportDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    viewModel.importBackupText(text, pw, replace == 1) { onDismiss() }
+                    // Düğme boş alanda da basılabilir: sessizce devre dışı
+                    // kalmak "tepki yok" olarak okunuyordu, oysa kullanıcının
+                    // ihtiyacı NEDEN olmadığını görmek.
+                    when {
+                        text.isBlank() ->
+                            viewModel.error = "Şifreli zarf alanı boş — " +
+                                "\"Panodan al\" ile yapıştır."
+                        pw.isEmpty() && qrdanGeldi ->
+                            viewModel.error = "Yedek parolası gerekli: zarfı " +
+                                "bilgisayarda şifrelerken girdiğin parola."
+                        pw.isEmpty() ->
+                            viewModel.error = "Yedek parolası girilmedi."
+                        else -> viewModel.importBackupText(text, pw, replace == 1) { onDismiss() }
+                    }
                 },
-                enabled = text.isNotBlank() && pw.isNotEmpty() && !viewModel.busy
+                enabled = !viewModel.busy
             ) { Text(if (viewModel.busy) "Aktarılıyor…" else "İçe aktar") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
