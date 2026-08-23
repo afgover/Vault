@@ -132,7 +132,14 @@ Vault → + → "Metinden içe aktar".</p>
   </label></div>
 </div>
 
-<label>Bağlantı ömrü
+<label>Aktarım yolu
+  <select id="yol">
+    <option value="qr" selected>QR (ağ yok — telefon kamerayla okur)</option>
+    <option value="relay">Bağlantı (vault.gover.us üzerinden)</option>
+  </select>
+</label>
+
+<label id="ttlEtiket">Bağlantı ömrü
   <select id="ttl">
     <option value="900">15 dakika</option>
     <option value="3600" selected>1 saat</option>
@@ -140,14 +147,15 @@ Vault → + → "Metinden içe aktar".</p>
   </select>
 </label>
 
-<button id="gonder">Şifrele ve yayınla</button>
+<button id="gonder">Şifrele ve QR göster</button>
 <div id="hata"></div>
 
 <div id="sonuc">
-  <p class="uyari">⚠️ Bağlantı <b>bir kez</b> görüntülenir ve <span id="omur"></span> sonra kendiliğinden silinir.</p>
+  <p class="uyari" id="uyari"></p>
   <div id="qr"></div>
+  <p id="kareBilgi" style="color:#888;font-size:.85rem"></p>
   <p id="url"></p>
-  <button id="kopyala" style="background:#246;color:#fff">Bağlantıyı kopyala</button>
+  <button id="kopyala" style="background:#246;color:#fff;display:none">Bağlantıyı kopyala</button>
 </div>
 
 <p class="not">Parola bu sayfadan hiçbir yere gönderilmez ve saklanmaz — telefonda
@@ -343,7 +351,63 @@ $("tokenKaydet").addEventListener("click", () => {
   $("token").value = ""; $("tokenAlani").style.display = "none"; $("hata").textContent = "";
 });
 $("tokenDegistir").addEventListener("click", (e) => { e.preventDefault(); tokenAlaniGoster(); });
-if (!tokenGetir()) tokenAlaniGoster();
+$("yol").dispatchEvent(new Event("change"));
+
+/* --- QR kipi: zarfın KENDİSİ karelere bölünür, ağ hiç kullanılmaz --- */
+const QR_CHUNK = 900; // uygulamadaki QrTransfer.CHUNK ile aynı
+
+async function qrKareleri(zarfMetni) {
+  const ham = new TextEncoder().encode(zarfMetni);
+  let bayrak = "P", bytes = ham;
+  // deflate-raw varsa sıkıştır: çoğu zarf tek kareye iner.
+  if (typeof CompressionStream !== "undefined") {
+    try {
+      const cs = new CompressionStream("deflate-raw");
+      const sikisik = new Uint8Array(
+        await new Response(new Blob([ham]).stream().pipeThrough(cs)).arrayBuffer()
+      );
+      if (sikisik.length < ham.length) { bayrak = "Z"; bytes = sikisik; }
+    } catch (_) { /* desteklenmiyorsa düz base64 */ }
+  }
+  const veri = b64(bytes);
+  const parcalar = [];
+  for (let i = 0; i < veri.length; i += QR_CHUNK) parcalar.push(veri.slice(i, i + QR_CHUNK));
+  const n = parcalar.length || 1;
+  return parcalar.map((p, i) => `VLT1|${i + 1}/${n}|${bayrak}|${p}`);
+}
+
+let qrDongu = null;
+function qrGoster(kareler) {
+  if (qrDongu) { clearInterval(qrDongu); qrDongu = null; }
+  const ciz = (metin) => {
+    const qr = qrcode(0, "M");
+    qr.addData(metin);
+    qr.make();
+    $("qr").innerHTML = qr.createSvgTag({ cellSize: 5, margin: 3 });
+  };
+  if (kareler.length === 1) {
+    ciz(kareler[0]);
+    $("kareBilgi").textContent = "Tek kare — telefonda Vault → + → \"QR ile aktar\"";
+    return;
+  }
+  let i = 0;
+  const adim = () => {
+    ciz(kareler[i]);
+    $("kareBilgi").textContent =
+      `Kare ${i + 1}/${kareler.length} — telefonu tut, kareler dönüyor; ` +
+      "okuyucu sırasız toplar.";
+    i = (i + 1) % kareler.length;
+  };
+  adim();
+  qrDongu = setInterval(adim, 1600);
+}
+
+$("yol").addEventListener("change", () => {
+  const qrKipi = $("yol").value === "qr";
+  $("ttlEtiket").style.display = qrKipi ? "none" : "block";
+  $("gonder").textContent = qrKipi ? "Şifrele ve QR göster" : "Şifrele ve yayınla";
+  $("tokenAlani").style.display = (!qrKipi && !tokenGetir()) ? "block" : "none";
+});
 
 $("gonder").addEventListener("click", async () => {
   $("hata").textContent = ""; $("sonuc").style.display = "none";
@@ -361,13 +425,26 @@ $("gonder").addEventListener("click", async () => {
     return;
   }
   if (p1 !== p2) { $("hata").textContent = "Parolalar eşleşmiyor."; return; }
-  if (!tokenGetir()) { tokenAlaniGoster(); $("hata").textContent = "Önce yükleme token'ını kaydet."; return; }
+  const qrKipi = $("yol").value === "qr";
+  if (!qrKipi && !tokenGetir()) {
+    tokenAlaniGoster(); $("hata").textContent = "Önce yükleme token'ını kaydet."; return;
+  }
   if (komutKokuyor(JSON.stringify(icerik)) &&
       !confirm("İçerik bir KOMUT gibi görünüyor (pano kazası? L-009).\nYine de bunu aktarayım mı?")) return;
 
   $("gonder").disabled = true; $("gonder").textContent = "Şifreleniyor…";
   try {
     const zarf = await zarfla(girdiyiKur(), p1);
+    if (qrKipi) {
+      const kareler = await qrKareleri(zarf);
+      qrGoster(kareler);
+      $("url").textContent = "";
+      $("kopyala").style.display = "none";
+      $("uyari").textContent =
+        "Bu QR zarfın KENDİSİNİ taşır — internete hiçbir şey gitmedi.";
+      $("sonuc").style.display = "block";
+      return;
+    }
     if (zarf.length > MAX_ZARF) {
       throw new Error(
         `Şifreli zarf ${(zarf.length/1024).toFixed(0)} KB — relay sınırı 64 KB. ` +
@@ -385,11 +462,14 @@ $("gonder").addEventListener("click", async () => {
       throw new Error("Token geçersiz — Keychain'deki güncel değeri kaydet.");
     }
     if (!r.ok) throw new Error(`Sunucu kabul etmedi: ${r.status} ${await r.text()}`);
+    $("kopyala").style.display = "block";
+    $("uyari").textContent = "⚠️ Bağlantı bir kez görüntülenir ve süresi dolunca silinir.";
     const { url, ttl:kabulTtl } = await r.json();
     const qr = qrcode(0, "M"); qr.addData(url); qr.make();
     $("qr").innerHTML = qr.createSvgTag({ cellSize:6, margin:3 });
     $("url").textContent = url;
-    $("omur").textContent = kabulTtl >= 3600 ? `${kabulTtl/3600} saat` : `${kabulTtl/60} dakika`;
+    $("kareBilgi").textContent =
+      "Ömür: " + (kabulTtl >= 3600 ? `${kabulTtl/3600} saat` : `${kabulTtl/60} dakika`);
     $("sonuc").style.display = "block";
     $("kopyala").onclick = async () => {
       await navigator.clipboard.writeText(url);

@@ -30,9 +30,10 @@ import com.afgover.vault.ui.VaultViewModel
 @Composable
 fun PasteImportDialog(
     viewModel: VaultViewModel,
+    initialText: String = "",
     onDismiss: () -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf(initialText) }
     var pw by remember { mutableStateOf("") }
     var replace by remember { mutableIntStateOf(0) }
     AlertDialog(

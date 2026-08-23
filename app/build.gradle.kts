@@ -65,6 +65,14 @@ dependencies {
     // (MainActivity zaten FragmentActivity'den türediği için doğrudan bağımlılık doğru.)
     implementation(libs.androidx.fragment)
 
+    // QR ile doğrudan aktarım: kamera + çevrimdışı çözücü.
+    // ML Kit bilinçli olarak kullanılmadı (Play Services bağımlılığı, SEC-019).
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.zxing.core)
+
     // JVM birim testleri: BackupManager java.util.Base64 kullanır (minSdk 26),
     // org.json ise Android'in çalışma zamanı sınıflarıyla aynı pakettir.
     testImplementation(libs.junit)
@@ -76,6 +84,14 @@ dependencies {
         // Doğrudan bağımlılık ileride kaldırılsa bile hiçbir geçişli bağımlılık
         // fragment'i 1.7.1'in altına düşüremesin.
         implementation(libs.androidx.fragment)
+
+    // QR ile doğrudan aktarım: kamera + çevrimdışı çözücü.
+    // ML Kit bilinçli olarak kullanılmadı (Play Services bağımlılığı, SEC-019).
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.zxing.core)
 
     // JVM birim testleri: BackupManager java.util.Base64 kullanır (minSdk 26),
     // org.json ise Android'in çalışma zamanı sınıflarıyla aynı pakettir.

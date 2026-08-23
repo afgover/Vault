@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.DataObject
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentPaste
@@ -147,6 +148,8 @@ fun HomeScreen(
     val filterTagIds = remember { mutableStateListOf<Long>() }
     var manageTags by remember { mutableStateOf(false) }
     var showPasteImport by remember { mutableStateOf(false) }
+    var qrTarama by remember { mutableStateOf(false) }
+    var qrZarf by remember { mutableStateOf("") }
     var showTransferWizard by remember { mutableStateOf(false) }
     var sortMenuOpen by remember { mutableStateOf(false) }
 
@@ -252,6 +255,17 @@ fun HomeScreen(
                         )
                     }
                     HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text("QR ile aktar") },
+                        leadingIcon = {
+                            Icon(Icons.Filled.QrCodeScanner, contentDescription = null)
+                        },
+                        onClick = {
+                            addMenuOpen = false
+                            qrZarf = ""
+                            qrTarama = true
+                        }
+                    )
                     DropdownMenuItem(
                         text = { Text("Metinden içe aktar") },
                         leadingIcon = {
@@ -454,8 +468,24 @@ fun HomeScreen(
         TransferWizardDialog(viewModel = viewModel, onDismiss = { showTransferWizard = false })
     }
 
+    if (qrTarama) {
+        QrScanScreen(
+            onEnvelope = { zarf ->
+                qrTarama = false
+                qrZarf = zarf
+                showPasteImport = true
+            },
+            onCancel = { qrTarama = false }
+        )
+        return
+    }
+
     if (showPasteImport) {
-        PasteImportDialog(viewModel = viewModel, onDismiss = { showPasteImport = false })
+        PasteImportDialog(
+            viewModel = viewModel,
+            initialText = qrZarf,
+            onDismiss = { showPasteImport = false; qrZarf = "" }
+        )
     }
 
     if (manageTags) {

@@ -35,6 +35,7 @@ import json
 import os
 import subprocess
 import sys
+import zlib
 import time
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor"))
@@ -227,6 +228,29 @@ def publish(envelope_text, ttl):
         die(f"relay beklenmedik cevap verdi: {result.stdout[:200]}")
 
 
+QR_PREFIX = "VLT1"
+QR_CHUNK = 900  # kare başına base64 uzunluğu (uygulamadaki QrTransfer.CHUNK ile aynı)
+
+
+def qr_kareleri(zarf_metni):
+    """
+    Zarfı QR karelerine böler: `VLT1|i/n|F|veri`.
+    Sıkıştırma (ham deflate) çoğu zarfı tek kareye indiriyor; kazanç yoksa
+    düz base64'e düşülür ve bayrak buna göre yazılır (uygulama ikisini de
+    tanır — vault_takip B-035).
+    """
+    ham = zarf_metni.encode("utf-8")
+    sikistirici = zlib.compressobj(9, zlib.DEFLATED, -15)
+    sikisik = sikistirici.compress(ham) + sikistirici.flush()
+    if len(sikisik) < len(ham):
+        bayrak, veri = "Z", base64.b64encode(sikisik).decode("ascii")
+    else:
+        bayrak, veri = "P", base64.b64encode(ham).decode("ascii")
+    parcalar = [veri[i:i + QR_CHUNK] for i in range(0, len(veri), QR_CHUNK)] or [""]
+    n = len(parcalar)
+    return [f"{QR_PREFIX}|{i + 1}/{n}|{bayrak}|{p}" for i, p in enumerate(parcalar)]
+
+
 def show_qr(url):
     try:
         import segno
@@ -264,6 +288,8 @@ def main():
     parser.add_argument("--push", action="store_true", help="Dosyayı telefonun Download klasörüne kopyala")
     parser.add_argument("--dosya", metavar="YOL",
                         help="Panodan değil dosyadan oku; metin olduğu gibi, ikili base64 + geri dönüştürme notu")
+    parser.add_argument("--qr", action="store_true",
+                        help="Zarfın KENDİSİNİ terminalde QR olarak göster (ağ yok, relay yok)")
     parser.add_argument("--yayinla", action="store_true",
                         help=f"Zarfı {RELAY} üzerinden tek kullanımlık URL olarak yayınla ve QR göster")
     parser.add_argument("--ttl", type=int, default=86_400, metavar="SANIYE",
@@ -313,6 +339,31 @@ def main():
     if len(payload.encode("utf-8")) > MAX_PLAIN_BYTES:
         die("kayıt 256 KB sınırını aşıyor — içerik kısaltılmalı (B-040 uygulamada da reddeder)")
     envelope = encrypt(payload, password)
+
+    if args.qr:
+        kareler = qr_kareleri(json.dumps(envelope, separators=(",", ":"), ensure_ascii=False))
+        print(f"\n{len(kareler)} kare · telefonda: Vault → + → \"QR ile aktar\"")
+        if len(kareler) > 1:
+            print("Kareler sırayla gösterilecek; okuyucu sırasız toplar, "
+                  "hepsi okunana kadar bekle. Çıkmak için Ctrl-C.\n")
+        try:
+            tur = 0
+            while True:
+                for i, kare in enumerate(kareler, 1):
+                    if len(kareler) > 1:
+                        sys.stdout.write("\033[2J\033[H")  # ekranı temizle
+                    print(f"— kare {i}/{len(kareler)} —")
+                    show_qr(kare)
+                    if len(kareler) == 1:
+                        break
+                    time.sleep(1.6)
+                tur += 1
+                if len(kareler) == 1:
+                    break
+        except KeyboardInterrupt:
+            print("\nQR gösterimi durduruldu.")
+        if not args.cikti and not args.push and not args.yayinla:
+            return
 
     if args.yayinla:
         zarf_metni = json.dumps(envelope, separators=(",", ":"), ensure_ascii=False)
