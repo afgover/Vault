@@ -294,15 +294,15 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun disablePin(password: String, pin: String, onDone: (Boolean) -> Unit) {
+    fun disablePin(password: String, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
             busy = true
             val ok = withContext(Dispatchers.Default) {
-                keyManager.disablePin(password.toCharArray(), pin)
+                keyManager.disablePin(password.toCharArray())
             }
             busy = false
             refreshLockOptions()
-            if (!ok) error = "PIN kapatılamadı: parola ya da PIN yanlış"
+            if (!ok) error = "PIN kapatılamadı: ana parola yanlış"
             else toast("PIN kapatıldı · parmak izini yeniden etkinleştir")
             onDone(ok)
         }

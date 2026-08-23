@@ -113,10 +113,14 @@ class KeyManager(context: Context) {
         return true
     }
 
-    /** PIN'i kapatır; parmak izi kaydı yine tazelenmeli. */
-    fun disablePin(password: CharArray, pin: String): Boolean {
+    /**
+     * PIN'i kapatır. **Yalnız ana parola ister**: PIN zaten sadece parmak izi
+     * yolunu koruyor ve ana parola tek başına kasayı açıyor, dolayısıyla
+     * kapatma anında PIN sormak güvenlik eklemez — yalnız unutulmuş bir PIN'i
+     * kaldırılamaz hâle getirirdi. Parmak izi kaydı yine tazelenmeli.
+     */
+    fun disablePin(password: CharArray): Boolean {
         unlockWithPassword(password) ?: return false
-        if (!verifyPin(pin)) return false
         prefs.edit().remove(PREF_PIN_SALT).remove(PREF_PIN_CHECK).apply()
         clearBiometric()
         return true

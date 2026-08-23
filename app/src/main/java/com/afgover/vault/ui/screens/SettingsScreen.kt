@@ -521,8 +521,13 @@ private fun PinSetupDialog(
     var parola by remember { mutableStateOf("") }
     var pin by remember { mutableStateOf("") }
     var pin2 by remember { mutableStateOf("") }
-    val gecerli = parola.isNotEmpty() && com.afgover.vault.core.PinLock.isValid(pin) &&
-        (kapatmaKipi || pin == pin2)
+    // Kapatmada PIN sorulmaz: ana parola zaten kasayı açan yetkidir.
+    // Onarım ayrı: orada PIN kriptografik olarak GEREKLİ (iç sargıyı o açar),
+    // ve onarım kipinde kapatmaKipi de true olduğu için ayrıca yazılıyor.
+    val pinGerekli = !kapatmaKipi || onarimKipi
+    val gecerli = parola.isNotEmpty() &&
+        (!pinGerekli || (com.afgover.vault.core.PinLock.isValid(pin) &&
+            (onarimKipi || pin == pin2)))
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -539,7 +544,9 @@ private fun PinSetupDialog(
             Column {
                 Text(
                     if (kapatmaKipi)
-                        "PIN kapatılınca kayıtlar yalnız ana parola/parmak izi ile açılır."
+                        "PIN kapatılınca kayıtlar yalnız ana parola/parmak izi ile " +
+                            "açılır. PIN'i hatırlaman gerekmiyor: ana parola yeter. " +
+                            "İşlem sonrası parmak izini yeniden etkinleştir."
                     else
                         "PIN 4-12 rakam olmalı. Unutursan ana parola TEK BAŞINA " +
                             "yetmez — PIN'i yedek parolan gibi güvenli bir yerde tut. " +
@@ -548,9 +555,21 @@ private fun PinSetupDialog(
                 )
                 Spacer(Modifier.height(8.dp))
                 SecretField(value = parola, onValueChange = { parola = it }, label = "Ana parola")
-                SecretField(value = pin, onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y }, label = "PIN", numeric = true)
-                if (!kapatmaKipi) {
-                    SecretField(value = pin2, onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin2 = y }, label = "PIN (tekrar)", numeric = true)
+                if (pinGerekli) {
+                    SecretField(
+                        value = pin,
+                        onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y },
+                        label = if (onarimKipi) "Mevcut PIN" else "PIN",
+                        numeric = true
+                    )
+                }
+                if (pinGerekli && !onarimKipi) {
+                    SecretField(
+                        value = pin2,
+                        onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin2 = y },
+                        label = "PIN (tekrar)",
+                        numeric = true
+                    )
                 }
                 viewModel.error?.let {
                     Spacer(Modifier.height(8.dp))
@@ -563,7 +582,7 @@ private fun PinSetupDialog(
                 onClick = {
                     when {
                         onarimKipi -> viewModel.migrateLegacyPin(parola, pin) { if (it) onDismiss() }
-                        kapatmaKipi -> viewModel.disablePin(parola, pin) { if (it) onDismiss() }
+                        kapatmaKipi -> viewModel.disablePin(parola) { if (it) onDismiss() }
                         else -> viewModel.enablePin(parola, pin) { if (it) onDismiss() }
                     }
                 },
