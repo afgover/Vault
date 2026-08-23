@@ -1,6 +1,10 @@
 package com.afgover.vault.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Lock
@@ -27,6 +32,7 @@ import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +54,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -66,6 +75,35 @@ fun EntryType.label(): String = when (this) {
     EntryType.EVERYDAY -> "Gündelik"
     EntryType.CARD -> "Kart"
     EntryType.NOTE -> "Güvenli Not"
+}
+
+/** Tür kimlik rengi: liste ve detayda ikon kapsülünü boyar, taramayı hızlandırır. */
+@Composable
+fun EntryType.renk(): Color = when (this) {
+    EntryType.LOGIN -> MaterialTheme.colorScheme.primary
+    EntryType.EVERYDAY -> Color(0xFF63C7B2)
+    EntryType.CARD -> MaterialTheme.colorScheme.tertiary
+    EntryType.NOTE -> Color(0xFFB08FE0)
+}
+
+/** Yumuşak renkli kapsül içinde tür ikonu. */
+@Composable
+fun TypeBadge(type: EntryType, size: Int = 42) {
+    val renk = type.renk()
+    Box(
+        modifier = Modifier
+            .size(size.dp)
+            .clip(RoundedCornerShape(size.dp / 3))
+            .background(renk.copy(alpha = 0.16f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            type.icon(),
+            contentDescription = null,
+            tint = renk,
+            modifier = Modifier.size((size * 0.55).dp)
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -142,7 +180,11 @@ fun HomeScreen(
                         }
                     )
                 }
-                FloatingActionButton(onClick = { addMenuOpen = true }) {
+                FloatingActionButton(
+                    onClick = { addMenuOpen = true },
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                ) {
                     Icon(Icons.Filled.Add, contentDescription = "Ekle")
                 }
             }
@@ -157,8 +199,10 @@ fun HomeScreen(
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                label = { Text("Ara") },
+                placeholder = { Text("Kayıtlarda ara") },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 singleLine = true,
+                shape = RoundedCornerShape(28.dp),
                 modifier = Modifier.fillMaxWidth()
             )
             Row(
@@ -192,35 +236,55 @@ fun HomeScreen(
             Spacer(Modifier.height(4.dp))
 
             if (filtered.isEmpty()) {
-                Text(
-                    text = if (entries.isEmpty())
-                        "Henüz kayıt yok. Sağ alttaki + ile ekleyebilirsin."
-                    else "Eşleşen kayıt yok.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 24.dp)
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 56.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        if (entries.isEmpty()) Icons.Filled.Lock else Icons.Filled.Search,
+                        contentDescription = null,
+                        modifier = Modifier.size(44.dp),
+                        tint = MaterialTheme.colorScheme.outlineVariant
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        text = if (entries.isEmpty())
+                            "Kasa hazır — ilk kaydını sağ alttaki + ile ekle."
+                        else "Bu filtrelerle eşleşen kayıt yok.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             } else {
                 LazyColumn {
                     items(filtered, key = { it.id }) { item ->
                         Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp)
+                                .padding(vertical = 5.dp)
+                                .clip(MaterialTheme.shapes.medium)
                                 .clickable { onOpen(item.id) }
                         ) {
                             Row(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    item.type.icon(),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                                Spacer(Modifier.width(16.dp))
-                                Column {
+                                TypeBadge(item.type)
+                                Spacer(Modifier.width(14.dp))
+                                Column(Modifier.weight(1f)) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(item.title, style = MaterialTheme.typography.titleMedium)
+                                        Text(
+                                            item.title,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.weight(1f, fill = false)
+                                        )
                                         item.tagIds.forEach { tid ->
                                             tags.find { it.id == tid }?.let {
                                                 Spacer(Modifier.width(6.dp))
@@ -228,14 +292,18 @@ fun HomeScreen(
                                             }
                                         }
                                     }
+                                    Spacer(Modifier.height(2.dp))
                                     Text(
-                                        if (item.quick) {
-                                            "${item.type.label()} · ⚡ klavyede parolasız"
-                                        } else {
-                                            item.type.label()
-                                        },
+                                        item.type.label(),
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                if (item.quick) {
+                                    Text(
+                                        "⚡",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(start = 8.dp)
                                     )
                                 }
                             }

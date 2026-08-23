@@ -1,7 +1,10 @@
 package com.afgover.vault.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.afgover.vault.ui.LockState
@@ -56,13 +61,21 @@ fun UnlockScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
-            Icons.Filled.Lock,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Spacer(Modifier.height(16.dp))
+        Box(
+            modifier = Modifier
+                .size(88.dp)
+                .clip(RoundedCornerShape(28.dp))
+                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                Icons.Filled.Lock,
+                contentDescription = null,
+                modifier = Modifier.size(44.dp),
+                tint = MaterialTheme.colorScheme.tertiary
+            )
+        }
+        Spacer(Modifier.height(20.dp))
         Text(
             text = if (isSetup) "Vault'a hoş geldin" else "Vault kilitli",
             style = MaterialTheme.typography.headlineSmall
@@ -70,10 +83,13 @@ fun UnlockScreen(
         Spacer(Modifier.height(8.dp))
         Text(
             text = if (isSetup)
-                "Bir ana parola belirle. Tüm verilerin bu paroladan türetilen anahtarla şifrelenir. Bu parolayı unutursan verilerine ERİŞİLEMEZ."
+                "Bir ana parola belirle. Tüm verilerin bu paroladan türetilen " +
+                    "anahtarla şifrelenir. Bu parolayı unutursan verilerine ERİŞİLEMEZ."
             else
                 "Devam etmek için ana parolanı gir.",
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(24.dp))
 

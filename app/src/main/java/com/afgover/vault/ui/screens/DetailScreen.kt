@@ -185,9 +185,14 @@ private fun FieldCard(
     onTypeToPc: () -> Unit
 ) {
     var visible by remember { mutableStateOf(!hiddenByDefault) }
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(Modifier.weight(1f)) {
