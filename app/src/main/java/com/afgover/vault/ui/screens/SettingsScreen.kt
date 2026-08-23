@@ -58,7 +58,7 @@ import java.util.Locale
 fun SettingsScreen(
     viewModel: VaultViewModel,
     canUseBiometric: Boolean,
-    onBiometricEnable: () -> Unit,
+    onBiometricEnable: (String?) -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -68,6 +68,7 @@ fun SettingsScreen(
     var showChangePassword by remember { mutableStateOf(false) }
     var showPasteImport by remember { mutableStateOf(false) }
     var showPinDialog by remember { mutableStateOf(false) }
+    var showBiometricPin by remember { mutableStateOf(false) }
 
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -224,7 +225,10 @@ fun SettingsScreen(
                     ) { Text("Biyometrik kilit açmayı kapat") }
                 } else {
                     OutlinedButton(
-                        onClick = onBiometricEnable,
+                        onClick = {
+                            if (viewModel.isPinEnabled) showBiometricPin = true
+                            else onBiometricEnable(null)
+                        },
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Biyometrik kilit açmayı etkinleştir") }
                 }
@@ -328,6 +332,38 @@ fun SettingsScreen(
         ChangePasswordDialog(
             viewModel = viewModel,
             onDismiss = { showChangePassword = false }
+        )
+    }
+
+    if (showBiometricPin) {
+        var pin by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showBiometricPin = false },
+            title = { Text("Parmak izini PIN'e bağla") },
+            text = {
+                Column {
+                    Text(
+                        "Parmak izi kaydı PIN ile şifrelenecek: açılışta önce " +
+                            "parmak izi, sonra bu PIN sorulur.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    OutlinedTextField(
+                        value = pin,
+                        onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y },
+                        label = { Text("PIN") }, singleLine = true,
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { showBiometricPin = false; onBiometricEnable(pin) },
+                    enabled = pin.length >= 4
+                ) { Text("Devam") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showBiometricPin = false }) { Text("Vazgeç") }
+            }
         )
     }
 

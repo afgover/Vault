@@ -34,6 +34,7 @@ class KeyManager(context: Context) {
         private const val PREF_BIO_WRAPPED_KEY = "bio_wrapped_data_key"
         private const val PREF_BIO_IV = "bio_iv"
         private const val PREF_PIN_SALT = "pin_salt"
+        private const val PREF_PIN_CHECK = "pin_check"
         private const val PREF_REMINDER_DAYS = "master_reminder_days"
         private const val PREF_LAST_MASTER = "last_master_password_at"
         private const val KEYSTORE_ALIAS = "vault_biometric_key"
@@ -45,44 +46,66 @@ class KeyManager(context: Context) {
         get() = prefs.contains(PREF_WRAPPED_KEY)
 
     // ---- PIN (ikinci kapı; varsayılan KAPALI) ----
+    //
+    // PIN, ana parola yolunu DEĞİL **parmak izi yolunu** korur. Gerekçe:
+    // ana parola zaten güçlü sırdır, üstüne PIN sormak yalnız sürtünme
+    // ekler. Korunmak istenen senaryo "biri parmağımı kullanır" olduğu için
+    // katman tam oraya kondu:
+    //
+    //   parola  → Enc(KEK_parola, dataKey)              (PIN sorulmaz)
+    //   parmak  → Enc(K_keystore, Enc(K_pin, dataKey))  (PIN şart)
+    //
+    // Böylece kurtarma garantisi de bozulmaz: ana parola her zaman tek
+    // başına açar; PIN unutulursa parmak izi kaydı silinip yenilenir.
 
     val isPinEnabled: Boolean
         get() = prefs.contains(PREF_PIN_SALT)
 
-    /**
-     * PIN'i açar: `dataKey` PIN'den türeyen anahtarla sarılır ve saklanan
-     * sargının içine o konur. Ana parola gerekir — hem doğrulama hem de
-     * sargıyı yeniden yazmak için. Biyometrik temizlenir (eski sargıyı
-     * gösterirdi); kullanıcı yeniden açtığında yeni katmanla sarılır.
-     */
-    fun enablePin(password: CharArray, pin: String): Boolean {
-        if (!PinLock.isValid(pin)) return false
-        val dataKey = unlockWithPassword(password) ?: return false
-        if (isPinEnabled) return false
-        val salt = Crypto.randomBytes(16)
-        val inner = PinLock.wrap(dataKey, pin, salt)
-        prefs.edit().putString(PREF_PIN_SALT, b64(salt)).apply()
-        storePayload(password, inner)
-        clearBiometric()
-        return true
-    }
-
-    /** PIN'i kapatır: iç sargı çözülür, `dataKey` doğrudan saklanır. */
-    fun disablePin(password: CharArray, pin: String): Boolean {
-        val inner = unlockStage1(password) ?: return false
-        val salt = pinSalt() ?: return false
-        val dataKey = PinLock.unwrap(inner, pin, salt) ?: return false
-        prefs.edit().remove(PREF_PIN_SALT).apply()
-        storePayload(password, dataKey.encoded)
-        clearBiometric()
-        return true
-    }
-
     private fun pinSalt(): ByteArray? = prefs.getString(PREF_PIN_SALT, null)?.let(::unb64)
 
+    /** PIN'in doğruluğunu sargıya dokunmadan sınar. */
+    fun verifyPin(pin: String): Boolean {
+        val salt = pinSalt() ?: return false
+        val check = prefs.getString(PREF_PIN_CHECK, null)?.let(::unb64) ?: return false
+        return PinLock.unwrapCheck(check, pin, salt)
+    }
+
     /**
-     * İkinci aşama: iç sargıyı PIN ile çözer. PIN kapalıysa çağrılmaz.
+     * PIN'i açar. Ana parola yalnız DOĞRULAMA için istenir; sargı biçimi
+     * değişmez. Var olan parmak izi kaydı ham dataKey'i sardığı için
+     * temizlenir — kullanıcı yeniden etkinleştirdiğinde PIN katmanıyla
+     * sarılır ([wrapForBiometric]).
      */
+    fun enablePin(password: CharArray, pin: String): Boolean {
+        if (!PinLock.isValid(pin) || isPinEnabled) return false
+        unlockWithPassword(password) ?: return false
+        val salt = Crypto.randomBytes(16)
+        prefs.edit()
+            .putString(PREF_PIN_SALT, b64(salt))
+            .putString(PREF_PIN_CHECK, b64(PinLock.wrapCheck(pin, salt)))
+            .apply()
+        clearBiometric()
+        return true
+    }
+
+    /** PIN'i kapatır; parmak izi kaydı yine tazelenmeli. */
+    fun disablePin(password: CharArray, pin: String): Boolean {
+        unlockWithPassword(password) ?: return false
+        if (!verifyPin(pin)) return false
+        prefs.edit().remove(PREF_PIN_SALT).remove(PREF_PIN_CHECK).apply()
+        clearBiometric()
+        return true
+    }
+
+    /** Parmak izi kaydına yazılacak içerik: PIN açıksa iç sargı, kapalıysa dataKey. */
+    fun wrapForBiometric(dataKey: SecretKey, pin: String?): ByteArray? {
+        if (!isPinEnabled) return dataKey.encoded
+        val salt = pinSalt() ?: return null
+        if (pin == null || !verifyPin(pin)) return null
+        return PinLock.wrap(dataKey, pin, salt)
+    }
+
+    /** Parmak izinden gelen iç sargıyı PIN ile çözer. */
     fun unlockWithPin(inner: ByteArray, pin: String): SecretKey? {
         val salt = pinSalt() ?: return null
         return PinLock.unwrap(inner, pin, salt)
@@ -149,9 +172,8 @@ class KeyManager(context: Context) {
         return Crypto.decrypt(kek, wrapped)
     }
 
-    /** Parola doğru VE PIN kapalıysa dataKey; PIN açıksa null (iki aşamalı). */
+    /** Parola doğruysa dataKey. PIN bu yolu etkilemez (bilinçli). */
     fun unlockWithPassword(password: CharArray): SecretKey? {
-        if (isPinEnabled) return null
         val raw = unlockStage1(password) ?: return null
         return SecretKeySpec(raw, "AES")
     }

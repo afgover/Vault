@@ -11,14 +11,16 @@ import javax.crypto.spec.SecretKeySpec
  * şifrelenmiş hâli (*iç sargı*) durur:
  *
  * ```
- * PIN kapalı:  saklanan = Enc(KEK_parola, dataKey)
- * PIN açık:    saklanan = Enc(KEK_parola, Enc(K_pin, dataKey))
+ * parola  → Enc(KEK_parola, dataKey)               (PIN sorulmaz)
+ * parmak  → Enc(K_keystore, Enc(K_pin, dataKey))   (PIN şart)
  * ```
  *
- * Sonuç: ana parola tek başına yetmez, PIN tek başına yetmez. PIN'in düşük
- * entropisi (4-12 hane) burada kabul edilebilir, çünkü iç sargıya ulaşmak
- * için önce ana parolayı (ya da biyometrik Keystore anahtarını) geçmek
- * gerekir — PIN'i tek başına deneyecek bir saldırgan için elde blob yoktur.
+ * PIN, ana parola yolunu değil **parmak izi yolunu** korur: korunmak istenen
+ * senaryo "biri parmağımı kullanır"dır; ana parolanın üstüne PIN sormak
+ * yalnız sürtünme olurdu. Düşük entropi kabul edilebilir, çünkü iç sargıya
+ * ulaşmak için önce cihazın biyometrik Keystore anahtarını geçmek gerekir —
+ * PIN'i tek başına deneyecek saldırgan için elde blob yoktur. Kurtarma
+ * garantisi de korunur: ana parola her zaman tek başına açar.
  *
  * Yanlış PIN "rastgele çözme" üretmez: GCM etiketi tutmaz ve `null` döner.
  */
@@ -39,6 +41,15 @@ object PinLock {
     /** `dataKey` → iç sargı. */
     fun wrap(dataKey: SecretKey, pin: String, salt: ByteArray): ByteArray =
         Crypto.encrypt(key(pin, salt), dataKey.encoded)
+
+    private const val CHECK_TEXT = "vault-pin-ok"
+
+    /** PIN'i sargıya dokunmadan sınamak için küçük doğrulama blobu. */
+    fun wrapCheck(pin: String, salt: ByteArray): ByteArray =
+        Crypto.encrypt(key(pin, salt), CHECK_TEXT.toByteArray())
+
+    fun unwrapCheck(blob: ByteArray, pin: String, salt: ByteArray): Boolean =
+        Crypto.decrypt(key(pin, salt), blob)?.toString(Charsets.UTF_8) == CHECK_TEXT
 
     /** İç sargı → `dataKey`; PIN yanlışsa null. */
     fun unwrap(inner: ByteArray, pin: String, salt: ByteArray): SecretKey? =

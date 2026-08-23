@@ -53,4 +53,24 @@ class PinLockTest {
         assertFalse(PinLock.isValid("1234567890123"))
         assertFalse(PinLock.isValid("12a4"))
     }
+
+    @Test
+    fun `dogrulama blobu pini sargiya dokunmadan sinar`() {
+        val check = PinLock.wrapCheck("482913", salt)
+        assertTrue(PinLock.unwrapCheck(check, "482913", salt))
+        assertFalse(PinLock.unwrapCheck(check, "482914", salt))
+        assertFalse(PinLock.unwrapCheck(check, "482913", Crypto.randomBytes(16)))
+    }
+
+    @Test
+    fun `bayat parmak izi kaydi ayirt edilebilir - dogru pin ama acilmayan sargi`() {
+        // PIN açılmadan önce yazılmış kayıt: ham dataKey, iç sargı değil.
+        val bayat = dataKey.encoded
+        val check = PinLock.wrapCheck("482913", salt)
+        // PIN doğru...
+        assertTrue(PinLock.unwrapCheck(check, "482913", salt))
+        // ...ama sargı açılmıyor: uygulama bunu "PIN yanlış" değil
+        // "kayıt bayat" olarak yorumlar ve kaydı siler.
+        assertNull(PinLock.unwrap(bayat, "482913", salt))
+    }
 }

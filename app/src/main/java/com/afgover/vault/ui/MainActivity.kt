@@ -43,7 +43,7 @@ class MainActivity : FragmentActivity() {
                     viewModel = viewModel,
                     canUseBiometric = ::canUseBiometric,
                     onBiometricUnlock = ::biometricUnlock,
-                    onBiometricEnable = ::biometricEnable
+                    onBiometricEnable = { pin -> biometricEnable(pin) }
                 )
             }
         }
@@ -60,8 +60,13 @@ class MainActivity : FragmentActivity() {
         BiometricAuth.unlock(this, viewModel.keyManager) { viewModel.onStage1Payload(it) }
     }
 
-    private fun biometricEnable() {
-        val key = com.afgover.vault.core.VaultSession.key() ?: return
+    private fun biometricEnable(pin: String? = null) {
+        // PIN açıkken parmak izi kaydı, ham anahtarı değil PIN ile sarılmış
+        // iç sargıyı taşımalı; yoksa açılışta PIN aşaması hiç geçilemez.
+        val payload = viewModel.biometricPayload(pin) ?: run {
+            viewModel.error = "Parmak izi kaydı için PIN gerekli"
+            return
+        }
         val cipher = try {
             viewModel.keyManager.biometricEncryptCipher()
         } catch (e: Exception) {
@@ -73,7 +78,7 @@ class MainActivity : FragmentActivity() {
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     val c = result.cryptoObject?.cipher ?: return
-                    viewModel.keyManager.storeBiometricWrappedKey(c, key.encoded)
+                    viewModel.keyManager.storeBiometricWrappedKey(c, payload)
                 }
             }
         )
@@ -98,7 +103,7 @@ fun VaultRoot(
     viewModel: VaultViewModel,
     canUseBiometric: () -> Boolean,
     onBiometricUnlock: () -> Unit,
-    onBiometricEnable: () -> Unit
+    onBiometricEnable: (String?) -> Unit
 ) {
     // Basit gezinme: durum bellekte tutulur; süreç yeniden başlarsa Home'a döner.
     var nav by remember { mutableStateOf<Nav>(Nav.Home) }
@@ -135,7 +140,7 @@ fun VaultRoot(
                 confirmButton = {
                     androidx.compose.material3.TextButton(onClick = {
                         viewModel.offerBiometric = false
-                        onBiometricEnable()
+                        onBiometricEnable(null)
                     }) { androidx.compose.material3.Text("Etkinleştir") }
                 },
                 dismissButton = {

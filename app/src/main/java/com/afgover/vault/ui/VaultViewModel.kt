@@ -186,28 +186,39 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 error = "Parola yanlış"
                 return@launch
             }
+            // Ana parola tek başına açar: PIN yalnız parmak izi yolunu korur.
             keyManager.markMasterPasswordUsed()
-            if (keyManager.isPinEnabled) {
-                pendingInner = payload
-                lockState = LockState.NEEDS_PIN
-            } else {
-                onUnlocked(SecretKeySpec(payload, "AES"))
-            }
+            onUnlocked(SecretKeySpec(payload, "AES"))
         }
     }
 
-    /** İkinci aşama: PIN. Yanlışsa GCM etiketi tutmaz ve hata gösterilir. */
+    /**
+     * İkinci aşama: parmak izinden gelen iç sargıyı PIN ile çözer.
+     *
+     * PIN doğru olmasına rağmen sargı açılmıyorsa kayıt **bayattır** (PIN
+     * açılmadan önce yazılmış bir parmak izi kaydı ham anahtarı sarar). O
+     * durumda kayıt silinir ve kullanıcıya yenilemesi söylenir — aksi hâlde
+     * uygulama "PIN yanlış" diyerek açılmaz hâle gelirdi.
+     */
     fun unlockWithPin(pin: String) {
         val inner = pendingInner ?: run { lockState = LockState.LOCKED; return }
         viewModelScope.launch {
             busy = true
             val key = withContext(Dispatchers.Default) { keyManager.unlockWithPin(inner, pin) }
             busy = false
-            if (key == null) {
-                error = "PIN yanlış"
-            } else {
+            if (key != null) {
                 pendingInner = null
                 onUnlocked(key)
+                return@launch
+            }
+            if (keyManager.verifyPin(pin)) {
+                keyManager.clearBiometric()
+                pendingInner = null
+                lockState = LockState.LOCKED
+                error = "Parmak izi kaydı bu PIN'den eskiydi; kayıt silindi. " +
+                    "Ana parolanla aç ve parmak izini yeniden etkinleştir."
+            } else {
+                error = "PIN yanlış"
             }
         }
     }
@@ -230,6 +241,12 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onBiometricUnlocked(key: javax.crypto.SecretKey) = onUnlocked(key)
 
+    /** Parmak izi kaydı için sarılacak içerik (PIN açıksa PIN gerekir). */
+    fun biometricPayload(pin: String?): ByteArray? {
+        val key = VaultSession.key() ?: return null
+        return keyManager.wrapForBiometric(key, pin)
+    }
+
     fun enablePin(password: String, pin: String, onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
             busy = true
@@ -238,7 +255,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             }
             busy = false
             if (!ok) error = "PIN açılamadı: parola yanlış ya da PIN geçersiz (4-12 rakam)"
-            else toast("PIN açıldı · biyometrik yeniden etkinleştirilmeli")
+            else toast("PIN açıldı · parmak izini yeniden etkinleştir")
             onDone(ok)
         }
     }
@@ -251,7 +268,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             }
             busy = false
             if (!ok) error = "PIN kapatılamadı: parola ya da PIN yanlış"
-            else toast("PIN kapatıldı · biyometrik yeniden etkinleştirilmeli")
+            else toast("PIN kapatıldı · parmak izini yeniden etkinleştir")
             onDone(ok)
         }
     }

@@ -54,9 +54,15 @@ fun UnlockScreen(
         !isSetup && canUseBiometric && viewModel.keyManager.isBiometricEnabled &&
             !hatirlatmaZamani
 
-    // Kilit ekranı açılır açılmaz biyometrik istemi göster
+    // Kilit ekranı açılır açılmaz biyometrik istemi göster — ama YALNIZ BİR
+    // KEZ. Aksi hâlde PIN aşamasından geri dönüldüğünde istem yeniden açılıp
+    // kullanıcıyı döngüye sokar (parolaya hiç geçemez).
+    var biometricIstendi by remember { mutableStateOf(false) }
     LaunchedEffect(biometricAvailable) {
-        if (biometricAvailable) onBiometricUnlock()
+        if (biometricAvailable && !biometricIstendi) {
+            biometricIstendi = true
+            onBiometricUnlock()
+        }
     }
 
     Column(
