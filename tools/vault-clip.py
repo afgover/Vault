@@ -251,15 +251,25 @@ def qr_kareleri(zarf_metni):
     return [f"{QR_PREFIX}|{i + 1}/{n}|{bayrak}|{p}" for i, p in enumerate(parcalar)]
 
 
-def show_qr(url):
+QR_VERSION = 25  # 1200 karakterlik kare + başlık bu sürüme sığar (ölçüldü)
+
+
+def show_qr(veri, sabit_boy=False):
+    """
+    QR'ı terminale çizer. Çok kareli aktarımda `sabit_boy` şarttır: QR
+    sürümü veri uzunluğuna göre seçilirse son (kısa) kare küçük çıkar,
+    kareler dönerken boy değişir ve telefonu hizalamak imkânsızlaşır.
+    Sürümü sabitlemek bütün kareleri aynı ölçüde tutar.
+    """
     try:
         import segno
     except ImportError:
-        print("(QR çizilemedi: tools/vendor/segno yok — URL'yi elle aç)")
+        print("(QR çizilemedi: tools/vendor/segno yok)")
         return
     # Hata düzeltme "l": ekran-kamera temiz bir kanal, düşük seviye daha çok
     # veri sığdırır ve kare sayısını azaltır.
-    segno.make(url, error="l").terminal(compact=True, border=2)
+    segno.make(veri, error="l", version=QR_VERSION if sabit_boy else None) \
+        .terminal(compact=True, border=2)
 
 
 def push(path):
@@ -358,7 +368,7 @@ def main():
                     if len(kareler) > 1:
                         sys.stdout.write("\033[2J\033[H")  # ekranı temizle
                     print(f"— kare {i}/{len(kareler)} —")
-                    show_qr(kare)
+                    show_qr(kare, sabit_boy=len(kareler) > 1)
                     if len(kareler) == 1:
                         break
                     time.sleep(1.2)

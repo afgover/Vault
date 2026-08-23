@@ -377,9 +377,13 @@ async function qrKareleri(zarfMetni) {
 let qrDongu = null;
 function qrGoster(kareler) {
   if (qrDongu) { clearInterval(qrDongu); qrDongu = null; }
+  // Çok kareli aktarımda QR sürümü SABİTLENİR: uzunluğa göre seçilirse son
+  // (kısa) kare küçük çıkıyor, kareler dönerken boy değişiyor ve telefonu
+  // hizalamak zorlaşıyor. Tek karede otomatik sürüm daha okunaklı.
+  const surum = kareler.length > 1 ? 25 : 0;
   const ciz = (metin) => {
     // Hata düzeltme "L": ekran-kamera temiz kanal; daha çok veri, daha az kare.
-    const qr = qrcode(0, "L");
+    const qr = qrcode(surum, "L");
     qr.addData(metin);
     qr.make();
     $("qr").innerHTML = qr.createSvgTag({ cellSize: 5, margin: 3 });
