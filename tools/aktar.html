@@ -47,9 +47,7 @@
 </head>
 <body>
 <h1>🔐 Vault Aktarım</h1>
-<p class="not">Metin bu sayfada, <b>bu bilgisayarda</b> şifrelenir; sunucuya yalnız
-şifreli zarf gider. Telefonda QR'ı okut → açılan düz metni kopyala →
-Vault → + → "Metinden içe aktar".</p>
+<p class="not" id="akis"></p>
 
 <div id="tokenAlani">
   <label>Yükleme token'ı (yalnız bu tarayıcıya kaydedilir)
@@ -407,6 +405,15 @@ $("yol").addEventListener("change", () => {
   $("ttlEtiket").style.display = qrKipi ? "none" : "block";
   $("gonder").textContent = qrKipi ? "Şifrele ve QR göster" : "Şifrele ve yayınla";
   $("tokenAlani").style.display = (!qrKipi && !tokenGetir()) ? "block" : "none";
+  // Açıklama kipe göre değişir: iki yolun güven modeli farklı, aynı cümleyle
+  // anlatılamaz.
+  $("akis").innerHTML = qrKipi
+    ? "Alanlar <b>bu bilgisayarda</b> şifrelenir ve QR olarak ekrana çizilir — " +
+      "<b>internete hiçbir şey gitmez</b>.<br>Telefonda: <b>Vault → + → " +
+      "\"QR ile aktar\"</b> → kamerayı QR'a tut → yedek parolasını gir."
+    : "Alanlar <b>bu bilgisayarda</b> şifrelenir; sunucuya yalnız şifreli zarf " +
+      "gider ve bağlantı bir kez açılır.<br>Telefonda: QR'ı okut → açılan düz " +
+      "metni kopyala → <b>Vault → + → \"Metinden içe aktar\"</b>.";
 });
 
 $("gonder").addEventListener("click", async () => {
@@ -440,8 +447,9 @@ $("gonder").addEventListener("click", async () => {
       qrGoster(kareler);
       $("url").textContent = "";
       $("kopyala").style.display = "none";
-      $("uyari").textContent =
-        "Bu QR zarfın KENDİSİNİ taşır — internete hiçbir şey gitmedi.";
+      $("uyari").innerHTML =
+        "Bu QR <b>zarfın kendisini</b> taşır — internete hiçbir şey gitmedi. " +
+        "Telefonda: <b>Vault → + → \"QR ile aktar\"</b>";
       $("sonuc").style.display = "block";
       return;
     }
