@@ -229,7 +229,7 @@ def publish(envelope_text, ttl):
 
 
 QR_PREFIX = "VLT1"
-QR_CHUNK = 900  # kare başına base64 uzunluğu (uygulamadaki QrTransfer.CHUNK ile aynı)
+QR_CHUNK = 1200  # kare başına base64 uzunluğu (uygulamadaki QrTransfer.CHUNK ile aynı)
 
 
 def qr_kareleri(zarf_metni):
@@ -257,7 +257,9 @@ def show_qr(url):
     except ImportError:
         print("(QR çizilemedi: tools/vendor/segno yok — URL'yi elle aç)")
         return
-    segno.make(url, error="m").terminal(compact=True, border=2)
+    # Hata düzeltme "l": ekran-kamera temiz bir kanal, düşük seviye daha çok
+    # veri sığdırır ve kare sayısını azaltır.
+    segno.make(url, error="l").terminal(compact=True, border=2)
 
 
 def push(path):
@@ -342,7 +344,10 @@ def main():
 
     if args.qr:
         kareler = qr_kareleri(json.dumps(envelope, separators=(",", ":"), ensure_ascii=False))
-        print(f"\n{len(kareler)} kare · telefonda: Vault → + → \"QR ile aktar\"")
+        sure = len(kareler) * 1.2
+        print(f"\n{len(kareler)} kare"
+              + (f" · tur başına ~{sure:.0f} sn" if len(kareler) > 1 else "")
+              + " · telefonda: Vault → + → \"QR ile aktar\"")
         if len(kareler) > 1:
             print("Kareler sırayla gösterilecek; okuyucu sırasız toplar, "
                   "hepsi okunana kadar bekle. Çıkmak için Ctrl-C.\n")
@@ -356,7 +361,7 @@ def main():
                     show_qr(kare)
                     if len(kareler) == 1:
                         break
-                    time.sleep(1.6)
+                    time.sleep(1.2)
                 tur += 1
                 if len(kareler) == 1:
                     break

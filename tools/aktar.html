@@ -352,7 +352,7 @@ $("tokenDegistir").addEventListener("click", (e) => { e.preventDefault(); tokenA
 $("yol").dispatchEvent(new Event("change"));
 
 /* --- QR kipi: zarfın KENDİSİ karelere bölünür, ağ hiç kullanılmaz --- */
-const QR_CHUNK = 900; // uygulamadaki QrTransfer.CHUNK ile aynı
+const QR_CHUNK = 1200; // uygulamadaki QrTransfer.CHUNK ile aynı
 
 async function qrKareleri(zarfMetni) {
   const ham = new TextEncoder().encode(zarfMetni);
@@ -378,7 +378,8 @@ let qrDongu = null;
 function qrGoster(kareler) {
   if (qrDongu) { clearInterval(qrDongu); qrDongu = null; }
   const ciz = (metin) => {
-    const qr = qrcode(0, "M");
+    // Hata düzeltme "L": ekran-kamera temiz kanal; daha çok veri, daha az kare.
+    const qr = qrcode(0, "L");
     qr.addData(metin);
     qr.make();
     $("qr").innerHTML = qr.createSvgTag({ cellSize: 5, margin: 3 });
@@ -392,12 +393,12 @@ function qrGoster(kareler) {
   const adim = () => {
     ciz(kareler[i]);
     $("kareBilgi").textContent =
-      `Kare ${i + 1}/${kareler.length} — telefonu tut, kareler dönüyor; ` +
-      "okuyucu sırasız toplar.";
+      `Kare ${i + 1}/${kareler.length} · tur başına ~${(kareler.length * 1.2).toFixed(0)} sn` +
+      " — telefonu tut, kareler dönüyor; okuyucu sırasız toplar.";
     i = (i + 1) % kareler.length;
   };
   adim();
-  qrDongu = setInterval(adim, 1600);
+  qrDongu = setInterval(adim, 1200);
 }
 
 $("yol").addEventListener("change", () => {
@@ -473,7 +474,8 @@ $("gonder").addEventListener("click", async () => {
     $("kopyala").style.display = "block";
     $("uyari").textContent = "⚠️ Bağlantı bir kez görüntülenir ve süresi dolunca silinir.";
     const { url, ttl:kabulTtl } = await r.json();
-    const qr = qrcode(0, "M"); qr.addData(url); qr.make();
+    // Hata düzeltme "L": ekran-kamera temiz kanal; daha çok veri, daha az kare.
+    const qr = qrcode(0, "L"); qr.addData(url); qr.make();
     $("qr").innerHTML = qr.createSvgTag({ cellSize:6, margin:3 });
     $("url").textContent = url;
     $("kareBilgi").textContent =

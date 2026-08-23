@@ -28,7 +28,7 @@ object QrTransfer {
     private const val PREFIX = "VLT1"
 
     /** Kare başına yaklaşık base64 uzunluğu — telefon kamerasının rahat okuduğu yoğunluk. */
-    const val CHUNK = 900
+    const val CHUNK = 1200
 
     data class Frame(val index: Int, val total: Int, val flag: Char, val data: String)
 
