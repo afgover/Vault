@@ -20,6 +20,7 @@ import com.afgover.vault.data.EntryType
 import com.afgover.vault.ui.screens.EditScreen
 import com.afgover.vault.ui.screens.DetailScreen
 import com.afgover.vault.ui.screens.HomeScreen
+import com.afgover.vault.ui.screens.PinScreen
 import com.afgover.vault.ui.screens.SettingsScreen
 import com.afgover.vault.ui.screens.UnlockScreen
 import com.afgover.vault.ui.theme.VaultTheme
@@ -56,7 +57,7 @@ class MainActivity : FragmentActivity() {
     private fun canUseBiometric(): Boolean = BiometricAuth.canUse(this)
 
     private fun biometricUnlock() {
-        BiometricAuth.unlock(this, viewModel.keyManager) { viewModel.onBiometricUnlocked(it) }
+        BiometricAuth.unlock(this, viewModel.keyManager) { viewModel.onStage1Payload(it) }
     }
 
     private fun biometricEnable() {
@@ -72,7 +73,7 @@ class MainActivity : FragmentActivity() {
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     val c = result.cryptoObject?.cipher ?: return
-                    viewModel.keyManager.storeBiometricWrappedKey(c, key)
+                    viewModel.keyManager.storeBiometricWrappedKey(c, key.encoded)
                 }
             }
         )
@@ -150,6 +151,8 @@ fun VaultRoot(
     }
 
     when (viewModel.lockState) {
+        LockState.NEEDS_PIN -> PinScreen(viewModel)
+
         LockState.NEEDS_SETUP, LockState.LOCKED -> {
             LaunchedEffect(Unit) { nav = Nav.Home }
             UnlockScreen(

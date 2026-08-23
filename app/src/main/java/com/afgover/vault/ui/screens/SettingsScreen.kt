@@ -7,6 +7,7 @@ import android.view.autofill.AutofillManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Row
@@ -66,6 +67,7 @@ fun SettingsScreen(
     var importUri by remember { mutableStateOf<Uri?>(null) }
     var showChangePassword by remember { mutableStateOf(false) }
     var showPasteImport by remember { mutableStateOf(false) }
+    var showPinDialog by remember { mutableStateOf(false) }
 
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -120,6 +122,49 @@ fun SettingsScreen(
                     "Şu anki sıra: ${viewModel.sort.label}",
                 style = MaterialTheme.typography.bodySmall
             )
+
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+
+            Text("Ek kilit", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                if (viewModel.isPinEnabled)
+                    "PIN açık: ana parola ya da parmak izinden sonra PIN sorulur. " +
+                        "PIN kriptografiktir — o olmadan kayıtlar çözülemez."
+                else
+                    "İsteğe bağlı ikinci kapı. Açarsan ana parola/parmak izinden " +
+                        "sonra 4-12 rakamlı PIN sorulur; PIN olmadan kayıtlar " +
+                        "çözülemez. Varsayılan: kapalı.",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { showPinDialog = true },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text(if (viewModel.isPinEnabled) "PIN'i kapat" else "PIN belirle") }
+
+            Spacer(Modifier.height(16.dp))
+            Text("Ana parola hatırlatıcısı", style = MaterialTheme.typography.titleSmall)
+            Text(
+                "Parmak izi kullanırken ana parola aylarca yazılmaz ve unutulur — " +
+                    "oysa yedekleri açan da odur. Seçtiğin aralıkta bir kez parmak " +
+                    "izi yerine parola istenir. Varsayılan: süresiz.",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(6.dp))
+            Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                listOf(0 to "Süresiz", 30 to "30 gün", 60 to "60 gün", 90 to "90 gün",
+                    180 to "180 gün").forEach { (gun, etiket) ->
+                    SecimCipi(
+                        secili = viewModel.reminderDays == gun,
+                        onClick = { viewModel.setReminderDays(gun) },
+                        label = etiket,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+            }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
@@ -286,6 +331,14 @@ fun SettingsScreen(
         )
     }
 
+    if (showPinDialog) {
+        PinSetupDialog(
+            viewModel = viewModel,
+            kapatmaKipi = viewModel.isPinEnabled,
+            onDismiss = { showPinDialog = false }
+        )
+    }
+
     if (showPasteImport) {
         PasteImportDialog(
             viewModel = viewModel,
@@ -429,6 +482,72 @@ private fun ChangePasswordDialog(
                 onClick = { viewModel.changePassword(old, new, confirm, onDismiss) },
                 enabled = old.isNotEmpty() && new.isNotEmpty() && !viewModel.busy
             ) { Text("Değiştir") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
+    )
+}
+
+/** PIN açma/kapatma: ikisi de ana parola ister (sargı yeniden yazılır). */
+@Composable
+private fun PinSetupDialog(
+    viewModel: VaultViewModel,
+    kapatmaKipi: Boolean,
+    onDismiss: () -> Unit
+) {
+    var parola by remember { mutableStateOf("") }
+    var pin by remember { mutableStateOf("") }
+    var pin2 by remember { mutableStateOf("") }
+    val gecerli = parola.isNotEmpty() && com.afgover.vault.core.PinLock.isValid(pin) &&
+        (kapatmaKipi || pin == pin2)
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(if (kapatmaKipi) "PIN'i kapat" else "PIN belirle") },
+        text = {
+            Column {
+                Text(
+                    if (kapatmaKipi)
+                        "PIN kapatılınca kayıtlar yalnız ana parola/parmak izi ile açılır."
+                    else
+                        "PIN 4-12 rakam olmalı. Unutursan ana parola TEK BAŞINA " +
+                            "yetmez — PIN'i yedek parolan gibi güvenli bir yerde tut. " +
+                            "İşlem sonrası parmak izini yeniden etkinleştirmen gerekir.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = parola, onValueChange = { parola = it },
+                    label = { Text("Ana parola") }, singleLine = true,
+                    visualTransformation = PasswordVisualTransformation()
+                )
+                OutlinedTextField(
+                    value = pin,
+                    onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y },
+                    label = { Text("PIN") }, singleLine = true,
+                    visualTransformation = PasswordVisualTransformation()
+                )
+                if (!kapatmaKipi) {
+                    OutlinedTextField(
+                        value = pin2,
+                        onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin2 = y },
+                        label = { Text("PIN (tekrar)") }, singleLine = true,
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                }
+                viewModel.error?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, color = MaterialTheme.colorScheme.error)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (kapatmaKipi) viewModel.disablePin(parola, pin) { if (it) onDismiss() }
+                    else viewModel.enablePin(parola, pin) { if (it) onDismiss() }
+                },
+                enabled = gecerli && !viewModel.busy
+            ) { Text(if (kapatmaKipi) "Kapat" else "Belirle") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
     )

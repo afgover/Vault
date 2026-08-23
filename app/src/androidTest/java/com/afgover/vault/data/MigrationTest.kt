@@ -48,6 +48,62 @@ class MigrationTest {
         return blob
     }
 
+    private fun v3VeritabaniKur(): ByteArray {
+        val blob = byteArrayOf(9, 8, 7, 6)
+        val db = SQLiteDatabase.openOrCreateDatabase(context.getDatabasePath(dbName), null)
+        db.execSQL(
+            "CREATE TABLE entries (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "type TEXT NOT NULL, title TEXT NOT NULL, blob BLOB NOT NULL, " +
+                "createdAt INTEGER NOT NULL, updatedAt INTEGER NOT NULL, " +
+                "quick INTEGER NOT NULL DEFAULT 0, quickBlob BLOB DEFAULT NULL, " +
+                "tags TEXT NOT NULL DEFAULT '[]')"
+        )
+        db.execSQL(
+            "CREATE TABLE tags (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "name TEXT NOT NULL, color INTEGER NOT NULL)"
+        )
+        db.execSQL(
+            "INSERT INTO entries (type, title, blob, createdAt, updatedAt, quick, tags) " +
+                "VALUES ('NOTE', 'v3 kaydı', x'09080706', 10, 20, 0, '[5]')"
+        )
+        db.version = 3
+        db.close()
+        return blob
+    }
+
+    @Test
+    fun goc3ten4e_notTuruVeSiraKolonlariniVarsayilanlaEkler() {
+        val beklenenBlob = v3VeritabaniKur()
+
+        val helper = FrameworkSQLiteOpenHelperFactory().create(
+            SupportSQLiteOpenHelper.Configuration.builder(context)
+                .name(dbName)
+                .callback(object : SupportSQLiteOpenHelper.Callback(4) {
+                    override fun onCreate(db: SupportSQLiteDatabase) =
+                        error("v3 veritabanı vardı; onCreate çağrılmamalıydı")
+
+                    override fun onUpgrade(db: SupportSQLiteDatabase, old: Int, new: Int) {
+                        assertEquals(3, old)
+                        VaultDatabase.MIGRATION_3_4.migrate(db)
+                    }
+                })
+                .build()
+        )
+
+        helper.writableDatabase.use { db ->
+            db.query("SELECT title, blob, tags, noteKind, sortIndex FROM entries").use { c ->
+                assertEquals(1, c.count)
+                c.moveToFirst()
+                assertEquals("v3 kaydı", c.getString(0))
+                assertArrayEquals(beklenenBlob, c.getBlob(1))
+                assertEquals("[5]", c.getString(2))     // etiketler korunur
+                assertEquals("GENEL", c.getString(3))   // varsayılan not türü
+                assertEquals(0, c.getInt(4))            // varsayılan sıra
+            }
+        }
+    }
+
     @Test
     fun goc2den3e_veriKaybetmedenTagsKolonuEkler() {
         val beklenenBlob = v2VeritabaniKur()

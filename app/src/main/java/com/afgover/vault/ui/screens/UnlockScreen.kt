@@ -46,8 +46,13 @@ fun UnlockScreen(
     var password by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
 
+    // Hatırlatıcı dolduysa bu açılışta parola istenir: amaç güvenlik değil,
+    // parolanın unutulmasını önlemek (kullanıcının seçtiği süre; varsayılan
+    // süresiz).
+    val hatirlatmaZamani = viewModel.masterPasswordDue
     val biometricAvailable =
-        !isSetup && canUseBiometric && viewModel.keyManager.isBiometricEnabled
+        !isSetup && canUseBiometric && viewModel.keyManager.isBiometricEnabled &&
+            !hatirlatmaZamani
 
     // Kilit ekranı açılır açılmaz biyometrik istemi göster
     LaunchedEffect(biometricAvailable) {
@@ -91,6 +96,16 @@ fun UnlockScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
+        if (hatirlatmaZamani) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Hatırlatma: parmak izi yerine bu sefer ana parolanı yaz. " +
+                    "Unutulan ana parola kasayı da yedekleri de kilitler.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.tertiary,
+                textAlign = TextAlign.Center
+            )
+        }
         Spacer(Modifier.height(24.dp))
 
         OutlinedTextField(

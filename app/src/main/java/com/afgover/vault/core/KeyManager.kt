@@ -33,6 +33,9 @@ class KeyManager(context: Context) {
         private const val PREF_WRAPPED_KEY = "wrapped_data_key"
         private const val PREF_BIO_WRAPPED_KEY = "bio_wrapped_data_key"
         private const val PREF_BIO_IV = "bio_iv"
+        private const val PREF_PIN_SALT = "pin_salt"
+        private const val PREF_REMINDER_DAYS = "master_reminder_days"
+        private const val PREF_LAST_MASTER = "last_master_password_at"
         private const val KEYSTORE_ALIAS = "vault_biometric_key"
         private const val QUICK_KEYSTORE_ALIAS = "vault_quick_key"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
@@ -41,6 +44,74 @@ class KeyManager(context: Context) {
     val isInitialized: Boolean
         get() = prefs.contains(PREF_WRAPPED_KEY)
 
+    // ---- PIN (ikinci kapı; varsayılan KAPALI) ----
+
+    val isPinEnabled: Boolean
+        get() = prefs.contains(PREF_PIN_SALT)
+
+    /**
+     * PIN'i açar: `dataKey` PIN'den türeyen anahtarla sarılır ve saklanan
+     * sargının içine o konur. Ana parola gerekir — hem doğrulama hem de
+     * sargıyı yeniden yazmak için. Biyometrik temizlenir (eski sargıyı
+     * gösterirdi); kullanıcı yeniden açtığında yeni katmanla sarılır.
+     */
+    fun enablePin(password: CharArray, pin: String): Boolean {
+        if (!PinLock.isValid(pin)) return false
+        val dataKey = unlockWithPassword(password) ?: return false
+        if (isPinEnabled) return false
+        val salt = Crypto.randomBytes(16)
+        val inner = PinLock.wrap(dataKey, pin, salt)
+        prefs.edit().putString(PREF_PIN_SALT, b64(salt)).apply()
+        storePayload(password, inner)
+        clearBiometric()
+        return true
+    }
+
+    /** PIN'i kapatır: iç sargı çözülür, `dataKey` doğrudan saklanır. */
+    fun disablePin(password: CharArray, pin: String): Boolean {
+        val inner = unlockStage1(password) ?: return false
+        val salt = pinSalt() ?: return false
+        val dataKey = PinLock.unwrap(inner, pin, salt) ?: return false
+        prefs.edit().remove(PREF_PIN_SALT).apply()
+        storePayload(password, dataKey.encoded)
+        clearBiometric()
+        return true
+    }
+
+    private fun pinSalt(): ByteArray? = prefs.getString(PREF_PIN_SALT, null)?.let(::unb64)
+
+    /**
+     * İkinci aşama: iç sargıyı PIN ile çözer. PIN kapalıysa çağrılmaz.
+     */
+    fun unlockWithPin(inner: ByteArray, pin: String): SecretKey? {
+        val salt = pinSalt() ?: return null
+        return PinLock.unwrap(inner, pin, salt)
+    }
+
+    // ---- Ana parola hatırlatıcısı (varsayılan: süresiz) ----
+
+    /** 0 = süresiz (kapalı). */
+    var reminderDays: Int
+        get() = prefs.getInt(PREF_REMINDER_DAYS, 0)
+        set(value) { prefs.edit().putInt(PREF_REMINDER_DAYS, value).apply() }
+
+    fun markMasterPasswordUsed() {
+        prefs.edit().putLong(PREF_LAST_MASTER, System.currentTimeMillis()).apply()
+    }
+
+    /**
+     * Biyometrik açılış yerine ana parola istenmeli mi? Amaç güvenlik değil
+     * **unutmayı önlemek**: aylarca yazılmayan parola kaybolur ve yedekleri
+     * de o açar. Süre kullanıcı tarafından seçilir; varsayılan süresizdir.
+     */
+    fun masterPasswordDue(now: Long = System.currentTimeMillis()): Boolean {
+        val days = reminderDays
+        if (days <= 0) return false
+        val last = prefs.getLong(PREF_LAST_MASTER, 0L)
+        if (last == 0L) return false
+        return now - last >= days * 24L * 60L * 60L * 1000L
+    }
+
     /** İlk kurulum: yeni dataKey üretir ve ana parola ile sarıp saklar. */
     fun setup(password: CharArray): SecretKey {
         val dataKey = Crypto.randomKey()
@@ -48,10 +119,17 @@ class KeyManager(context: Context) {
         return dataKey
     }
 
-    private fun storeWrappedKey(password: CharArray, dataKey: SecretKey) {
+    private fun storeWrappedKey(password: CharArray, dataKey: SecretKey) =
+        storePayload(password, dataKey.encoded)
+
+    /**
+     * Saklanan sargının içeriği: PIN kapalıyken `dataKey`, açıkken PIN ile
+     * sarılmış iç sargı. Ana parola katmanı ikisini de aynı şekilde tutar.
+     */
+    private fun storePayload(password: CharArray, payload: ByteArray) {
         val salt = Crypto.randomBytes(16)
         val kek = Crypto.deriveKey(password, salt)
-        val wrapped = Crypto.encrypt(kek, dataKey.encoded)
+        val wrapped = Crypto.encrypt(kek, payload)
         prefs.edit()
             .putString(PREF_SALT, b64(salt))
             .putInt(PREF_ITERATIONS, Crypto.KDF_ITERATIONS)
@@ -59,20 +137,32 @@ class KeyManager(context: Context) {
             .apply()
     }
 
-    /** Parola doğruysa dataKey, yanlışsa null. */
-    fun unlockWithPassword(password: CharArray): SecretKey? {
+    /**
+     * Ana parola katmanını açar. Dönen bayt dizisi PIN kapalıyken `dataKey`,
+     * açıkken PIN ile sarılmış iç sargıdır ([unlockWithPin] ile çözülür).
+     */
+    fun unlockStage1(password: CharArray): ByteArray? {
         val salt = prefs.getString(PREF_SALT, null)?.let(::unb64) ?: return null
         val iterations = prefs.getInt(PREF_ITERATIONS, Crypto.KDF_ITERATIONS)
         val wrapped = prefs.getString(PREF_WRAPPED_KEY, null)?.let(::unb64) ?: return null
         val kek = Crypto.deriveKey(password, salt, iterations)
-        val raw = Crypto.decrypt(kek, wrapped) ?: return null
+        return Crypto.decrypt(kek, wrapped)
+    }
+
+    /** Parola doğru VE PIN kapalıysa dataKey; PIN açıksa null (iki aşamalı). */
+    fun unlockWithPassword(password: CharArray): SecretKey? {
+        if (isPinEnabled) return null
+        val raw = unlockStage1(password) ?: return null
         return SecretKeySpec(raw, "AES")
     }
 
-    /** Ana parolayı değiştirir: dataKey aynı kalır, yalnızca sargı yenilenir. */
+    /**
+     * Ana parolayı değiştirir: içerik (dataKey ya da PIN iç sargısı) aynı
+     * kalır, yalnızca ana parola katmanı yenilenir — PIN açıkken de çalışır.
+     */
     fun changePassword(oldPassword: CharArray, newPassword: CharArray): Boolean {
-        val dataKey = unlockWithPassword(oldPassword) ?: return false
-        storeWrappedKey(newPassword, dataKey)
+        val payload = unlockStage1(oldPassword) ?: return false
+        storePayload(newPassword, payload)
         return true
     }
 
@@ -160,9 +250,12 @@ class KeyManager(context: Context) {
         }
     }
 
-    /** BiometricPrompt onayından sonra dataKey'i keystore anahtarıyla sarıp saklar. */
-    fun storeBiometricWrappedKey(authorizedCipher: Cipher, dataKey: SecretKey) {
-        val ct = authorizedCipher.doFinal(dataKey.encoded)
+    /**
+     * BiometricPrompt onayından sonra saklanan içeriği (PIN kapalıysa
+     * dataKey, açıksa iç sargı) keystore anahtarıyla sarıp saklar.
+     */
+    fun storeBiometricWrappedKey(authorizedCipher: Cipher, payload: ByteArray) {
+        val ct = authorizedCipher.doFinal(payload)
         prefs.edit()
             .putString(PREF_BIO_WRAPPED_KEY, b64(ct))
             .putString(PREF_BIO_IV, b64(authorizedCipher.iv))
@@ -191,13 +284,20 @@ class KeyManager(context: Context) {
     }
 
     /** BiometricPrompt onayından sonra dataKey'i çözer. */
-    fun unlockWithBiometricCipher(authorizedCipher: Cipher): SecretKey? {
+    /** Biyometrik katmanı açar; PIN açıksa iç sargı, kapalıysa dataKey döner. */
+    fun unlockWithBiometricStage1(authorizedCipher: Cipher): ByteArray? {
         val ct = prefs.getString(PREF_BIO_WRAPPED_KEY, null)?.let(::unb64) ?: return null
         return try {
-            SecretKeySpec(authorizedCipher.doFinal(ct), "AES")
+            authorizedCipher.doFinal(ct)
         } catch (e: Exception) {
             null
         }
+    }
+
+    fun unlockWithBiometricCipher(authorizedCipher: Cipher): SecretKey? {
+        if (isPinEnabled) return null
+        val raw = unlockWithBiometricStage1(authorizedCipher) ?: return null
+        return SecretKeySpec(raw, "AES")
     }
 
     private fun b64(bytes: ByteArray): String = Base64.encodeToString(bytes, Base64.NO_WRAP)

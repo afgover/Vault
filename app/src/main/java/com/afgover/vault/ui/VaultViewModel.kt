@@ -46,7 +46,7 @@ data class EntryListItem(
     val sortIndex: Int = 0
 )
 
-enum class LockState { NEEDS_SETUP, LOCKED, UNLOCKED }
+enum class LockState { NEEDS_SETUP, LOCKED, NEEDS_PIN, UNLOCKED }
 
 class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -70,6 +70,19 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     /** İlk kurulum biter bitmez biyometrik teklifi gösterilsin mi? */
     var offerBiometric by mutableStateOf(false)
+
+    /** PIN aşaması için bekleyen iç sargı; PIN doğrulanınca temizlenir. */
+    private var pendingInner: ByteArray? = null
+
+    val isPinEnabled: Boolean get() = keyManager.isPinEnabled
+    val reminderDays: Int get() = keyManager.reminderDays
+
+    fun setReminderDays(days: Int) {
+        keyManager.reminderDays = days
+    }
+
+    /** Biyometrik yerine ana parola istenmeli mi (hatırlatıcı doldu mu)? */
+    val masterPasswordDue: Boolean get() = keyManager.masterPasswordDue()
 
     /** Kullanıcının seçtiği sıra; klavye ile ana liste aynı düzeni kullanır. */
     var sort by mutableStateOf(EntrySort.read(application))
@@ -135,6 +148,9 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) { repo.repairQuickCopies(key) }
     }
 
+    private fun SecretKeySpec(bytes: ByteArray, algo: String) =
+        javax.crypto.spec.SecretKeySpec(bytes, algo)
+
     fun setup(password: String, confirm: String) {
         if (password.length < 8) {
             error = "Ana parola en az 8 karakter olmalı"
@@ -150,6 +166,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 keyManager.setup(password.toCharArray())
             }
             busy = false
+            keyManager.markMasterPasswordUsed()
             onUnlocked(key)
             // Teklif kurulumun hemen ardından yapılır: sonraya bırakılırsa
             // kullanıcı ana parolayı her açılışta yeniden yazmak zorunda kalır
@@ -161,19 +178,83 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     fun unlock(password: String) {
         viewModelScope.launch {
             busy = true
-            val key = withContext(Dispatchers.Default) {
-                keyManager.unlockWithPassword(password.toCharArray())
+            val payload = withContext(Dispatchers.Default) {
+                keyManager.unlockStage1(password.toCharArray())
             }
             busy = false
-            if (key == null) {
+            if (payload == null) {
                 error = "Parola yanlış"
+                return@launch
+            }
+            keyManager.markMasterPasswordUsed()
+            if (keyManager.isPinEnabled) {
+                pendingInner = payload
+                lockState = LockState.NEEDS_PIN
             } else {
+                onUnlocked(SecretKeySpec(payload, "AES"))
+            }
+        }
+    }
+
+    /** İkinci aşama: PIN. Yanlışsa GCM etiketi tutmaz ve hata gösterilir. */
+    fun unlockWithPin(pin: String) {
+        val inner = pendingInner ?: run { lockState = LockState.LOCKED; return }
+        viewModelScope.launch {
+            busy = true
+            val key = withContext(Dispatchers.Default) { keyManager.unlockWithPin(inner, pin) }
+            busy = false
+            if (key == null) {
+                error = "PIN yanlış"
+            } else {
+                pendingInner = null
                 onUnlocked(key)
             }
         }
     }
 
+    fun cancelPinStage() {
+        pendingInner = null
+        error = null
+        lockState = LockState.LOCKED
+    }
+
+    /** Biyometrik/parola aşama-1 çıktısı; PIN açıksa ikinci aşamaya geçer. */
+    fun onStage1Payload(payload: ByteArray) {
+        if (keyManager.isPinEnabled) {
+            pendingInner = payload
+            lockState = LockState.NEEDS_PIN
+        } else {
+            onUnlocked(SecretKeySpec(payload, "AES"))
+        }
+    }
+
     fun onBiometricUnlocked(key: javax.crypto.SecretKey) = onUnlocked(key)
+
+    fun enablePin(password: String, pin: String, onDone: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            busy = true
+            val ok = withContext(Dispatchers.Default) {
+                keyManager.enablePin(password.toCharArray(), pin)
+            }
+            busy = false
+            if (!ok) error = "PIN açılamadı: parola yanlış ya da PIN geçersiz (4-12 rakam)"
+            else toast("PIN açıldı · biyometrik yeniden etkinleştirilmeli")
+            onDone(ok)
+        }
+    }
+
+    fun disablePin(password: String, pin: String, onDone: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            busy = true
+            val ok = withContext(Dispatchers.Default) {
+                keyManager.disablePin(password.toCharArray(), pin)
+            }
+            busy = false
+            if (!ok) error = "PIN kapatılamadı: parola ya da PIN yanlış"
+            else toast("PIN kapatıldı · biyometrik yeniden etkinleştirilmeli")
+            onDone(ok)
+        }
+    }
 
     fun lock() {
         VaultSession.lock()

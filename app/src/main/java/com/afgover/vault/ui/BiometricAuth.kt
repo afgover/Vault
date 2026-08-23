@@ -22,7 +22,7 @@ object BiometricAuth {
     fun unlock(
         activity: FragmentActivity,
         keyManager: KeyManager,
-        onKey: (SecretKey) -> Unit
+        onPayload: (ByteArray) -> Unit
     ) {
         val cipher = keyManager.biometricDecryptCipher() ?: return
         val prompt = BiometricPrompt(
@@ -31,8 +31,8 @@ object BiometricAuth {
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     val c = result.cryptoObject?.cipher ?: return
-                    val key = keyManager.unlockWithBiometricCipher(c) ?: return
-                    onKey(key)
+                    val payload = keyManager.unlockWithBiometricStage1(c) ?: return
+                    onPayload(payload)
                 }
             }
         )

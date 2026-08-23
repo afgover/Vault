@@ -59,13 +59,17 @@ class AutofillUnlockActivity : FragmentActivity() {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
+                } else if (viewModel.lockState == LockState.NEEDS_PIN) {
+                    // PIN açıksa bu ekranlarda da ikinci kapı gösterilir;
+                    // yoksa klavye/otomatik doldurma kilidi hiç açılamazdı.
+                    com.afgover.vault.ui.screens.PinScreen(viewModel)
                 } else {
                     UnlockScreen(
                         viewModel = viewModel,
                         canUseBiometric = BiometricAuth.canUse(this),
                         onBiometricUnlock = {
                             BiometricAuth.unlock(this, viewModel.keyManager) {
-                                viewModel.onBiometricUnlocked(it)
+                                viewModel.onStage1Payload(it)
                             }
                         }
                     )
