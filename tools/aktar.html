@@ -37,6 +37,12 @@
   a { color:#7ab; }
   .satir { display:flex; gap:.8rem; }
   .satir > div { flex:1; }
+  .grup { display:none; border:1px solid #2a2a2a; border-radius:10px;
+          padding:.2rem .8rem .8rem; margin-top:.8rem; }
+  .grup.aktif { display:block; }
+  .ekSatir { border:1px solid #2a2a2a; border-radius:10px; padding:.4rem .8rem .8rem;
+             margin-top:.6rem; }
+  .ekSatir .sil { background:#432; color:#fca; margin-top:.4rem; }
 </style>
 </head>
 <body>
@@ -54,26 +60,67 @@ Vault → + → "Metinden içe aktar".</p>
 
 <label>Başlık <input id="baslik" placeholder="Uygulamada listede görünecek ad"></label>
 
-<div class="satir">
-  <div><label>Tür
-    <select id="tur">
-      <option value="hesap">Hesap / Şifre</option>
-      <option value="gundelik">Gündelik</option>
-      <option value="kart">Kart</option>
-      <option value="not" selected>Güvenli Not</option>
-    </select>
-  </label></div>
-  <div><label>Alan etiketi (opsiyonel)
-    <input id="alanEtiketi" placeholder="boşsa türün varsayılanı">
-  </label></div>
+<label>Tür
+  <select id="tur">
+    <option value="hesap">Hesap / Şifre</option>
+    <option value="gundelik">Gündelik</option>
+    <option value="kart">Kart</option>
+    <option value="not" selected>Güvenli Not</option>
+  </select>
+</label>
+
+<!-- Uygulamadaki düzenleme ekranının birebir alanları -->
+<div class="grup" data-tur="hesap">
+  <label>Kullanıcı adı / E-posta <input id="username" autocomplete="off"></label>
+  <label>Şifre <input id="password" autocomplete="off"></label>
+  <label>Site / Uygulama <input id="url" autocomplete="off"></label>
 </div>
 
-<label>İçerik
-  <textarea id="icerik" placeholder="Aktarılacak şifre / anahtar / metni buraya yapıştır"></textarea>
+<div class="grup" data-tur="gundelik">
+  <label>Ad Soyad <input id="fullName" autocomplete="off"></label>
+  <label>Telefon <input id="phone" autocomplete="off"></label>
+  <label>E-posta <input id="email" autocomplete="off"></label>
+  <label>Adres <textarea id="address" style="height:4rem"></textarea></label>
+</div>
+
+<div class="grup" data-tur="kart">
+  <label>Kart sahibi <input id="cardholder" autocomplete="off"></label>
+  <label>Kart numarası <input id="cardNumber" autocomplete="off"></label>
+  <div class="satir">
+    <div><label>Son kullanma (AA/YY) <input id="expiry" autocomplete="off"></label></div>
+    <div><label>CVV <input id="cvv" autocomplete="off"></label></div>
+  </div>
+  <label>IBAN (opsiyonel) <input id="iban" autocomplete="off"></label>
+</div>
+
+<div class="grup" data-tur="not">
+  <label>Not türü
+    <select id="noteKind">
+      <option value="GENEL">Genel not</option>
+      <option value="BETIK">Betik / komut (.sh)</option>
+      <option value="ANAHTAR">Anahtar / sertifika (.pem)</option>
+      <option value="PARMAK_IZI">Parmak izi / çıpa</option>
+      <option value="KURTARMA">Kurtarma kodları</option>
+      <option value="YAPILANDIRMA">Yapılandırma (.env, json)</option>
+    </select>
+  </label>
+</div>
+
+<label id="notEtiket">Not
+  <textarea id="notes" placeholder="Aktarılacak metin, anahtar ya da dosya içeriği"></textarea>
 </label>
 <div id="onizleme"></div>
 <label>…ya da dosyadan al (.sh, .pem, .env — en çok 256 KB)
   <input type="file" id="dosya">
+</label>
+
+<div id="ekAlanlar"></div>
+<button id="alanEkle" type="button" style="background:#246;color:#fff;margin-top:.6rem">+ Alan ekle</button>
+
+<label style="display:flex;align-items:center;gap:.5rem;margin-top:.9rem">
+  <input type="checkbox" id="hizli" style="width:auto;margin:0">
+  <span style="font-size:.85rem;color:#aaa">Klavyede parolasız kullanılabilir olsun
+    (varsayılan kapalı — koruması telefonun ekran kilidi kadardır)</span>
 </label>
 
 <div class="satir">
@@ -154,25 +201,88 @@ async function zarfla(payloadText, parola) {
   });
 }
 
+/**
+ * Uygulamanın `EntryData` şemasıyla birebir aynı gövdeyi kurar; alan adları
+ * `EntryData.fromJson` anahtarlarıdır. Boş alanlar yazılmaz — uygulamanın
+ * kendi dışa aktarımı da öyle yapıyor, böylece zarf iki tarafta da aynı.
+ */
+const ALANLAR = {
+  hesap: ["username", "password", "url"],
+  gundelik: ["fullName", "phone", "email", "address"],
+  kart: ["cardholder", "cardNumber", "expiry", "cvv", "iban"],
+  not: ["notes"],
+};
+
+/** Dosyadan/panodan gelen içeriğin yazılacağı ana alan. */
+const ANA_ALAN = { hesap: "password", gundelik: "address", kart: "cardNumber", not: "notes" };
+
+function ekAlanlariTopla() {
+  return [...document.querySelectorAll("#ekAlanlar .ekSatir")]
+    .map((satir) => ({
+      label: satir.querySelector(".ekAd").value.trim(),
+      value: satir.querySelector(".ekDeger").value,
+    }))
+    .filter((f) => f.label !== "");
+}
+
 function girdiyiKur() {
   const tur = $("tur").value;
-  const value = $("icerik").value;
-  const etiket = $("alanEtiketi").value.trim();
-  const data = etiket ? { custom:[{ label:etiket, value }] }
-                      : { [DEFAULT_FIELD[tur]]: value };
+  const data = {};
+  for (const alan of ALANLAR[tur]) {
+    const v = $(alan).value;
+    if (v) data[alan] = v;
+  }
+  // Not alanı her türde görünür (uygulamada da öyle): notlar boş değilse yazılır.
+  if (tur !== "not" && $("notes").value) data.notes = $("notes").value;
+  const ek = ekAlanlariTopla();
+  if (ek.length) data.custom = ek;
+  // Şifre taşıyan aktarımda "şifre yaşı" bilgisi doğar (uygulamadaki alan).
+  if (data.password) data.passwordChangedAt = Date.now();
   if (ikiliDosyaAdi) {
-    data.notes = "İkili dosya base64 olarak saklandı. Geri döndürmek için " +
+    const komut = "İkili dosya base64 olarak saklandı. Geri döndürmek için " +
       "değeri bir dosyaya koy ve çalıştır: base64 -d giris.txt > " + ikiliDosyaAdi +
       "  (macOS: base64 -D -i giris.txt -o " + ikiliDosyaAdi + ")";
+    data.notes = data.notes ? data.notes + "\n\n" + komut : komut;
   }
+
   const now = Date.now();
-  return JSON.stringify({ entries:[{
-    type:TYPES[tur], title:$("baslik").value.trim(),
-    createdAt:now, updatedAt:now,
-    quick:false, /* aktarılan sırlar korumalı başlar */
-    data
-  }]});
+  const kayit = {
+    type: TYPES[tur],
+    title: $("baslik").value.trim(),
+    createdAt: now,
+    updatedAt: now,
+    quick: $("hizli").checked,
+    data,
+  };
+  if (tur === "not" && $("noteKind").value !== "GENEL") {
+    kayit.noteKind = $("noteKind").value;
+  }
+  return JSON.stringify({ entries: [kayit] });
 }
+
+/** Türe göre alan kümesini göster; not alanının etiketi türe uyar. */
+function turUygula() {
+  const tur = $("tur").value;
+  document.querySelectorAll(".grup").forEach((g) => {
+    g.classList.toggle("aktif", g.dataset.tur === tur);
+  });
+  $("notEtiket").firstChild.textContent = tur === "not" ? "Not " : "Not (opsiyonel) ";
+}
+$("tur").addEventListener("change", turUygula);
+turUygula();
+
+let ekSayac = 0;
+$("alanEkle").addEventListener("click", () => {
+  const i = ++ekSayac;
+  const div = document.createElement("div");
+  div.className = "ekSatir";
+  div.innerHTML =
+    '<label>Alan adı <input class="ekAd" id="ekAd' + i + '" autocomplete="off"></label>' +
+    '<label>Değer <textarea class="ekDeger" id="ekDeger' + i + '" style="height:3.5rem"></textarea></label>' +
+    '<button type="button" class="sil">Alanı kaldır</button>';
+  div.querySelector(".sil").addEventListener("click", () => div.remove());
+  $("ekAlanlar").appendChild(div);
+});
 
 /* Dosyadan alım: metin olduğu gibi (görünür ve düzenlenebilir kalır),
    ikili base64 + geri dönüştürme notu (SEC-018: büyük dosya kasaya girmez,
@@ -180,6 +290,11 @@ function girdiyiKur() {
 const MAX_PLAIN = 256 * 1024;
 const MAX_ZARF = 64 * 1024;
 let ikiliDosyaAdi = null;
+
+/** Dosya içeriği türün ana alanına yazılır (nota, şifreye, kart no'ya…). */
+function hedefeYaz(deger) {
+  $(ANA_ALAN[$("tur").value]).value = deger;
+}
 
 $("dosya").addEventListener("change", async () => {
   $("hata").textContent = ""; ikiliDosyaAdi = null;
@@ -195,19 +310,18 @@ $("dosya").addEventListener("change", async () => {
   let metin = null;
   try { metin = new TextDecoder("utf-8", { fatal:true }).decode(buf); } catch (_) {}
   if (metin !== null && !metin.includes("\u0000")) {
-    $("icerik").value = metin;
+    hedefeYaz(metin);
   } else {
-    $("icerik").value = b64(buf);
+    hedefeYaz(b64(buf));
     ikiliDosyaAdi = f.name;
-    if (!$("alanEtiketi").value) $("alanEtiketi").value = f.name + " (base64)";
   }
   if (!$("baslik").value) $("baslik").value = f.name;
-  $("icerik").dispatchEvent(new Event("input"));
+  $("notes").dispatchEvent(new Event("input"));
 });
 
 /* L-009: pano kazası korumaları */
-$("icerik").addEventListener("input", () => {
-  const v = $("icerik").value;
+$("notes").addEventListener("input", () => {
+  const v = $("notes").value;
   if (!v) { $("onizleme").textContent = ""; return; }
   const ilk = v.trim().split("\n")[0];
   $("onizleme").textContent =
@@ -234,10 +348,13 @@ if (!tokenGetir()) tokenAlaniGoster();
 $("gonder").addEventListener("click", async () => {
   $("hata").textContent = ""; $("sonuc").style.display = "none";
   const baslik = $("baslik").value.trim();
-  const icerik = $("icerik").value;
+  const icerik = JSON.parse(girdiyiKur()).entries[0].data;
+  const doluMu = Object.keys(icerik).some(
+    (k) => k !== "passwordChangedAt" && String(icerik[k] ?? "").length > 0
+  );
   const p1 = $("parola").value, p2 = $("parola2").value;
   if (!baslik) { $("hata").textContent = "Başlık gerekli."; return; }
-  if (!icerik) { $("hata").textContent = "İçerik boş."; return; }
+  if (!doluMu) { $("hata").textContent = "En az bir alan doldurulmalı."; return; }
   if (p1.length < 8) { $("hata").textContent = "Parola en az 8 karakter olmalı."; return; }
   if (!/^[\x20-\x7E]+$/.test(p1)) {
     $("hata").textContent = "Parola yalnız ASCII olabilir (Türkçe/özel harf yok) — Android'in PBKDF2 dönüşümü aksi hâlde eşleşmeyebilir.";
@@ -245,7 +362,7 @@ $("gonder").addEventListener("click", async () => {
   }
   if (p1 !== p2) { $("hata").textContent = "Parolalar eşleşmiyor."; return; }
   if (!tokenGetir()) { tokenAlaniGoster(); $("hata").textContent = "Önce yükleme token'ını kaydet."; return; }
-  if (komutKokuyor(icerik) &&
+  if (komutKokuyor(JSON.stringify(icerik)) &&
       !confirm("İçerik bir KOMUT gibi görünüyor (pano kazası? L-009).\nYine de bunu aktarayım mı?")) return;
 
   $("gonder").disabled = true; $("gonder").textContent = "Şifreleniyor…";
