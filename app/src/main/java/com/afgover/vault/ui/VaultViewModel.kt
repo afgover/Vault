@@ -454,14 +454,21 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     fun importBackupText(text: String, password: String, replace: Boolean, onSuccess: () -> Unit = {}) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
         error = null
-        val kirpik = text.trim()
+        val kirpik = BackupManager.normalize(text)
         if (kirpik.isEmpty()) { error = "Yapıştırılan metin boş"; return }
         if (kirpik.length > 1_000_000) { error = "Metin çok büyük — bu bir Vault zarfı olamaz"; return }
-        // Dostça ön-tanı: zarf değilse parola bile sormadan söyle (L-009 ruhu).
+        // Dostça ön-tanı: en sık iki yanlış yapıştırma ayrı ayrı adlandırılır,
+        // çünkü "geçersiz" demek kullanıcıya ne yapacağını söylemiyor.
+        if (kirpik.startsWith("http://") || kirpik.startsWith("https://")) {
+            error = "Bu bir bağlantı, zarfın kendisi değil. Bağlantıyı telefonun " +
+                "tarayıcısında aç ve açılan METNİ kopyala."
+            return
+        }
         val zarfGibi = kirpik.startsWith("{") && kirpik.contains("\"app\"") &&
             kirpik.contains("\"vault\"")
         if (!zarfGibi) {
-            error = "Bu, şifreli bir Vault zarfı değil. Sayfadaki \"Kopyala\" düğmesini kullandın mı?"
+            error = "Bu, şifreli bir Vault zarfı değil — kopyalanan metin eksik ya da " +
+                "farklı bir şey olabilir. Sayfadaki metnin TAMAMINI kopyala."
             return
         }
         viewModelScope.launch {

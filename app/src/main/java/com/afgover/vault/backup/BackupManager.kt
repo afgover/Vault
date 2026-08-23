@@ -105,8 +105,24 @@ object BackupManager {
         output.use { it.write(envelope.toString(2).toByteArray(Charsets.UTF_8)) }
     }
 
+    /**
+     * Panodan gelen metni ayrıştırılabilir hâle getirir. Tarayıcıdan
+     * kopyalarken başa BOM ya da görünmez karakter, sona satır sonu
+     * gelebiliyor; `trim()` bunların hepsini temizlemez (`\uFEFF` boşluk
+     * sayılmaz) ve `JSONObject` tek bir görünmez karaktere takılıp
+     * "geçersiz dosya" diyor. Zarf ilk `{` ile son `}` arasından çıkarılır;
+     * içerik yine GCM ile doğrulandığı için bu gevşeklik güvenliği
+     * etkilemez, yalnız kullanıcıyı gereksiz hatadan kurtarır.
+     */
+    internal fun normalize(raw: String): String {
+        val temiz = raw.filterNot { it == '\uFEFF' || it == '\u200B' || it == '\u200E' }.trim()
+        val bas = temiz.indexOf('{')
+        val son = temiz.lastIndexOf('}')
+        return if (bas >= 0 && son > bas) temiz.substring(bas, son + 1) else temiz
+    }
+
     fun import(input: InputStream, password: CharArray): ImportResult {
-        val text = input.use { it.readBytes().toString(Charsets.UTF_8) }
+        val text = normalize(input.use { it.readBytes().toString(Charsets.UTF_8) })
         val envelope = try {
             JSONObject(text)
         } catch (e: Exception) {
