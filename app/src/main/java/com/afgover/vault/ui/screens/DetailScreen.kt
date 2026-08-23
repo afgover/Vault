@@ -1,8 +1,10 @@
 package com.afgover.vault.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.core.Fingerprint
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.ui.VaultViewModel
@@ -113,7 +117,8 @@ fun DetailScreen(
                     value = value,
                     hiddenByDefault = label in HIDDEN_LABELS,
                     onCopy = { viewModel.copyToClipboard(label, value) },
-                    onTypeToPc = { btField = label to value }
+                    onTypeToPc = { btField = label to value },
+                    onCopyFingerprint = { viewModel.copyToClipboard("$label parmak izi", it) }
                 )
                 Spacer(Modifier.padding(4.dp))
             }
@@ -182,44 +187,94 @@ private fun FieldCard(
     value: String,
     hiddenByDefault: Boolean,
     onCopy: () -> Unit,
-    onTypeToPc: () -> Unit
+    onTypeToPc: () -> Unit,
+    onCopyFingerprint: (String) -> Unit
 ) {
     var visible by remember { mutableStateOf(!hiddenByDefault) }
+    var fullFingerprint by remember { mutableStateOf(false) }
+    // Uzun/çok satırlı değerler (.pem, anahtar) parmak iziyle karşılaştırılır.
+    val uzun = value.length >= 100 || value.contains('\n')
+    val hex = remember(value) { if (uzun) Fingerprint.sha256Hex(value) else "" }
+
     Card(
         colors = androidx.compose.material3.CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(Modifier.weight(1f)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
+            // Başlık ve eylemler üstte: değer artık tam genişlikte akıyor,
+            // düğmeler metnin ortasında yer kaplamıyor.
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     label,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
                 )
-                Text(
-                    text = if (visible) value else "••••••••",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = FontFamily.Monospace
-                )
-            }
-            if (hiddenByDefault) {
-                IconButton(onClick = { visible = !visible }) {
-                    Icon(
-                        if (visible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (visible) "Gizle" else "Göster"
-                    )
+                if (hiddenByDefault) {
+                    IconButton(onClick = { visible = !visible }) {
+                        Icon(
+                            if (visible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                            contentDescription = if (visible) "Gizle" else "Göster"
+                        )
+                    }
+                }
+                IconButton(onClick = onCopy) {
+                    Icon(Icons.Filled.ContentCopy, contentDescription = "Kopyala")
+                }
+                IconButton(onClick = onTypeToPc) {
+                    Icon(Icons.Filled.Computer, contentDescription = "Bilgisayara yaz")
                 }
             }
-            IconButton(onClick = onCopy) {
-                Icon(Icons.Filled.ContentCopy, contentDescription = "Kopyala")
-            }
-            IconButton(onClick = onTypeToPc) {
-                Icon(Icons.Filled.Computer, contentDescription = "Bilgisayara yaz")
+            Text(
+                text = if (visible) value else "••••••••",
+                style = MaterialTheme.typography.bodyLarge,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 2.dp, bottom = if (uzun) 6.dp else 0.dp)
+            )
+            if (uzun) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { fullFingerprint = !fullFingerprint }
+                        .padding(top = 6.dp)
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            "SHA-256 parmak izi · ${value.length} karakter",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            if (fullFingerprint) Fingerprint.grouped(hex)
+                            else Fingerprint.short(hex),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontFamily = FontFamily.Monospace
+                        )
+                        if (fullFingerprint) {
+                            Text(
+                                "Bilgisayarda: shasum -a 256 dosya\n" +
+                                    "(elle yapıştırdıysan son satır sonu düşmüş olabilir: " +
+                                    "printf '%s' \"\$(cat dosya)\" | shasum -a 256)",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                    }
+                    IconButton(onClick = { onCopyFingerprint(hex) }) {
+                        Icon(
+                            Icons.Filled.ContentCopy,
+                            contentDescription = "Parmak izini kopyala",
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
             }
         }
     }
