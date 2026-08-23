@@ -106,3 +106,18 @@ dependencies {
         }
     }
 }
+
+/**
+ * 16 KB sayfa uyumu: `assembleDebug` sonrası yerel kütüphanelerin ELF
+ * hizalaması ölçülür. 4 KB hizalı bir `.so` cihazda "uygulama 16 KB ile
+ * uyumlu değil" uyarısı verir ve derlemede hiçbir iz bırakmaz; bu kontrol
+ * onu derleme zamanına taşır (CameraX 1.3.4 ile tam bunu yaşadık).
+ */
+tasks.register<Exec>("checkApkAlignment") {
+    dependsOn("assembleDebug")
+    commandLine(
+        "python3",
+        "${rootDir}/tools/apk-hizalama.py",
+        "${layout.buildDirectory.get()}/outputs/apk/debug/app-debug.apk"
+    )
+}
