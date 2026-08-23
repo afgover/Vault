@@ -115,29 +115,11 @@ fun SettingsScreen(
             Text("Görünüm", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
-                "Kayıtların hem Vault Klavyesi'nde hem ana listede hangi sırayla " +
-                    "görüneceğini seç.",
+                "Sıralama ana ekrana taşındı: başlığın yanındaki ⇅ simgesinden " +
+                    "seçilir ve hem listede hem Vault Klavyesi'nde geçerli olur.\n" +
+                    "Şu anki sıra: ${viewModel.sort.label}",
                 style = MaterialTheme.typography.bodySmall
             )
-            Spacer(Modifier.height(8.dp))
-            Column {
-                EntrySort.entries.forEach { s ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { viewModel.selectSort(s) }
-                            .padding(vertical = 2.dp)
-                    ) {
-                        RadioButton(
-                            selected = viewModel.sort == s,
-                            onClick = { viewModel.selectSort(s) }
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(s.label, style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
-            }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
@@ -274,7 +256,9 @@ fun SettingsScreen(
     exportUri?.let { uri ->
         PasswordDialog(
             title = "Yedek parolası belirle",
-            description = "Bu parola olmadan yedek dosyası AÇILAMAZ. Ana parolanla aynı olabilir.",
+            description = "Bu parola olmadan yedek dosyası AÇILAMAZ. " +
+                "Ana parolandan FARKLI olsun: yedek parolası bilgisayarlarda " +
+                "yazılabiliyor, ana parola hiçbir bilgisayara girmiyor.",
             confirmField = true,
             onConfirm = { pw ->
                 viewModel.exportBackup(uri, pw)

@@ -9,6 +9,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -109,6 +110,42 @@ fun VaultRoot(
         nav = when (val screen = nav) {
             is Nav.Edit -> if (screen.id == 0L) Nav.Home else Nav.Detail(screen.id)
             else -> Nav.Home
+        }
+    }
+
+    if (viewModel.offerBiometric) {
+        if (canUseBiometric()) {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { viewModel.offerBiometric = false },
+                icon = {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Filled.Fingerprint,
+                        contentDescription = null
+                    )
+                },
+                title = { androidx.compose.material3.Text("Parmak izi ile aç") },
+                text = {
+                    androidx.compose.material3.Text(
+                        "Kasayı her açışta ana parolayı yazmak yerine parmak izini " +
+                            "kullanabilirsin. Ana parola kaybolmaz: gerektiğinde her " +
+                            "zaman çalışır ve yedekleri açan da odur — unutma."
+                    )
+                },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(onClick = {
+                        viewModel.offerBiometric = false
+                        onBiometricEnable()
+                    }) { androidx.compose.material3.Text("Etkinleştir") }
+                },
+                dismissButton = {
+                    androidx.compose.material3.TextButton(onClick = {
+                        viewModel.offerBiometric = false
+                    }) { androidx.compose.material3.Text("Şimdilik parola ile") }
+                }
+            )
+        } else {
+            // Cihazda biyometrik yoksa teklif hiç görünmez.
+            LaunchedEffect(Unit) { viewModel.offerBiometric = false }
         }
     }
 

@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Note
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Casino
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.DataObject
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Lock
@@ -146,6 +148,7 @@ fun HomeScreen(
     var manageTags by remember { mutableStateOf(false) }
     var showPasteImport by remember { mutableStateOf(false) }
     var showTransferWizard by remember { mutableStateOf(false) }
+    var sortMenuOpen by remember { mutableStateOf(false) }
 
     // Seçimler daraltarak birleşir: tür VE seçili etiketlerin tamamı.
     // Sıra kullanıcının seçtiği düzendir (klavyeyle aynı — EntrySort).
@@ -181,7 +184,41 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Vault") },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Vault")
+                        Box {
+                            IconButton(onClick = { sortMenuOpen = true }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.Sort,
+                                    contentDescription = "Sıralama: ${viewModel.sort.label}"
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = sortMenuOpen,
+                                onDismissRequest = { sortMenuOpen = false }
+                            ) {
+                                EntrySort.entries.forEach { secenek ->
+                                    DropdownMenuItem(
+                                        text = { Text(secenek.label) },
+                                        leadingIcon = {
+                                            if (viewModel.sort == secenek) {
+                                                Icon(
+                                                    Icons.Filled.Check,
+                                                    contentDescription = "Seçili"
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            viewModel.selectSort(secenek)
+                                            sortMenuOpen = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
                 actions = {
                     IconButton(onClick = { showTransferWizard = true }) {
                         Icon(Icons.Filled.SwapHoriz, contentDescription = "Bilgisayardan aktar")

@@ -68,6 +68,9 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     var error by mutableStateOf<String?>(null)
 
+    /** İlk kurulum biter bitmez biyometrik teklifi gösterilsin mi? */
+    var offerBiometric by mutableStateOf(false)
+
     /** Kullanıcının seçtiği sıra; klavye ile ana liste aynı düzeni kullanır. */
     var sort by mutableStateOf(EntrySort.read(application))
         private set
@@ -148,6 +151,10 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             }
             busy = false
             onUnlocked(key)
+            // Teklif kurulumun hemen ardından yapılır: sonraya bırakılırsa
+            // kullanıcı ana parolayı her açılışta yeniden yazmak zorunda kalır
+            // ve özelliğin var olduğunu çoğu zaman hiç fark etmez.
+            offerBiometric = true
         }
     }
 
