@@ -57,11 +57,7 @@ fun PasteImportDialog(
                 TextButton(onClick = { text = viewModel.clipboardText() }) {
                     Text("Panodan al")
                 }
-                OutlinedTextField(
-                    value = pw, onValueChange = { pw = it },
-                    label = { Text("Yedek parolası") }, singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
+                SecretField(value = pw, onValueChange = { pw = it }, label = "Yedek parolası")
                 Spacer(Modifier.height(8.dp))
                 Row {
                     SecimCipi(

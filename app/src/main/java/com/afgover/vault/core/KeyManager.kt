@@ -63,6 +63,31 @@ class KeyManager(context: Context) {
 
     private fun pinSalt(): ByteArray? = prefs.getString(PREF_PIN_SALT, null)?.let(::unb64)
 
+    /**
+     * `ead5d0f` sürümünde açılmış PIN kaydı: PIN tuzu var ama doğrulama
+     * blobu yok ve ana parola sargısı **iç sargıyı** taşıyor. O sürüm
+     * yayından kalktı; bu durumdaki kasa [migrateLegacyPin] ile onarılır,
+     * yoksa parola doğru olsa bile kayıtlar çözülemez.
+     */
+    val isPinLegacy: Boolean
+        get() = isPinEnabled && !prefs.contains(PREF_PIN_CHECK)
+
+    /**
+     * Eski model kaydı yeni modele taşır: iç sargı PIN ile çözülür, `dataKey`
+     * doğrudan ana parola katmanına yazılır ve PIN kaydı silinir. Kullanıcı
+     * isterse PIN'i sonra yeniden açar (bu kez parmak izi yolunu koruyarak).
+     */
+    fun migrateLegacyPin(password: CharArray, pin: String): Boolean {
+        if (!isPinLegacy) return false
+        val inner = unlockStage1(password) ?: return false
+        val salt = pinSalt() ?: return false
+        val dataKey = PinLock.unwrap(inner, pin, salt) ?: return false
+        storePayload(password, dataKey.encoded)
+        prefs.edit().remove(PREF_PIN_SALT).remove(PREF_PIN_CHECK).apply()
+        clearBiometric()
+        return true
+    }
+
     /** PIN'in doğruluğunu sargıya dokunmadan sınar. */
     fun verifyPin(pin: String): Boolean {
         val salt = pinSalt() ?: return false

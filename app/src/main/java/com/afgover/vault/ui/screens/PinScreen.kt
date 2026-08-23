@@ -77,7 +77,7 @@ fun PinScreen(viewModel: VaultViewModel) {
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(24.dp))
-        OutlinedTextField(
+        SecretField(
             value = pin,
             onValueChange = { yeni ->
                 if (yeni.all { it.isDigit() } && yeni.length <= PinLock.MAX_LENGTH) {
@@ -85,11 +85,8 @@ fun PinScreen(viewModel: VaultViewModel) {
                     viewModel.error = null
                 }
             },
-            label = { Text("PIN (${PinLock.MIN_LENGTH}-${PinLock.MAX_LENGTH} rakam)") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            label = "PIN (${PinLock.MIN_LENGTH}-${PinLock.MAX_LENGTH} rakam)",
+            numeric = true
         )
         viewModel.error?.let {
             Spacer(Modifier.height(8.dp))

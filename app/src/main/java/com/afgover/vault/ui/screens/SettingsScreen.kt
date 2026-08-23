@@ -129,6 +129,21 @@ fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
 
             Text("Ek kilit", style = MaterialTheme.typography.titleMedium)
+            if (viewModel.isPinLegacy) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "⚠ Bu PIN kaydı eski sürümde açıldı ve bu sürümle uyumsuz: " +
+                        "kayıtlar açılamaz ve PIN kapatılamaz. Ana parola + PIN ile " +
+                        "onar; PIN'i sonra yeniden açabilirsin.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Spacer(Modifier.height(6.dp))
+                OutlinedButton(
+                    onClick = { showPinDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("PIN kaydını onar") }
+            }
             Spacer(Modifier.height(4.dp))
             Text(
                 if (viewModel.isPinEnabled)
@@ -347,12 +362,7 @@ fun SettingsScreen(
                             "parmak izi, sonra bu PIN sorulur.",
                         style = MaterialTheme.typography.bodySmall
                     )
-                    OutlinedTextField(
-                        value = pin,
-                        onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y },
-                        label = { Text("PIN") }, singleLine = true,
-                        visualTransformation = PasswordVisualTransformation()
-                    )
+                    SecretField(value = pin, onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y }, label = "PIN", numeric = true)
                 }
             },
             confirmButton = {
@@ -371,6 +381,7 @@ fun SettingsScreen(
         PinSetupDialog(
             viewModel = viewModel,
             kapatmaKipi = viewModel.isPinEnabled,
+            onarimKipi = viewModel.isPinLegacy,
             onDismiss = { showPinDialog = false }
         )
     }
@@ -401,18 +412,10 @@ private fun PasswordDialog(
             Column {
                 Text(description, style = MaterialTheme.typography.bodySmall)
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = pw, onValueChange = { pw = it },
-                    label = { Text("Parola") }, singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
+                SecretField(value = pw, onValueChange = { pw = it }, label = "Parola")
                 if (confirmField) {
                     Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = pw2, onValueChange = { pw2 = it },
-                        label = { Text("Parola (tekrar)") }, singleLine = true,
-                        visualTransformation = PasswordVisualTransformation()
-                    )
+                    SecretField(value = pw2, onValueChange = { pw2 = it }, label = "Parola (tekrar)")
                 }
             }
         },
@@ -438,11 +441,7 @@ private fun ImportDialog(
         title = { Text("Yedekten geri yükle") },
         text = {
             Column {
-                OutlinedTextField(
-                    value = pw, onValueChange = { pw = it },
-                    label = { Text("Yedek parolası") }, singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
+                SecretField(value = pw, onValueChange = { pw = it }, label = "Yedek parolası")
                 Spacer(Modifier.height(8.dp))
                 Row {
                     SecimCipi(
@@ -490,23 +489,11 @@ private fun ChangePasswordDialog(
         title = { Text("Ana parolayı değiştir") },
         text = {
             Column {
-                OutlinedTextField(
-                    value = old, onValueChange = { old = it },
-                    label = { Text("Mevcut parola") }, singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
+                SecretField(value = old, onValueChange = { old = it }, label = "Mevcut parola")
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = new, onValueChange = { new = it },
-                    label = { Text("Yeni parola") }, singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
+                SecretField(value = new, onValueChange = { new = it }, label = "Yeni parola")
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = confirm, onValueChange = { confirm = it },
-                    label = { Text("Yeni parola (tekrar)") }, singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
+                SecretField(value = confirm, onValueChange = { confirm = it }, label = "Yeni parola (tekrar)")
                 viewModel.error?.let {
                     Spacer(Modifier.height(8.dp))
                     Text(it, color = MaterialTheme.colorScheme.error)
@@ -528,6 +515,7 @@ private fun ChangePasswordDialog(
 private fun PinSetupDialog(
     viewModel: VaultViewModel,
     kapatmaKipi: Boolean,
+    onarimKipi: Boolean = false,
     onDismiss: () -> Unit
 ) {
     var parola by remember { mutableStateOf("") }
@@ -538,7 +526,15 @@ private fun PinSetupDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (kapatmaKipi) "PIN'i kapat" else "PIN belirle") },
+        title = {
+            Text(
+                when {
+                    onarimKipi -> "PIN kaydını onar"
+                    kapatmaKipi -> "PIN'i kapat"
+                    else -> "PIN belirle"
+                }
+            )
+        },
         text = {
             Column {
                 Text(
@@ -551,24 +547,10 @@ private fun PinSetupDialog(
                     style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = parola, onValueChange = { parola = it },
-                    label = { Text("Ana parola") }, singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
-                OutlinedTextField(
-                    value = pin,
-                    onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y },
-                    label = { Text("PIN") }, singleLine = true,
-                    visualTransformation = PasswordVisualTransformation()
-                )
+                SecretField(value = parola, onValueChange = { parola = it }, label = "Ana parola")
+                SecretField(value = pin, onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y }, label = "PIN", numeric = true)
                 if (!kapatmaKipi) {
-                    OutlinedTextField(
-                        value = pin2,
-                        onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin2 = y },
-                        label = { Text("PIN (tekrar)") }, singleLine = true,
-                        visualTransformation = PasswordVisualTransformation()
-                    )
+                    SecretField(value = pin2, onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin2 = y }, label = "PIN (tekrar)", numeric = true)
                 }
                 viewModel.error?.let {
                     Spacer(Modifier.height(8.dp))
@@ -579,11 +561,22 @@ private fun PinSetupDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (kapatmaKipi) viewModel.disablePin(parola, pin) { if (it) onDismiss() }
-                    else viewModel.enablePin(parola, pin) { if (it) onDismiss() }
+                    when {
+                        onarimKipi -> viewModel.migrateLegacyPin(parola, pin) { if (it) onDismiss() }
+                        kapatmaKipi -> viewModel.disablePin(parola, pin) { if (it) onDismiss() }
+                        else -> viewModel.enablePin(parola, pin) { if (it) onDismiss() }
+                    }
                 },
                 enabled = gecerli && !viewModel.busy
-            ) { Text(if (kapatmaKipi) "Kapat" else "Belirle") }
+            ) {
+                Text(
+                    when {
+                        onarimKipi -> "Onar"
+                        kapatmaKipi -> "Kapat"
+                        else -> "Belirle"
+                    }
+                )
+            }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
     )

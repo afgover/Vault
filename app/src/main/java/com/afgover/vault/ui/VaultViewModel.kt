@@ -75,6 +75,21 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     private var pendingInner: ByteArray? = null
 
     val isPinEnabled: Boolean get() = keyManager.isPinEnabled
+    val isPinLegacy: Boolean get() = keyManager.isPinLegacy
+
+    /** Eski sürümde açılmış PIN kaydını onarır (parola + PIN ile). */
+    fun migrateLegacyPin(password: String, pin: String, onDone: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            busy = true
+            val ok = withContext(Dispatchers.Default) {
+                keyManager.migrateLegacyPin(password.toCharArray(), pin)
+            }
+            busy = false
+            if (ok) toast("PIN kaydı onarıldı · kasa ana parolayla açılıyor")
+            else error = "Onarılamadı: parola ya da PIN yanlış"
+            onDone(ok)
+        }
+    }
     val reminderDays: Int get() = keyManager.reminderDays
 
     fun setReminderDays(days: Int) {

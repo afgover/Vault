@@ -114,23 +114,17 @@ fun UnlockScreen(
         }
         Spacer(Modifier.height(24.dp))
 
-        OutlinedTextField(
+        SecretField(
             value = password,
             onValueChange = { password = it; viewModel.error = null },
-            label = { Text(if (isSetup) "Ana parola" else "Parola") },
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            label = if (isSetup) "Ana parola" else "Parola"
         )
         if (isSetup) {
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
+            SecretField(
                 value = confirm,
                 onValueChange = { confirm = it; viewModel.error = null },
-                label = { Text("Parola (tekrar)") },
-                visualTransformation = PasswordVisualTransformation(),
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                label = "Parola (tekrar)"
             )
         }
 
