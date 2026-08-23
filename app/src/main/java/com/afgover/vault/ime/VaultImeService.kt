@@ -86,6 +86,7 @@ class VaultImeService : InputMethodService() {
         // Basılı tutunca sistem klavyesindeki gibi silmeye devam eder.
         header.addView(repeatingButton("⌫") {
             currentInputConnection?.deleteSurroundingText(1, 0)
+            haptic()
         })
         header.addView(flatButton("⌄") { requestHideSelf(0) })
         root.addView(header)
@@ -209,6 +210,30 @@ class VaultImeService : InputMethodService() {
             minimumWidth = dp(48)
             setOnClickListener { onClick() }
         }
+
+    /**
+     * Kısa dokunsal geri bildirim. Sistem klavyeleri gibi: silme her
+     * karakterde hissedilir. Cihazın dokunsal geri bildirimi kapalıysa
+     * sessizce hiçbir şey olmaz (kullanıcı ayarına saygı).
+     */
+    private fun haptic() {
+        val vibrator = if (Build.VERSION.SDK_INT >= 31) {
+            (getSystemService(VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager)
+                .defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(VIBRATOR_SERVICE) as android.os.Vibrator
+        }
+        if (!vibrator.hasVibrator()) return
+        runCatching {
+            vibrator.vibrate(
+                android.os.VibrationEffect.createOneShot(
+                    12L,
+                    android.os.VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            )
+        }
+    }
 
     /**
      * Basılı tutuldukça eylemi tekrarlayan düğme (silme tuşu). Sistem
