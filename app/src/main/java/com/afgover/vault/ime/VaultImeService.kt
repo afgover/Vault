@@ -218,25 +218,31 @@ class VaultImeService : InputMethodService() {
         flatButton(label) { onAction() }.apply {
             val handler = android.os.Handler(android.os.Looper.getMainLooper())
             var repeater: Runnable? = null
-            setOnTouchListener { view, event ->
+            var repeated = false
+            setOnTouchListener { _, event ->
                 when (event.actionMasked) {
                     android.view.MotionEvent.ACTION_DOWN -> {
+                        repeated = false
                         val r = object : Runnable {
                             override fun run() {
+                                repeated = true
                                 onAction()
                                 handler.postDelayed(this, 55)
                             }
                         }
                         repeater = r
                         handler.postDelayed(r, 400)
-                        false // tıklama da normal aksın (tek basış = tek silme)
+                        // false: tekrar başlamazsa parmak kalkınca sistemin
+                        // kendi tıklaması tek silmeyi yapar.
+                        false
                     }
                     android.view.MotionEvent.ACTION_UP,
                     android.view.MotionEvent.ACTION_CANCEL -> {
                         repeater?.let(handler::removeCallbacks)
                         repeater = null
-                        view.performClick()
-                        false
+                        // Tekrar çalıştıysa parmak kalkışını YUTARIZ: aksi
+                        // hâlde sistem tıklaması bir fazla silerdi.
+                        repeated
                     }
                     else -> false
                 }
