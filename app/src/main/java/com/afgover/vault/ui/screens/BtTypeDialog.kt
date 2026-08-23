@@ -16,7 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -29,28 +29,38 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.afgover.vault.bt.BtHidManager
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.ui.text.font.FontWeight
 import com.afgover.vault.bt.HidLayouts
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
+
+/** Aynı geri sayım + yazma akışından geçen üç gönderim. */
+private enum class Gonderim { DUZEN_TESTI, HIZ_TESTI, DEGER }
+
+/** Bu uzunluğa kadar olan değerler yazılınca diyalog kendi kapanır. */
+private const val KISA_DEGER = 100
+
+/** "42 sn" / "2 dk 15 sn". */
+private fun sureMetni(ms: Long): String {
+    val sn = ((ms + 999L) / 1000L).toInt()
+    return if (sn < 60) "$sn sn" else "${sn / 60} dk ${sn % 60} sn"
+}
 
 /**
  * Seçilen değeri Bluetooth klavye olarak bilgisayara yazar.
  * Akış: izin → HID kaydı → eşleşmiş cihaz seç → bağlan → 3 sn geri sayım → yaz.
+ *
+ * Uzun sırlarda (5.000+ karakter) yazma dakikalar sürebildiği için hız
+ * seçilebilir; hızın bu bilgisayarda güvenli olduğu "hız testi" ile ölçülür.
  */
 @Composable
 fun BtTypeDialog(
@@ -59,7 +69,6 @@ fun BtTypeDialog(
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     if (!BtHidManager.isSupported) {
         AlertDialog(
@@ -93,8 +102,14 @@ fun BtTypeDialog(
             BtHidManager.start(context)
         }
     }
+
+    /** Yazma arka planda blokluyor; durdurma bu bayrakla bildirilir. */
+    val iptal = remember { AtomicBoolean(false) }
     DisposableEffect(Unit) {
-        onDispose { BtHidManager.stop() }
+        onDispose {
+            iptal.set(true)
+            BtHidManager.stop()
+        }
     }
 
     val state by BtHidManager.state.collectAsState()
@@ -110,11 +125,83 @@ fun BtTypeDialog(
             }.getOrDefault(HidLayouts.Layout.TR)
         )
     }
+    var speed by remember {
+        mutableStateOf(
+            runCatching {
+                BtHidManager.Speed.valueOf(prefs.getString("pc_speed", "FAST") ?: "FAST")
+            }.getOrDefault(BtHidManager.Speed.FAST)
+        )
+    }
     var countdown by remember { mutableIntStateOf(0) }
     var typing by remember { mutableStateOf(false) }
     var untypedWarning by remember { mutableStateOf<String?>(null) }
+    var summary by remember { mutableStateOf<String?>(null) }
     var testTyped by remember { mutableStateOf(false) }
-    var pendingIsTest by remember { mutableStateOf(false) }
+    var hizSonucu by remember { mutableStateOf<String?>(null) }
+    var pending by remember { mutableStateOf<Gonderim?>(null) }
+    var progress by remember { mutableIntStateOf(0) }
+    var total by remember { mutableIntStateOf(0) }
+
+    // Üç gönderim de aynı akıştan geçer: geri sayım → yaz → sonucu bildir.
+    LaunchedEffect(pending) {
+        val kind = pending ?: return@LaunchedEffect
+        val metin = when (kind) {
+            Gonderim.DUZEN_TESTI -> HidLayouts.LAYOUT_TEST_TEXT
+            Gonderim.HIZ_TESTI -> HidLayouts.SPEED_TEST_TEXT
+            Gonderim.DEGER -> value
+        }
+        untypedWarning = null
+        summary = null
+        progress = 0
+        total = metin.length
+        iptal.set(false)
+        for (i in 3 downTo 1) {
+            countdown = i
+            delay(1000)
+        }
+        countdown = 0
+        typing = true
+        val sonuc = withContext(Dispatchers.IO) {
+            BtHidManager.typeText(
+                metin, layout, speed,
+                onProgress = { progress = it },
+                isCancelled = { !isActive || iptal.get() }
+            )
+        }
+        typing = false
+        pending = null
+
+        when {
+            sonuc.cancelled -> summary =
+                "Durduruldu: ${sonuc.typed} / ${metin.length} karakter yazıldı. " +
+                    "Bilgisayardaki metin EKSİK — sil ve baştan yaz."
+
+            sonuc.aborted -> summary =
+                "Yazma yarıda kesildi: ${sonuc.typed} / ${metin.length} karakter. " +
+                    "Bilgisayardaki metin EKSİK — sil, daha yavaş bir hız seçip tekrar dene."
+
+            else -> {
+                if (kind == Gonderim.DUZEN_TESTI) testTyped = true
+                if (kind == Gonderim.HIZ_TESTI) {
+                    hizSonucu = "${sonuc.typed} karakter, ${sureMetni(sonuc.elapsedMs)} " +
+                        "(${sonuc.charsPerSecond} karakter/sn)"
+                }
+                if (sonuc.untyped.isNotEmpty()) {
+                    untypedWarning = "Şu karakterler bu düzende yazılamadı: " +
+                        sonuc.untyped.distinct().joinToString(" ") +
+                        " — diğer düzeni deneyebilirsin."
+                } else if (kind == Gonderim.DEGER) {
+                    if (value.length <= KISA_DEGER) {
+                        onDismiss()
+                    } else {
+                        summary = "✓ ${sonuc.typed} karakter yazıldı — " +
+                            "${sureMetni(sonuc.elapsedMs)}, ${sonuc.charsPerSecond} karakter/sn. " +
+                            "Bilgisayarda karakter sayısını doğrula."
+                    }
+                }
+            }
+        }
+    }
 
     AlertDialog(
         onDismissRequest = { if (!typing) onDismiss() },
@@ -210,7 +297,7 @@ fun BtTypeDialog(
                         }
                         OutlinedButton(
                             enabled = !typing && countdown == 0,
-                            onClick = { pendingIsTest = true },
+                            onClick = { pending = Gonderim.DUZEN_TESTI },
                             modifier = Modifier.fillMaxWidth()
                         ) { Text(if (testTyped) "✓ Test yazıldı — tekrar dene" else "🧪 Önce test yaz (önerilir)") }
                         if (testTyped) {
@@ -221,9 +308,70 @@ fun BtTypeDialog(
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
-                        Spacer(Modifier.height(8.dp))
+
+                        Spacer(Modifier.height(12.dp))
+                        Text("Yazma hızı:", style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            "Tuşlar tek tek gönderilir. Hız, bağlantının taşıyabileceğinden " +
+                                "yüksek olursa yazma durur (karakter kaybolmaz) — hangisinin " +
+                                "çalıştığını hız testiyle ölç.",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Row {
+                            BtHidManager.Speed.entries.forEach { h ->
+                                SecimCipi(
+                                    secili = speed == h,
+                                    onClick = {
+                                        speed = h
+                                        hizSonucu = null
+                                        prefs.edit().putString("pc_speed", h.name).apply()
+                                    },
+                                    label = h.label,
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                            }
+                        }
+                        Text(
+                            "${value.length} karakter ≈ " +
+                                sureMetni(value.length * speed.perCharMs),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        OutlinedButton(
+                            enabled = !typing && countdown == 0,
+                            onClick = { pending = Gonderim.HIZ_TESTI },
+                            modifier = Modifier.fillMaxWidth()
+                        ) { Text("⏱ Hız testi (${HidLayouts.SPEED_TEST_TEXT.length} karakter)") }
+                        hizSonucu?.let {
+                            Text(
+                                "$it\nBilgisayarda boşlukla ayrılmış 10 grup olmalı ve her biri " +
+                                    "birebir ${HidLayouts.SPEED_TEST_BLOCK} — biri bile farklıysa " +
+                                    "bir alt hızı seç ve testi tekrarla.",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        Spacer(Modifier.height(12.dp))
                         when {
-                            typing -> Text("Yazılıyor…")
+                            typing -> {
+                                Text("Yazılıyor… $progress / $total karakter")
+                                Spacer(Modifier.height(4.dp))
+                                LinearProgressIndicator(
+                                    progress = {
+                                        if (total == 0) 0f else progress / total.toFloat()
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    "~" + sureMetni((total - progress) * speed.perCharMs) +
+                                        " kaldı — bitene kadar bilgisayarda imleci oynatma.",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                             countdown > 0 -> Text(
                                 "$countdown saniye içinde yazılacak — bilgisayarda imleci " +
                                     "ilgili alana getir!",
@@ -238,6 +386,10 @@ fun BtTypeDialog(
                     }
                 }
 
+                summary?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it)
+                }
                 untypedWarning?.let {
                     Spacer(Modifier.height(8.dp))
                     Text(it, color = MaterialTheme.colorScheme.error)
@@ -250,50 +402,18 @@ fun BtTypeDialog(
         },
         confirmButton = {
             if (state is BtHidManager.State.Connected) {
-                // Test isteği de aynı geri sayım akışından geçer.
-                LaunchedEffect(pendingIsTest) {
-                    if (!pendingIsTest) return@LaunchedEffect
-                    untypedWarning = null
-                    for (i in 3 downTo 1) { countdown = i; delay(1000) }
-                    countdown = 0
-                    typing = true
-                    withContext(Dispatchers.IO) {
-                        BtHidManager.typeText(HidLayouts.LAYOUT_TEST_TEXT, layout)
-                    }
-                    typing = false
-                    testTyped = true
-                    pendingIsTest = false
-                }
                 Button(
                     enabled = !typing && countdown == 0,
-                    onClick = {
-                        scope.launch {
-                            untypedWarning = null
-                            for (i in 3 downTo 1) {
-                                countdown = i
-                                delay(1000)
-                            }
-                            countdown = 0
-                            typing = true
-                            val untyped = withContext(Dispatchers.IO) {
-                                BtHidManager.typeText(value, layout)
-                            }
-                            typing = false
-                            if (untyped.isEmpty()) {
-                                onDismiss()
-                            } else {
-                                untypedWarning =
-                                    "Şu karakterler bu düzende yazılamadı: " +
-                                        untyped.distinct().joinToString(" ") +
-                                        " — diğer düzeni deneyebilirsin."
-                            }
-                        }
-                    }
+                    onClick = { pending = Gonderim.DEGER }
                 ) { Text(if (countdown > 0) "$countdown…" else "Yaz") }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss, enabled = !typing) { Text("Kapat") }
+            if (typing) {
+                TextButton(onClick = { iptal.set(true) }) { Text("Durdur") }
+            } else {
+                TextButton(onClick = onDismiss) { Text("Kapat") }
+            }
         }
     )
 }

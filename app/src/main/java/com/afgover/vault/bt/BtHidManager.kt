@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.os.Build
+import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,41 @@ object BtHidManager {
         data object Ready : State
         data class Connecting(val name: String) : State
         data class Connected(val name: String) : State
+    }
+
+    /**
+     * Tuş gönderim temposu: her rapordan sonra beklenen süre. Karakter başına
+     * iki rapor gider (basma + bırakma), yani maliyet [stepMs] x 2.
+     *
+     * Bu değerler bağlantının fiziksel sınırı değil, seçilmiş bir emniyet
+     * payıdır — hangisinin çalıştığı bilgisayara ve ortama göre değişir,
+     * "Hız testi" ile ölçülür.
+     */
+    enum class Speed(val label: String, val stepMs: Long) {
+        SAFE("Güvenli", 12),
+        FAST("Hızlı", 5),
+        TURBO("Çok hızlı", 2);
+
+        /** Karakter başına yaklaşık maliyet (ms). */
+        val perCharMs: Long get() = stepMs * 2
+    }
+
+    /**
+     * Yazma sonucu. [cancelled] ya da [aborted] ise bilgisayardaki metin
+     * EKSİKTİR; [untyped] doluysa aradan karakter atlanmıştır.
+     */
+    data class TypeResult(
+        val typed: Int,
+        val untyped: List<Char>,
+        val elapsedMs: Long,
+        val cancelled: Boolean = false,
+        val aborted: Boolean = false
+    ) {
+        val complete: Boolean get() = !cancelled && !aborted && untyped.isEmpty()
+
+        /** Ölçülen gerçek hız (karakter/sn). */
+        val charsPerSecond: Int
+            get() = if (elapsedMs <= 0L) 0 else (typed * 1000L / elapsedMs).toInt()
     }
 
     private val _state = MutableStateFlow<State>(State.Idle)
@@ -174,17 +210,73 @@ object BtHidManager {
     }
 
     /**
-     * Metni tuş basımları olarak gönderir; haritada olmayan karakterleri
-     * atlayıp geri döndürür. Arka plan iş parçacığında çağrılmalı.
+     * Raporu gönderir; kuyruk doluysa katlanarak geri çekilip tekrar dener.
+     * Toplam bekleme 2+4+8+16+32+64 = 126 ms — bilgisayarların en kısa tuş
+     * tekrarı gecikmesinin (~250 ms) altında kalır, yani basılı tuş bu
+     * denemeler sırasında kendi kendine tekrarlamaz.
      */
     @RequiresApi(28)
-    fun typeText(text: String, layout: HidLayouts.Layout): List<Char> {
-        val hidDevice = hid ?: return text.toList()
-        val device = connectedDevice ?: return text.toList()
+    private fun sendReport(
+        hidDevice: BluetoothHidDevice,
+        device: BluetoothDevice,
+        report: ByteArray
+    ): Boolean {
+        var bekleme = 2L
+        repeat(6) {
+            if (safe { hidDevice.sendReport(device, 0, report) } == true) return true
+            Thread.sleep(bekleme)
+            bekleme *= 2
+        }
+        return false
+    }
+
+    /**
+     * Metni tuş basımları olarak gönderir. Arka plan iş parçacığında çağrılmalı.
+     *
+     * Her karakter iki rapordur ve her rapordan sonra [speed] kadar beklenir.
+     * Tempo bağlantının taşıyabileceğinden hızlıysa gönderim kuyruğu dolar:
+     * o durumda [sendReport] geri çekilip tekrar dener, yine olmuyorsa yazma
+     * DURUR ve [TypeResult.aborted] ile bildirilir. Eskiden `sendReport`'un
+     * dönüşü yutuluyordu — başarısız rapor sessizce kaybolur, 5.000 karakterlik
+     * bir sırda eksik karakter fark edilmezdi.
+     *
+     * @param onProgress yazılan karakter sayısı (her karakterde değil, ~25'te bir)
+     * @param isCancelled true dönerse yazma bırakılır (tuş basılı bırakılmaz)
+     */
+    @RequiresApi(28)
+    fun typeText(
+        text: String,
+        layout: HidLayouts.Layout,
+        speed: Speed = Speed.FAST,
+        onProgress: (Int) -> Unit = {},
+        isCancelled: () -> Boolean = { false }
+    ): TypeResult {
+        val hidDevice = hid
+        val device = connectedDevice
+        if (hidDevice == null || device == null) {
+            _lastError.value = "Bağlantı yok — cihazı yeniden seç."
+            return TypeResult(0, text.toList(), 0L, aborted = true)
+        }
+        _lastError.value = null   // önceki denemenin hatası ekranda kalmasın
         val map = HidLayouts.map(layout)
         val untyped = mutableListOf<Char>()
+        val release = ByteArray(8)
+        val basladi = SystemClock.elapsedRealtime()
+        var typed = 0
 
-        for (ch in text) {
+        fun gecen() = SystemClock.elapsedRealtime() - basladi
+
+        fun birak() {
+            // Hangi yoldan çıkarsak çıkalım tuş basılı kalmamalı: kalırsa
+            // bilgisayar tuş tekrarına girer ve metne çöp karakter ekler.
+            safe { hidDevice.sendReport(device, 0, release) }
+        }
+
+        for ((i, ch) in text.withIndex()) {
+            if (isCancelled()) {
+                birak()
+                return TypeResult(typed, untyped, gecen(), cancelled = true)
+            }
             val stroke = map[ch]
             if (stroke == null) {
                 untyped.add(ch)
@@ -194,13 +286,25 @@ object BtHidManager {
                 stroke.modifier.toByte(), 0,
                 stroke.usage.toByte(), 0, 0, 0, 0, 0
             )
-            val release = ByteArray(8)
-            safe { hidDevice.sendReport(device, 0, press) }
-            Thread.sleep(12)
-            safe { hidDevice.sendReport(device, 0, release) }
-            Thread.sleep(12)
+            if (!sendReport(hidDevice, device, press)) {
+                birak()
+                _lastError.value = "Bluetooth gönderim kuyruğu yanıt vermedi; " +
+                    "yazma $typed. karakterde durdu. Daha yavaş bir hız seç."
+                return TypeResult(typed, untyped, gecen(), aborted = true)
+            }
+            Thread.sleep(speed.stepMs)
+            if (!sendReport(hidDevice, device, release)) {
+                birak()
+                _lastError.value = "Bluetooth gönderim kuyruğu yanıt vermedi; " +
+                    "yazma $typed. karakterde durdu. Daha yavaş bir hız seç."
+                return TypeResult(typed, untyped, gecen(), aborted = true)
+            }
+            Thread.sleep(speed.stepMs)
+            typed++
+            if (i % 25 == 0) onProgress(typed)
         }
-        return untyped
+        onProgress(typed)
+        return TypeResult(typed, untyped, gecen())
     }
 
     fun stop() {

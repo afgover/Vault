@@ -1,6 +1,7 @@
 package com.afgover.vault.data
 
 import com.afgover.vault.bt.HidLayouts
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
 import org.junit.Test
@@ -29,5 +30,24 @@ class HidLayoutsTest {
     fun `harf ve rakamlar duyarli degil - yalniz simgeler`() {
         assertTrue(HidLayouts.layoutSensitiveChars("abcXYZ0123 \n").isEmpty())
         assertFalse(HidLayouts.layoutSensitiveChars("kullanici@site.com").isEmpty())
+    }
+
+    @Test
+    fun `hiz testi metni duzenden bagimsiz - tasimayi olcer`() {
+        assertTrue(HidLayouts.layoutSensitiveChars(HidLayouts.SPEED_TEST_TEXT).isEmpty())
+        for (layout in HidLayouts.Layout.entries) {
+            val map = HidLayouts.map(layout)
+            assertTrue(
+                "$layout düzeninde yazılamıyor",
+                HidLayouts.SPEED_TEST_TEXT.all { it in map }
+            )
+        }
+    }
+
+    @Test
+    fun `hiz testi ozdes bloklardan olusur - dusen karakter goze carpar`() {
+        val bloklar = HidLayouts.SPEED_TEST_TEXT.split(" ")
+        assertEquals(10, bloklar.size)
+        assertTrue(bloklar.all { it == HidLayouts.SPEED_TEST_BLOCK })
     }
 }

@@ -38,6 +38,16 @@ object HidLayouts {
      */
     const val LAYOUT_TEST_TEXT = "vault: @ \" ' ( ) = ? - _ ; , ."
 
+    /**
+     * Hız testi bloğu ve metni: iki düzende de aynı tuşa düşen harf ve
+     * rakamlardan — düzeni değil TAŞIMAyı ölçer ('i' bilerek yok, TR-Q'da
+     * başka tuştadır). Boşlukla ayrılmış 10 özdeş blok; seçilen tempoda
+     * rapor düşerse ya da tuş tekrarı olursa bloklardan biri diğerlerine
+     * benzemez, gözle anında görülür.
+     */
+    const val SPEED_TEST_BLOCK = "abcdefghjk0123456789"
+    val SPEED_TEST_TEXT: String = List(10) { SPEED_TEST_BLOCK }.joinToString(" ")
+
     private fun MutableMap<Char, KeyStroke>.putLetters(overrides: Map<Char, KeyStroke> = emptyMap()) {
         for (c in 'a'..'z') {
             val usage = 0x04 + (c - 'a')

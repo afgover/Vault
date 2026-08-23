@@ -32,7 +32,8 @@ Tamamen çevrimdışı çalışır; hiçbir veri internete gönderilmez.
 - **Bilgisayara yazma (Bluetooth klavye)**: Telefon, bilgisayara Bluetooth
   klavye olarak bağlanır ve seçtiğin şifreyi/alanı tuş basımları halinde
   doğrudan bilgisayardaki imlecin olduğu alana yazar. Bilgisayara hiçbir
-  yazılım kurulmaz; Windows/Mac/Linux fark etmez (Android 9+ gerektirir)
+  yazılım kurulmaz; Windows/Mac/Linux fark etmez (Android 9+ gerektirir).
+  Uzun sırlar için yazma hızı seçilir, hız testiyle ölçülür
 - **Şifre üretici**: Kriptografik rastgelelikle (SecureRandom) 8–64 karakter
   şifre üretimi; karakter sınıfı seçimi, karışan karakterleri eleme ve entropi
   (bit) göstergesi. Ana ekrandaki 🎲 simgesinden ya da kayıt düzenlerken şifre
@@ -123,9 +124,17 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
    (Türkçe Q / US)
 4. Bilgisayarda imleci şifre kutusuna getir → telefonda **Yaz**'a bas →
    3 saniyelik geri sayımdan sonra değer tuş tuş yazılır
+5. **Uzun sırlarda hız**: değer tuş tuş gittiği için 5.000 karakterlik bir sır
+   *Güvenli* temposunda dakikalar sürer. Diyalogdaki **Yazma hızı**
+   (Güvenli / Hızlı / Çok hızlı) tempoyu belirler, altında tahmini süre yazar.
+   Hızı artırmadan önce **⏱ Hız testi**'ne bas: bilgisayara boşlukla ayrılmış
+   10 özdeş blok (`abcdefghjk0123456789`) yazılır ve ölçülen karakter/sn
+   gösterilir — bloklardan biri farklıysa o tempo bu bilgisayarda güvenli
+   değil, bir alt hızı seç. Yazarken ilerleme çubuğu ve **Durdur** vardır
 
 > Değer panodan veya ağdan geçmez; Bluetooth bağlantısının kendi şifrelemesi
-> içinde iletilir. Türkçe Q düzeninde birkaç nadir özel karakter yazılamazsa
+> içinde iletilir. Gönderim kuyruğu dolarsa rapor geri çekilip tekrar denenir,
+> yine olmazsa yazma **durur ve söyler** — karakter sessizce kaybolmaz. Türkçe Q düzeninde birkaç nadir özel karakter yazılamazsa
 > uygulama uyarır — o durumda US düzenini seçip bilgisayarı da geçici olarak
 > İngilizce düzene almak yeterlidir.
 
