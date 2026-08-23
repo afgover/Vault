@@ -327,10 +327,11 @@ def main():
         print(f"  {url}\n")
         show_qr(url)
         print(
-            "\nTelefonda: kamerayla QR'ı okut → sayfadaki \"💾 .vaultbak indir\" →\n"
-            "Vault → Ayarlar → Yedekten geri yükle → indirilen dosya → yedek parolası\n"
-            "→ \"Mevcuta ekle\". Sayfa bir kez açılır; yanlışlıkla kapattıysan komutu\n"
-            "yeniden çalıştır. Bittiğinde dosyayı Download'dan sil."
+            "\nTelefonda: kamerayla QR'ı okut → açılan düz metni kopyala →\n"
+            "Vault → + → \"Metinden içe aktar\" → Panodan al → yedek parolası\n"
+            "→ \"Mevcuta ekle\". Bağlantı bir kez açılır; yanlışlıkla kapattıysan\n"
+            "komutu yeniden çalıştır. Dosya olarak indirmek istersen URL'nin\n"
+            "sonuna ?indir=1 ekle."
         )
         if not args.cikti and not args.push:
             return

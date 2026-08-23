@@ -27,59 +27,28 @@ const CORS_HEADERS = {
   "Access-Control-Max-Age": "86400",
 };
 
-const PAGE_HEADERS = {
-  "Content-Type": "text/html; charset=utf-8",
+const TEXT_HEADERS = {
+  "Content-Type": "text/plain; charset=utf-8",
   "Referrer-Policy": "no-referrer",
   "X-Robots-Tag": "noindex, nofollow, noarchive",
   "Cache-Control": "no-store",
   "X-Content-Type-Options": "nosniff",
-  "Content-Security-Policy":
-    "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'",
+  "Content-Security-Policy": "default-src 'none'; sandbox",
 };
-
-function esc(s) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
 
 function notFound() {
   return new Response(
-    `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vault Relay</title>
-<body style="font-family:system-ui;background:#111;color:#ddd;display:grid;place-items:center;min-height:100vh;margin:0">
-<div style="text-align:center;padding:2rem">
-<h1 style="font-size:1.2rem">Burada bir şey yok</h1>
-<p style="color:#888">Bağlantı ya hiç var olmadı, ya süresi doldu, ya da bir kez görüntülenip yandı.</p>
-</div></body>`,
-    { status: 404, headers: PAGE_HEADERS }
+    "Burada bir sey yok. Baglanti ya hic var olmadi, ya suresi doldu, " +
+      "ya da bir kez goruntulenip silindi.\n",
+    { status: 404, headers: TEXT_HEADERS }
   );
 }
 
-function blobPage(blob) {
-  return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vault aktarımı</title>
-<body style="font-family:system-ui;background:#111;color:#ddd;margin:0;padding:1.2rem;max-width:640px;margin-inline:auto">
-<h1 style="font-size:1.1rem">🔐 Şifreli Vault zarfı</h1>
-<p style="color:#e0a800;font-size:.9rem">⚠️ Bu sayfa <b>bir kez</b> görüntülenir — kapatırsan içerik sunucudan silinmiş olur.
-Aşağıdaki metin şifrelidir; yedek parolan olmadan hiçbir şey ifade etmez.</p>
-<p style="color:#888;font-size:.85rem">${blob.length} karakter</p>
-<textarea id="z" readonly style="width:100%;height:9rem;background:#1a1a1a;color:#9c9;border:1px solid #333;border-radius:8px;padding:.6rem;font-family:monospace;font-size:.7rem">${esc(blob)}</textarea>
-<div style="display:flex;gap:.6rem;margin-top:.8rem;flex-wrap:wrap">
-<button id="dl" style="flex:1;padding:.9rem;background:#2a6;border:0;border-radius:8px;color:#fff;font-size:1rem">💾 .vaultbak indir</button>
-<button id="cp" style="flex:1;padding:.9rem;background:#246;border:0;border-radius:8px;color:#fff;font-size:1rem">📋 Kopyala</button>
-</div>
-<p style="color:#888;font-size:.85rem;margin-top:1rem">Telefonda: <b>Vault → Ayarlar → Yedekten geri yükle</b> → indirilen dosyayı seç
-→ yedek parolası → <b>Mevcuta ekle</b>. Bittiğinde dosyayı Download'dan sil.</p>
-<script>
-const t=document.getElementById("z");
-document.getElementById("cp").onclick=async e=>{await navigator.clipboard.writeText(t.value);e.target.textContent="✓ Kopyalandı"};
-document.getElementById("dl").onclick=e=>{
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([t.value],{type:"application/octet-stream"}));
-  a.download="vault-aktarim.vaultbak";a.click();URL.revokeObjectURL(a.href);
-  e.target.textContent="✓ İndirildi";
-};
-</script></body>`;
-}
+/*
+ * Not: sayfa (HTML) sunumu 2026-08-24'te kaldırıldı — Güvenli Tarama
+ * işaretlemesinin sinyallerini taşıyordu (SEC-027). Zarf artık düz metin
+ * olarak sunulur; indirme `?indir=1` ile aynı içeriği dosya olarak verir.
+ */
 
 export default {
   async fetch(request, env) {
@@ -121,10 +90,21 @@ export default {
       if (blob === null) return notFound();
       if (request.method === "HEAD") {
         // Ön-getirme/önizleme HEAD atarsa blob yakılmaz.
-        return new Response(null, { headers: PAGE_HEADERS });
+        return new Response(null, { headers: TEXT_HEADERS });
       }
       await env.BLOBS.delete(m[1]); // yak-oku
-      return new Response(blobPage(blob), { headers: PAGE_HEADERS });
+
+      // İndirme isteği: aynı içerik, dosya olarak.
+      if (url.searchParams.has("indir")) {
+        return new Response(blob, {
+          headers: {
+            ...TEXT_HEADERS,
+            "Content-Type": "application/octet-stream",
+            "Content-Disposition": 'attachment; filename="vault-aktarim.vaultbak"',
+          },
+        });
+      }
+      return new Response(blob, { headers: TEXT_HEADERS });
     }
 
     return new Response("vault relay", {
