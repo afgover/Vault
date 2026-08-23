@@ -2,12 +2,15 @@ package com.afgover.vault.ui.screens
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Arrangement
@@ -75,6 +78,7 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
 
     val toplanan = remember { mutableStateOf(mapOf<Int, QrTransfer.Frame>()) }
     var durum by remember { mutableStateOf("QR'ı çerçeveye al") }
+    var cozunurluk by remember { mutableStateOf("") }
     var bitti by remember { mutableStateOf(false) }
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -97,16 +101,39 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                                     setHints(
                                         mapOf(
                                             DecodeHintType.POSSIBLE_FORMATS to
-                                                listOf(BarcodeFormat.QR_CODE)
+                                                listOf(BarcodeFormat.QR_CODE),
+                                            // Yoğun kareyi zor açılarda da bul;
+                                            // maliyeti CPU, kazancı bekleme.
+                                            DecodeHintType.TRY_HARDER to true
                                         )
                                     )
                                 }
+                                // Çözünürlük bilinçli olarak yükseltildi:
+                                // CameraX varsayılanı 640x480 ve 117 modüllük
+                                // bir kare ekranın yarısını kapladığında modül
+                                // başına ~2,7 piksel düşüyor — ZXing'in
+                                // sınırı. 720p'de bu 5,5 piksele çıkıyor ve
+                                // okuma anında oluyor (ölçüm: B-080).
                                 val analysis = ImageAnalysis.Builder()
+                                    .setResolutionSelector(
+                                        ResolutionSelector.Builder()
+                                            .setResolutionStrategy(
+                                                ResolutionStrategy(
+                                                    Size(1280, 720),
+                                                    ResolutionStrategy
+                                                        .FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
+                                                )
+                                            )
+                                            .build()
+                                    )
                                     .setBackpressureStrategy(
                                         ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
                                     )
                                     .build()
                                 analysis.setAnalyzer(executor) { image ->
+                                    if (cozunurluk.isEmpty()) {
+                                        cozunurluk = "${image.width}×${image.height}"
+                                    }
                                     if (!bitti) {
                                         okunanQr(image, reader)?.let { metin ->
                                             QrTransfer.parse(metin)?.let { kare ->
@@ -162,6 +189,14 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
 
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                 Text(durum, style = MaterialTheme.typography.titleMedium)
+                if (cozunurluk.isNotEmpty()) {
+                    Text(
+                        "Kamera analizi: $cozunurluk · kareyi ekranın yarısını " +
+                            "kaplayacak kadar yakın tut",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 val kareler = toplanan.value.values
                 val toplam = kareler.firstOrNull()?.total ?: 0
                 if (toplam > 1) {
