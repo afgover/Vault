@@ -49,6 +49,7 @@ class VaultRepository(
     private val db = VaultDatabase.get(context)
     private val dao = db.entryDao()
     private val tagDao = db.tagDao()
+    private val usageLogDao = db.usageLogDao()
 
     fun observeAll(): Flow<List<EntryEntity>> = dao.observeAll()
 
@@ -205,6 +206,11 @@ class VaultRepository(
         val hazir = entries.map { it.toEntity(key, resolve(it)) }
         db.withTransaction {
             dao.deleteAll()
+            // Eski kasanın kullanım günlüğü de gitmeli: kayıtlar silinince
+            // olaylar sahipsiz kalıyordu (denetim). delete() bunu tek kayıt
+            // için yapıyor; 'tümünü değiştir' hepsini yapmalı.
+            usageLogDao.clear()
+            usageLogDao.clearBuffer()
             dao.insertAll(hazir)
         }
     }

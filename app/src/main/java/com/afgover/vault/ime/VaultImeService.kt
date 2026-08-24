@@ -231,8 +231,10 @@ class VaultImeService : InputMethodService() {
         })
         entry.data.fields().forEach { (label, value) ->
             content.addView(actionButton("$label yaz") {
-                currentInputConnection?.commitText(value, 1)
-                logUsage(entry.id, label)
+                // commitText false dönerse (bağlantı yok) yazma olmamıştır;
+                // günlüğe 'yazıldı' düşme (denetim).
+                val yazildi = currentInputConnection?.commitText(value, 1) == true
+                if (yazildi) logUsage(entry.id, label)
             })
         }
     }

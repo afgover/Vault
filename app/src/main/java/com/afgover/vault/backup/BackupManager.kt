@@ -77,6 +77,7 @@ object BackupManager {
                         .put("createdAt", e.createdAt)
                         .put("updatedAt", e.updatedAt)
                         .put("quick", e.quick)
+                        .put("sortIndex", e.sortIndex)
                         .put("data", e.data.toJson())
                         .apply {
                             if (e.noteKind != com.afgover.vault.data.NoteKind.GENEL) {
@@ -206,6 +207,9 @@ object BackupManager {
                         updatedAt = o.optLong("updatedAt", System.currentTimeMillis()),
                         // Eski yedeklerde alan yok: korumalı kabul edilir.
                         quick = o.optBoolean("quick", false),
+                        // Elle kurulan sıra yedeğe girsin: eskiden yazılmıyordu,
+                        // geri yüklemede hepsi 0'a düşüyordu (denetim).
+                        sortIndex = o.optInt("sortIndex", 0),
                         noteKind = com.afgover.vault.data.NoteKind.of(o.optString("noteKind")),
                         tagNames = o.optJSONArray("tags")?.let { arr ->
                             buildList { for (j in 0 until arr.length()) add(arr.getString(j)) }

@@ -583,7 +583,8 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     fun clipboardText(): String {
         val cm = getApplication<Application>()
             .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        return cm.primaryClip?.getItemAt(0)?.coerceToText(getApplication()).toString()
+        // Boş panoda coerceToText null döner; .toString() "null" metni üretiyordu (denetim).
+        return cm.primaryClip?.getItemAt(0)?.coerceToText(getApplication())?.toString() ?: ""
     }
 
     private fun clearClipboard() {

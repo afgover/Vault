@@ -29,7 +29,7 @@ class BackupManagerTest {
                 custom = listOf(CustomField("şube", "kadıköy")),
                 passwordChangedAt = 1_755_000_000_000
             ),
-            createdAt = 100, updatedAt = 200, quick = false, tagIds = listOf(7L)
+            createdAt = 100, updatedAt = 200, quick = false, tagIds = listOf(7L), sortIndex = 5
         ),
         DecryptedEntry(
             id = 2, type = EntryType.NOTE, title = "Not",
@@ -163,5 +163,11 @@ class BackupManagerTest {
         assertThrows(BackupManager.InvalidFormatException::class.java) {
             BackupManager.import(dev.inputStream(), password)
         }
+    }
+
+    @Test
+    fun `sortIndex gidis donusunde korunur - elle sira kaybolmaz`() {
+        val sonuc = BackupManager.import(disaVer().byteInputStream(), password)
+        assertEquals(5, sonuc.entries[0].sortIndex)
     }
 }
