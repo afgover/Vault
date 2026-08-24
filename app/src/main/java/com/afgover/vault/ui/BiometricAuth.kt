@@ -5,6 +5,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.afgover.vault.R
 import com.afgover.vault.core.KeyManager
 import javax.crypto.SecretKey
 
@@ -32,7 +33,7 @@ object BiometricAuth {
         val cipher = keyManager.biometricDecryptCipher()
         if (cipher == null) {
             keyManager.clearBiometric()
-            onError("Parmak izi kilidi geçersizleşmiş (ör. yeni parmak izi eklendi). Parolayla aç.")
+            onError(activity.getString(R.string.main_biometric_invalidated))
             return
         }
         val prompt = BiometricPrompt(
@@ -42,8 +43,11 @@ object BiometricAuth {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     val c = result.cryptoObject?.cipher ?: return
                     val payload = keyManager.unlockWithBiometricStage1(c)
-                    if (payload == null) onError("Parmak izi doğrulandı ama anahtar çözülemedi. Parolayla aç.")
-                    else onPayload(payload)
+                    if (payload == null) {
+                        onError(activity.getString(R.string.main_biometric_decrypt_failed))
+                    } else {
+                        onPayload(payload)
+                    }
                 }
 
                 override fun onAuthenticationError(code: Int, msg: CharSequence) {
@@ -57,8 +61,8 @@ object BiometricAuth {
             }
         )
         val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Vault kilidini aç")
-            .setNegativeButtonText("Parola kullan")
+            .setTitle(activity.getString(R.string.main_unlock_title))
+            .setNegativeButtonText(activity.getString(R.string.main_use_password))
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
         prompt.authenticate(info, BiometricPrompt.CryptoObject(cipher))

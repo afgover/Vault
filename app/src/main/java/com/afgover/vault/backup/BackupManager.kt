@@ -29,8 +29,10 @@ import java.io.OutputStream
  */
 object BackupManager {
 
-    class WrongPasswordException : Exception("Yedek parolası yanlış")
-    class InvalidFormatException : Exception("Geçersiz yedek dosyası")
+    // Mesajlar TEKNİKTİR ve kullanıcıya gösterilmez: arayüz bu istisnaları
+    // TİPLE yakalayıp kendi dilinde mesaj kurar (yerelleştirme).
+    class WrongPasswordException : Exception("wrong backup password")
+    class InvalidFormatException : Exception("invalid backup envelope")
 
     /**
      * Girdi üst sınırı. Meşru bir yedek (256 KB/kayıt) bunun çok altındadır;

@@ -18,8 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.R
 import com.afgover.vault.ui.VaultViewModel
 
 /**
@@ -38,55 +40,69 @@ fun PasteImportDialog(
     val qrdanGeldi = initialText.isNotEmpty()
     var pw by remember { mutableStateOf("") }
     var replace by remember { mutableIntStateOf(0) }
+    // Hata metinleri onClick içinde, yani @Composable olmayan bir bağlamda
+    // kullanılıyor; kaynaklar burada, gövdede çözülmek zorunda.
+    val bosZarfHatasi = stringResource(R.string.paste_err_envelope_empty)
+    val qrParolaHatasi = stringResource(R.string.paste_err_password_required_qr)
+    val eksikParolaHatasi = stringResource(R.string.paste_err_password_missing)
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (qrdanGeldi) "QR ile aktar" else "Metinden içe aktar") },
+        title = {
+            Text(
+                if (qrdanGeldi) stringResource(R.string.paste_title_qr)
+                else stringResource(R.string.paste_title_text)
+            )
+        },
         text = {
             Column {
                 if (qrdanGeldi) {
                     Text(
-                        "✓ QR okundu · ${text.length} karakterlik şifreli zarf alındı.\n" +
-                            "Şimdi yalnız **yedek parolasını** gir.",
+                        stringResource(R.string.paste_qr_ready, text.length),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 } else {
                     Text(
-                        "Sayfadaki metni yapıştır ya da \"Panodan al\"a bas. " +
-                            "Metin şifrelidir; parolasını bir sonraki alana gireceksin.",
+                        stringResource(R.string.paste_intro),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = text, onValueChange = { text = it },
-                        label = { Text("Şifreli zarf") },
+                        label = { Text(stringResource(R.string.paste_label_envelope)) },
                         minLines = 3, maxLines = 5,
                         supportingText = {
-                            if (text.isNotEmpty()) Text("${text.length} karakter")
+                            if (text.isNotEmpty()) {
+                                Text(stringResource(R.string.paste_char_count, text.length))
+                            }
                         }
                     )
                     TextButton(onClick = { text = viewModel.clipboardText() }) {
-                        Text("Panodan al")
+                        Text(stringResource(R.string.paste_btn_clipboard))
                     }
                 }
-                SecretField(value = pw, onValueChange = { pw = it }, label = "Yedek parolası")
+                SecretField(
+                    value = pw,
+                    onValueChange = { pw = it },
+                    label = stringResource(R.string.paste_label_backup_password)
+                )
                 Spacer(Modifier.height(8.dp))
                 Row {
                     SecimCipi(
                         secili = replace == 0,
                         onClick = { replace = 0 },
-                        label = "Mevcuta ekle",
+                        label = stringResource(R.string.paste_mode_merge),
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     SecimCipi(
                         secili = replace == 1,
                         onClick = { replace = 1 },
-                        label = "Tümünü değiştir"
+                        label = stringResource(R.string.paste_mode_replace)
                     )
                 }
                 if (replace == 1) {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Dikkat: mevcut tüm kayıtlar silinip zarftakiler yazılır.",
+                        stringResource(R.string.paste_replace_warning),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -104,20 +120,22 @@ fun PasteImportDialog(
                     // kalmak "tepki yok" olarak okunuyordu, oysa kullanıcının
                     // ihtiyacı NEDEN olmadığını görmek.
                     when {
-                        text.isBlank() ->
-                            viewModel.error = "Şifreli zarf alanı boş — " +
-                                "\"Panodan al\" ile yapıştır."
-                        pw.isEmpty() && qrdanGeldi ->
-                            viewModel.error = "Yedek parolası gerekli: zarfı " +
-                                "bilgisayarda şifrelerken girdiğin parola."
-                        pw.isEmpty() ->
-                            viewModel.error = "Yedek parolası girilmedi."
+                        text.isBlank() -> viewModel.error = bosZarfHatasi
+                        pw.isEmpty() && qrdanGeldi -> viewModel.error = qrParolaHatasi
+                        pw.isEmpty() -> viewModel.error = eksikParolaHatasi
                         else -> viewModel.importBackupText(text, pw, replace == 1) { onDismiss() }
                     }
                 },
                 enabled = !viewModel.busy
-            ) { Text(if (viewModel.busy) "Aktarılıyor…" else "İçe aktar") }
+            ) {
+                Text(
+                    if (viewModel.busy) stringResource(R.string.paste_btn_importing)
+                    else stringResource(R.string.paste_btn_import)
+                )
+            }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.paste_btn_cancel)) }
+        }
     )
 }

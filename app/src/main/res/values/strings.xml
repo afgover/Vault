@@ -1,6 +1,468 @@
 <?xml version="1.0" encoding="utf-8"?>
+    <!--
+  Base language: ENGLISH. Turkish lives in values-tr/.
+
+  Android falls back to this file when the device locale has no translation,
+  so a non-Turkish phone shows English instead of Turkish (the app shipped
+  Turkish-only before). Keep keys stable: they are referenced from code.
+-->
 <resources>
-    <string name="app_name">Vault</string>
-    <string name="ime_label">Vault Klavyesi</string>
-    <string name="autofill_label">Vault</string>
+    <!-- Brand name: not translated. -->
+    <string name="app_name" translatable="false">Vault</string>
+    <string name="ime_label">Vault Keyboard</string>
+    <string name="autofill_label" translatable="false">Vault</string>
+
+    <!-- Built-in field labels. These are DISPLAY text only: what gets stored
+         in the usage log and the clipboard label is the stable key, never
+         this string (otherwise the log would change language mid-history). -->
+    <string name="field_full_name">Full name</string>
+    <string name="field_username">Username</string>
+    <string name="field_password">Password</string>
+    <string name="field_url">Site / App</string>
+    <string name="field_phone">Phone</string>
+    <string name="field_email">Email</string>
+    <string name="field_address">Address</string>
+    <string name="field_cardholder">Cardholder</string>
+    <string name="field_card_number">Card number</string>
+    <string name="field_expiry">Expiry date</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">Note</string>
+
+    <!-- Entry types -->
+    <string name="type_login">Account / Password</string>
+    <string name="type_everyday">Everyday</string>
+    <string name="type_card">Card</string>
+    <string name="type_note">Secure note</string>
+
+    <!-- Note subtypes -->
+    <string name="note_kind_general">General note</string>
+    <string name="note_kind_script">Script / command (.sh)</string>
+    <string name="note_kind_key">Key / certificate (.pem)</string>
+    <string name="note_kind_fingerprint">Fingerprint / trust anchor</string>
+    <string name="note_kind_recovery">Recovery codes</string>
+    <string name="note_kind_config">Configuration (.env, json)</string>
+
+    <!-- Sort options -->
+    <string name="sort_title_asc">Title (A→Z)</string>
+    <string name="sort_title_desc">Title (Z→A)</string>
+    <string name="sort_updated_desc">Recently updated</string>
+    <string name="sort_created_desc">Recently added</string>
+    <string name="sort_type">By type</string>
+    <string name="sort_manual">Custom order (drag)</string>
+
+    <!-- Usage log event kinds -->
+    <string name="usage_created">Created</string>
+    <string name="usage_updated">Changed</string>
+    <string name="usage_copied">Copied to clipboard</string>
+    <string name="usage_bt_typed">Typed to computer</string>
+    <string name="usage_keyboard_typed">Typed from keyboard</string>
+    <string name="usage_quick_on">Quick access enabled</string>
+    <string name="usage_quick_off">Quick access disabled</string>
+
+    <!-- Bluetooth keyboard: layouts and speeds -->
+    <string name="bt_layout_us">US (English)</string>
+    <string name="bt_layout_tr">Turkish Q</string>
+    <string name="bt_speed_safe">Safe</string>
+    <string name="bt_speed_fast">Fast</string>
+    <string name="bt_speed_turbo">Very fast</string>
+
+    <!-- Bluetooth keyboard: errors reported from a context-free manager -->
+    <string name="bt_err_off">Bluetooth is off. Turn Bluetooth on first.</string>
+    <string name="bt_err_unsupported">This phone does not support the Bluetooth keyboard (HID) profile.</string>
+    <string name="bt_err_register">HID registration failed — the phone may not support it.</string>
+    <string name="bt_err_connect">Could not start the connection. Is the other device\'s Bluetooth on?</string>
+    <string name="bt_err_no_link">No connection — pick the device again.</string>
+    <string name="bt_err_queue">The Bluetooth send queue stopped responding; typing stopped at character %1$d. Choose a slower speed.</string>
+
+    <!-- Entry too large -->
+    <string name="entry_too_large">\"%1$s\" is too large: %2$d KB (limit %3$d KB). Split the long content, or keep it as a file on your computer.</string>
+    <string name="ime_write_field">Type %1$s</string>
+
+    <!-- backup -->
+    <string name="backup_autofill_form_unreadable">Could not read the form</string>
+    <string name="backup_autofill_locked_save">The vault is locked. Unlock Vault first to save.</string>
+    <string name="backup_autofill_nothing_to_save">No information found to save</string>
+    <string name="backup_autofill_save_failed">Could not save: %1$s</string>
+    <string name="backup_autofill_unlock_to_fill">Unlock to fill</string>
+    <!-- bt -->
+    <string name="bt_duration_seconds">%1$d s</string>
+    <string name="bt_duration_minutes">%1$d min %2$d s</string>
+    <string name="bt_unsupported_title">Not supported</string>
+    <string name="bt_unsupported_body">The Bluetooth keyboard feature requires Android 9 or newer.</string>
+    <string name="bt_ok">OK</string>
+    <string name="bt_stopped_summary">Stopped: %1$d / %2$d characters typed. The text on the computer is INCOMPLETE — delete it and start over.</string>
+    <string name="bt_aborted_summary">Typing was cut short: %1$d / %2$d characters. The text on the computer is INCOMPLETE — delete it, pick a slower speed and try again.</string>
+    <string name="bt_speed_result">%1$d characters, %2$s (%3$d characters/s)</string>
+    <string name="bt_unknown_device">unknown device</string>
+    <string name="bt_untyped_warning">These characters could not be typed in this layout: %1$s — you can try the other layout.</string>
+    <string name="bt_done_summary">✓ %1$d characters typed — %2$s, %3$d characters/s. Verify the character count on the computer.</string>
+    <string name="bt_title">Type to computer: %1$s</string>
+    <string name="bt_permission_required">Bluetooth permission is required. This feature cannot work without it.</string>
+    <string name="bt_preparing">Preparing the Bluetooth keyboard…</string>
+    <string name="bt_pick_computer">Pick your computer (it must already be paired with the phone over Bluetooth):</string>
+    <string name="bt_no_bonded_devices">No paired devices. Pair with your computer from the phone\'s Bluetooth settings, then try again.</string>
+    <string name="bt_connecting">Connecting to %1$s…</string>
+    <string name="bt_connected">✓ %1$s connected</string>
+    <string name="bt_layout_heading">YOUR COMPUTER\'S keyboard layout (not the phone\'s):</string>
+    <string name="bt_layout_warning">The computer interprets the key codes — if you pick the wrong layout, characters like @ \" ? SILENTLY turn into other ones.</string>
+    <string name="bt_selected_layout">Selected layout: %1$s</string>
+    <string name="bt_sensitive_chars">This text contains layout-sensitive characters: %1$s — I recommend typing the test before you send it.</string>
+    <string name="bt_test_done">✓ Test typed — try again</string>
+    <string name="bt_test_first">🧪 Type the test first (recommended)</string>
+    <string name="bt_test_expected">The computer must show EXACTLY this:\n%1$s\nIf it differs, pick the other layout above and repeat the test.</string>
+    <string name="bt_speed_heading">Typing speed:</string>
+    <string name="bt_speed_desc">Keystrokes are sent one by one. If the speed is higher than the connection can carry, typing stops (no characters are lost) — use the speed test to measure which one works.</string>
+    <string name="bt_estimate">%1$d characters ≈ %2$s</string>
+    <string name="bt_speed_test_button">⏱ Speed test (%1$d characters)</string>
+    <string name="bt_speed_result_detail">%1$s\nThe computer must show 10 space-separated groups, each of them exactly %2$s — if even one differs, pick the next slower speed and repeat the test.</string>
+    <string name="bt_typing_progress">Typing… %1$d / %2$d characters</string>
+    <string name="bt_remaining">~%1$s left — don\'t move the cursor on the computer until it finishes.</string>
+    <string name="bt_before_start">Put the cursor in the target field on the computer, then press the button. Typing starts 3 seconds later.</string>
+    <string name="bt_countdown_short">%1$d…</string>
+    <string name="bt_type">Type</string>
+    <string name="bt_stop">Stop</string>
+    <string name="bt_close">Close</string>
+    <!-- detail -->
+    <string name="detail_back">Back</string>
+    <string name="detail_edit">Edit</string>
+    <string name="detail_quick_title">Use on the keyboard without a password</string>
+    <string name="detail_quick_on">Appears in the Vault Keyboard even while the vault is locked; its protection is only as strong as your phone\'s screen lock.</string>
+    <string name="detail_quick_off">Available only while the vault is unlocked.</string>
+    <string name="detail_dates">Added: %1$s · Updated: %2$s</string>
+    <string name="detail_password_changed">Password last changed: %1$s</string>
+    <string name="detail_usage_title">Recent uses</string>
+    <string name="detail_usage_desc">Where this entry went from inside the app. Values read off the screen, photographed or picked through autofill DO NOT appear here — the log only knows what the app itself did.</string>
+    <string name="detail_usage_empty">No uses yet.</string>
+    <string name="detail_show_less">Show less</string>
+    <string name="detail_show_all">Show all (%1$d)</string>
+    <string name="detail_hide">Hide</string>
+    <string name="detail_show">Show</string>
+    <string name="detail_copy">Copy</string>
+    <string name="detail_type_to_pc">Type to computer</string>
+    <string name="detail_show_fingerprint">Show SHA-256 fingerprint</string>
+    <string name="detail_fingerprint_len">SHA-256 fingerprint · %1$d characters</string>
+    <string name="detail_fingerprint_len_short">SHA-256 fingerprint · %1$d characters · short value</string>
+    <string name="detail_fingerprint_warning">The digest of a short value can be reversed by brute force — do not share this fingerprint.</string>
+    <string name="detail_fingerprint_verify">On a computer: shasum -a 256 file\n(if you pasted it by hand the trailing newline may be missing: printf \'%1$s\' \"$(cat file)\" | shasum -a 256)</string>
+    <string name="detail_copy_fingerprint">Copy fingerprint</string>
+    <!-- edit -->
+    <string name="edit_title_new">New %1$s</string>
+    <string name="edit_title_edit">Edit</string>
+    <string name="edit_back">Back</string>
+    <string name="edit_delete">Delete</string>
+    <string name="edit_field_title">Title</string>
+    <string name="edit_field_username">Username / Email</string>
+    <string name="edit_generate_password">Generate password</string>
+    <string name="edit_field_card_number">Card number</string>
+    <string name="edit_field_expiry">Expiry (MM/YY)</string>
+    <string name="edit_field_iban">IBAN (optional)</string>
+    <string name="edit_note_kind">Note type</string>
+    <string name="edit_custom_fields">Extra fields</string>
+    <string name="edit_field_name">Field name</string>
+    <string name="edit_remove_field">Remove field</string>
+    <string name="edit_field_value">Value</string>
+    <string name="edit_add_field">+ Add field</string>
+    <string name="edit_field_notes">Notes</string>
+    <string name="edit_quick_title">Use on the keyboard without a password</string>
+    <string name="edit_quick_desc">When on, this entry appears in the Vault Keyboard even while the vault is locked. It is then protected only by your phone\'s screen lock; leave it off for sensitive data such as passwords.</string>
+    <string name="edit_tags">Tags</string>
+    <string name="edit_new_tag">+ New</string>
+    <string name="edit_save">Save</string>
+    <string name="edit_discard_title">Changes not saved</string>
+    <string name="edit_discard_text">You are about to leave without saving what you entered. Are you sure?</string>
+    <string name="edit_discard_confirm">Leave without saving</string>
+    <string name="edit_discard_cancel">Back to editing</string>
+    <string name="edit_delete_title">Delete entry</string>
+    <string name="edit_delete_text">\"%1$s\" will be permanently deleted. Are you sure?</string>
+    <string name="edit_cancel">Cancel</string>
+    <!-- home -->
+    <string name="home_sort_cd">Sort: %1$s</string>
+    <string name="home_selected">Selected</string>
+    <string name="home_transfer_cd">Transfer from computer</string>
+    <string name="home_generator_cd">Password generator</string>
+    <string name="home_lock_cd">Lock</string>
+    <string name="home_settings_cd">Settings</string>
+    <string name="home_import_qr">Import via QR</string>
+    <string name="home_import_text">Import from text</string>
+    <string name="home_add_cd">Add</string>
+    <string name="home_search_hint">Search entries</string>
+    <string name="home_manage_tags_cd">Manage tags</string>
+    <string name="home_manual_hint">Custom order: press and hold the ⠿ handle on a row and drag.</string>
+    <string name="home_empty_vault">Your vault is ready — add your first entry with the + at the bottom right.</string>
+    <string name="home_empty_filter">No entries match these filters.</string>
+    <string name="home_drag_cd">Drag</string>
+    <string name="home_tag_new">New tag</string>
+    <string name="home_tag_edit">Edit tag</string>
+    <string name="home_tag_name">Name</string>
+    <string name="home_selected_color">Selected color</string>
+    <string name="home_save">Save</string>
+    <string name="home_cancel">Cancel</string>
+    <string name="home_tags_title">Tags</string>
+    <string name="home_tags_empty">No tags yet. You can add one below.</string>
+    <string name="home_edit_cd">Edit</string>
+    <string name="home_delete">Delete</string>
+    <string name="home_tag_add_new">+ New tag</string>
+    <string name="home_close">Close</string>
+    <string name="home_tag_delete_title">Delete tag</string>
+    <string name="home_tag_delete_msg">\"%1$s\" will be deleted and removed from the entries that carry it. The entries themselves are not deleted.</string>
+    <!-- ime -->
+    <string name="ime_switch_keyboard">ABC</string>
+    <string name="ime_locked_quick_only">The vault is locked — quick access entries only.</string>
+    <string name="ime_unlock_all">🔓 Unlock (for all entries)</string>
+    <string name="ime_no_quick_entries">No entries marked for quick access.</string>
+    <string name="ime_no_entries">No entries.</string>
+    <string name="ime_no_match">No entries match \"%1$s\".</string>
+    <string name="ime_back_to_list">← %1$s</string>
+    <string name="ime_search_hint">Search…</string>
+    <!-- log -->
+    <string name="log_title">Usage log</string>
+    <string name="log_scope_note">The log only sees what the app itself does: a value read off the screen, photographed or typed in by hand leaves no trace. Which entry you pick during autofill cannot be recorded either, because Android does not report it to the app. This log can be deleted while the vault is unlocked — it is not a tamper-proof record.</string>
+    <string name="log_filter_by_target">Filter by target:</string>
+    <string name="log_filter_all">All</string>
+    <string name="log_empty">The log is empty.</string>
+    <string name="log_empty_for_target">No entry went to this target.</string>
+    <string name="log_deleted_entry">(deleted entry)</string>
+    <string name="log_entries_to_target">Entries sent to \"%1$s\": %2$s</string>
+    <string name="log_clear_confirm">Delete the entire log? This cannot be undone; the entries themselves are not affected.</string>
+    <string name="log_clear_yes">Yes, delete</string>
+    <string name="log_cancel">Cancel</string>
+    <string name="log_close">Close</string>
+    <string name="log_clear">Delete log</string>
+    <!-- main -->
+    <string name="main_biometric_needs_pin">Your Vault PIN is required to save the fingerprint record</string>
+    <string name="main_biometric_enable_failed">Could not enable fingerprint: %1$s</string>
+    <string name="main_biometric_enroll_title">Enable biometric unlock</string>
+    <string name="main_cancel">Cancel</string>
+    <string name="main_biometric_offer_title">Unlock with fingerprint</string>
+    <string name="main_biometric_offer_body">Instead of typing your master password every time you open the vault, you can use your fingerprint. The master password does not go away: it always works when you need it, and it is also what opens your backups — don\'t forget it.</string>
+    <string name="main_enable">Enable</string>
+    <string name="main_password_for_now">Password for now</string>
+    <string name="main_biometric_invalidated">Fingerprint unlock is no longer valid (e.g. a new fingerprint was added). Unlock with your password.</string>
+    <string name="main_biometric_decrypt_failed">Fingerprint verified, but the key could not be decrypted. Unlock with your password.</string>
+    <string name="main_unlock_title">Unlock Vault</string>
+    <string name="main_use_password">Use password</string>
+    <string name="main_hide">Hide</string>
+    <string name="main_show">Show</string>
+    <!-- paste -->
+    <string name="paste_title_qr">Import via QR</string>
+    <string name="paste_title_text">Import from text</string>
+    <string name="paste_qr_ready">✓ QR scanned · encrypted envelope of %1$d characters received.\nNow enter just the **backup password**.</string>
+    <string name="paste_intro">Paste the text from the page or tap \"Get from clipboard\". The text is encrypted; you will enter its password in the next field.</string>
+    <string name="paste_label_envelope">Encrypted envelope</string>
+    <string name="paste_char_count">%1$d characters</string>
+    <string name="paste_btn_clipboard">Get from clipboard</string>
+    <string name="paste_label_backup_password">Backup password</string>
+    <string name="paste_mode_merge">Add to existing</string>
+    <string name="paste_mode_replace">Replace all</string>
+    <string name="paste_replace_warning">Warning: every existing entry is deleted and the ones in the envelope are written instead.</string>
+    <string name="paste_err_envelope_empty">Encrypted envelope field is empty — paste it with \"Get from clipboard\".</string>
+    <string name="paste_err_password_required_qr">Backup password required: the password you entered when encrypting the envelope on your computer.</string>
+    <string name="paste_err_password_missing">No backup password entered.</string>
+    <string name="paste_btn_importing">Importing…</string>
+    <string name="paste_btn_import">Import</string>
+    <string name="paste_btn_cancel">Cancel</string>
+    <!-- qr -->
+    <string name="qr_status_aim">Line up the QR code in the viewfinder</string>
+    <string name="qr_status_done">Done</string>
+    <string name="qr_status_received">%1$d/%2$d received</string>
+    <string name="qr_status_frames_mismatch">Frames didn\'t match, start over</string>
+    <string name="qr_permission_rationale">Camera permission is required. The image never leaves the device: the decoder is inside the app and the app has no network permission.</string>
+    <string name="qr_grant_in_settings">Grant in Settings</string>
+    <string name="qr_grant_permission">Grant permission</string>
+    <string name="qr_camera_analysis">Camera analysis: %1$s · hold the code close enough to fill half the screen</string>
+    <string name="qr_missing_frames">Missing frames: %1$s</string>
+    <string name="qr_cancel">Cancel</string>
+    <!-- settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_back">Back</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_sort_moved">Sorting moved to the home screen: you pick it from the ⇅ icon next to the title, and it applies both in the list and in the Vault Keyboard.\nCurrent order: %1$s</string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_backup_desc">The backup file is encrypted with AES-256 and opens only with the backup password. You can save the file anywhere you like — Drive, SD card and so on; even if the phone is wiped, the file plus the password restores everything.</string>
+    <string name="settings_backup_export">Create encrypted backup</string>
+    <string name="settings_backup_restore">Restore from backup</string>
+    <string name="settings_import_paste">Import from text (paste)</string>
+    <string name="settings_usage_log">Usage log</string>
+    <string name="settings_usage_log_desc">Which field of which entry went where, and when — to the clipboard, to a computer, or out through the keyboard.</string>
+    <string name="settings_usage_log_open">Open usage log</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_locking">Locking</string>
+    <string name="settings_locking_desc">The vault locks the moment the screen turns off; the key is wiped from memory. As long as the screen stays on, you are not asked for the password or fingerprint again.\n\nEntries marked \"Use on the keyboard without a password\" can be used while the vault is locked too; you can turn that mark on and off from each entry\'s own screen.</string>
+    <string name="settings_biometric_disable">Turn off biometric unlock</string>
+    <string name="settings_biometric_enable">Enable biometric unlock</string>
+    <string name="settings_pin_heading">PIN (second gate for the fingerprint)</string>
+    <string name="settings_pin_legacy_warning">⚠ This PIN was set up in an older version and is incompatible with this one: entries cannot be opened and the PIN cannot be turned off. Repair it with your master password + PIN.</string>
+    <string name="settings_pin_on_desc">On: after your fingerprint is read, the PIN is asked. It is not asked when you unlock with the master password — that password is already a strong secret.</string>
+    <string name="settings_pin_off_desc">Optional. If you turn it on, the fingerprint record is encrypted with the PIN and the PIN is asked after the fingerprint at unlock. Default: off.\nOrder matters: set the PIN first, then enable the fingerprint.</string>
+    <string name="settings_pin_repair">Repair PIN record</string>
+    <string name="settings_pin_turn_off">Turn off PIN</string>
+    <string name="settings_pin_set">Set PIN</string>
+    <string name="settings_reminder_heading">Master password reminder</string>
+    <string name="settings_reminder_desc">While you use the fingerprint, the master password goes untyped for months and gets forgotten — yet it is also what opens your backups. Once per interval you choose, the password is asked instead of the fingerprint. Default: never.</string>
+    <string name="settings_reminder_never">Never</string>
+    <string name="settings_reminder_days">%1$d days</string>
+    <string name="settings_change_password">Change master password</string>
+    <string name="settings_autofill">Autofill</string>
+    <string name="settings_autofill_on_desc">On. When you tap a sign-in or card form in apps and browsers, your Vault entries appear as a fill option. If the vault is locked, the unlock screen comes first; no value is handed to the system while locked.</string>
+    <string name="settings_autofill_off_desc">If you enable it, tapping a sign-in or card form in apps and browsers offers your Vault entries directly as a fill option. It also offers to save newly entered details to Vault.\n\nThe button below opens system settings. The name of the list that opens varies by device (\"Preferred service\", \"Autofill service\" or \"Passwords, passkeys &amp; autofill\"); just pick Vault from that list.</string>
+    <string name="settings_autofill_open">Open autofill settings</string>
+    <string name="settings_autofill_enable">Enable autofill</string>
+    <string name="settings_keyboard">Vault Keyboard</string>
+    <string name="settings_keyboard_desc">If you enable the keyboard add-on, you can pick Vault Keyboard from the keyboard switcher in any app and type your saved details straight into the field.</string>
+    <string name="settings_keyboard_open">Open keyboard settings</string>
+    <string name="settings_export_pw_title">Set backup password</string>
+    <string name="settings_export_pw_desc">Without this password the backup file CANNOT be opened. Make it DIFFERENT from your master password: the backup password gets typed on computers, the master password never touches a computer.</string>
+    <string name="settings_biometric_pin_title">Tie the fingerprint to a PIN</string>
+    <string name="settings_biometric_pin_desc">The fingerprint record will be encrypted with the PIN: at unlock you are asked for the fingerprint first, then this PIN.</string>
+    <string name="settings_label_pin">PIN</string>
+    <string name="settings_continue">Continue</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_label_password">Password</string>
+    <string name="settings_label_password_again">Password (again)</string>
+    <string name="settings_ok">OK</string>
+    <string name="settings_label_backup_password">Backup password</string>
+    <string name="settings_import_merge">Add to existing</string>
+    <string name="settings_import_replace">Replace all</string>
+    <string name="settings_import_replace_warning">Warning: every existing entry is deleted and the ones in the backup are written instead.</string>
+    <string name="settings_import_pw_missing">No backup password entered.</string>
+    <string name="settings_import_confirm">Restore</string>
+    <string name="settings_label_current_password">Current password</string>
+    <string name="settings_label_new_password">New password</string>
+    <string name="settings_label_new_password_again">New password (again)</string>
+    <string name="settings_change">Change</string>
+    <string name="settings_pin_disable_desc">Once the PIN is off, entries open with the master password / fingerprint alone. You do not need to remember the PIN: the master password is enough. Re-enable the fingerprint afterwards.</string>
+    <string name="settings_pin_set_desc">The PIN must be 4-12 digits. If you forget it, the master password ALONE is not enough — keep the PIN somewhere safe, like your backup password. You have to re-enable the fingerprint afterwards.</string>
+    <string name="settings_label_master_password">Master password</string>
+    <string name="settings_label_current_pin">Current PIN</string>
+    <string name="settings_label_pin_again">PIN (again)</string>
+    <string name="settings_repair">Repair</string>
+    <string name="settings_turn_off">Turn off</string>
+    <string name="settings_set">Set</string>
+    <!-- transfer -->
+    <string name="transfer_title">Transfer from computer · step %1$d/2</string>
+    <string name="transfer_step1_steps">1. On the computer, open aktar.html and put the cursor in the \"Yedek parolası\" (backup password) field.\n2. Use the button below to type the password into both fields at once (a Tab goes in between).</string>
+    <string name="transfer_regenerate">Generate a new password</string>
+    <string name="transfer_password_note">A generated, single-transfer password — you don\'t need to memorize it, step 2 uses it automatically. Letters+digits: unaffected by keyboard layout differences.</string>
+    <string name="transfer_bt_write_both">💻 Type into both fields over Bluetooth</string>
+    <string name="transfer_step2_steps">On the computer: paste the content → \"Şifrele ve yayınla\" (encrypt and publish) → scan the QR with your phone → 📋 Kopyala (copy) on the page. Then come back here and pick up the envelope. The password is ready in the wizard — you won\'t enter it.</string>
+    <string name="transfer_envelope_label">Encrypted envelope</string>
+    <string name="transfer_char_count">%1$d characters</string>
+    <string name="transfer_from_clipboard">Get from clipboard</string>
+    <string name="transfer_merge">Add to existing</string>
+    <string name="transfer_replace_all">Replace all</string>
+    <string name="transfer_replace_warning">Warning: every existing entry is deleted and the ones in the envelope are written instead.</string>
+    <string name="transfer_password_typed_next">Password typed, continue →</string>
+    <string name="transfer_envelope_empty">The encrypted envelope field is empty — publish on the computer, scan the QR and tap \"Get from clipboard\".</string>
+    <string name="transfer_importing">Importing…</string>
+    <string name="transfer_import">Import</string>
+    <string name="transfer_back">← Back</string>
+    <string name="transfer_cancel">Cancel</string>
+    <string name="transfer_bt_label">Transfer password (into both fields, with Tab)</string>
+    <!-- unlock -->
+    <string name="unlock_welcome_title">Welcome to Vault</string>
+    <string name="unlock_locked_title">Vault is locked</string>
+    <string name="unlock_setup_desc">Set a master password. All your data is encrypted with a key derived from this password. If you forget it, your data becomes permanently INACCESSIBLE.</string>
+    <string name="unlock_enter_desc">Enter your master password to continue.</string>
+    <string name="unlock_master_reminder">Reminder: type your master password this time instead of your fingerprint. A forgotten master password locks the vault and the backups alike.</string>
+    <string name="unlock_master_password_label">Master password</string>
+    <string name="unlock_password_label">Password</string>
+    <string name="unlock_password_again_label">Password (again)</string>
+    <string name="unlock_create_vault">Create the vault</string>
+    <string name="unlock_open_button">Unlock</string>
+    <string name="unlock_biometric_button">Unlock with biometrics</string>
+    <string name="unlock_pin_title">Second gate</string>
+    <string name="unlock_pin_desc">Enter your PIN. Without this code the entries cannot be decrypted — the master password alone is not enough.</string>
+    <string name="unlock_pin_label">PIN (%1$d-%2$d digits)</string>
+    <string name="unlock_pin_open">Open</string>
+    <string name="unlock_pin_cancel">Cancel</string>
+    <string name="unlock_generator_title">Password generator</string>
+    <string name="unlock_generator_refresh">Refresh</string>
+    <string name="unlock_generator_summary">Length: %1$d • Strength: ~%2$d bits %3$s</string>
+    <string name="unlock_generator_very_strong">(very strong)</string>
+    <string name="unlock_generator_strong">(strong)</string>
+    <string name="unlock_generator_weak">(weak)</string>
+    <string name="unlock_generator_avoid_ambiguous">Drop look-alike characters (l, 1, O, 0)</string>
+    <string name="unlock_generator_use">Use</string>
+    <string name="unlock_generator_copy">Copy</string>
+    <string name="unlock_generator_close">Close</string>
+    <!-- vm -->
+    <string name="vm_pin_repaired">PIN record repaired · the vault now opens with your master password</string>
+    <string name="vm_pin_repair_failed">Could not repair: wrong password or PIN</string>
+    <string name="vm_master_password_too_short">The master password must be at least 8 characters</string>
+    <string name="vm_passwords_mismatch">Passwords do not match</string>
+    <string name="vm_wrong_password">Wrong password</string>
+    <string name="vm_legacy_pin_vault">This vault uses the old PIN format. It has to be repaired with the master password + PIN.</string>
+    <string name="vm_key_undecryptable">The vault key could not be decrypted (the record may be corrupt).</string>
+    <string name="vm_biometric_stale">The fingerprint record was older than this PIN; it has been deleted. Unlock with your master password and enable the fingerprint again.</string>
+    <string name="vm_pin_biometric_off">Too many wrong PINs. Fingerprint unlock has been turned off; unlock with your master password.</string>
+    <string name="vm_pin_wrong">Wrong PIN</string>
+    <string name="vm_key_unexpected_size">The vault key has an unexpected size; try unlocking with your master password.</string>
+    <string name="vm_pin_enable_failed">Could not enable the PIN: wrong password, or invalid PIN (4-12 digits)</string>
+    <string name="vm_pin_enabled">PIN enabled · enable the fingerprint again</string>
+    <string name="vm_pin_disable_failed">Could not turn the PIN off: wrong master password</string>
+    <string name="vm_pin_disabled">PIN turned off · enable the fingerprint again</string>
+    <string name="vm_new_password_too_short">The new password must be at least 8 characters</string>
+    <string name="vm_master_password_changed">Master password changed</string>
+    <string name="vm_current_password_wrong">Current password is wrong</string>
+    <string name="vm_quick_on">Usable on the keyboard without a password</string>
+    <string name="vm_quick_off">Hidden on the keyboard until you unlock</string>
+    <string name="vm_copied">%1$s copied (will be cleared in 45 seconds)</string>
+    <string name="vm_backup_password_too_short">The backup password must be at least 8 characters</string>
+    <string name="vm_file_open_failed">Could not open the file</string>
+    <string name="vm_backup_saved">Backup saved</string>
+    <string name="vm_backup_failed">Backup failed: %1$s — delete the file it created and try again.</string>
+    <string name="vm_vault_locked_retry">The vault has locked — unlock it with your master password and try again.</string>
+    <string name="vm_pasted_text_empty">The pasted text is empty</string>
+    <string name="vm_text_too_large">The text is too large — this cannot be a Vault envelope</string>
+    <string name="vm_pasted_is_link">This is a link, not the envelope itself. Open the link in the phone\'s browser and copy the TEXT it shows.</string>
+    <string name="vm_not_an_envelope">This is not an encrypted Vault envelope — the copied text may be incomplete, or it may be something else. Copy ALL of the text on the page.</string>
+    <string name="vm_envelope_empty">The envelope opened but holds no entries — the fields may have been left empty on the sending side. Your vault is untouched.</string>
+    <string name="vm_backup_password_wrong">Wrong backup password</string>
+    <string name="vm_invalid_envelope">Invalid envelope — the text may have been copied incompletely</string>
+    <string name="vm_import_failed">Import failed: %1$s</string>
+    <string name="vm_backup_empty">The backup opened but holds no entries. Your vault is untouched.</string>
+    <string name="vm_invalid_backup_file">Invalid backup file</string>
+    <string name="vm_restore_failed">Restore failed: %1$s</string>
+    <string name="vm_biometric_enabled">Fingerprint enabled</string>
+    <string name="vm_biometric_enable_failed">Could not enable the fingerprint</string>
+    <string name="vm_biometric_disabled">Biometric unlock turned off</string>
+    <string name="vm_usage_log_cleared">Usage log deleted</string>
+    <string name="bt_sdp_name">Vault Keyboard</string>
+    <string name="bt_sdp_description">Vault secure keystroke transfer</string>
+
+    <!-- Çoğul biçimler: İngilizcede "1 entries" gibi bozuk dilbilgisini
+         önler. Türkçede tek biçim (other) yeterlidir. -->
+    <plurals name="vm_import_added">
+        <item quantity="one">%1$d entry added · clipboard cleared</item>
+        <item quantity="other">%1$d entries added · clipboard cleared</item>
+    </plurals>
+    <plurals name="vm_restored">
+        <item quantity="one">%1$d entry restored</item>
+        <item quantity="other">%1$d entries restored</item>
+    </plurals>
+    <plurals name="vm_backup_saved_incomplete">
+        <item quantity="one">Backup saved, but %1$d entry could not be read and was left out (it may be corrupt). This backup is incomplete.</item>
+        <item quantity="other">Backup saved, but %1$d entries could not be read and were left out (they may be corrupt). This backup is incomplete.</item>
+    </plurals>
+    <plurals name="log_pending_note">
+        <item quantity="one">%1$d event happened while locked and has not been moved into the log yet; it will appear in the list when the vault is unlocked.</item>
+        <item quantity="other">%1$d events happened while locked and have not been moved into the log yet; they will appear in the list when the vault is unlocked.</item>
+    </plurals>
+    <plurals name="log_more_events">
+        <item quantity="one">… and %1$d more event (the first 200 are shown in the list).</item>
+        <item quantity="other">… and %1$d more events (the first 200 are shown in the list).</item>
+    </plurals>
+    <plurals name="bt_countdown">
+        <item quantity="one">Typing starts in %1$d second — put the cursor in the right field on the computer!</item>
+        <item quantity="other">Typing starts in %1$d seconds — put the cursor in the right field on the computer!</item>
+    </plurals>
+    <plurals name="vm_pin_wrong_wait">
+        <item quantity="one">Wrong PIN. You have to wait %1$d second.</item>
+        <item quantity="other">Wrong PIN. You have to wait %1$d seconds.</item>
+    </plurals>
+    <plurals name="vm_pin_locked_wait">
+        <item quantity="one">Too many wrong PINs. Try again in %1$d second.</item>
+        <item quantity="other">Too many wrong PINs. Try again in %1$d seconds.</item>
+    </plurals>
 </resources>

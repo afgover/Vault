@@ -47,11 +47,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.R
 import com.afgover.vault.data.CustomField
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.data.NoteKind
 import com.afgover.vault.ui.VaultViewModel
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,16 +145,21 @@ fun EditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (id == 0L) "Yeni ${type.label()}" else "Düzenle") },
+                title = {
+                    Text(
+                        if (id == 0L) stringResource(R.string.edit_title_new, type.label())
+                        else stringResource(R.string.edit_title_edit)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { cikmayiDene() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.edit_back))
                     }
                 },
                 actions = {
                     if (id != 0L) {
                         IconButton(onClick = { confirmDelete = true }) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Sil")
+                            Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.edit_delete))
                         }
                     }
                 }
@@ -169,7 +176,7 @@ fun EditScreen(
         ) {
             OutlinedTextField(
                 value = title, onValueChange = { title = it },
-                label = { Text("Başlık") }, singleLine = true,
+                label = { Text(stringResource(R.string.edit_field_title)) }, singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(8.dp))
@@ -178,16 +185,16 @@ fun EditScreen(
                 EntryType.LOGIN -> {
                     OutlinedTextField(
                         value = username, onValueChange = { username = it },
-                        label = { Text("Kullanıcı adı / E-posta") }, singleLine = true,
+                        label = { Text(stringResource(R.string.edit_field_username)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = password, onValueChange = { password = it },
-                        label = { Text("Şifre") }, singleLine = true,
+                        label = { Text(stringResource(R.string.field_password)) }, singleLine = true,
                         trailingIcon = {
                             IconButton(onClick = { showGenerator = true }) {
-                                Icon(Icons.Filled.Casino, contentDescription = "Şifre üret")
+                                Icon(Icons.Filled.Casino, contentDescription = stringResource(R.string.edit_generate_password))
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -195,7 +202,7 @@ fun EditScreen(
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = url, onValueChange = { url = it },
-                        label = { Text("Site / Uygulama") }, singleLine = true,
+                        label = { Text(stringResource(R.string.field_url)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -203,31 +210,31 @@ fun EditScreen(
                 EntryType.CARD -> {
                     OutlinedTextField(
                         value = cardholder, onValueChange = { cardholder = it },
-                        label = { Text("Kart sahibi") }, singleLine = true,
+                        label = { Text(stringResource(R.string.field_cardholder)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = cardNumber, onValueChange = { cardNumber = it },
-                        label = { Text("Kart numarası") }, singleLine = true,
+                        label = { Text(stringResource(R.string.edit_field_card_number)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = expiry, onValueChange = { expiry = it },
-                        label = { Text("Son kullanma (AA/YY)") }, singleLine = true,
+                        label = { Text(stringResource(R.string.edit_field_expiry)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = cvv, onValueChange = { cvv = it },
-                        label = { Text("CVV") }, singleLine = true,
+                        label = { Text(stringResource(R.string.field_cvv)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = iban, onValueChange = { iban = it },
-                        label = { Text("IBAN (opsiyonel)") }, singleLine = true,
+                        label = { Text(stringResource(R.string.edit_field_iban)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -235,25 +242,25 @@ fun EditScreen(
                 EntryType.EVERYDAY -> {
                     OutlinedTextField(
                         value = fullName, onValueChange = { fullName = it },
-                        label = { Text("Ad Soyad") }, singleLine = true,
+                        label = { Text(stringResource(R.string.field_full_name)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = phone, onValueChange = { phone = it },
-                        label = { Text("Telefon") }, singleLine = true,
+                        label = { Text(stringResource(R.string.field_phone)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = email, onValueChange = { email = it },
-                        label = { Text("E-posta") }, singleLine = true,
+                        label = { Text(stringResource(R.string.field_email)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = address, onValueChange = { address = it },
-                        label = { Text("Adres") }, minLines = 2,
+                        label = { Text(stringResource(R.string.field_address)) }, minLines = 2,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -261,7 +268,7 @@ fun EditScreen(
                 EntryType.NOTE -> {
                     // Notun ne taşıdığı: ikon ve liste görünümü buna göre
                     // değişir (araç çıpası, .sh, .pem, kurtarma kodları…).
-                    Text("Not türü", style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.edit_note_kind), style = MaterialTheme.typography.titleSmall)
                     Spacer(Modifier.height(6.dp))
                     Column(
                         modifier = Modifier
@@ -299,7 +306,7 @@ fun EditScreen(
                                         )
                                         Spacer(Modifier.width(6.dp))
                                         Text(
-                                            k.label,
+                                            stringResource(k.labelRes),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = if (secili)
                                                 MaterialTheme.colorScheme.onPrimary
@@ -319,7 +326,7 @@ fun EditScreen(
             // eklenen not), ve o kayıt görünmezse ekran boş sanılır.
             run {
                 Spacer(Modifier.height(16.dp))
-                Text("Ek alanlar", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.edit_custom_fields), style = MaterialTheme.typography.titleSmall)
                 customFields.forEachIndexed { index, field ->
                     Spacer(Modifier.height(12.dp))
                     // Alan adı ve değer alt alta: yan yana iken ikisi de dar
@@ -337,18 +344,18 @@ fun EditScreen(
                             OutlinedTextField(
                                 value = field.label,
                                 onValueChange = { customFields[index] = field.copy(label = it) },
-                                label = { Text("Alan adı") }, singleLine = true,
+                                label = { Text(stringResource(R.string.edit_field_name)) }, singleLine = true,
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { customFields.removeAt(index) }) {
-                                Icon(Icons.Filled.Close, contentDescription = "Alanı kaldır")
+                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.edit_remove_field))
                             }
                         }
                         Spacer(Modifier.height(8.dp))
                         OutlinedTextField(
                             value = field.value,
                             onValueChange = { customFields[index] = field.copy(value = it) },
-                            label = { Text("Değer") },
+                            label = { Text(stringResource(R.string.edit_field_value)) },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -357,13 +364,13 @@ fun EditScreen(
                 OutlinedButton(
                     onClick = { customFields.add(CustomField("", "")) },
                     modifier = Modifier.fillMaxWidth()
-                ) { Text("+ Alan ekle") }
+                ) { Text(stringResource(R.string.edit_add_field)) }
             }
 
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
                 value = notes, onValueChange = { notes = it },
-                label = { Text("Notlar") },
+                label = { Text(stringResource(R.string.edit_field_notes)) },
                 minLines = if (type == EntryType.NOTE) 6 else 2,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -374,11 +381,9 @@ fun EditScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("Klavyede parolasız kullan")
+                    Text(stringResource(R.string.edit_quick_title))
                     Text(
-                        "Açıkken bu kayıt, kasa kilitliyken de Vault Klavyesi'nde çıkar. " +
-                            "Koruması telefonun ekran kilidi kadardır; şifre gibi hassas " +
-                            "bilgiler için kapalı bırak.",
+                        stringResource(R.string.edit_quick_desc),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -386,7 +391,7 @@ fun EditScreen(
             }
 
             Spacer(Modifier.height(16.dp))
-            Text("Etiketler", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.edit_tags), style = MaterialTheme.typography.titleSmall)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -403,7 +408,7 @@ fun EditScreen(
                         }
                     )
                 }
-                OutlinedButton(onClick = { addTagDialog = true }) { Text("+ Yeni") }
+                OutlinedButton(onClick = { addTagDialog = true }) { Text(stringResource(R.string.edit_new_tag)) }
             }
 
             Spacer(Modifier.height(16.dp))
@@ -448,7 +453,7 @@ fun EditScreen(
                 enabled = title.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Kaydet")
+                Text(stringResource(R.string.edit_save))
             }
             Spacer(Modifier.height(48.dp))
         }
@@ -457,16 +462,16 @@ fun EditScreen(
     if (showDiscard) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { showDiscard = false },
-            title = { Text("Değişiklikler kaydedilmedi") },
-            text = { Text("Girdiğin bilgiler kaydedilmeden çıkılacak. Emin misin?") },
+            title = { Text(stringResource(R.string.edit_discard_title)) },
+            text = { Text(stringResource(R.string.edit_discard_text)) },
             confirmButton = {
                 androidx.compose.material3.TextButton(onClick = { showDiscard = false; onBack() }) {
-                    Text("Çık, kaydetme")
+                    Text(stringResource(R.string.edit_discard_confirm))
                 }
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(onClick = { showDiscard = false }) {
-                    Text("Düzenlemeye dön")
+                    Text(stringResource(R.string.edit_discard_cancel))
                 }
             }
         )
@@ -484,9 +489,12 @@ fun EditScreen(
     }
 
     if (showGenerator) {
+        // Pano etiketi @Composable olmayan geri çağrımda kullanılıyor: dizeyi
+        // burada, Compose bağlamında çöz.
+        val sifreEtiketi = stringResource(R.string.field_password)
         GeneratorDialog(
             onDismiss = { showGenerator = false },
-            onCopy = { viewModel.copyToClipboard("Şifre", it) },
+            onCopy = { viewModel.copyToClipboard(sifreEtiketi, it) },
             onUse = { password = it }
         )
     }
@@ -494,16 +502,16 @@ fun EditScreen(
     if (confirmDelete) {
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
-            title = { Text("Kaydı sil") },
-            text = { Text("\"$title\" kalıcı olarak silinecek. Emin misin?") },
+            title = { Text(stringResource(R.string.edit_delete_title)) },
+            text = { Text(stringResource(R.string.edit_delete_text, title)) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmDelete = false
                     viewModel.deleteEntry(id, onDeleted)
-                }) { Text("Sil") }
+                }) { Text(stringResource(R.string.edit_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmDelete = false }) { Text("Vazgeç") }
+                TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.edit_cancel)) }
             }
         )
     }

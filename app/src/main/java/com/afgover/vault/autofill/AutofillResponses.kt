@@ -33,7 +33,11 @@ object AutofillResponses {
         .setAuthentication(
             parsed.allIds(),
             sender,
-            presentation(context, "🔐 Vault", "Doldurmak için kilidi aç")
+            presentation(
+                context,
+                "🔐 Vault",
+                context.getString(R.string.backup_autofill_unlock_to_fill)
+            )
         )
         .apply { saveInfo(parsed)?.let { setSaveInfo(it) } }
         .build()

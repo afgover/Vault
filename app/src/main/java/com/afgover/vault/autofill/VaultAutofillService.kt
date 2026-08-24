@@ -9,6 +9,7 @@ import android.service.autofill.FillRequest
 import android.service.autofill.SaveCallback
 import android.service.autofill.SaveRequest
 import android.os.CancellationSignal
+import com.afgover.vault.R
 import com.afgover.vault.VaultApp
 import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.EntryData
@@ -85,13 +86,13 @@ class VaultAutofillService : AutofillService() {
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
         val structure = request.fillContexts.lastOrNull()?.structure
         if (structure == null) {
-            callback.onFailure("Form okunamadı")
+            callback.onFailure(getString(R.string.backup_autofill_form_unreadable))
             return
         }
         val parsed = StructureParser.parse(structure)
         val key = VaultSession.key()
         if (key == null) {
-            callback.onFailure("Kasa kilitli. Kaydetmek için önce Vault'un kilidini aç.")
+            callback.onFailure(getString(R.string.backup_autofill_locked_save))
             return
         }
 
@@ -100,7 +101,7 @@ class VaultAutofillService : AutofillService() {
         val cardNumber = parsed.valueOf(FieldKind.CARD_NUMBER).orEmpty()
         val isCard = cardNumber.isNotEmpty()
         if (!isCard && username.isEmpty() && password.isEmpty()) {
-            callback.onFailure("Kaydedilecek bilgi bulunamadı")
+            callback.onFailure(getString(R.string.backup_autofill_nothing_to_save))
             return
         }
 
@@ -142,7 +143,9 @@ class VaultAutofillService : AutofillService() {
                 }
                 callback.onSuccess()
             } catch (e: Exception) {
-                callback.onFailure("Kaydedilemedi: ${e.message}")
+                callback.onFailure(
+                    getString(R.string.backup_autofill_save_failed, e.message.orEmpty())
+                )
             }
         }
     }

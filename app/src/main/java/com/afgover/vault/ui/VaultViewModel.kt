@@ -9,11 +9,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.PersistableBundle
 import android.widget.Toast
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.afgover.vault.R
 import com.afgover.vault.VaultApp
 import com.afgover.vault.backup.BackupManager
 import com.afgover.vault.core.VaultSession
@@ -106,8 +109,8 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             }
             busy = false
             refreshLockOptions()
-            if (ok) toast("PIN kaydı onarıldı · kasa ana parolayla açılıyor")
-            else error = "Onarılamadı: parola ya da PIN yanlış"
+            if (ok) toast(str(R.string.vm_pin_repaired))
+            else error = str(R.string.vm_pin_repair_failed)
             onDone(ok)
         }
     }
@@ -199,11 +202,11 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setup(password: String, confirm: String) {
         if (password.length < 8) {
-            error = "Ana parola en az 8 karakter olmalı"
+            error = str(R.string.vm_master_password_too_short)
             return
         }
         if (password != confirm) {
-            error = "Parolalar eşleşmiyor"
+            error = str(R.string.vm_passwords_mismatch)
             return
         }
         viewModelScope.launch {
@@ -229,7 +232,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             }
             busy = false
             if (payload == null) {
-                error = "Parola yanlış"
+                error = str(R.string.vm_wrong_password)
                 return@launch
             }
             // dataKey tam 32 bayt olmalı. Eski (legacy) PIN kasasında bu payload
@@ -238,9 +241,9 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             if (payload.size != 32) {
                 if (keyManager.isPinLegacy) {
                     lockState = LockState.LOCKED
-                    error = "Bu kasa eski PIN biçiminde. Ana parola + PIN ile onarılması gerekiyor."
+                    error = str(R.string.vm_legacy_pin_vault)
                 } else {
-                    error = "Kasa anahtarı çözülemedi (kayıt bozuk olabilir)."
+                    error = str(R.string.vm_key_undecryptable)
                 }
                 return@launch
             }
@@ -263,7 +266,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         // Kaba kuvvete karşı üssel bekleme (denetim): kilitliyken deneme reddedilir.
         val kalan = keyManager.pinLockRemainingMs()
         if (kalan > 0) {
-            error = "Çok fazla yanlış PIN. ${(kalan / 1000).coerceAtLeast(1)} sn sonra tekrar dene."
+            error = cogul(R.plurals.vm_pin_locked_wait, (kalan / 1000).coerceAtLeast(1).toInt())
             return
         }
         viewModelScope.launch {
@@ -283,19 +286,18 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 keyManager.clearBiometric()
                 pendingInner = null
                 lockState = LockState.LOCKED
-                error = "Parmak izi kaydı bu PIN'den eskiydi; kayıt silindi. " +
-                    "Ana parolanla aç ve parmak izini yeniden etkinleştir."
+                error = str(R.string.vm_biometric_stale)
             } else {
                 val kapandi = keyManager.notePinFailure()
                 if (kapandi) {
                     pendingInner = null
                     lockState = LockState.LOCKED
-                    error = "Çok fazla yanlış PIN. Parmak izi kapatıldı; ana parolanla aç."
+                    error = str(R.string.vm_pin_biometric_off)
                 } else {
                     val yeniKalan = keyManager.pinLockRemainingMs()
                     error = if (yeniKalan > 0)
-                        "PIN yanlış. ${(yeniKalan / 1000).coerceAtLeast(1)} sn beklemen gerekiyor."
-                    else "PIN yanlış"
+                        cogul(R.plurals.vm_pin_wrong_wait, (yeniKalan / 1000).coerceAtLeast(1).toInt())
+                    else str(R.string.vm_pin_wrong)
                 }
             }
         }
@@ -316,7 +318,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             onUnlocked(SecretKeySpec(payload, "AES"))
         } else {
             lockState = LockState.LOCKED
-            error = "Kasa anahtarı beklenmedik boyutta; ana parolayla açmayı dene."
+            error = str(R.string.vm_key_unexpected_size)
         }
     }
 
@@ -336,8 +338,8 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             }
             busy = false
             refreshLockOptions()
-            if (!ok) error = "PIN açılamadı: parola yanlış ya da PIN geçersiz (4-12 rakam)"
-            else toast("PIN açıldı · parmak izini yeniden etkinleştir")
+            if (!ok) error = str(R.string.vm_pin_enable_failed)
+            else toast(str(R.string.vm_pin_enabled))
             onDone(ok)
         }
     }
@@ -350,8 +352,8 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             }
             busy = false
             refreshLockOptions()
-            if (!ok) error = "PIN kapatılamadı: ana parola yanlış"
-            else toast("PIN kapatıldı · parmak izini yeniden etkinleştir")
+            if (!ok) error = str(R.string.vm_pin_disable_failed)
+            else toast(str(R.string.vm_pin_disabled))
             onDone(ok)
         }
     }
@@ -363,11 +365,11 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     fun changePassword(old: String, new: String, confirm: String, onDone: () -> Unit) {
         if (new.length < 8) {
-            error = "Yeni parola en az 8 karakter olmalı"
+            error = str(R.string.vm_new_password_too_short)
             return
         }
         if (new != confirm) {
-            error = "Parolalar eşleşmiyor"
+            error = str(R.string.vm_passwords_mismatch)
             return
         }
         viewModelScope.launch {
@@ -377,10 +379,10 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             }
             busy = false
             if (ok) {
-                toast("Ana parola değiştirildi")
+                toast(str(R.string.vm_master_password_changed))
                 onDone()
             } else {
-                error = "Mevcut parola yanlış"
+                error = str(R.string.vm_current_password_wrong)
             }
         }
     }
@@ -409,7 +411,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 onDone()
             } catch (e: VaultRepository.EntryTooLargeException) {
                 // Ekran açık kalır, girilenler durur; kullanıcı kısaltıp yeniden dener.
-                toast(e.message ?: "Kayıt çok büyük")
+                toast(str(R.string.entry_too_large, e.title, e.kb, e.limitKb))
             }
         }
     }
@@ -420,8 +422,8 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) { repo.setQuick(id, quick, key) }
             toast(
-                if (quick) "Klavyede parolasız kullanılabilir"
-                else "Klavyede kilit açmadan görünmez"
+                if (quick) str(R.string.vm_quick_on)
+                else str(R.string.vm_quick_off)
             )
             onDone()
         }
@@ -445,7 +447,17 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     private var clipboardClearJob: Job? = null
 
-    fun copyToClipboard(label: String, value: String, entryId: Long? = null) {
+    /**
+     * [label] ekranda gösterilen (çevrilmiş) ad, [stableName] ise günlüğe
+     * yazılan dile bağlı olmayan ad. İkisi ayrı: günlük dil değiştiğinde
+     * ikiye bölünmemeli (yerelleştirme).
+     */
+    fun copyToClipboard(
+        label: String,
+        value: String,
+        entryId: Long? = null,
+        stableName: String? = null
+    ) {
         val cm = getApplication<Application>()
             .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText(label, value)
@@ -457,8 +469,8 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             if (Build.VERSION.SDK_INT >= 33) putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
         }
         cm.setPrimaryClip(clip)
-        toast("$label kopyalandı (45 sn sonra silinecek)")
-        entryId?.let { logUsage(it, UsageKind.KOPYALANDI, label) }
+        toast(str(R.string.vm_copied, label))
+        entryId?.let { logUsage(it, UsageKind.KOPYALANDI, stableName ?: label) }
         clipboardClearJob?.cancel()
         clipboardClearJob = viewModelScope.launch {
             delay(45_000)
@@ -475,7 +487,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     fun exportBackup(uri: Uri, password: String) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
         if (password.length < 8) {
-            error = "Yedek parolası en az 8 karakter olmalı"
+            error = str(R.string.vm_backup_password_too_short)
             return
         }
         viewModelScope.launch {
@@ -498,18 +510,17 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                         buf.toByteArray()
                     }
                     val out = getApplication<Application>().contentResolver.openOutputStream(uri, "wt")
-                        ?: throw Exception("Dosya açılamadı")
+                        ?: throw Exception(str(R.string.vm_file_open_failed))
                     out.use { it.write(bytes) }
                     eksikSayi
                 }
                 if (eksik > 0) {
-                    error = "Yedek kaydedildi ama $eksik kayıt okunamadığı için " +
-                        "dışarı yazılamadı (bozuk olabilir). Bu yedek eksik."
+                    error = cogul(R.plurals.vm_backup_saved_incomplete, eksik)
                 } else {
-                    toast("Yedek kaydedildi")
+                    toast(str(R.string.vm_backup_saved))
                 }
             } catch (e: Exception) {
-                error = "Yedekleme başarısız: ${e.message} — oluşan dosyayı silip tekrar dene."
+                error = str(R.string.vm_backup_failed, e.message.orEmpty())
             } finally {
                 busy = false
             }
@@ -525,26 +536,24 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         val key = VaultSession.key() ?: run {
             // Ekran kapanıp kasa kilitlenmiş olabilir; sessizce dönmek
             // "düğme çalışmıyor" gibi görünüyordu.
-            error = "Kasa kilitlendi — ana parolanla açıp tekrar dene."
+            error = str(R.string.vm_vault_locked_retry)
             lockState = LockState.LOCKED
             return
         }
         error = null
         val kirpik = BackupManager.normalize(text)
-        if (kirpik.isEmpty()) { error = "Yapıştırılan metin boş"; return }
-        if (kirpik.length > 1_000_000) { error = "Metin çok büyük — bu bir Vault zarfı olamaz"; return }
+        if (kirpik.isEmpty()) { error = str(R.string.vm_pasted_text_empty); return }
+        if (kirpik.length > 1_000_000) { error = str(R.string.vm_text_too_large); return }
         // Dostça ön-tanı: en sık iki yanlış yapıştırma ayrı ayrı adlandırılır,
         // çünkü "geçersiz" demek kullanıcıya ne yapacağını söylemiyor.
         if (kirpik.startsWith("http://") || kirpik.startsWith("https://")) {
-            error = "Bu bir bağlantı, zarfın kendisi değil. Bağlantıyı telefonun " +
-                "tarayıcısında aç ve açılan METNİ kopyala."
+            error = str(R.string.vm_pasted_is_link)
             return
         }
         val zarfGibi = kirpik.startsWith("{") && kirpik.contains("\"app\"") &&
             kirpik.contains("\"vault\"")
         if (!zarfGibi) {
-            error = "Bu, şifreli bir Vault zarfı değil — kopyalanan metin eksik ya da " +
-                "farklı bir şey olabilir. Sayfadaki metnin TAMAMINI kopyala."
+            error = str(R.string.vm_not_an_envelope)
             return
         }
         viewModelScope.launch {
@@ -560,19 +569,18 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     imported.entries.size
                 }
                 if (count == 0) {
-                    error = "Zarf açıldı ama içinde kayıt yok — gönderen tarafta " +
-                        "alanlar boş kalmış olabilir. Kasan olduğu gibi duruyor."
+                    error = str(R.string.vm_envelope_empty)
                     return@launch
                 }
                 clearClipboard()
-                toast("$count kayıt eklendi · pano temizlendi")
+                toast(cogul(R.plurals.vm_import_added, count))
                 onSuccess()
             } catch (e: BackupManager.WrongPasswordException) {
-                error = "Yedek parolası yanlış"
+                error = str(R.string.vm_backup_password_wrong)
             } catch (e: BackupManager.InvalidFormatException) {
-                error = "Geçersiz zarf — metin eksik kopyalanmış olabilir"
+                error = str(R.string.vm_invalid_envelope)
             } catch (e: Exception) {
-                error = "İçe aktarma başarısız: ${e.message}"
+                error = str(R.string.vm_import_failed, e.message.orEmpty())
             } finally {
                 busy = false
             }
@@ -604,7 +612,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val count = withContext(Dispatchers.IO) {
                     val input = getApplication<Application>().contentResolver.openInputStream(uri)
-                        ?: throw Exception("Dosya açılamadı")
+                        ?: throw Exception(str(R.string.vm_file_open_failed))
                     val imported = BackupManager.import(input, password.toCharArray())
                     if (imported.entries.isEmpty()) return@withContext 0
                     if (replace) repo.replaceAll(imported.entries, key, imported.tagColors)
@@ -612,16 +620,16 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     imported.entries.size
                 }
                 if (count == 0) {
-                    error = "Yedek açıldı ama içinde kayıt yok. Kasan olduğu gibi duruyor."
+                    error = str(R.string.vm_backup_empty)
                     return@launch
                 }
-                toast("$count kayıt geri yüklendi")
+                toast(cogul(R.plurals.vm_restored, count))
             } catch (e: BackupManager.WrongPasswordException) {
-                error = "Yedek parolası yanlış"
+                error = str(R.string.vm_backup_password_wrong)
             } catch (e: BackupManager.InvalidFormatException) {
-                error = "Geçersiz yedek dosyası"
+                error = str(R.string.vm_invalid_backup_file)
             } catch (e: Exception) {
-                error = "Geri yükleme başarısız: ${e.message}"
+                error = str(R.string.vm_restore_failed, e.message.orEmpty())
             } finally {
                 busy = false
             }
@@ -633,15 +641,26 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     /** Parmak izi kaydı yazıldıktan sonra çağrılır: durum + geri bildirim. */
     fun onBiometricRegistered(basarili: Boolean) {
         refreshLockOptions()
-        if (basarili) toast("Parmak izi etkinleştirildi")
-        else error = "Parmak izi etkinleştirilemedi"
+        if (basarili) toast(str(R.string.vm_biometric_enabled))
+        else error = str(R.string.vm_biometric_enable_failed)
     }
 
     fun disableBiometric() {
         keyManager.clearBiometric()
         refreshLockOptions()   // düğme durumu 'kapat' → 'etkinleştir' güncellensin (denetim)
-        toast("Biyometrik kilit açma kapatıldı")
+        toast(str(R.string.vm_biometric_disabled))
     }
+
+    /** Yerelleştirilmiş metin: ViewModel'de Composable bağlamı yok. */
+    private fun str(@StringRes id: Int, vararg args: Any): String =
+        getApplication<Application>().getString(id, *args)
+
+    /**
+     * Sayıya bağlı metin: İngilizcede "1 entries" gibi bozuk dilbilgisini
+     * önler (Türkçede tek biçim yeterli, çeviri dosyası öyle tanımlı).
+     */
+    private fun cogul(@PluralsRes id: Int, adet: Int): String =
+        getApplication<Application>().resources.getQuantityString(id, adet, adet)
 
     private fun toast(msg: String) {
         Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT).show()
@@ -677,7 +696,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     fun clearUsageLog(onDone: () -> Unit = {}) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) { usageLog.clearAll() }
-            toast("Kullanım günlüğü silindi")
+            toast(str(R.string.vm_usage_log_cleared))
             onDone()
         }
     }

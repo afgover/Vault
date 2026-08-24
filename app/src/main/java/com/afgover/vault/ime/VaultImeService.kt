@@ -96,7 +96,7 @@ class VaultImeService : InputMethodService() {
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         header.addView(flatButton("🔍") { toggleSearch() })
-        header.addView(flatButton("ABC") { switchBackToKeyboard() })
+        header.addView(flatButton(getString(R.string.ime_switch_keyboard)) { switchBackToKeyboard() })
         // Basılı tutunca sistem klavyesindeki gibi silmeye devam eder.
         header.addView(repeatingButton("⌫") {
             currentInputConnection?.deleteSurroundingText(1, 0)
@@ -202,15 +202,15 @@ class VaultImeService : InputMethodService() {
         }
 
         if (locked) {
-            content.addView(hint("Kasa kilitli — yalnızca hızlı erişim kayıtları."))
-            content.addView(actionButton("🔓 Kilidi aç (tümü için)") { startUnlock() })
+            content.addView(hint(getString(R.string.ime_locked_quick_only)))
+            content.addView(actionButton(getString(R.string.ime_unlock_all)) { startUnlock() })
         }
 
         if (entries.isEmpty()) {
             content.addView(
                 hint(
-                    if (locked) "Hızlı erişim işaretli kayıt yok."
-                    else "Kayıt yok."
+                    if (locked) getString(R.string.ime_no_quick_entries)
+                    else getString(R.string.ime_no_entries)
                 )
             )
             return
@@ -218,23 +218,25 @@ class VaultImeService : InputMethodService() {
 
         val matches = filtered()
         if (matches.isEmpty()) {
-            content.addView(hint("\"$query\" ile eşleşen kayıt yok."))
+            content.addView(hint(getString(R.string.ime_no_match, query)))
             return
         }
         matches.forEach { content.addView(entryButton(it)) }
     }
 
     private fun renderFields(entry: DecryptedEntry) {
-        content.addView(actionButton("← ${entry.title}") {
+        content.addView(actionButton(getString(R.string.ime_back_to_list, entry.title)) {
             selected = null
             render()
         })
-        entry.data.fields().forEach { (label, value) ->
-            content.addView(actionButton("$label yaz") {
+        entry.data.fields().forEach { alan ->
+            val gosterilen = alan.customLabel ?: getString(alan.key!!.labelRes)
+            content.addView(actionButton(getString(R.string.ime_write_field, gosterilen)) {
                 // commitText false dönerse (bağlantı yok) yazma olmamıştır;
                 // günlüğe 'yazıldı' düşme (denetim).
-                val yazildi = currentInputConnection?.commitText(value, 1) == true
-                if (yazildi) logUsage(entry.id, label)
+                val yazildi = currentInputConnection?.commitText(alan.value, 1) == true
+                // Günlüğe KARARLI ad yazılır, ekrandaki çeviri değil.
+                if (yazildi) logUsage(entry.id, alan.stableName)
             })
         }
     }
@@ -301,7 +303,7 @@ class VaultImeService : InputMethodService() {
     }
 
     private fun updateSearchLabel() {
-        searchLabel.text = query.ifEmpty { "Ara…" }
+        searchLabel.text = query.ifEmpty { getString(R.string.ime_search_hint) }
         searchLabel.alpha = if (query.isEmpty()) 0.6f else 1f
     }
 

@@ -30,9 +30,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.R
 import com.afgover.vault.ui.LockState
 import com.afgover.vault.ui.VaultViewModel
 
@@ -88,16 +90,16 @@ fun UnlockScreen(
         }
         Spacer(Modifier.height(20.dp))
         Text(
-            text = if (isSetup) "Vault'a hoş geldin" else "Vault kilitli",
+            text = stringResource(
+                if (isSetup) R.string.unlock_welcome_title else R.string.unlock_locked_title
+            ),
             style = MaterialTheme.typography.headlineSmall
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = if (isSetup)
-                "Bir ana parola belirle. Tüm verilerin bu paroladan türetilen " +
-                    "anahtarla şifrelenir. Bu parolayı unutursan verilerine ERİŞİLEMEZ."
-            else
-                "Devam etmek için ana parolanı gir.",
+            text = stringResource(
+                if (isSetup) R.string.unlock_setup_desc else R.string.unlock_enter_desc
+            ),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -105,8 +107,7 @@ fun UnlockScreen(
         if (hatirlatmaZamani) {
             Spacer(Modifier.height(8.dp))
             Text(
-                "Hatırlatma: parmak izi yerine bu sefer ana parolanı yaz. " +
-                    "Unutulan ana parola kasayı da yedekleri de kilitler.",
+                stringResource(R.string.unlock_master_reminder),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.tertiary,
                 textAlign = TextAlign.Center
@@ -117,14 +118,17 @@ fun UnlockScreen(
         SecretField(
             value = password,
             onValueChange = { password = it; viewModel.error = null },
-            label = if (isSetup) "Ana parola" else "Parola"
+            label = stringResource(
+                if (isSetup) R.string.unlock_master_password_label
+                else R.string.unlock_password_label
+            )
         )
         if (isSetup) {
             Spacer(Modifier.height(8.dp))
             SecretField(
                 value = confirm,
                 onValueChange = { confirm = it; viewModel.error = null },
-                label = "Parola (tekrar)"
+                label = stringResource(R.string.unlock_password_again_label)
             )
         }
 
@@ -144,7 +148,12 @@ fun UnlockScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (isSetup) "Kasayı oluştur" else "Kilidi aç")
+                Text(
+                    stringResource(
+                        if (isSetup) R.string.unlock_create_vault
+                        else R.string.unlock_open_button
+                    )
+                )
             }
             if (biometricAvailable) {
                 Spacer(Modifier.height(8.dp))
@@ -154,7 +163,7 @@ fun UnlockScreen(
                 ) {
                     Icon(Icons.Filled.Fingerprint, contentDescription = null)
                     Spacer(Modifier.height(0.dp))
-                    Text("  Biyometrik ile aç")
+                    Text("  " + stringResource(R.string.unlock_biometric_button))
                 }
             }
         }

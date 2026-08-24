@@ -24,8 +24,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.R
 import com.afgover.vault.core.PasswordGenerator
 import com.afgover.vault.ui.VaultViewModel
 
@@ -53,17 +56,16 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
     var showBt by remember { mutableStateOf(false) }
     var zarf by remember { mutableStateOf("") }
     var replace by remember { mutableIntStateOf(0) }
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = { if (!viewModel.busy) onDismiss() },
-        title = { Text("Bilgisayardan aktar · adım $step/2") },
+        title = { Text(stringResource(R.string.transfer_title, step)) },
         text = {
             Column {
                 if (step == 1) {
                     Text(
-                        "1. Bilgisayarda aktar.html'i aç, imleci \"Yedek parolası\" " +
-                            "alanına getir.\n2. Aşağıdaki düğmeyle parolayı iki alana " +
-                            "birden yazdır (araya Tab girer).",
+                        stringResource(R.string.transfer_step1_steps),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(12.dp))
@@ -75,13 +77,14 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(onClick = { parola = aktarimParolasi() }) {
-                            Icon(Icons.Filled.Refresh, contentDescription = "Yeni parola üret")
+                            Icon(
+                                Icons.Filled.Refresh,
+                                contentDescription = stringResource(R.string.transfer_regenerate)
+                            )
                         }
                     }
                     Text(
-                        "Üretilmiş, tek aktarımlık parola — ezberlemene gerek yok, " +
-                            "adım 2'de otomatik kullanılacak. Harf+rakam: klavye düzeni " +
-                            "farkından etkilenmez.",
+                        stringResource(R.string.transfer_password_note),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
@@ -89,43 +92,43 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                     Button(
                         onClick = { showBt = true },
                         modifier = Modifier.fillMaxWidth()
-                    ) { Text("💻 Bluetooth ile iki alana yaz") }
+                    ) { Text(stringResource(R.string.transfer_bt_write_both)) }
                 } else {
                     Text(
-                        "Bilgisayarda: içeriği yapıştır → \"Şifrele ve yayınla\" → " +
-                            "telefonla QR'ı okut → sayfada 📋 Kopyala. Sonra buraya dön " +
-                            "ve zarfı al. Parola sihirbazda hazır — girmeyeceksin.",
+                        stringResource(R.string.transfer_step2_steps),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = zarf, onValueChange = { zarf = it },
-                        label = { Text("Şifreli zarf") },
+                        label = { Text(stringResource(R.string.transfer_envelope_label)) },
                         minLines = 3, maxLines = 5,
                         supportingText = {
-                            if (zarf.isNotEmpty()) Text("${zarf.length} karakter")
+                            if (zarf.isNotEmpty()) {
+                                Text(stringResource(R.string.transfer_char_count, zarf.length))
+                            }
                         }
                     )
                     TextButton(onClick = { zarf = viewModel.clipboardText() }) {
-                        Text("Panodan al")
+                        Text(stringResource(R.string.transfer_from_clipboard))
                     }
                     Row {
                         SecimCipi(
                             secili = replace == 0,
                             onClick = { replace = 0 },
-                            label = "Mevcuta ekle",
+                            label = stringResource(R.string.transfer_merge),
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         SecimCipi(
                             secili = replace == 1,
                             onClick = { replace = 1 },
-                            label = "Tümünü değiştir"
+                            label = stringResource(R.string.transfer_replace_all)
                         )
                     }
                     if (replace == 1) {
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            "Dikkat: mevcut tüm kayıtlar silinip zarftakiler yazılır.",
+                            stringResource(R.string.transfer_replace_warning),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -139,33 +142,40 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
         },
         confirmButton = {
             if (step == 1) {
-                TextButton(onClick = { step = 2 }) { Text("Parola yazıldı, devam →") }
+                TextButton(onClick = { step = 2 }) {
+                    Text(stringResource(R.string.transfer_password_typed_next))
+                }
             } else {
                 TextButton(
                     onClick = {
                         if (zarf.isBlank()) {
-                            viewModel.error = "Şifreli zarf alanı boş — " +
-                                "bilgisayarda yayınla, QR'ı okut ve \"Panodan al\"a bas."
+                            viewModel.error =
+                                context.getString(R.string.transfer_envelope_empty)
                         } else {
                             viewModel.importBackupText(zarf, parola, replace == 1) { onDismiss() }
                         }
                     },
                     enabled = !viewModel.busy
-                ) { Text(if (viewModel.busy) "Aktarılıyor…" else "İçe aktar") }
+                ) {
+                    Text(
+                        if (viewModel.busy) stringResource(R.string.transfer_importing)
+                        else stringResource(R.string.transfer_import)
+                    )
+                }
             }
         },
         dismissButton = {
             if (step == 2) {
-                TextButton(onClick = { step = 1 }) { Text("← Geri") }
+                TextButton(onClick = { step = 1 }) { Text(stringResource(R.string.transfer_back)) }
             } else {
-                TextButton(onClick = onDismiss) { Text("Vazgeç") }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.transfer_cancel)) }
             }
         }
     )
 
     if (showBt) {
         BtTypeDialog(
-            label = "Aktarım parolası (iki alana, Tab ile)",
+            label = stringResource(R.string.transfer_bt_label),
             value = parola + "\t" + parola,
             onDismiss = {
                 showBt = false

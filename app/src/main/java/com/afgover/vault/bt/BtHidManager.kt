@@ -11,6 +11,8 @@ import android.content.Context
 import android.os.Build
 import android.os.SystemClock
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
+import com.afgover.vault.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -45,10 +47,10 @@ object BtHidManager {
      * payıdır — hangisinin çalıştığı bilgisayara ve ortama göre değişir,
      * "Hız testi" ile ölçülür.
      */
-    enum class Speed(val label: String, val stepMs: Long) {
-        SAFE("Güvenli", 12),
-        FAST("Hızlı", 5),
-        TURBO("Çok hızlı", 2);
+    enum class Speed(@StringRes val labelRes: Int, val stepMs: Long) {
+        SAFE(R.string.bt_speed_safe, 12),
+        FAST(R.string.bt_speed_fast, 5),
+        TURBO(R.string.bt_speed_turbo, 2);
 
         /** Karakter başına yaklaşık maliyet (ms). */
         val perCharMs: Long get() = stepMs * 2
@@ -75,8 +77,15 @@ object BtHidManager {
     private val _state = MutableStateFlow<State>(State.Idle)
     val state: StateFlow<State> = _state
 
-    private val _lastError = MutableStateFlow<String?>(null)
-    val lastError: StateFlow<String?> = _lastError
+    /**
+     * Hata, METİN değil kaynak kimliği olarak yayınlanır: bu nesne bir
+     * `object` ve elinde Context yok, dolayısıyla dile göre metin üretemez.
+     * Çeviriyi arayüz yapar (yerelleştirme).
+     */
+    data class BtError(@StringRes val res: Int, val args: List<Any> = emptyList())
+
+    private val _lastError = MutableStateFlow<BtError?>(null)
+    val lastError: StateFlow<BtError?> = _lastError
 
     private var hid: BluetoothHidDevice? = null
     private var connectedDevice: BluetoothDevice? = null
@@ -121,7 +130,7 @@ object BtHidManager {
         val manager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         val btAdapter = manager.adapter
         if (btAdapter == null || safe { btAdapter.isEnabled } != true) {
-            _lastError.value = "Bluetooth kapalı. Önce Bluetooth'u aç."
+            _lastError.value = BtError(R.string.bt_err_off)
             return
         }
         adapter = btAdapter
@@ -149,15 +158,17 @@ object BtHidManager {
         }
         if (ok != true) {
             _state.value = State.Unsupported
-            _lastError.value = "Bu telefon Bluetooth klavye (HID) profilini desteklemiyor."
+            _lastError.value = BtError(R.string.bt_err_unsupported)
         }
     }
 
     @RequiresApi(28)
     private fun registerApp(context: Context, hidDevice: BluetoothHidDevice) {
+        // Bu ad ve açıklama KARŞI BİLGİSAYARDA görünür (eşleşme listesinde),
+        // yani telefonun dilinde olmalı — Context burada var (yerelleştirme).
         val sdp = BluetoothHidDeviceAppSdpSettings(
-            "Vault Klavye",
-            "Vault güvenli tuş aktarımı",
+            context.getString(R.string.bt_sdp_name),
+            context.getString(R.string.bt_sdp_description),
             "Vault",
             BluetoothHidDevice.SUBCLASS1_KEYBOARD,
             KEYBOARD_DESCRIPTOR
@@ -198,7 +209,7 @@ object BtHidManager {
         }
         if (ok != true) {
             _state.value = State.Unsupported
-            _lastError.value = "HID kaydı başarısız — telefon desteklemiyor olabilir."
+            _lastError.value = BtError(R.string.bt_err_register)
         }
     }
 
@@ -216,7 +227,7 @@ object BtHidManager {
         val ok = safe { hid?.connect(device) }
         if (ok != true) {
             _state.value = State.Ready
-            _lastError.value = "Bağlantı başlatılamadı. Cihazın Bluetooth'u açık mı?"
+            _lastError.value = BtError(R.string.bt_err_connect)
         }
     }
 
@@ -265,7 +276,7 @@ object BtHidManager {
         val hidDevice = hid
         val device = connectedDevice
         if (hidDevice == null || device == null) {
-            _lastError.value = "Bağlantı yok — cihazı yeniden seç."
+            _lastError.value = BtError(R.string.bt_err_no_link)
             return TypeResult(0, text.toList(), 0L, aborted = true)
         }
         _lastError.value = null   // önceki denemenin hatası ekranda kalmasın
@@ -303,15 +314,13 @@ object BtHidManager {
             )
             if (!sendReport(hidDevice, device, press)) {
                 birak()
-                _lastError.value = "Bluetooth gönderim kuyruğu yanıt vermedi; " +
-                    "yazma $typed. karakterde durdu. Daha yavaş bir hız seç."
+                _lastError.value = BtError(R.string.bt_err_queue, listOf(typed))
                 return TypeResult(typed, untyped, gecen(), aborted = true)
             }
             Thread.sleep(speed.stepMs)
             if (!sendReport(hidDevice, device, release)) {
                 birak()
-                _lastError.value = "Bluetooth gönderim kuyruğu yanıt vermedi; " +
-                    "yazma $typed. karakterde durdu. Daha yavaş bir hız seç."
+                _lastError.value = BtError(R.string.bt_err_queue, listOf(typed))
                 return TypeResult(typed, untyped, gecen(), aborted = true)
             }
             Thread.sleep(speed.stepMs)

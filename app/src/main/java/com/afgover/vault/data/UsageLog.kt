@@ -1,5 +1,7 @@
 package com.afgover.vault.data
 
+import androidx.annotation.StringRes
+import com.afgover.vault.R
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Insert
@@ -15,14 +17,14 @@ import org.json.JSONObject
  * değil rotasyon listesidir — bir bilgisayar ele geçtiğinde "oraya hangi
  * sırlar gitti" sorusunun cevabı (vault_takip SEC-023).
  */
-enum class UsageKind(val label: String) {
-    OLUSTURULDU("Oluşturuldu"),
-    DEGISTIRILDI("Değiştirildi"),
-    KOPYALANDI("Panoya kopyalandı"),
-    BT_YAZILDI("Bilgisayara yazıldı"),
-    KLAVYE_YAZILDI("Klavyeden yazıldı"),
-    HIZLI_ERISIM_ACILDI("Hızlı erişim açıldı"),
-    HIZLI_ERISIM_KAPATILDI("Hızlı erişim kapatıldı");
+enum class UsageKind(@StringRes val labelRes: Int) {
+    OLUSTURULDU(R.string.usage_created),
+    DEGISTIRILDI(R.string.usage_updated),
+    KOPYALANDI(R.string.usage_copied),
+    BT_YAZILDI(R.string.usage_bt_typed),
+    KLAVYE_YAZILDI(R.string.usage_keyboard_typed),
+    HIZLI_ERISIM_ACILDI(R.string.usage_quick_on),
+    HIZLI_ERISIM_KAPATILDI(R.string.usage_quick_off);
 
     companion object {
         fun of(name: String?): UsageKind? =
