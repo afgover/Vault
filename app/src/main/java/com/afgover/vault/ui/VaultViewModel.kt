@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.PersistableBundle
 import android.widget.Toast
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -265,7 +266,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         // Kaba kuvvete karşı üssel bekleme (denetim): kilitliyken deneme reddedilir.
         val kalan = keyManager.pinLockRemainingMs()
         if (kalan > 0) {
-            error = str(R.string.vm_pin_locked_wait, (kalan / 1000).coerceAtLeast(1))
+            error = cogul(R.plurals.vm_pin_locked_wait, (kalan / 1000).coerceAtLeast(1).toInt())
             return
         }
         viewModelScope.launch {
@@ -295,7 +296,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 } else {
                     val yeniKalan = keyManager.pinLockRemainingMs()
                     error = if (yeniKalan > 0)
-                        str(R.string.vm_pin_wrong_wait, (yeniKalan / 1000).coerceAtLeast(1))
+                        cogul(R.plurals.vm_pin_wrong_wait, (yeniKalan / 1000).coerceAtLeast(1).toInt())
                     else str(R.string.vm_pin_wrong)
                 }
             }
@@ -514,7 +515,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     eksikSayi
                 }
                 if (eksik > 0) {
-                    error = str(R.string.vm_backup_saved_incomplete, eksik)
+                    error = cogul(R.plurals.vm_backup_saved_incomplete, eksik)
                 } else {
                     toast(str(R.string.vm_backup_saved))
                 }
@@ -572,7 +573,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     return@launch
                 }
                 clearClipboard()
-                toast(str(R.string.vm_import_added, count))
+                toast(cogul(R.plurals.vm_import_added, count))
                 onSuccess()
             } catch (e: BackupManager.WrongPasswordException) {
                 error = str(R.string.vm_backup_password_wrong)
@@ -622,7 +623,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     error = str(R.string.vm_backup_empty)
                     return@launch
                 }
-                toast(str(R.string.vm_restored, count))
+                toast(cogul(R.plurals.vm_restored, count))
             } catch (e: BackupManager.WrongPasswordException) {
                 error = str(R.string.vm_backup_password_wrong)
             } catch (e: BackupManager.InvalidFormatException) {
@@ -653,6 +654,13 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     /** Yerelleştirilmiş metin: ViewModel'de Composable bağlamı yok. */
     private fun str(@StringRes id: Int, vararg args: Any): String =
         getApplication<Application>().getString(id, *args)
+
+    /**
+     * Sayıya bağlı metin: İngilizcede "1 entries" gibi bozuk dilbilgisini
+     * önler (Türkçede tek biçim yeterli, çeviri dosyası öyle tanımlı).
+     */
+    private fun cogul(@PluralsRes id: Int, adet: Int): String =
+        getApplication<Application>().resources.getQuantityString(id, adet, adet)
 
     private fun toast(msg: String) {
         Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT).show()

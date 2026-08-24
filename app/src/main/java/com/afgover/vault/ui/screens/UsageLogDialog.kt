@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.afgover.vault.R
 import com.afgover.vault.data.UsageEvent
 import com.afgover.vault.ui.VaultViewModel
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 
 /**
@@ -72,7 +73,7 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                 if (pending > 0) {
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        stringResource(R.string.log_pending_note, pending),
+                        pluralStringResource(R.plurals.log_pending_note, pending, pending),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -144,7 +145,7 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                     }
                     if (shown.size > 200) {
                         Text(
-                            stringResource(R.string.log_more_events, shown.size - 200),
+                            pluralStringResource(R.plurals.log_more_events, shown.size - 200, shown.size - 200),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )

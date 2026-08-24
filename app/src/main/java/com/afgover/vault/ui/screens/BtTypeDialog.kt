@@ -42,6 +42,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.afgover.vault.R
 
@@ -436,7 +437,7 @@ fun BtTypeDialog(
                                 )
                             }
                             countdown > 0 -> Text(
-                                stringResource(R.string.bt_countdown, countdown),
+                                pluralStringResource(R.plurals.bt_countdown, countdown, countdown),
                                 color = MaterialTheme.colorScheme.primary
                             )
                             else -> Text(
