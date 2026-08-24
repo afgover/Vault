@@ -28,6 +28,8 @@ import com.afgover.vault.ui.screens.UnlockScreen
 import com.afgover.vault.ui.theme.VaultTheme
 import com.afgover.vault.core.AppLocale
 import android.content.Context
+import android.os.PowerManager
+import com.afgover.vault.core.VaultSession
 
 class MainActivity : FragmentActivity() {
 
@@ -63,6 +65,22 @@ class MainActivity : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.refreshLockState()
+    }
+
+    /**
+     * Ekran kapandığı için arka plana düştüysek YAYINI BEKLEME, burada kilitle.
+     *
+     * `ACTION_SCREEN_OFF` önbellekteki sürece ertelenerek teslim edilebiliyor
+     * ve pratikte uygulama yeniden öne geldikten sonra geliyordu; o aralıkta
+     * kasa kilitli sayılmıyordu. `onStop` ekran kapanmasıyla senkron çalışır.
+     *
+     * Ekran AÇIKKEN uygulamadan çıkmak kilitlemez: klavye ve otomatik doldurma
+     * başka uygulamalardayken aynı oturumu kullanıyor (tasarım gereği).
+     */
+    override fun onStop() {
+        super.onStop()
+        val pm = getSystemService(PowerManager::class.java)
+        if (pm?.isInteractive == false) VaultSession.lock()
     }
 
     private fun canUseBiometric(): Boolean = BiometricAuth.canUse(this)

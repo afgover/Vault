@@ -179,16 +179,29 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** Ekran öne geldiğinde: ekran kapanıp kasa kilitlendiyse kilit ekranına dön. */
-    fun refreshLockState() {
-        if (lockState == LockState.UNLOCKED && !VaultSession.isUnlocked) {
-            lockState = LockState.LOCKED
+    init {
+        // Oturum kilidi HER kaynaktan (ekran kapanması, klavye, otomatik
+        // doldurma) anında arayüze yansısın: eskiden yalnız onResume'da
+        // eşitleniyordu ve ertelenmiş yayın yüzünden kilitli kasada içerik
+        // görünüyordu.
+        viewModelScope.launch {
+            VaultSession.unlocked.collect { acik ->
+                if (!acik) kilitliyeDus()
+            }
         }
-        // Yarıda kalmış PIN aşaması ekran kapanınca sıfırlansın: pendingInner
-        // ekranda asılı kalıp kesintisiz denemeye zemin olmasın (denetim).
-        if (lockState == LockState.NEEDS_PIN && !VaultSession.isUnlocked && pendingInner != null) {
+    }
+
+    /** Oturum kapandıysa arayüzü de kilitle; kurulum/PIN durumları korunur. */
+    private fun kilitliyeDus() {
+        if (lockState == LockState.UNLOCKED) lockState = LockState.LOCKED
+        if (lockState == LockState.NEEDS_PIN && pendingInner != null) {
             pendingInner = null
             lockState = LockState.LOCKED
         }
+    }
+
+    fun refreshLockState() {
+        if (!VaultSession.isUnlocked) kilitliyeDus()
     }
 
     /**
