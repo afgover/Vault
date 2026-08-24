@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.afgover.vault"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.afgover.vault"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -108,4 +108,18 @@ tasks.register<Exec>("checkApkAlignment") {
         "${rootDir}/tools/apk-hizalama.py",
         "${layout.buildDirectory.get()}/outputs/apk/debug/app-debug.apk"
     )
+}
+
+// Asıl önemli olan MARKET'e giden çıktı: release APK'yı da ölç (denetim —
+// eskiden yalnız debug denetleniyordu). assembleRelease sonrası otomatik koşar.
+tasks.register<Exec>("checkReleaseApkAlignment") {
+    dependsOn("assembleRelease")
+    commandLine(
+        "python3",
+        "${rootDir}/tools/apk-hizalama.py",
+        "${layout.buildDirectory.get()}/outputs/apk/release/app-release-unsigned.apk"
+    )
+}
+tasks.matching { it.name == "assembleRelease" }.configureEach {
+    finalizedBy("checkReleaseApkAlignment")
 }
