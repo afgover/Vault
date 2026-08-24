@@ -13,7 +13,11 @@
 set -eu
 
 cd "$(dirname "$0")/.."
-DOSYALAR="tools/aktar.html tools/vault-clip.py tools/dogrula.sh tools/vendor/segno/encoder.py tools/vendor/segno/__init__.py"
+# Kapsam: tools/ altındaki TÜM kaynak dosyalar (py/html/sh/pyi). Elle sayım
+# import zincirindeki modülleri (consts, utils, writers, cli, helpers) dışarıda
+# bırakıyordu — o modüller vault-clip.py sürecinde parolaya ve düz metne erişir.
+DOSYALAR=$(find tools -type f \( -name '*.py' -o -name '*.pyi' -o -name '*.html' -o -name '*.sh' \) \
+  ! -path '*/__pycache__/*' | LC_ALL=C sort | tr '\n' ' ')
 MASA="$HOME/Desktop/aktar.html"
 
 case "${1:-}" in
@@ -31,6 +35,18 @@ case "${1:-}" in
 esac
 
 hata=0
+
+echo "0) Bytecode önbelleği (planted .pyc atlatması)"
+pyc=$(find tools -type d -name __pycache__ 2>/dev/null)
+if [ -n "$pyc" ]; then
+  echo "   ✗ tools/ altında __pycache__ VAR — .pyc kaynağın önüne geçebilir:"
+  echo "$pyc" | sed 's/^/     /'
+  echo "     sil: find tools -type d -name __pycache__ -exec rm -rf {} +"
+  echo "     ve araçları -B ile çalıştır (vault-clip.py bytecode yazmaz)"
+  hata=1
+else
+  echo "   ✓ bytecode önbelleği yok (yalnız denetlenen kaynak koşar)"
+fi
 
 echo "1) Dosyalar → SHA256SUMS"
 if shasum -a 256 -c tools/SHA256SUMS >/dev/null 2>&1; then

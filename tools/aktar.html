@@ -231,6 +231,14 @@ function ekAlanlariTopla() {
     .filter((f) => f.label !== "");
 }
 
+// Değeri dolu ama adı boş ek alan sessizce aktarım dışı kalıyordu (denetim).
+function adsizEkAlanVarMi() {
+  return [...document.querySelectorAll("#ekAlanlar .ekSatir")].some(
+    (satir) => satir.querySelector(".ekAd").value.trim() === "" &&
+               satir.querySelector(".ekDeger").value !== ""
+  );
+}
+
 function girdiyiKur() {
   const tur = $("tur").value;
   const data = {};
@@ -334,6 +342,13 @@ $("notes").addEventListener("input", () => {
     `${v.length} karakter · başı: “${ilk.slice(0,32)}${ilk.length>32||v.trim().includes("\n")?"…":""}”`;
 });
 
+// Kaba bir zayıflık sezgisi: kısa ya da tek karakter sınıfı (yalnız harf/rakam).
+function parolaZayif(p) {
+  if (p.length < 16) return true;
+  const siniflar = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/].filter((r) => r.test(p)).length;
+  return siniflar < 2;
+}
+
 function komutKokuyor(v) {
   return v.includes("vault-clip") || v.includes("aktar.html") ||
          /^\s*(cd|curl|ssh|sudo|python3?)\s/.test(v.trim());
@@ -350,6 +365,15 @@ $("tokenKaydet").addEventListener("click", () => {
 });
 $("tokenDegistir").addEventListener("click", (e) => { e.preventDefault(); tokenAlaniGoster(); });
 $("yol").dispatchEvent(new Event("change"));
+
+// GİZLİLİK: tarayıcı yazım denetimi alan içeriğini bulut denetleyicisine
+// gönderebilir; "internete hiçbir şey gitmez" sözünü bozar. Kapat.
+for (const el of document.querySelectorAll("input, textarea")) {
+  el.setAttribute("spellcheck", "false");
+  el.setAttribute("autocorrect", "off");
+  el.setAttribute("autocapitalize", "off");
+  el.setAttribute("autocomplete", "off");
+}
 
 /* --- QR kipi: zarfın KENDİSİ karelere bölünür, ağ hiç kullanılmaz --- */
 const QR_CHUNK = 1200; // uygulamadaki QrTransfer.CHUNK ile aynı
@@ -437,7 +461,22 @@ $("gonder").addEventListener("click", async () => {
     return;
   }
   if (p1 !== p2) { $("hata").textContent = "Parolalar eşleşmiyor."; return; }
+  if (adsizEkAlanVarMi() &&
+      !confirm("Adı boş bir ek alan var; değeri DOLU ama aktarılmayacak.\nYine de devam edeyim mi?")) return;
+  // Toplam kayıt boyutu uygulamadaki 256 KB sınırını aşarsa telefonda içe
+  // alınamaz; şifrelemeden önce söyle (denetim).
+  const hamBoyut = new TextEncoder().encode(girdiyiKur()).length;
+  if (hamBoyut > 256 * 1024) {
+    $("hata").textContent = `Kayıt ${(hamBoyut/1024).toFixed(0)} KB — uygulama sınırı 256 KB. Büyük dosyayı bölerek ekle.`;
+    return;
+  }
   const qrKipi = $("yol").value === "qr";
+  // Relay'e (herkese açık blob) zayıf/insan-uydurması parola konmasın: modelin
+  // şartı üretilmiş güçlü paroladır (docs/kendi-zarfini-uret.md). QR'da kanal
+  // ekran-kamera olduğu için bu şart yok.
+  if (!qrKipi && parolaZayif(p1) &&
+      !confirm("Bu parola relay'e yüklenecek herkese açık zarf için ZAYIF görünüyor " +
+               "(kısa ya da tek karakter sınıfı). Üretilmiş güçlü bir parola önerilir.\nYine de yükleyeyim mi?")) return;
   if (!qrKipi && !tokenGetir()) {
     tokenAlaniGoster(); $("hata").textContent = "Önce yükleme token'ını kaydet."; return;
   }

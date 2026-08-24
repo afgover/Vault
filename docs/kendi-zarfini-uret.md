@@ -46,7 +46,8 @@ betik zarfı üretir. Tek bağımlılık `cryptography` (`pip install cryptograp
 ```python
 #!/usr/bin/env python3
 # zarf-uret.py — stdin'den sırrı alır, .vaultbak zarfını stdout'a yazar.
-# Kullanım: printf '%s' 'GİZLİ METİN' | python3 zarf-uret.py "Başlık" > zarf.json
+# Kullanım: python3 zarf-uret.py "Başlık" > zarf.json  (sırrı YAPIŞTIR, Ctrl-D)
+# Komut satırına sır yazma (printf '...'): ~/.zsh_history'e düz metin kalır.
 import sys, os, json, time, base64, hashlib, getpass
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 

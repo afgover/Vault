@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# -B: bytecode önbelleği yazma/okuma — planted .pyc atlatmasını kapatır (denetim).
+import sys
+if not sys.flags.dont_write_bytecode:
+    import os
+    os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 """
 Mac panosundaki metni Vault'a aktarılabilir şifreli yedeğe (.vaultbak) çevirir.
 
