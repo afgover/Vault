@@ -1,10 +1,61 @@
 package com.afgover.vault.data
 
+import androidx.annotation.StringRes
+import com.afgover.vault.R
 import org.json.JSONArray
 import org.json.JSONObject
 
 /** Kullanıcının kendi tanımladığı ek alan (ad + değer). */
 data class CustomField(val label: String, val value: String)
+
+/**
+ * Yerleşik alanların KİMLİĞİ. Etiket artık metin değil anahtar:
+ *
+ * - [labelRes] yalnız EKRANDA gösterilen metindir, dile göre değişir.
+ * - [stable] ise günlüğe ve pano etiketine yazılan, **dile bağlı olmayan**
+ *   addır. Eskiden buraya Türkçe etiket yazılıyordu; uygulama İngilizceye
+ *   açılınca aynı kaydın geçmişi iki dile bölünürdü.
+ * - Maskeleme de metin karşılaştırmasıyla değil kimlikle yapılır
+ *   ([EntryField.hidden]): "Şifre" metnine bakan bir kontrol, etiket
+ *   çevrildiği anda şifreyi maskesiz gösterirdi.
+ */
+enum class FieldKey(@StringRes val labelRes: Int, val stable: String) {
+    FULL_NAME(R.string.field_full_name, "fullName"),
+    USERNAME(R.string.field_username, "username"),
+    PASSWORD(R.string.field_password, "password"),
+    URL(R.string.field_url, "url"),
+    PHONE(R.string.field_phone, "phone"),
+    EMAIL(R.string.field_email, "email"),
+    ADDRESS(R.string.field_address, "address"),
+    CARDHOLDER(R.string.field_cardholder, "cardholder"),
+    CARD_NUMBER(R.string.field_card_number, "cardNumber"),
+    EXPIRY(R.string.field_expiry, "expiry"),
+    CVV(R.string.field_cvv, "cvv"),
+    IBAN(R.string.field_iban, "iban"),
+    NOTES(R.string.field_notes, "notes");
+
+    companion object {
+        /** Günlükte duran kararlı ada karşılık gelen alan; bilinmiyorsa null. */
+        fun ofStable(name: String?): FieldKey? = entries.firstOrNull { it.stable == name }
+    }
+}
+
+/**
+ * Gösterilecek tek alan. Yerleşikse [key] doludur; kullanıcının kendi
+ * eklediği alansa [customLabel] doludur (o zaten kullanıcının yazdığı metin,
+ * çevrilmez).
+ */
+data class EntryField(
+    val key: FieldKey?,
+    val customLabel: String?,
+    val value: String
+) {
+    /** Günlüğe/panoya yazılan ad — dile bağlı DEĞİL. */
+    val stableName: String get() = key?.stable ?: customLabel.orEmpty()
+
+    /** Varsayılan olarak gizlenir mi (şifre, CVV)? Metin değil kimlik sorusu. */
+    val hidden: Boolean get() = key == FieldKey.PASSWORD || key == FieldKey.CVV
+}
 
 /**
  * Bir kaydın şifrelenen alanları. Türe göre ilgili alanlar doldurulur;
@@ -60,23 +111,26 @@ data class EntryData(
     }
 
     /** IME ve detay ekranında gösterilecek (etiket, değer) çiftleri. */
-    fun fields(): List<Pair<String, String>> = buildList {
-        if (fullName.isNotEmpty()) add("Ad Soyad" to fullName)
-        if (username.isNotEmpty()) add("Kullanıcı adı" to username)
-        if (password.isNotEmpty()) add("Şifre" to password)
-        if (url.isNotEmpty()) add("Site / Uygulama" to url)
-        if (phone.isNotEmpty()) add("Telefon" to phone)
-        if (email.isNotEmpty()) add("E-posta" to email)
-        if (address.isNotEmpty()) add("Adres" to address)
-        if (cardholder.isNotEmpty()) add("Kart sahibi" to cardholder)
-        if (cardNumber.isNotEmpty()) add("Kart no" to cardNumber)
-        if (expiry.isNotEmpty()) add("Son kul. tarihi" to expiry)
-        if (cvv.isNotEmpty()) add("CVV" to cvv)
-        if (iban.isNotEmpty()) add("IBAN" to iban)
-        custom.forEach { field ->
-            if (field.value.isNotEmpty()) add(field.label to field.value)
+    fun fields(): List<EntryField> = buildList {
+        fun yerlesik(key: FieldKey, value: String) {
+            if (value.isNotEmpty()) add(EntryField(key, null, value))
         }
-        if (notes.isNotEmpty()) add("Not" to notes)
+        yerlesik(FieldKey.FULL_NAME, fullName)
+        yerlesik(FieldKey.USERNAME, username)
+        yerlesik(FieldKey.PASSWORD, password)
+        yerlesik(FieldKey.URL, url)
+        yerlesik(FieldKey.PHONE, phone)
+        yerlesik(FieldKey.EMAIL, email)
+        yerlesik(FieldKey.ADDRESS, address)
+        yerlesik(FieldKey.CARDHOLDER, cardholder)
+        yerlesik(FieldKey.CARD_NUMBER, cardNumber)
+        yerlesik(FieldKey.EXPIRY, expiry)
+        yerlesik(FieldKey.CVV, cvv)
+        yerlesik(FieldKey.IBAN, iban)
+        custom.forEach { field ->
+            if (field.value.isNotEmpty()) add(EntryField(null, field.label, field.value))
+        }
+        yerlesik(FieldKey.NOTES, notes)
     }
 
     companion object {

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Türkçe. Taban dil values/ altındaki İngilizcedir; bu dosya yalnız Türkçe
+  cihazlarda kullanılır. Anahtarlar koddan çağrılıyor, değiştirme.
+-->
+<resources>
+    <string name="ime_label">Vault Klavyesi</string>
+
+    <!-- Yerleşik alan etiketleri. Bunlar YALNIZ görüntü metnidir: kullanım
+         günlüğüne ve pano etiketine kararlı anahtar yazılır, bu metin değil
+         (yoksa günlük dil değişince ikiye bölünürdü). -->
+    <string name="field_full_name">Ad Soyad</string>
+    <string name="field_username">Kullanıcı adı</string>
+    <string name="field_password">Şifre</string>
+    <string name="field_url">Site / Uygulama</string>
+    <string name="field_phone">Telefon</string>
+    <string name="field_email">E-posta</string>
+    <string name="field_address">Adres</string>
+    <string name="field_cardholder">Kart sahibi</string>
+    <string name="field_card_number">Kart no</string>
+    <string name="field_expiry">Son kul. tarihi</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">Not</string>
+
+    <!-- Kayıt türleri -->
+    <string name="type_login">Hesap / Şifre</string>
+    <string name="type_everyday">Gündelik</string>
+    <string name="type_card">Kart</string>
+    <string name="type_note">Güvenli Not</string>
+
+    <!-- Not alt türleri -->
+    <string name="note_kind_general">Genel not</string>
+    <string name="note_kind_script">Betik / komut (.sh)</string>
+    <string name="note_kind_key">Anahtar / sertifika (.pem)</string>
+    <string name="note_kind_fingerprint">Parmak izi / çıpa</string>
+    <string name="note_kind_recovery">Kurtarma kodları</string>
+    <string name="note_kind_config">Yapılandırma (.env, json)</string>
+
+    <!-- Sıralama -->
+    <string name="sort_title_asc">Başlık (A→Z)</string>
+    <string name="sort_title_desc">Başlık (Z→A)</string>
+    <string name="sort_updated_desc">Son güncellenen</string>
+    <string name="sort_created_desc">Son eklenen</string>
+    <string name="sort_type">Türe göre</string>
+    <string name="sort_manual">Kullanıcı sırası (sürükle)</string>
+
+    <!-- Kullanım günlüğü olay türleri -->
+    <string name="usage_created">Oluşturuldu</string>
+    <string name="usage_updated">Değiştirildi</string>
+    <string name="usage_copied">Panoya kopyalandı</string>
+    <string name="usage_bt_typed">Bilgisayara yazıldı</string>
+    <string name="usage_keyboard_typed">Klavyeden yazıldı</string>
+    <string name="usage_quick_on">Hızlı erişim açıldı</string>
+    <string name="usage_quick_off">Hızlı erişim kapatıldı</string>
+
+    <!-- Bluetooth klavye: düzenler ve hızlar -->
+    <string name="bt_layout_us">US (İngilizce)</string>
+    <string name="bt_layout_tr">Türkçe Q</string>
+    <string name="bt_speed_safe">Güvenli</string>
+    <string name="bt_speed_fast">Hızlı</string>
+    <string name="bt_speed_turbo">Çok hızlı</string>
+
+    <!-- Bluetooth klavye: bağlamsız yöneticiden bildirilen hatalar -->
+    <string name="bt_err_off">Bluetooth kapalı. Önce Bluetooth\'u aç.</string>
+    <string name="bt_err_unsupported">Bu telefon Bluetooth klavye (HID) profilini desteklemiyor.</string>
+    <string name="bt_err_register">HID kaydı başarısız — telefon desteklemiyor olabilir.</string>
+    <string name="bt_err_connect">Bağlantı başlatılamadı. Cihazın Bluetooth\'u açık mı?</string>
+    <string name="bt_err_no_link">Bağlantı yok — cihazı yeniden seç.</string>
+    <string name="bt_err_queue">Bluetooth gönderim kuyruğu yanıt vermedi; yazma %1$d. karakterde durdu. Daha yavaş bir hız seç.</string>
+
+    <!-- Kayıt çok büyük -->
+    <string name="entry_too_large">\"%1$s\" kaydı çok büyük: %2$d KB (sınır %3$d KB). Uzun içeriği bölerek ya da dosya olarak bilgisayarda saklayarak ekle.</string>
+    <string name="ime_write_field">%1$s yaz</string>
+</resources>

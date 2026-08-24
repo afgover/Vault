@@ -52,6 +52,7 @@ import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.data.NoteKind
 import com.afgover.vault.ui.VaultViewModel
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -299,7 +300,7 @@ fun EditScreen(
                                         )
                                         Spacer(Modifier.width(6.dp))
                                         Text(
-                                            k.label,
+                                            stringResource(k.labelRes),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = if (secili)
                                                 MaterialTheme.colorScheme.onPrimary

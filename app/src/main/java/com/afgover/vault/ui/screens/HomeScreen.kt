@@ -77,6 +77,8 @@ import com.afgover.vault.data.EntrySort
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.ui.EntryListItem
 import com.afgover.vault.ui.VaultViewModel
+import androidx.compose.ui.res.stringResource
+import com.afgover.vault.R
 
 fun EntryType.icon(): ImageVector = when (this) {
     EntryType.LOGIN -> Icons.Filled.Key
@@ -85,12 +87,15 @@ fun EntryType.icon(): ImageVector = when (this) {
     EntryType.NOTE -> Icons.AutoMirrored.Filled.Note
 }
 
-fun EntryType.label(): String = when (this) {
-    EntryType.LOGIN -> "Hesap / Şifre"
-    EntryType.EVERYDAY -> "Gündelik"
-    EntryType.CARD -> "Kart"
-    EntryType.NOTE -> "Güvenli Not"
-}
+@Composable
+fun EntryType.label(): String = stringResource(
+    when (this) {
+        EntryType.LOGIN -> R.string.type_login
+        EntryType.EVERYDAY -> R.string.type_everyday
+        EntryType.CARD -> R.string.type_card
+        EntryType.NOTE -> R.string.type_note
+    }
+)
 
 /** Tür kimlik rengi: liste ve detayda ikon kapsülünü boyar, taramayı hızlandırır. */
 @Composable
@@ -194,7 +199,7 @@ fun HomeScreen(
                             IconButton(onClick = { sortMenuOpen = true }) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.Sort,
-                                    contentDescription = "Sıralama: ${viewModel.sort.label}"
+                                    contentDescription = "Sıralama: " + stringResource(viewModel.sort.labelRes)
                                 )
                             }
                             DropdownMenu(
@@ -203,7 +208,7 @@ fun HomeScreen(
                             ) {
                                 EntrySort.entries.forEach { secenek ->
                                     DropdownMenuItem(
-                                        text = { Text(secenek.label) },
+                                        text = { Text(stringResource(secenek.labelRes)) },
                                         leadingIcon = {
                                             if (viewModel.sort == secenek) {
                                                 Icon(

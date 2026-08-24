@@ -42,6 +42,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
+import androidx.compose.ui.res.stringResource
+import com.afgover.vault.R
 
 /** Aynı geri sayım + yazma akışından geçen üç gönderim. */
 private enum class Gonderim { DUZEN_TESTI, HIZ_TESTI, DEGER }
@@ -238,7 +240,8 @@ fun BtTypeDialog(
                         Text("Bluetooth klavye hazırlanıyor…")
 
                     is BtHidManager.State.Unsupported ->
-                        Text(error ?: "Bu telefon HID profilini desteklemiyor.")
+                        Text(error?.let { stringResource(it.res, *it.args.toTypedArray()) }
+                            ?: stringResource(R.string.bt_err_unsupported))
 
                     is BtHidManager.State.Ready -> {
                         Text(
@@ -289,13 +292,13 @@ fun BtTypeDialog(
                                         testTyped = false
                                         prefs.edit().putString("pc_layout", l.name).apply()
                                     },
-                                    label = l.label,
+                                    label = stringResource(l.labelRes),
                                     modifier = Modifier.padding(end = 8.dp)
                                 )
                             }
                         }
                         Text(
-                            "Seçili düzen: ${layout.label}",
+                            "Seçili düzen: " + stringResource(layout.labelRes),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -346,7 +349,7 @@ fun BtTypeDialog(
                                         hizSonucu = null
                                         prefs.edit().putString("pc_speed", h.name).apply()
                                     },
-                                    label = h.label,
+                                    label = stringResource(h.labelRes),
                                     modifier = Modifier.padding(end = 8.dp)
                                 )
                             }
@@ -415,7 +418,10 @@ fun BtTypeDialog(
                 }
                 if (state !is BtHidManager.State.Unsupported && error != null) {
                     Spacer(Modifier.height(8.dp))
-                    Text(error!!, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        stringResource(error!!.res, *error!!.args.toTypedArray()),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         },

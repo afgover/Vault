@@ -1,5 +1,7 @@
 package com.afgover.vault.data
 
+import androidx.annotation.StringRes
+import com.afgover.vault.R
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -48,13 +50,13 @@ data class EntryEntity(
 }
 
 /** Güvenli notun ne taşıdığı — ikon ve düzenleme ipucu bundan türer. */
-enum class NoteKind(val label: String) {
-    GENEL("Genel not"),
-    BETIK("Betik / komut (.sh)"),
-    ANAHTAR("Anahtar / sertifika (.pem)"),
-    PARMAK_IZI("Parmak izi / çıpa"),
-    KURTARMA("Kurtarma kodları"),
-    YAPILANDIRMA("Yapılandırma (.env, json)");
+enum class NoteKind(@StringRes val labelRes: Int) {
+    GENEL(R.string.note_kind_general),
+    BETIK(R.string.note_kind_script),
+    ANAHTAR(R.string.note_kind_key),
+    PARMAK_IZI(R.string.note_kind_fingerprint),
+    KURTARMA(R.string.note_kind_recovery),
+    YAPILANDIRMA(R.string.note_kind_config);
 
     companion object {
         fun of(name: String?): NoteKind =

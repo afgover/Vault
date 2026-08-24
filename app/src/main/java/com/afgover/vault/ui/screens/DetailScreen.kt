@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.afgover.vault.core.Fingerprint
@@ -48,7 +49,12 @@ import com.afgover.vault.data.UsageEvent
 import com.afgover.vault.data.UsageKind
 import com.afgover.vault.ui.VaultViewModel
 
-private val HIDDEN_LABELS = setOf("Şifre", "CVV")
+/** Bilgisayara yazılacak alan: ekrandaki adı, kararlı adı ve değeri. */
+data class BtHedef(val gosterilen: String, val kararli: String, val deger: String)
+
+// Maskeleme METİN karşılaştırmasıyla değil kimlikle yapılır
+// ([EntryField.hidden]): "Şifre" metnine bakan eski kontrol, etiket
+// çevrildiği anda şifreyi maskesiz gösterirdi (yerelleştirme tuzağı).
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +66,7 @@ fun DetailScreen(
 ) {
     var entry by remember { mutableStateOf<DecryptedEntry?>(null) }
     val tags by viewModel.tags.collectAsState()
-    var btField by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var btField by remember { mutableStateOf<BtHedef?>(null) }
     var usage by remember { mutableStateOf<List<UsageEvent>>(emptyList()) }
     var usageTick by remember { mutableStateOf(0) }
     var usageExpanded by remember { mutableStateOf(false) }
@@ -120,17 +126,19 @@ fun DetailScreen(
                 }
             }
 
-            e.data.fields().forEach { (label, value) ->
+            e.data.fields().forEach { alan ->
+                val gosterilen = alan.customLabel ?: stringResource(alan.key!!.labelRes)
                 FieldCard(
-                    label = label,
-                    value = value,
-                    hiddenByDefault = label in HIDDEN_LABELS,
+                    label = gosterilen,
+                    value = alan.value,
+                    hiddenByDefault = alan.hidden,
                     onCopy = {
-                        viewModel.copyToClipboard(label, value, e.id)
+                        // Panoya ve günlüğe KARARLI ad gider, ekrandaki çeviri değil.
+                        viewModel.copyToClipboard(gosterilen, alan.value, e.id, alan.stableName)
                         usageTick++
                     },
-                    onTypeToPc = { btField = label to value },
-                    onCopyFingerprint = { viewModel.copyToClipboard("$label parmak izi", it) }
+                    onTypeToPc = { btField = BtHedef(gosterilen, alan.stableName, alan.value) },
+                    onCopyFingerprint = { viewModel.copyToClipboard(gosterilen, it) }
                 )
                 Spacer(Modifier.padding(4.dp))
             }
@@ -202,7 +210,7 @@ fun DetailScreen(
                     Text(
                         buildString {
                             append(df.format(java.util.Date(ev.at)))
-                            append(" · ").append(ev.kind.label)
+                            append(" · ").append(stringResource(ev.kind.labelRes))
                             ev.fieldLabel?.let { append(" (").append(it).append(")") }
                             ev.target?.let { append(" → ").append(it) }
                         },
@@ -218,13 +226,15 @@ fun DetailScreen(
         }
     }
 
-    btField?.let { (label, value) ->
+    btField?.let { hedef ->
         BtTypeDialog(
-            label = label,
-            value = value,
+            label = hedef.gosterilen,
+            value = hedef.deger,
             onDismiss = { btField = null },
             onTyped = { target ->
-                entry?.let { viewModel.logUsage(it.id, UsageKind.BT_YAZILDI, label, target) }
+                entry?.let {
+                    viewModel.logUsage(it.id, UsageKind.BT_YAZILDI, hedef.kararli, target)
+                }
                 usageTick++
             }
         )

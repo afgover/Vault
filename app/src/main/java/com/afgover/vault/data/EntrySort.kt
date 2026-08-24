@@ -1,6 +1,8 @@
 package com.afgover.vault.data
 
 import android.content.Context
+import androidx.annotation.StringRes
+import com.afgover.vault.R
 
 /**
  * Kayıt sıralaması. Kullanıcı seçer; hem Vault Klavyesi hem ana liste aynı
@@ -10,13 +12,13 @@ import android.content.Context
  * Tercih düz bir ayar dosyasında tutulur (sır değil): klavye ayrı bir süreç
  * gibi davranabildiği için Room'a değil `SharedPreferences`'a yazılır.
  */
-enum class EntrySort(val label: String) {
-    TITLE_ASC("Başlık (A→Z)"),
-    TITLE_DESC("Başlık (Z→A)"),
-    UPDATED_DESC("Son güncellenen"),
-    CREATED_DESC("Son eklenen"),
-    TYPE("Türe göre"),
-    MANUAL("Kullanıcı sırası (sürükle)");
+enum class EntrySort(@StringRes val labelRes: Int) {
+    TITLE_ASC(R.string.sort_title_asc),
+    TITLE_DESC(R.string.sort_title_desc),
+    UPDATED_DESC(R.string.sort_updated_desc),
+    CREATED_DESC(R.string.sort_created_desc),
+    TYPE(R.string.sort_type),
+    MANUAL(R.string.sort_manual);
 
     companion object {
         private const val PREFS = "vault_settings"

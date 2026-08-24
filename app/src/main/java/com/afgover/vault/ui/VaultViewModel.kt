@@ -445,7 +445,17 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     private var clipboardClearJob: Job? = null
 
-    fun copyToClipboard(label: String, value: String, entryId: Long? = null) {
+    /**
+     * [label] ekranda gösterilen (çevrilmiş) ad, [stableName] ise günlüğe
+     * yazılan dile bağlı olmayan ad. İkisi ayrı: günlük dil değiştiğinde
+     * ikiye bölünmemeli (yerelleştirme).
+     */
+    fun copyToClipboard(
+        label: String,
+        value: String,
+        entryId: Long? = null,
+        stableName: String? = null
+    ) {
         val cm = getApplication<Application>()
             .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText(label, value)
@@ -458,7 +468,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         }
         cm.setPrimaryClip(clip)
         toast("$label kopyalandı (45 sn sonra silinecek)")
-        entryId?.let { logUsage(it, UsageKind.KOPYALANDI, label) }
+        entryId?.let { logUsage(it, UsageKind.KOPYALANDI, stableName ?: label) }
         clipboardClearJob?.cancel()
         clipboardClearJob = viewModelScope.launch {
             delay(45_000)

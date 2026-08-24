@@ -52,6 +52,7 @@ import com.afgover.vault.ui.VaultViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,7 +122,7 @@ fun SettingsScreen(
             Text(
                 "Sıralama ana ekrana taşındı: başlığın yanındaki ⇅ simgesinden " +
                     "seçilir ve hem listede hem Vault Klavyesi'nde geçerli olur.\n" +
-                    "Şu anki sıra: ${viewModel.sort.label}",
+                    "Şu anki sıra: " + stringResource(viewModel.sort.labelRes),
                 style = MaterialTheme.typography.bodySmall
             )
 

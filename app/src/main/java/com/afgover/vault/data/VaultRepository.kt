@@ -35,12 +35,16 @@ class VaultRepository(
         const val MAX_PLAIN_BYTES = 256 * 1024
     }
 
-    /** Kayıt [MAX_PLAIN_BYTES] sınırını aşarsa fırlatılır; mesajı ekrana çıkar. */
-    class EntryTooLargeException(title: String, bytes: Int) : Exception(
-        "\"$title\" kaydı çok büyük: ${bytes / 1024} KB " +
-            "(sınır ${MAX_PLAIN_BYTES / 1024} KB). Uzun içeriği bölerek ya da " +
-            "dosya olarak bilgisayarda saklayarak ekle."
-    )
+    /**
+     * Kayıt [MAX_PLAIN_BYTES] sınırını aşarsa fırlatılır. Mesaj METİN değil
+     * VERİ taşır: arayüz onu kendi dilinde kurar (yerelleştirme).
+     */
+    class EntryTooLargeException(val title: String, val bytes: Int) : Exception(
+        "entry too large: $title ${bytes / 1024}KB"
+    ) {
+        val kb: Int get() = bytes / 1024
+        val limitKb: Int get() = MAX_PLAIN_BYTES / 1024
+    }
 
     private fun checkSize(title: String, plain: ByteArray) {
         if (plain.size > MAX_PLAIN_BYTES) throw EntryTooLargeException(title, plain.size)

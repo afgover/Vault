@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.afgover.vault.data.UsageEvent
 import com.afgover.vault.ui.VaultViewModel
+import androidx.compose.ui.res.stringResource
 
 /**
  * Tüm kullanım günlüğü: hangi kaydın hangi alanı, ne zaman, nereye gitti.
@@ -127,7 +128,7 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                             buildString {
                                 append(df.format(java.util.Date(ev.at)))
                                 append(" · ").append(titles[ev.entryId] ?: "(silinmiş kayıt)")
-                                append(" · ").append(ev.kind.label)
+                                append(" · ").append(stringResource(ev.kind.labelRes))
                                 ev.fieldLabel?.let { append(" (").append(it).append(")") }
                                 ev.target?.let { append(" → ").append(it) }
                             },

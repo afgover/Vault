@@ -1,5 +1,8 @@
 package com.afgover.vault.bt
 
+import androidx.annotation.StringRes
+import com.afgover.vault.R
+
 /**
  * Karakter → HID klavye tuş kodu eşlemesi.
  *
@@ -15,7 +18,9 @@ object HidLayouts {
 
     data class KeyStroke(val usage: Int, val modifier: Int)
 
-    enum class Layout(val label: String) { US("US (İngilizce)"), TR("Türkçe Q") }
+    enum class Layout(@StringRes val labelRes: Int) {
+        US(R.string.bt_layout_us), TR(R.string.bt_layout_tr)
+    }
 
     fun map(layout: Layout): Map<Char, KeyStroke> =
         when (layout) {

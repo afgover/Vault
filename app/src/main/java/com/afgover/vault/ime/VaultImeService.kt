@@ -229,12 +229,14 @@ class VaultImeService : InputMethodService() {
             selected = null
             render()
         })
-        entry.data.fields().forEach { (label, value) ->
-            content.addView(actionButton("$label yaz") {
+        entry.data.fields().forEach { alan ->
+            val gosterilen = alan.customLabel ?: getString(alan.key!!.labelRes)
+            content.addView(actionButton(getString(R.string.ime_write_field, gosterilen)) {
                 // commitText false dönerse (bağlantı yok) yazma olmamıştır;
                 // günlüğe 'yazıldı' düşme (denetim).
-                val yazildi = currentInputConnection?.commitText(value, 1) == true
-                if (yazildi) logUsage(entry.id, label)
+                val yazildi = currentInputConnection?.commitText(alan.value, 1) == true
+                // Günlüğe KARARLI ad yazılır, ekrandaki çeviri değil.
+                if (yazildi) logUsage(entry.id, alan.stableName)
             })
         }
     }

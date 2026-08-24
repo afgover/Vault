@@ -1,6 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Base language: ENGLISH. Turkish lives in values-tr/.
+
+  Android falls back to this file when the device locale has no translation,
+  so a non-Turkish phone shows English instead of Turkish (the app shipped
+  Turkish-only before). Keep keys stable: they are referenced from code.
+-->
 <resources>
     <string name="app_name">Vault</string>
-    <string name="ime_label">Vault Klavyesi</string>
+    <string name="ime_label">Vault Keyboard</string>
     <string name="autofill_label">Vault</string>
+
+    <!-- Built-in field labels. These are DISPLAY text only: what gets stored
+         in the usage log and the clipboard label is the stable key, never
+         this string (otherwise the log would change language mid-history). -->
+    <string name="field_full_name">Full name</string>
+    <string name="field_username">Username</string>
+    <string name="field_password">Password</string>
+    <string name="field_url">Site / App</string>
+    <string name="field_phone">Phone</string>
+    <string name="field_email">Email</string>
+    <string name="field_address">Address</string>
+    <string name="field_cardholder">Cardholder</string>
+    <string name="field_card_number">Card number</string>
+    <string name="field_expiry">Expiry date</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">Note</string>
+
+    <!-- Entry types -->
+    <string name="type_login">Account / Password</string>
+    <string name="type_everyday">Everyday</string>
+    <string name="type_card">Card</string>
+    <string name="type_note">Secure note</string>
+
+    <!-- Note subtypes -->
+    <string name="note_kind_general">General note</string>
+    <string name="note_kind_script">Script / command (.sh)</string>
+    <string name="note_kind_key">Key / certificate (.pem)</string>
+    <string name="note_kind_fingerprint">Fingerprint / anchor</string>
+    <string name="note_kind_recovery">Recovery codes</string>
+    <string name="note_kind_config">Configuration (.env, json)</string>
+
+    <!-- Sort options -->
+    <string name="sort_title_asc">Title (A→Z)</string>
+    <string name="sort_title_desc">Title (Z→A)</string>
+    <string name="sort_updated_desc">Recently updated</string>
+    <string name="sort_created_desc">Recently added</string>
+    <string name="sort_type">By type</string>
+    <string name="sort_manual">Custom order (drag)</string>
+
+    <!-- Usage log event kinds -->
+    <string name="usage_created">Created</string>
+    <string name="usage_updated">Changed</string>
+    <string name="usage_copied">Copied to clipboard</string>
+    <string name="usage_bt_typed">Typed to computer</string>
+    <string name="usage_keyboard_typed">Typed from keyboard</string>
+    <string name="usage_quick_on">Quick access enabled</string>
+    <string name="usage_quick_off">Quick access disabled</string>
+
+    <!-- Bluetooth keyboard: layouts and speeds -->
+    <string name="bt_layout_us">US (English)</string>
+    <string name="bt_layout_tr">Turkish Q</string>
+    <string name="bt_speed_safe">Safe</string>
+    <string name="bt_speed_fast">Fast</string>
+    <string name="bt_speed_turbo">Very fast</string>
+
+    <!-- Bluetooth keyboard: errors reported from a context-free manager -->
+    <string name="bt_err_off">Bluetooth is off. Turn Bluetooth on first.</string>
+    <string name="bt_err_unsupported">This phone does not support the Bluetooth keyboard (HID) profile.</string>
+    <string name="bt_err_register">HID registration failed — the phone may not support it.</string>
+    <string name="bt_err_connect">Could not start the connection. Is the other device\'s Bluetooth on?</string>
+    <string name="bt_err_no_link">No connection — pick the device again.</string>
+    <string name="bt_err_queue">The Bluetooth send queue stopped responding; typing stopped at character %1$d. Choose a slower speed.</string>
+
+    <!-- Entry too large -->
+    <string name="entry_too_large">\"%1$s\" is too large: %2$d KB (limit %3$d KB). Split the long content, or keep it as a file on your computer.</string>
+    <string name="ime_write_field">Type %1$s</string>
 </resources>
