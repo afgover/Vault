@@ -12,8 +12,11 @@ Tamamen çevrimdışı çalışır; hiçbir veri internete gönderilmez.
   ekranında ve klavyede diğerleriyle birlikte listelenir
 - **Güçlü şifreleme**: Tüm hassas alanlar AES-256-GCM ile şifrelenir; anahtar ana
   paroladan PBKDF2-HMAC-SHA256 (310.000 tur) ile türetilir
-- **Biyometrik kilit açma** (opsiyonel, parmak izi/yüz). Kasa **ekran kapandığı
-  anda** kilitlenir; ekran açık kaldığı sürece parola/parmak izi tekrar sorulmaz
+- **Biyometrik kilit açma** (opsiyonel, parmak izi/yüz). Kasa, uygulamanın
+  bulunduğu **ekran kapandığı anda** kilitlenir — ekranı kapatmak da,
+  katlanabilir cihazı **katlamak** da kilitler (katlayınca cihaz "uyanık"
+  kalır ama ana ekran kapanır). Uygulamadan çıkmak ekran açıkken kilitlemez:
+  klavye ve otomatik doldurma aynı oturumu kullanır
 - **Şifreli yedekleme**: `.vaultbak` dosyası olarak istediğin yere (Drive, SD kart,
   USB...) kaydet; **telefon sıfırlansa veya değişse bile** dosya + yedek parolası
   ile tüm veriler geri yüklenir

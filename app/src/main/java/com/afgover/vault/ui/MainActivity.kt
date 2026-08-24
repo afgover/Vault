@@ -30,6 +30,9 @@ import com.afgover.vault.core.AppLocale
 import android.content.Context
 import android.os.PowerManager
 import com.afgover.vault.core.VaultSession
+import android.os.Build
+import android.view.Display
+import com.afgover.vault.core.ScreenLockPolicy
 
 class MainActivity : FragmentActivity() {
 
@@ -79,8 +82,26 @@ class MainActivity : FragmentActivity() {
      */
     override fun onStop() {
         super.onStop()
+        if (ekranimGittiMi()) VaultSession.lock()
+    }
+
+    /**
+     * Bu Activity'nin bulunduğu ekran kapandı mı? Katlanabilir cihazda telefonu
+     * katlamak iç ekranı kapatır ama kapak ekranı açık kaldığı için cihaz
+     * "uyanık" sayılır ve ekran-kapandı yayını hiç gelmez; genel etkileşim
+     * durumuna bakmak bu yüzden yetmiyor (ölçüldü).
+     */
+    private fun ekranimGittiMi(): Boolean {
+        val ekran = if (Build.VERSION.SDK_INT >= 30) {
+            display
+        } else {
+            @Suppress("DEPRECATION") windowManager.defaultDisplay
+        }
         val pm = getSystemService(PowerManager::class.java)
-        if (pm?.isInteractive == false) VaultSession.lock()
+        return ScreenLockPolicy.shouldLock(
+            displayState = ekran?.state ?: Display.STATE_OFF,
+            interactive = pm?.isInteractive ?: true
+        )
     }
 
     private fun canUseBiometric(): Boolean = BiometricAuth.canUse(this)
