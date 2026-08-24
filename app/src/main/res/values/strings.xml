@@ -470,4 +470,5 @@
     <string name="bt_layout_fr">French (AZERTY)</string>
     <string name="bt_layout_es">Spanish</string>
     <string name="bt_layout_it">Italian</string>
+    <string name="bt_layout_tr_f">Turkish F</string>
 </resources>

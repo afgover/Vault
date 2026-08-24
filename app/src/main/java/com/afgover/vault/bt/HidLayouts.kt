@@ -25,7 +25,8 @@ object HidLayouts {
         DE(R.string.bt_layout_de),
         FR(R.string.bt_layout_fr),
         ES(R.string.bt_layout_es),
-        IT(R.string.bt_layout_it)
+        IT(R.string.bt_layout_it),
+        TR_F(R.string.bt_layout_tr_f)
     }
 
     /**
@@ -48,6 +49,7 @@ object HidLayouts {
             Layout.FR -> FR
             Layout.ES -> ES
             Layout.IT -> IT
+            Layout.TR_F -> TR_F
         }
 
     /**
@@ -445,12 +447,77 @@ object HidLayouts {
     private val DE: Map<Char, KeyStroke> = DE_TABLE.toMap()
     private val FR: Map<Char, KeyStroke> = FR_TABLE.toMap()
     private val ES: Map<Char, KeyStroke> = ES_TABLE.toMap()
+    /**
+     * Türkçe F — konum tablosu.
+     * TR-F, US ile yalnız rakam tabanlarını (1-0) ve boşluk/enter/tab'ı paylaşır; geri kalan her şey farklıdır.
+     *
+     * İki bağımsız hakem onayladı; ikincisi Microsoft'un resmî TR-F düzen
+     * dosyasıyla (KBDTUF) satır satır karşılaştırdı.
+     *
+     * `|` düzende iki tuştan da çıkıyor (AltGr+0x2E ve AltGr+0x64); tabloda
+     * yalnız 0x2E bırakıldı: 0x64 (ISO 102. tuş) ANSI-only ana bilgisayarlarda
+     * eşlenmeyebilir, 0x2E her yerde vardır.
+     */
+    private val TR_F_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x04, 'u', shift = 'U'),
+            KeyCap(0x05, 'ç', shift = 'Ç'),
+            KeyCap(0x06, 'v', shift = 'V'),
+            KeyCap(0x07, 'e', shift = 'E'),
+            KeyCap(0x08, 'ğ', shift = 'Ğ'),
+            KeyCap(0x09, 'a', shift = 'A'),
+            KeyCap(0x0A, 'ü', shift = 'Ü'),
+            KeyCap(0x0B, 't', shift = 'T'),
+            KeyCap(0x0C, 'n', shift = 'N'),
+            KeyCap(0x0D, 'k', shift = 'K'),
+            KeyCap(0x0E, 'm', shift = 'M'),
+            KeyCap(0x0F, 'l', shift = 'L'),
+            KeyCap(0x10, 's', shift = 'S'),
+            KeyCap(0x11, 'z', shift = 'Z'),
+            KeyCap(0x12, 'h', shift = 'H'),
+            KeyCap(0x13, 'p', shift = 'P'),
+            KeyCap(0x14, 'f', shift = 'F', altgr = '@'),
+            KeyCap(0x15, 'ı', shift = 'I'),
+            KeyCap(0x16, 'i', shift = 'İ'),
+            KeyCap(0x17, 'o', shift = 'O'),
+            KeyCap(0x18, 'r', shift = 'R'),
+            KeyCap(0x19, 'c', shift = 'C'),
+            KeyCap(0x1A, 'g', shift = 'G'),
+            KeyCap(0x1B, 'ö', shift = 'Ö'),
+            KeyCap(0x1C, 'd', shift = 'D'),
+            KeyCap(0x1D, 'j', shift = 'J'),
+            KeyCap(0x1E, '1', shift = '!'),
+            KeyCap(0x1F, '2', shift = '"'),
+            KeyCap(0x20, '3', shift = null, altgr = '#'),
+            KeyCap(0x21, '4', shift = '$'),
+            KeyCap(0x22, '5', shift = '%'),
+            KeyCap(0x23, '6', shift = '&'),
+            KeyCap(0x24, '7', shift = '\'', altgr = '{'),
+            KeyCap(0x25, '8', shift = '(', altgr = '['),
+            KeyCap(0x26, '9', shift = ')', altgr = ']'),
+            KeyCap(0x27, '0', shift = '=', altgr = '}'),
+            KeyCap(0x2D, '/', shift = '?', altgr = '\\'),
+            KeyCap(0x2E, '-', shift = '_', altgr = '|'),
+            KeyCap(0x2F, 'q', shift = 'Q'),
+            KeyCap(0x30, 'w', shift = 'W'),
+            KeyCap(0x31, 'x', shift = 'X'),
+            KeyCap(0x33, 'y', shift = 'Y'),
+            KeyCap(0x34, 'ş', shift = 'Ş'),
+            KeyCap(0x35, '+', shift = '*'),
+            KeyCap(0x36, 'b', shift = 'B'),
+            KeyCap(0x37, '.', shift = ':'),
+            KeyCap(0x38, ',', shift = ';'),
+            KeyCap(0x64, '<', shift = '>')
+        )
+    )
+
     private val IT: Map<Char, KeyStroke> = IT_TABLE.toMap()
+    private val TR_F: Map<Char, KeyStroke> = TR_F_TABLE.toMap()
 
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
-        Layout.IT to IT_TABLE
+        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE
     )
 }
