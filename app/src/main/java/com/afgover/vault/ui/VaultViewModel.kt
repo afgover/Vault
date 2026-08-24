@@ -408,10 +408,12 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         val cm = getApplication<Application>()
             .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText(label, value)
-        if (Build.VERSION.SDK_INT >= 33) {
-            clip.description.extras = PersistableBundle().apply {
-                putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
-            }
+        // İşaretle: bizim panomuz olduğunu ekran kapanınca tanıyıp temizleyelim
+        // (45 sn'lik iş süreç ölünce çalışmıyordu — denetim). Duyarlı bayrağı
+        // 33+ önizlemeyi de gizler.
+        clip.description.extras = PersistableBundle().apply {
+            putBoolean(VaultApp.CLIP_MARKER, true)
+            if (Build.VERSION.SDK_INT >= 33) putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
         }
         cm.setPrimaryClip(clip)
         toast("$label kopyalandı (45 sn sonra silinecek)")
@@ -441,13 +443,21 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 withContext(Dispatchers.IO) {
                     val all = repo.getAllDecrypted(key)
                     val allTags = repo.getAllTags()
-                    val out = getApplication<Application>().contentResolver.openOutputStream(uri)
+                    // Şifrele ÖNCE (belleğe), dosyaya sonra tek seferde yaz:
+                    // yazma sırasında bir hata olursa seçilen konumda yarım/boş
+                    // .vaultbak kalmasın — kullanıcı onu geçerli yedek sanabilir
+                    // (denetim). "w" kipi ayrıca dosyayı budar (kesip yeniler).
+                    val bytes = java.io.ByteArrayOutputStream().use { buf ->
+                        BackupManager.export(buf, password.toCharArray(), all, allTags)
+                        buf.toByteArray()
+                    }
+                    val out = getApplication<Application>().contentResolver.openOutputStream(uri, "wt")
                         ?: throw Exception("Dosya açılamadı")
-                    BackupManager.export(out, password.toCharArray(), all, allTags)
+                    out.use { it.write(bytes) }
                 }
                 toast("Yedek kaydedildi")
             } catch (e: Exception) {
-                error = "Yedekleme başarısız: ${e.message}"
+                error = "Yedekleme başarısız: ${e.message} — oluşan dosyayı silip tekrar dene."
             } finally {
                 busy = false
             }
@@ -576,6 +586,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     fun disableBiometric() {
         keyManager.clearBiometric()
+        refreshLockOptions()   // düğme durumu 'kapat' → 'etkinleştir' güncellensin (denetim)
         toast("Biyometrik kilit açma kapatıldı")
     }
 

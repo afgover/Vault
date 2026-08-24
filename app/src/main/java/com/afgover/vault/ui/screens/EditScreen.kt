@@ -1,5 +1,7 @@
 package com.afgover.vault.ui.screens
 
+import androidx.activity.compose.BackHandler
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -87,6 +89,25 @@ fun EditScreen(
     var loaded by remember { mutableStateOf(id == 0L) }
     var confirmDelete by remember { mutableStateOf(false) }
     var showGenerator by remember { mutableStateOf(false) }
+    var showDiscard by remember { mutableStateOf(false) }
+    var initialSnap by remember { mutableStateOf<String?>(null) }
+    var kaydedildi by remember { mutableStateOf(false) }
+
+    // Kaydedilmemiş değişiklikte geri çıkış tüm girilenleri kaybettiriyordu
+    // (denetim). Alanların anlık özetini yükleme anındaki özetle karşılaştırıp
+    // farklıysa onay iste.
+    fun snapshot(): String = listOf(
+        title, username, password, url, cardholder, cardNumber, expiry, cvv, iban,
+        notes, fullName, phone, email, address, quick.toString(), noteKind.name,
+        selectedTagIds.sorted().joinToString(","),
+        customFields.joinToString("|") { it.label + "=" + it.value }
+    ).joinToString(String(charArrayOf('\u0001')))
+
+    fun cikmayiDene() {
+        if (!kaydedildi && initialSnap != null && snapshot() != initialSnap) showDiscard = true
+        else onBack()
+    }
+    BackHandler(enabled = true) { cikmayiDene() }
 
     LaunchedEffect(id) {
         if (id != 0L) {
@@ -116,6 +137,7 @@ fun EditScreen(
             }
             loaded = true
         }
+        initialSnap = snapshot()
     }
 
     Scaffold(
@@ -123,7 +145,7 @@ fun EditScreen(
             TopAppBar(
                 title = { Text(if (id == 0L) "Yeni ${type.label()}" else "Düzenle") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { cikmayiDene() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
                     }
                 },
@@ -420,7 +442,7 @@ fun EditScreen(
                         quick = quick,
                         tagIds = selectedTagIds.toList(),
                         noteKind = noteKind,
-                        onDone = onBack
+                        onDone = { kaydedildi = true; onBack() }
                     )
                 },
                 enabled = title.isNotBlank(),
@@ -430,6 +452,24 @@ fun EditScreen(
             }
             Spacer(Modifier.height(48.dp))
         }
+    }
+
+    if (showDiscard) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDiscard = false },
+            title = { Text("Değişiklikler kaydedilmedi") },
+            text = { Text("Girdiğin bilgiler kaydedilmeden çıkılacak. Emin misin?") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { showDiscard = false; onBack() }) {
+                    Text("Çık, kaydetme")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showDiscard = false }) {
+                    Text("Düzenlemeye dön")
+                }
+            }
+        )
     }
 
     if (addTagDialog) {

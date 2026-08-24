@@ -68,7 +68,10 @@ class AutofillUnlockActivity : FragmentActivity() {
                         viewModel = viewModel,
                         canUseBiometric = BiometricAuth.canUse(this),
                         onBiometricUnlock = {
-                            BiometricAuth.unlock(this, viewModel.keyManager) {
+                            BiometricAuth.unlock(
+                                this, viewModel.keyManager,
+                                onError = { viewModel.error = it }
+                            ) {
                                 viewModel.onStage1Payload(it)
                             }
                         }

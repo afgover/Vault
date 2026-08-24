@@ -25,6 +25,25 @@ class VaultApp : Application() {
     private val screenOffReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             VaultSession.lock()
+            clearSensitiveClip()
+        }
+    }
+
+    /**
+     * Panoda bizim kopyaladığımız duyarlı bir değer duruyorsa siler. 45 sn'lik
+     * gecikmeli temizlik süreç ölünce çalışmıyordu; ekran kapanır kapanmaz
+     * (kasa kilidiyle aynı an) temizlemek hem daha erken hem sürece bağlı değil
+     * (denetim). Yalnız kendi işaretimizi taşıyan panoya dokunulur.
+     */
+    private fun clearSensitiveClip() {
+        try {
+            val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val bizim = cm.primaryClipDescription?.extras?.getBoolean(CLIP_MARKER) == true
+            if (bizim) {
+                if (android.os.Build.VERSION.SDK_INT >= 28) cm.clearPrimaryClip()
+                else cm.setPrimaryClip(android.content.ClipData.newPlainText("", ""))
+            }
+        } catch (_: Exception) {
         }
     }
 
@@ -39,6 +58,9 @@ class VaultApp : Application() {
     }
 
     companion object {
+        /** Panoya konan duyarlı değeri tanımak için işaret (ClipDescription extras). */
+        const val CLIP_MARKER = "com.afgover.vault.sensitive_clip"
+
         fun from(context: Context): VaultApp = context.applicationContext as VaultApp
     }
 }

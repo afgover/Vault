@@ -22,17 +22,37 @@ object BiometricAuth {
     fun unlock(
         activity: FragmentActivity,
         keyManager: KeyManager,
+        onError: (String) -> Unit = {},
         onPayload: (ByteArray) -> Unit
     ) {
-        val cipher = keyManager.biometricDecryptCipher() ?: return
+        // Parmak izi anahtarı geçersizleşmişse (yeni parmak izi kaydı, cihaz
+        // değişikliği) cipher null döner. Eskiden sessizce return ediliyordu:
+        // düğme hiçbir şey yapmıyordu (denetim). Şimdi bayat kayıt temizlenir
+        // ve kullanıcı paroladan devam etmeye yönlendirilir.
+        val cipher = keyManager.biometricDecryptCipher()
+        if (cipher == null) {
+            keyManager.clearBiometric()
+            onError("Parmak izi kilidi geçersizleşmiş (ör. yeni parmak izi eklendi). Parolayla aç.")
+            return
+        }
         val prompt = BiometricPrompt(
             activity,
             ContextCompat.getMainExecutor(activity),
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     val c = result.cryptoObject?.cipher ?: return
-                    val payload = keyManager.unlockWithBiometricStage1(c) ?: return
-                    onPayload(payload)
+                    val payload = keyManager.unlockWithBiometricStage1(c)
+                    if (payload == null) onError("Parmak izi doğrulandı ama anahtar çözülemedi. Parolayla aç.")
+                    else onPayload(payload)
+                }
+
+                override fun onAuthenticationError(code: Int, msg: CharSequence) {
+                    // Kullanıcı iptali (negatif düğme / geri) sessiz geçer.
+                    if (code != BiometricPrompt.ERROR_USER_CANCELED &&
+                        code != BiometricPrompt.ERROR_NEGATIVE_BUTTON &&
+                        code != BiometricPrompt.ERROR_CANCELED) {
+                        onError(msg.toString())
+                    }
                 }
             }
         )

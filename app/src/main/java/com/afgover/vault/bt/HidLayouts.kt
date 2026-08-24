@@ -108,6 +108,10 @@ object HidLayouts {
         "!'^+%&/()=".forEachIndexed { i, c ->
             put(c, KeyStroke(if (i == 9) 0x27 else 0x1E + i, MOD_SHIFT))
         }
+        // '^' TR-Q'da Shift+3 = DÜZELTME İŞARETİ ölü tuşudur: tek başına
+        // karakter basmaz, sonraki harfle birleşir (â). Sessizce yanlış üretmek
+        // yerine haritadan çıkar; "bu düzende yazılamadı" uyarısına düşsün (denetim).
+        remove('^')
         put('*', KeyStroke(0x2D, MOD_NONE)); put('?', KeyStroke(0x2D, MOD_SHIFT))
         put('\\', KeyStroke(0x2D, MOD_ALTGR))
         put('-', KeyStroke(0x2E, MOD_NONE)); put('_', KeyStroke(0x2E, MOD_SHIFT))

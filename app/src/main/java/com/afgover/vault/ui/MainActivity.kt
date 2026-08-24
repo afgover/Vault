@@ -57,7 +57,10 @@ class MainActivity : FragmentActivity() {
     private fun canUseBiometric(): Boolean = BiometricAuth.canUse(this)
 
     private fun biometricUnlock() {
-        BiometricAuth.unlock(this, viewModel.keyManager) { viewModel.onStage1Payload(it) }
+        BiometricAuth.unlock(
+            this, viewModel.keyManager,
+            onError = { viewModel.error = it }
+        ) { viewModel.onStage1Payload(it) }
     }
 
     private fun biometricEnable(pin: String? = null) {

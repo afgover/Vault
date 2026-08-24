@@ -136,6 +136,20 @@ fun BtTypeDialog(
     }
     var countdown by remember { mutableIntStateOf(0) }
     var typing by remember { mutableStateOf(false) }
+
+    // Uzun yazma dakikalar sürebiliyor ve kullanıcı bilgisayara bakar; ekran
+    // zaman aşımı yazmayı yarıda kesip kasayı kilitler (denetim). Yazma/geri
+    // sayım boyunca ekranı açık tut.
+    val view = androidx.compose.ui.platform.LocalView.current
+    DisposableEffect(typing || countdown > 0) {
+        val w = (view.context as? android.app.Activity)?.window
+        if (typing || countdown > 0) {
+            w?.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            w?.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+        onDispose { w?.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
+    }
     var untypedWarning by remember { mutableStateOf<String?>(null) }
     var summary by remember { mutableStateOf<String?>(null) }
     var testTyped by remember { mutableStateOf(false) }

@@ -80,6 +80,8 @@ object BtHidManager {
 
     private var hid: BluetoothHidDevice? = null
     private var connectedDevice: BluetoothDevice? = null
+    /** Kullanıcının bu oturumda 'Bağlan' dediği cihaz; yalnız buna yazılır. */
+    private var intendedDevice: BluetoothDevice? = null
     private var adapter: BluetoothAdapter? = null
 
     /** Standart 8 baytlık boot klavye rapor tanımı. */
@@ -171,11 +173,19 @@ object BtHidManager {
                     override fun onConnectionStateChanged(device: BluetoothDevice, state: Int) {
                         when (state) {
                             BluetoothProfile.STATE_CONNECTED -> {
-                                connectedDevice = device
-                                _state.value = State.Connected(deviceName(device))
+                                // Yalnız kullanıcının seçtiği cihazı kabul et:
+                                // eşleşmiş başka bir host (ör. Windows) kendiliğinden
+                                // bağlanırsa sır ona gitmesin (denetim).
+                                if (intendedDevice == null || device == intendedDevice) {
+                                    connectedDevice = device
+                                    _state.value = State.Connected(deviceName(device))
+                                } else {
+                                    safe { hidDevice.disconnect(device) }
+                                }
                             }
                             BluetoothProfile.STATE_CONNECTING ->
-                                _state.value = State.Connecting(deviceName(device))
+                                if (intendedDevice == null || device == intendedDevice)
+                                    _state.value = State.Connecting(deviceName(device))
                             BluetoothProfile.STATE_DISCONNECTED,
                             BluetoothProfile.STATE_DISCONNECTING -> {
                                 if (connectedDevice == device) connectedDevice = null
@@ -201,6 +211,7 @@ object BtHidManager {
     @RequiresApi(28)
     fun connect(device: BluetoothDevice) {
         _lastError.value = null
+        intendedDevice = device
         _state.value = State.Connecting(deviceName(device))
         val ok = safe { hid?.connect(device) }
         if (ok != true) {
@@ -269,7 +280,11 @@ object BtHidManager {
         fun birak() {
             // Hangi yoldan çıkarsak çıkalım tuş basılı kalmamalı: kalırsa
             // bilgisayar tuş tekrarına girer ve metne çöp karakter ekler.
-            safe { hidDevice.sendReport(device, 0, release) }
+            // Abort'un sebebi zaten kuyruğun dolu olmasıdır; tek deneme yetmez,
+            // geri çekilmeli gönderim kullan ve son çare bağlantıyı kopar (denetim).
+            if (!sendReport(hidDevice, device, release)) {
+                safe { hidDevice.disconnect(device) }
+            }
         }
 
         for ((i, ch) in text.withIndex()) {
