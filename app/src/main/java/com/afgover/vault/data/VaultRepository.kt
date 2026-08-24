@@ -120,8 +120,9 @@ class VaultRepository(
                     quickBlob = quickBlob,
                     tags = TagIds.serialize(tagIds),
                     noteKind = noteKind.name,
-                    // Yeni kayıt kullanıcı sırasında en sona düşer.
-                    sortIndex = (dao.getAll().maxOfOrNull { it.sortIndex } ?: 0) + 1
+                    // Düzenlemede kullanıcı sırası KORUNUR: eskiden her kayıtta
+                    // max+1'e taşınıyordu, elle kurulan sıra bozuluyordu (denetim).
+                    sortIndex = existing.sortIndex
                 )
             )
             usage.record(UsageEvent(id, UsageKind.DEGISTIRILDI, now))

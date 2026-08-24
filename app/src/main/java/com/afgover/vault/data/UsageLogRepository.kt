@@ -81,7 +81,10 @@ class UsageLogRepository(
                 moved++
             }
         }
-        dao.clearBuffer()
+        // Yalnız BU turda okunan satırları sil: getBuffered() ile silme arasında
+        // kilitliyken yeni bir olay eklenebilir; clearBuffer() onu taşınmadan
+        // silerdi (denetim: yarış). id listesiyle silmek o pencereyi kapatır.
+        dao.deleteBufferedByIds(buffered.map { it.id })
         if (dao.count() > MAX_EVENTS) prune(key)
         return moved
     }

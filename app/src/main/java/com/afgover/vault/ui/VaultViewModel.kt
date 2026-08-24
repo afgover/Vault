@@ -172,6 +172,12 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         if (lockState == LockState.UNLOCKED && !VaultSession.isUnlocked) {
             lockState = LockState.LOCKED
         }
+        // Yarıda kalmış PIN aşaması ekran kapanınca sıfırlansın: pendingInner
+        // ekranda asılı kalıp kesintisiz denemeye zemin olmasın (denetim).
+        if (lockState == LockState.NEEDS_PIN && !VaultSession.isUnlocked && pendingInner != null) {
+            pendingInner = null
+            lockState = LockState.LOCKED
+        }
     }
 
     /**
@@ -226,6 +232,18 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                 error = "Parola yanlış"
                 return@launch
             }
+            // dataKey tam 32 bayt olmalı. Eski (legacy) PIN kasasında bu payload
+            // 60 baytlık iç sargıdır; oturuma konursa kasa "açık ama boş" görünür
+            // ve yazmada çöker (denetim). Onun yerine onarıma yönlendir.
+            if (payload.size != 32) {
+                if (keyManager.isPinLegacy) {
+                    lockState = LockState.LOCKED
+                    error = "Bu kasa eski PIN biçiminde. Ana parola + PIN ile onarılması gerekiyor."
+                } else {
+                    error = "Kasa anahtarı çözülemedi (kayıt bozuk olabilir)."
+                }
+                return@launch
+            }
             // Ana parola tek başına açar: PIN yalnız parmak izi yolunu korur.
             keyManager.markMasterPasswordUsed()
             onUnlocked(SecretKeySpec(payload, "AES"))
@@ -242,23 +260,43 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun unlockWithPin(pin: String) {
         val inner = pendingInner ?: run { lockState = LockState.LOCKED; return }
+        // Kaba kuvvete karşı üssel bekleme (denetim): kilitliyken deneme reddedilir.
+        val kalan = keyManager.pinLockRemainingMs()
+        if (kalan > 0) {
+            error = "Çok fazla yanlış PIN. ${(kalan / 1000).coerceAtLeast(1)} sn sonra tekrar dene."
+            return
+        }
         viewModelScope.launch {
             busy = true
             val key = withContext(Dispatchers.Default) { keyManager.unlockWithPin(inner, pin) }
             busy = false
             if (key != null) {
+                keyManager.resetPinFailures()
                 pendingInner = null
                 onUnlocked(key)
                 return@launch
             }
             if (keyManager.verifyPin(pin)) {
+                // PIN doğru ama sargı bayat: sayaç bir güvenlik olayı değil,
+                // sıfırla ve onarıma yönlendir.
+                keyManager.resetPinFailures()
                 keyManager.clearBiometric()
                 pendingInner = null
                 lockState = LockState.LOCKED
                 error = "Parmak izi kaydı bu PIN'den eskiydi; kayıt silindi. " +
                     "Ana parolanla aç ve parmak izini yeniden etkinleştir."
             } else {
-                error = "PIN yanlış"
+                val kapandi = keyManager.notePinFailure()
+                if (kapandi) {
+                    pendingInner = null
+                    lockState = LockState.LOCKED
+                    error = "Çok fazla yanlış PIN. Parmak izi kapatıldı; ana parolanla aç."
+                } else {
+                    val yeniKalan = keyManager.pinLockRemainingMs()
+                    error = if (yeniKalan > 0)
+                        "PIN yanlış. ${(yeniKalan / 1000).coerceAtLeast(1)} sn beklemen gerekiyor."
+                    else "PIN yanlış"
+                }
             }
         }
     }
@@ -274,8 +312,11 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         if (keyManager.isPinEnabled) {
             pendingInner = payload
             lockState = LockState.NEEDS_PIN
-        } else {
+        } else if (payload.size == 32) {
             onUnlocked(SecretKeySpec(payload, "AES"))
+        } else {
+            lockState = LockState.LOCKED
+            error = "Kasa anahtarı beklenmedik boyutta; ana parolayla açmayı dene."
         }
     }
 
@@ -440,9 +481,14 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             busy = true
             try {
-                withContext(Dispatchers.IO) {
+                val eksik = withContext(Dispatchers.IO) {
                     val all = repo.getAllDecrypted(key)
                     val allTags = repo.getAllTags()
+                    // Çözülemeyen kayıt sessizce yedekten düşüyordu (denetim):
+                    // toplam satırla karşılaştır, eksik varsa kullanıcıya söyle —
+                    // eksik bir yedeği tam sanmak, kaybın en sinsi biçimi.
+                    val toplam = repo.getAll().size
+                    val eksikSayi = toplam - all.size
                     // Şifrele ÖNCE (belleğe), dosyaya sonra tek seferde yaz:
                     // yazma sırasında bir hata olursa seçilen konumda yarım/boş
                     // .vaultbak kalmasın — kullanıcı onu geçerli yedek sanabilir
@@ -454,8 +500,14 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     val out = getApplication<Application>().contentResolver.openOutputStream(uri, "wt")
                         ?: throw Exception("Dosya açılamadı")
                     out.use { it.write(bytes) }
+                    eksikSayi
                 }
-                toast("Yedek kaydedildi")
+                if (eksik > 0) {
+                    error = "Yedek kaydedildi ama $eksik kayıt okunamadığı için " +
+                        "dışarı yazılamadı (bozuk olabilir). Bu yedek eksik."
+                } else {
+                    toast("Yedek kaydedildi")
+                }
             } catch (e: Exception) {
                 error = "Yedekleme başarısız: ${e.message} — oluşan dosyayı silip tekrar dene."
             } finally {

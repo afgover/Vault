@@ -35,8 +35,14 @@ class KeyManager(context: Context) {
         private const val PREF_BIO_IV = "bio_iv"
         private const val PREF_PIN_SALT = "pin_salt"
         private const val PREF_PIN_CHECK = "pin_check"
+        /** pin_check, Keystore quickKey ile ikinci kez sarılı mı (çevrimdışı kahini kapatır). */
+        private const val PREF_PIN_CHECK_KS = "pin_check_ks"
         private const val PREF_REMINDER_DAYS = "master_reminder_days"
         private const val PREF_LAST_MASTER = "last_master_password_at"
+        private const val PREF_PIN_FAILS = "pin_fail_count"
+        private const val PREF_PIN_FAIL_AT = "pin_fail_at"
+        /** Bu kadar art arda yanlış PIN'den sonra parmak izi yolu tamamen kapanır. */
+        private const val PIN_MAX_FAILS = 10
         private const val KEYSTORE_ALIAS = "vault_biometric_key"
         private const val QUICK_KEYSTORE_ALIAS = "vault_quick_key"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
@@ -83,15 +89,67 @@ class KeyManager(context: Context) {
         val salt = pinSalt() ?: return false
         val dataKey = PinLock.unwrap(inner, pin, salt) ?: return false
         storePayload(password, dataKey.encoded)
-        prefs.edit().remove(PREF_PIN_SALT).remove(PREF_PIN_CHECK).apply()
+        prefs.edit().remove(PREF_PIN_SALT).remove(PREF_PIN_CHECK).remove(PREF_PIN_CHECK_KS).apply()
         clearBiometric()
         return true
+    }
+
+    // ---- PIN kaba kuvvet kısıtlaması (denetim) ----
+    //
+    // PIN 4-12 hane; kilitlenme olmadan bir saldırgan (parmak izini bir kez
+    // geçtikten sonra) tüm PIN'leri sırayla deneyebiliyordu. Kalıcı bir sayaç +
+    // üssel bekleme bunu kapatır; sayaç yalnız doğru PIN'de sıfırlanır ve
+    // süreç ölümünden etkilenmez (SharedPreferences).
+
+    /** Şu an denemeye izin verilene kadar kalan süre (ms); 0 = serbest. */
+    fun pinLockRemainingMs(now: Long = System.currentTimeMillis()): Long {
+        val fails = prefs.getInt(PREF_PIN_FAILS, 0)
+        val bekleme = pinBackoffMs(fails)
+        if (bekleme == 0L) return 0L
+        val son = prefs.getLong(PREF_PIN_FAIL_AT, 0L)
+        return (son + bekleme - now).coerceAtLeast(0L)
+    }
+
+    private fun pinBackoffMs(fails: Int): Long = when {
+        fails < 5 -> 0L
+        fails == 5 -> 30_000L
+        fails == 6 -> 60_000L
+        fails == 7 -> 5 * 60_000L
+        else -> 15 * 60_000L
+    }
+
+    /**
+     * Yanlış PIN'i kaydeder ve kalan bekleme süresini döndürür. [PIN_MAX_FAILS]
+     * aşılınca parmak izi yolu tamamen kapatılır (yalnız ana parola kalır) —
+     * çevrimdışı deneme kahini de böylece işe yaramaz hâle gelir.
+     */
+    fun notePinFailure(now: Long = System.currentTimeMillis()): Boolean {
+        val fails = prefs.getInt(PREF_PIN_FAILS, 0) + 1
+        prefs.edit().putInt(PREF_PIN_FAILS, fails).putLong(PREF_PIN_FAIL_AT, now).apply()
+        if (fails >= PIN_MAX_FAILS) {
+            clearBiometric()
+            return true
+        }
+        return false
+    }
+
+    fun resetPinFailures() {
+        prefs.edit().remove(PREF_PIN_FAILS).remove(PREF_PIN_FAIL_AT).apply()
     }
 
     /** PIN'in doğruluğunu sargıya dokunmadan sınar. */
     fun verifyPin(pin: String): Boolean {
         val salt = pinSalt() ?: return false
-        val check = prefs.getString(PREF_PIN_CHECK, null)?.let(::unb64) ?: return false
+        val stored = prefs.getString(PREF_PIN_CHECK, null)?.let(::unb64) ?: return false
+        // KS sarılıysa önce Keystore anahtarıyla aç: cihaz dökümünü ele geçiren
+        // (Keystore anahtarı donanımda, dışa çıkmaz) blobu çözemez, yani PIN'i
+        // çevrimdışı deneyemez (denetim). Anahtar kaybolursa doğrulama düşer;
+        // PIN yine de gerçek sargıyı GCM etiketiyle açar, yalnız bayat-kayıt
+        // ayrımı bozulur.
+        val check = if (prefs.getBoolean(PREF_PIN_CHECK_KS, false)) {
+            val qk = quickKey() ?: return false
+            Crypto.decrypt(qk, stored) ?: return false
+        } else stored
         return PinLock.unwrapCheck(check, pin, salt)
     }
 
@@ -105,9 +163,15 @@ class KeyManager(context: Context) {
         if (!PinLock.isValid(pin) || isPinEnabled) return false
         unlockWithPassword(password) ?: return false
         val salt = Crypto.randomBytes(16)
+        val checkPlain = PinLock.wrapCheck(pin, salt)
+        val qk = quickKey()
+        val (stored, ks) = if (qk != null)
+            Crypto.encryptWithGeneratedIv(qk, checkPlain) to true
+        else checkPlain to false   // Keystore yoksa eski davranışa düş
         prefs.edit()
             .putString(PREF_PIN_SALT, b64(salt))
-            .putString(PREF_PIN_CHECK, b64(PinLock.wrapCheck(pin, salt)))
+            .putString(PREF_PIN_CHECK, b64(stored))
+            .putBoolean(PREF_PIN_CHECK_KS, ks)
             .apply()
         clearBiometric()
         return true
@@ -121,7 +185,7 @@ class KeyManager(context: Context) {
      */
     fun disablePin(password: CharArray): Boolean {
         unlockWithPassword(password) ?: return false
-        prefs.edit().remove(PREF_PIN_SALT).remove(PREF_PIN_CHECK).apply()
+        prefs.edit().remove(PREF_PIN_SALT).remove(PREF_PIN_CHECK).remove(PREF_PIN_CHECK_KS).apply()
         clearBiometric()
         return true
     }
