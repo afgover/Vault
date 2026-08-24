@@ -465,4 +465,10 @@
         <item quantity="one">Too many wrong PINs. Try again in %1$d second.</item>
         <item quantity="other">Too many wrong PINs. Try again in %1$d seconds.</item>
     </plurals>
+    <string name="bt_layout_uk">British (UK)</string>
+    <string name="bt_layout_de">German (QWERTZ)</string>
+    <string name="bt_layout_fr">French (AZERTY)</string>
+    <string name="bt_layout_es">Spanish</string>
+    <string name="bt_layout_it">Italian</string>
+    <string name="bt_layout_tr_f">Turkish F</string>
 </resources>
