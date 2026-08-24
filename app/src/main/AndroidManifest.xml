@@ -6,7 +6,14 @@
     <!-- QR ile aktarım. Yerel-yalnız: INTERNET izni olmadığı için görüntünün
          cihazdan çıkma yolu yoktur (SEC-019). -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Kamera ve Bluetooth OLMAYAN cihazlarda da kurulabilsin: izinler bu
+         özellikleri required=true ima ediyor ve uygulamayı Play'de birçok
+         cihazdan gizliyordu (denetim). Özellikler uygulama içinde zaten
+         opsiyonel (QR ve BT yazma isteğe bağlı). -->
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
     <!-- Klavyede silme tuşunun dokunsal geri bildirimi. Normal izin:
          kullanıcı onayı istemez, veriye erişmez. -->
     <uses-permission android:name="android.permission.VIBRATE" />
