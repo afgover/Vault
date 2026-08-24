@@ -69,11 +69,12 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                 PackageManager.PERMISSION_GRANTED
         )
     }
+    var istendi by remember { mutableStateOf(false) }
     val izinIstegi = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { verildi -> izinVar = verildi }
     LaunchedEffect(Unit) {
-        if (!izinVar) izinIstegi.launch(Manifest.permission.CAMERA)
+        if (!izinVar) { istendi = true; izinIstegi.launch(Manifest.permission.CAMERA) }
     }
 
     val toplanan = remember { mutableStateOf(mapOf<Int, QrTransfer.Frame>()) }
@@ -86,7 +87,16 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 if (izinVar) {
                     val executor = remember { Executors.newSingleThreadExecutor() }
-                    DisposableEffect(Unit) { onDispose { executor.shutdown() } }
+                    // Kamerayı ekran kapanınca/çıkınca bırak: sağlayıcıyı tut ve
+                    // onDispose'da çöz, yoksa tarama ekranından çıkılsa bile
+                    // kamera göstergesi yanık kalır (denetim).
+                    val providerRef = remember { java.util.concurrent.atomic.AtomicReference<ProcessCameraProvider?>() }
+                    DisposableEffect(Unit) {
+                        onDispose {
+                            providerRef.get()?.unbindAll()
+                            executor.shutdown()
+                        }
+                    }
                     AndroidView(
                         modifier = Modifier.fillMaxSize(),
                         factory = { ctx ->
@@ -94,6 +104,7 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                             val future = ProcessCameraProvider.getInstance(ctx)
                             future.addListener({
                                 val provider = future.get()
+                                providerRef.set(provider)
                                 val preview = Preview.Builder().build().also {
                                     it.setSurfaceProvider(previewView.surfaceProvider)
                                 }
@@ -180,8 +191,23 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                             textAlign = TextAlign.Center
                         )
                         Spacer(Modifier.height(12.dp))
-                        Button(onClick = { izinIstegi.launch(Manifest.permission.CAMERA) }) {
-                            Text("İzin ver")
+                        // İzin kalıcı reddedildiyse sistem istemi bir daha
+                        // açılmaz; o durumda düğme sessizce hiçbir şey yapmasın
+                        // diye ayarları açan bir yol sunulur (denetim).
+                        Button(onClick = {
+                            if (istendi) {
+                                context.startActivity(
+                                    android.content.Intent(
+                                        android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        android.net.Uri.fromParts("package", context.packageName, null)
+                                    )
+                                )
+                            } else {
+                                istendi = true
+                                izinIstegi.launch(Manifest.permission.CAMERA)
+                            }
+                        }) {
+                            Text(if (istendi) "Ayarlardan izin ver" else "İzin ver")
                         }
                     }
                 }

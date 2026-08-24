@@ -137,6 +137,12 @@ object StructureParser {
             variation == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD ||
             variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD
 
+        // "parola ipucu / hatırlatıcı" gibi MASKESİZ düz metin alanları
+        // yalnız anahtar kelimeyle PASSWORD sayılırsa parola oraya doldurulup
+        // açığa çıkabilir (denetim). Gerçek parola girişi (maskeli inputType)
+        // bu istisnadan etkilenmez.
+        val ipucuAlani = has("hint", "ipucu", "reminder", "hatirlatici", "hatirlatma", "recovery", "kurtarma")
+
         return when {
             has("cvv", "cvc", "securitycode", "guvenlikkodu") -> FieldKind.CVV
             has("cardnumber", "cardno", "kartno", "kartnumara", "creditcard", "cardnum") ->
@@ -145,7 +151,8 @@ object StructureParser {
             has("expyear", "expirationyear", "sonkullanmayil") -> FieldKind.CARD_EXP_YEAR
             has("expiry", "expiration", "sonkullanma", "skt") -> FieldKind.CARD_EXPIRY
             has("cardholder", "kartsahibi", "nameoncard") -> FieldKind.CARDHOLDER
-            isPasswordType || has("password", "passwd", "pwd", "sifre", "parola") ->
+            isPasswordType -> FieldKind.PASSWORD
+            has("password", "passwd", "pwd", "sifre", "parola") && !ipucuAlani ->
                 FieldKind.PASSWORD
             variation == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS ||
                 variation == InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS ->

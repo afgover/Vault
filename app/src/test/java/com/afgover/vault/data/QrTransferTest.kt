@@ -3,6 +3,7 @@ package com.afgover.vault.data
 import com.afgover.vault.core.QrTransfer
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -89,5 +90,13 @@ class QrTransferTest {
         val metinler = (0 until arr.length()).map { arr.getString(it) }
         assertTrue("çok kareli olmalı", metinler.size > 1)
         assertEquals(v.getString("zarf"), coz(metinler))
+    }
+
+    @Test
+    fun `asiri kare sayisi reddedilir - OOM engeli`() {
+        assertNull(QrTransfer.parse("VLT1|1/2000000000|P|x"))
+        assertNull(QrTransfer.parse("VLT1|1/513|P|x"))
+        // sınırdaki değer kabul
+        assertNotNull(QrTransfer.parse("VLT1|1/512|P|x"))
     }
 }

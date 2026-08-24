@@ -13,6 +13,7 @@ import com.afgover.vault.VaultApp
 import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,7 +32,11 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class VaultAutofillService : AutofillService() {
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    // Beklenmedik bir istisna (şifreleme, boyut sınırı, veritabanı) süreci
+    // çökertip SaveCallback/FillCallback sözleşmesini bozmasın: yakala ve yut,
+    // her giriş noktası zaten kendi hata yolunu bildiriyor (denetim).
+    private val hata = CoroutineExceptionHandler { _, _ -> }
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main + hata)
 
     override fun onDestroy() {
         super.onDestroy()
@@ -65,11 +70,15 @@ class VaultAutofillService : AutofillService() {
         cancellationSignal.setOnCancelListener { cancelled = true }
 
         scope.launch {
-            val entries = withContext(Dispatchers.IO) {
-                VaultApp.from(this@VaultAutofillService).repository.getAllDecrypted(key)
+            try {
+                val entries = withContext(Dispatchers.IO) {
+                    VaultApp.from(this@VaultAutofillService).repository.getAllDecrypted(key)
+                }
+                if (cancelled) return@launch
+                callback.onSuccess(AutofillResponses.fillResponse(this@VaultAutofillService, parsed, entries))
+            } catch (e: Exception) {
+                if (!cancelled) callback.onSuccess(null)
             }
-            if (cancelled) return@launch
-            callback.onSuccess(AutofillResponses.fillResponse(this@VaultAutofillService, parsed, entries))
         }
     }
 
@@ -119,18 +128,22 @@ class VaultAutofillService : AutofillService() {
         }
 
         scope.launch {
-            withContext(Dispatchers.IO) {
-                VaultApp.from(this@VaultAutofillService).repository.save(
-                    id = 0L,
-                    type = if (isCard) EntryType.CARD else EntryType.LOGIN,
-                    title = sourceLabel(parsed),
-                    data = data,
-                    // Otomatik doldurmadan gelen kayıtlar korumalı başlar.
-                    quick = false,
-                    key = key
-                )
+            try {
+                withContext(Dispatchers.IO) {
+                    VaultApp.from(this@VaultAutofillService).repository.save(
+                        id = 0L,
+                        type = if (isCard) EntryType.CARD else EntryType.LOGIN,
+                        title = sourceLabel(parsed),
+                        data = data,
+                        // Otomatik doldurmadan gelen kayıtlar korumalı başlar.
+                        quick = false,
+                        key = key
+                    )
+                }
+                callback.onSuccess()
+            } catch (e: Exception) {
+                callback.onFailure("Kaydedilemedi: ${e.message}")
             }
-            callback.onSuccess()
         }
     }
 

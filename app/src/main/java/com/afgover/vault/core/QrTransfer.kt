@@ -30,6 +30,16 @@ object QrTransfer {
     /** Kare başına yaklaşık base64 uzunluğu — telefon kamerasının rahat okuduğu yoğunluk. */
     const val CHUNK = 1200
 
+    /**
+     * Toplam kare için üst sınır. 512 kare ≈ 600 KB base64, meşru her
+     * aktarımın çok üstü. Düşman bir kare `n`'i ~2 milyara koyup okuyucuyu
+     * dev bir liste kurmaya zorlayabilir (denetim: OOM çökmesi).
+     */
+    const val MAX_FRAMES = 512
+
+    /** Deflate çıktısı için üst sınır — zip bombasına karşı (4 MB, kayıt sınırının katı). */
+    private const val MAX_INFLATED = 4 * 1024 * 1024
+
     data class Frame(val index: Int, val total: Int, val flag: Char, val data: String)
 
     /** Bir QR metnini kareye çevirir; bizim biçimimiz değilse null. */
@@ -42,7 +52,7 @@ object QrTransfer {
         if (sira.size != 2) return null
         val i = sira[0].toIntOrNull() ?: return null
         val n = sira[1].toIntOrNull() ?: return null
-        if (i < 1 || n < 1 || i > n) return null
+        if (i < 1 || n < 1 || i > n || n > MAX_FRAMES) return null
         val flag = parts[2].firstOrNull() ?: return null
         if (flag != 'Z' && flag != 'P') return null
         return Frame(i, n, flag, parts[3])
@@ -81,14 +91,15 @@ object QrTransfer {
         inflater.setInput(data)
         val out = ByteArrayOutputStream(data.size * 4)
         val buf = ByteArray(8 * 1024)
+        var tasti = false
         while (!inflater.finished()) {
             val n = inflater.inflate(buf)
             if (n == 0 && (inflater.needsInput() || inflater.needsDictionary())) break
             out.write(buf, 0, n)
+            if (out.size() > MAX_INFLATED) { tasti = true; break }  // zip bombasına karşı
         }
         inflater.end()
-        val text = out.toString(Charsets.UTF_8.name())
-        text.ifEmpty { null }
+        if (tasti) null else out.toString(Charsets.UTF_8.name()).ifEmpty { null }
     } catch (e: Exception) {
         null
     }

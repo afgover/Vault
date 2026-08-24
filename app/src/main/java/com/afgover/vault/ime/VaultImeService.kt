@@ -71,6 +71,12 @@ class VaultImeService : InputMethodService() {
     private fun color(res: Int): Int = ContextCompat.getColor(this, res)
 
     override fun onCreateInputView(): View {
+        // Klavye penceresi kasa içeriğini gösterebiliyor; ekran görüntüsü ve
+        // ekran kaydına kapat (uygulama ekranlarındaki FLAG_SECURE ile aynı).
+        window?.window?.setFlags(
+            android.view.WindowManager.LayoutParams.FLAG_SECURE,
+            android.view.WindowManager.LayoutParams.FLAG_SECURE
+        )
         root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(color(R.color.ime_background))
@@ -145,10 +151,21 @@ class VaultImeService : InputMethodService() {
         refresh()
     }
 
-    /** Kilit açma ekranından dönüldüğünde liste tazelenir. */
+    /**
+     * Her gösterimde kilit durumu YENİDEN okunur ve liste tazelenir. Tek yönlü
+     * (yalnız kilitli→açık) tazeleme, kasa açıkken ekran kapanıp klavye tekrar
+     * açıldığında eski çözülmüş kayıtları ekranda bırakıyordu (denetim).
+     */
     override fun onWindowShown() {
         super.onWindowShown()
-        if (locked && VaultSession.isUnlocked) refresh()
+        refresh()
+    }
+
+    /** Pencere gizlenince çözülmüş kayıtları bellekte tutma. */
+    override fun onWindowHidden() {
+        super.onWindowHidden()
+        selected = null
+        entries = emptyList()
     }
 
     override fun onDestroy() {
