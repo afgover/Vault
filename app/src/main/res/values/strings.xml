@@ -471,4 +471,13 @@
     <string name="bt_layout_es">Spanish</string>
     <string name="bt_layout_it">Italian</string>
     <string name="bt_layout_tr_f">Turkish F</string>
+    <!-- Uygulama dili ve klavye düzeni seçimi -->
+    <string name="settings_language">Language</string>
+    <string name="settings_language_desc">Choose the app language. It applies to Vault only, not the rest of the phone.</string>
+    <string name="settings_lang_system">System language</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_layouts">Computer keyboard layouts</string>
+    <string name="settings_layouts_desc">Pick the layouts you actually use. Only the ones you tick appear when you type a secret to a computer — the rest stay out of your way.</string>
+    <string name="settings_layouts_min">At least one layout stays on.</string>
 </resources>

@@ -127,8 +127,13 @@ fun BtTypeDialog(
     val prefs = remember {
         context.getSharedPreferences("vault_settings", Context.MODE_PRIVATE)
     }
+    // Kullanıcının ayarlardan açtığı düzenler; aktarım ekranında yalnız bunlar
+    // görünür (istemediği düzen yoluna çıkmasın).
+    val acikDuzenler = remember {
+        HidLayouts.enabledLayouts(prefs.getString("pc_layouts", null))
+    }
     var layout by remember {
-        mutableStateOf(HidLayouts.readLayout(prefs.getString("pc_layout", null)))
+        mutableStateOf(HidLayouts.readLayout(prefs.getString("pc_layout", null), acikDuzenler))
     }
     var speed by remember {
         mutableStateOf(
@@ -296,7 +301,7 @@ fun BtTypeDialog(
                         Spacer(Modifier.height(4.dp))
                         // Yedi düzen tek satıra sığmıyor; kaydırılabilir olsun.
                         Row(Modifier.horizontalScroll(rememberScrollState())) {
-                            HidLayouts.Layout.entries.forEach { l ->
+                            acikDuzenler.forEach { l ->
                                 SecimCipi(
                                     secili = layout == l,
                                     onClick = {

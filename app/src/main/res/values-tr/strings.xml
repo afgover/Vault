@@ -463,4 +463,13 @@
     <string name="bt_layout_es">İspanyolca</string>
     <string name="bt_layout_it">İtalyanca</string>
     <string name="bt_layout_tr_f">Türkçe F</string>
+    <!-- Uygulama dili ve klavye düzeni seçimi -->
+    <string name="settings_language">Dil</string>
+    <string name="settings_language_desc">Uygulamanın dilini seç. Yalnız Vault için geçerlidir, telefonun geri kalanını değiştirmez.</string>
+    <string name="settings_lang_system">Sistem dili</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_layouts">Bilgisayar klavye düzenleri</string>
+    <string name="settings_layouts_desc">Gerçekten kullandığın düzenleri seç. Bilgisayara sır yazarken yalnız işaretlediklerin çıkar, diğerleri yoluna çıkmaz.</string>
+    <string name="settings_layouts_min">En az bir düzen açık kalır.</string>
 </resources>

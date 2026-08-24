@@ -26,8 +26,17 @@ import com.afgover.vault.ui.screens.PinScreen
 import com.afgover.vault.ui.screens.SettingsScreen
 import com.afgover.vault.ui.screens.UnlockScreen
 import com.afgover.vault.ui.theme.VaultTheme
+import com.afgover.vault.core.AppLocale
+import android.content.Context
 
 class MainActivity : FragmentActivity() {
+
+    // Seçili uygulama dili cihaz dilinden bağımsızdır; her Context açılışında
+    // yapılandırmaya bindirilir (AppLocale).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
+
 
     private val viewModel: VaultViewModel by viewModels()
 

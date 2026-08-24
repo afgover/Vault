@@ -54,6 +54,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.res.stringResource
+import com.afgover.vault.core.AppLocale
+import com.afgover.vault.bt.HidLayouts
+import android.content.Context
+import android.app.Activity
+import androidx.compose.material3.Switch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +77,14 @@ fun SettingsScreen(
     var showPinDialog by remember { mutableStateOf(false) }
     var showBiometricPin by remember { mutableStateOf(false) }
     var showUsageLog by remember { mutableStateOf(false) }
+    val prefs = remember {
+        context.getSharedPreferences("vault_settings", Context.MODE_PRIVATE)
+    }
+    var dilSecimi by remember { mutableStateOf(AppLocale.current(context)) }
+    var acikDuzenler by remember {
+        mutableStateOf(HidLayouts.enabledLayouts(prefs.getString("pc_layouts", null)).toSet())
+    }
+    var sonDuzenUyarisi by remember { mutableStateOf(false) }
 
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -130,6 +143,88 @@ fun SettingsScreen(
                 ),
                 style = MaterialTheme.typography.bodySmall
             )
+
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+
+            // --- Uygulama dili ---
+            Text(stringResource(R.string.settings_language), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.settings_language_desc),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(Modifier.horizontalScroll(rememberScrollState())) {
+                AppLocale.Option.entries.forEach { secenek ->
+                    SecimCipi(
+                        secili = dilSecimi == secenek,
+                        onClick = {
+                            if (dilSecimi != secenek) {
+                                AppLocale.set(context, secenek)
+                                dilSecimi = secenek
+                                // Dil yapılandırması Context'e bağlı: ekranın
+                                // yeniden yaratılması gerekiyor.
+                                (context as? Activity)?.recreate()
+                            }
+                        },
+                        label = stringResource(secenek.labelRes),
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+
+            // --- Bilgisayara yazarken kullanılabilecek klavye düzenleri ---
+            Text(stringResource(R.string.settings_layouts), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.settings_layouts_desc),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(8.dp))
+            HidLayouts.Layout.entries.forEach { duzen ->
+                val acik = duzen in acikDuzenler
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(duzen.labelRes),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(
+                        checked = acik,
+                        onCheckedChange = { istendi ->
+                            val yeniKume = if (istendi) acikDuzenler + duzen
+                            else acikDuzenler - duzen
+                            // En az bir düzen açık kalmalı; hepsi kapanırsa
+                            // aktarım ekranı kullanılamaz hâle gelirdi.
+                            if (yeniKume.isEmpty()) {
+                                sonDuzenUyarisi = true
+                            } else {
+                                acikDuzenler = yeniKume
+                                sonDuzenUyarisi = false
+                                prefs.edit()
+                                    .putString("pc_layouts", HidLayouts.storeEnabled(yeniKume))
+                                    .apply()
+                            }
+                        }
+                    )
+                }
+            }
+            if (sonDuzenUyarisi) {
+                Text(
+                    stringResource(R.string.settings_layouts_min),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()

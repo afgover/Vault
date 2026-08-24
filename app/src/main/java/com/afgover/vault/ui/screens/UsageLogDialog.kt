@@ -56,7 +56,7 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
     val shown = remember(events, target) {
         if (target == null) events else events.filter { it.target == target }
     }
-    val df = remember { java.text.SimpleDateFormat("d MMM yyyy HH:mm", java.util.Locale("tr")) }
+    val df = remember { java.text.SimpleDateFormat("d MMM yyyy HH:mm", java.util.Locale.getDefault()) }
     // Silinmiş kaydın etiketi: buildString içinde stringResource çağırmamak için dışarı alındı.
     val deletedLabel = stringResource(R.string.log_deleted_entry)
 

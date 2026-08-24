@@ -11,6 +11,8 @@ import com.afgover.vault.ui.LockState
 import com.afgover.vault.ui.VaultViewModel
 import com.afgover.vault.ui.screens.UnlockScreen
 import com.afgover.vault.ui.theme.VaultTheme
+import com.afgover.vault.core.AppLocale
+import android.content.Context
 
 /**
  * Vault Klavyesi'ndeki "Kilidi aç" düğmesinin açtığı ekran.
@@ -20,6 +22,13 @@ import com.afgover.vault.ui.theme.VaultTheme
  * için bu ekran tek bir kez görülür.
  */
 class ImeUnlockActivity : FragmentActivity() {
+
+    // Seçili uygulama dili cihaz dilinden bağımsızdır; her Context açılışında
+    // yapılandırmaya bindirilir (AppLocale).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
+
 
     private val viewModel: VaultViewModel by viewModels()
 

@@ -30,14 +30,39 @@ object HidLayouts {
     }
 
     /**
+     * Kullanıcının ayarlardan açtığı düzenler. Sekiz düzenin hepsi aktarım
+     * ekranında birden görünmesin diye kullanıcı listeyi kendi daraltır;
+     * varsayılan hepsi açıktır (kimsenin ihtiyacı olan düzen gizlenmiş
+     * olmasın), ayarlardan kapatılır.
+     *
+     * En az bir düzen her zaman açık kalır: hiçbiri seçilmezse aktarım ekranı
+     * kullanılamaz hâle gelirdi.
+     */
+    fun enabledLayouts(stored: String?): List<Layout> {
+        if (stored == null) return Layout.entries
+        val secilen = stored.split(",").mapNotNull { ad ->
+            runCatching { Layout.valueOf(ad.trim()) }.getOrNull()
+        }
+        return secilen.ifEmpty { Layout.entries }
+    }
+
+    fun storeEnabled(layouts: Collection<Layout>): String =
+        layouts.ifEmpty { Layout.entries }.joinToString(",") { it.name }
+
+    /**
      * Saklanmış düzen tercihini okur. Eski sürümler Türkçe Q'yu `"TR"` diye
      * yazıyordu; düzen sayısı artınca ad `TR_Q` oldu. Eski tercih sessizce
      * varsayılana düşmemeli — kullanıcı bir daha seçmek zorunda kalmasın.
      */
-    fun readLayout(stored: String?): Layout = when (stored) {
-        null -> Layout.TR_Q
-        "TR" -> Layout.TR_Q
-        else -> runCatching { Layout.valueOf(stored) }.getOrDefault(Layout.TR_Q)
+    fun readLayout(stored: String?, enabled: List<Layout> = Layout.entries): Layout {
+        val secili = when (stored) {
+            null -> Layout.TR_Q
+            "TR" -> Layout.TR_Q       // eski sürümlerin adı
+            else -> runCatching { Layout.valueOf(stored) }.getOrDefault(Layout.TR_Q)
+        }
+        // Kullanıcı bu düzeni ayarlardan kapattıysa açık olanlardan birine düş;
+        // yoksa aktarım ekranında görünmeyen bir düzen seçili kalırdı.
+        return if (secili in enabled) secili else enabled.first()
     }
 
     fun map(layout: Layout): Map<Char, KeyStroke> =

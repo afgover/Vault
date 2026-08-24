@@ -22,6 +22,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicInteger
+import com.afgover.vault.core.AppLocale
+import android.content.Context
 
 /**
  * Sistemin otomatik doldurma servisi: herhangi bir uygulamada veya tarayıcıda
@@ -32,6 +34,13 @@ import java.util.concurrent.atomic.AtomicInteger
  * ile kilit açılır, doldurma seçenekleri ancak ondan sonra üretilir.
  */
 class VaultAutofillService : AutofillService() {
+
+    // Seçili uygulama dili cihaz dilinden bağımsızdır; her Context açılışında
+    // yapılandırmaya bindirilir (AppLocale).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
+
 
     // Beklenmedik bir istisna (şifreleme, boyut sınırı, veritabanı) süreci
     // çökertip SaveCallback/FillCallback sözleşmesini bozmasın: yakala ve yut,

@@ -24,6 +24,8 @@ import com.afgover.vault.ui.screens.UnlockScreen
 import com.afgover.vault.ui.theme.VaultTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.afgover.vault.core.AppLocale
+import android.content.Context
 
 /**
  * Otomatik doldurma menüsünde "kilidi aç" seçildiğinde açılan ekran.
@@ -31,6 +33,13 @@ import kotlinx.coroutines.withContext
  * kasa kapalıyken sisteme hiçbir kayıt verilmez.
  */
 class AutofillUnlockActivity : FragmentActivity() {
+
+    // Seçili uygulama dili cihaz dilinden bağımsızdır; her Context açılışında
+    // yapılandırmaya bindirilir (AppLocale).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
+
 
     private val viewModel: VaultViewModel by viewModels()
 

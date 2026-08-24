@@ -28,6 +28,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.afgover.vault.core.AppLocale
+import android.content.Context
 
 /**
  * Vault Klavyesi: herhangi bir uygulamada kayıtlı kullanıcı adı, şifre, kart
@@ -45,6 +47,13 @@ import kotlinx.coroutines.withContext
  * arama harfleri klavyenin kendi tuş ızgarasından gelir.
  */
 class VaultImeService : InputMethodService() {
+
+    // Seçili uygulama dili cihaz dilinden bağımsızdır; her Context açılışında
+    // yapılandırmaya bindirilir (AppLocale).
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
+
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
