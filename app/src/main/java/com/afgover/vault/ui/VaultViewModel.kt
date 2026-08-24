@@ -490,13 +490,16 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val count = withContext(Dispatchers.IO) {
                     val imported = BackupManager.import(kirpik.byteInputStream(), password.toCharArray())
+                    // Boş zarfta HİÇBİR depo işlemi yapma: 'Tümünü değiştir' ile
+                    // boş zarf, kasanın tamamını silerdi (denetim: kritik).
+                    if (imported.entries.isEmpty()) return@withContext 0
                     if (replace) repo.replaceAll(imported.entries, key, imported.tagColors)
                     else repo.addAll(imported.entries, key, imported.tagColors)
                     imported.entries.size
                 }
                 if (count == 0) {
                     error = "Zarf açıldı ama içinde kayıt yok — gönderen tarafta " +
-                        "alanlar boş kalmış olabilir."
+                        "alanlar boş kalmış olabilir. Kasan olduğu gibi duruyor."
                     return@launch
                 }
                 clearClipboard()
@@ -540,9 +543,14 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
                     val input = getApplication<Application>().contentResolver.openInputStream(uri)
                         ?: throw Exception("Dosya açılamadı")
                     val imported = BackupManager.import(input, password.toCharArray())
+                    if (imported.entries.isEmpty()) return@withContext 0
                     if (replace) repo.replaceAll(imported.entries, key, imported.tagColors)
                     else repo.addAll(imported.entries, key, imported.tagColors)
                     imported.entries.size
+                }
+                if (count == 0) {
+                    error = "Yedek açıldı ama içinde kayıt yok. Kasan olduğu gibi duruyor."
+                    return@launch
                 }
                 toast("$count kayıt geri yüklendi")
             } catch (e: BackupManager.WrongPasswordException) {

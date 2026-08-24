@@ -1,6 +1,7 @@
 package com.afgover.vault.data
 
 import android.content.Context
+import androidx.room.withTransaction
 import com.afgover.vault.core.Crypto
 import com.afgover.vault.core.KeyManager
 import com.afgover.vault.core.VaultSession
@@ -45,8 +46,9 @@ class VaultRepository(
         if (plain.size > MAX_PLAIN_BYTES) throw EntryTooLargeException(title, plain.size)
     }
 
-    private val dao = VaultDatabase.get(context).entryDao()
-    private val tagDao = VaultDatabase.get(context).tagDao()
+    private val db = VaultDatabase.get(context)
+    private val dao = db.entryDao()
+    private val tagDao = db.tagDao()
 
     fun observeAll(): Flow<List<EntryEntity>> = dao.observeAll()
 
@@ -189,11 +191,21 @@ class VaultRepository(
         }
     }
 
-    /** İçe aktarma: mevcut kayıtları silip yenilerini yazar. */
+    /**
+     * İçe aktarma: mevcut kayıtları silip yenilerini yazar.
+     *
+     * Şifreleme ve boyut denetimi (toEntity → checkSize) silmeden ÖNCE koşar:
+     * yedekteki bir kayıt hatalıysa mevcut kasa hiç silinmez. Silme ve yazma
+     * da tek transaction'dadır; yarıda kesilen bir içe aktarma kasayı boş
+     * bırakamaz (denetim: kritik veri kaybı yolu).
+     */
     suspend fun replaceAll(entries: List<DecryptedEntry>, key: SecretKey, tagColors: Map<String, Int> = emptyMap()) {
-        dao.deleteAll()
         val resolve = tagNameResolver(entries, tagColors)
-        dao.insertAll(entries.map { it.toEntity(key, resolve(it)) })
+        val hazir = entries.map { it.toEntity(key, resolve(it)) }
+        db.withTransaction {
+            dao.deleteAll()
+            dao.insertAll(hazir)
+        }
     }
 
     /** İçe aktarma: yedektekileri mevcut kayıtların yanına ekler. */

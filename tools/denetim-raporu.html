@@ -1,0 +1,1211 @@
+<title>Vault Pazar Denetimi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#eef1f4; --panel:#ffffff; --panel-2:#f6f8fa; --ink:#161b24; --ink-soft:#4a5666;
+  --line:#dde3ea; --line-soft:#e8edf2; --accent:#1f7a8c; --accent-ink:#0d5561;
+  --kritik:#c62d42; --yuksek:#d17a1d; --orta:#b08a1e; --dusuk:#5f7089; --fixed:#2e8b63;
+  --kritik-bg:#fbe9eb; --yuksek-bg:#fbf0e2; --orta-bg:#f8f2df; --dusuk-bg:#eef1f5; --fixed-bg:#e6f3ec;
+  --shadow:0 1px 2px rgba(20,30,45,.06),0 4px 16px rgba(20,30,45,.05);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0d1017; --panel:#151a22; --panel-2:#1b212b; --ink:#e7ecf3; --ink-soft:#98a4b4;
+  --line:#262e3a; --line-soft:#1f2732; --accent:#4bb3c9; --accent-ink:#8ad6e6;
+  --kritik:#f0616f; --yuksek:#e79a4a; --orta:#d6b955; --dusuk:#8593a8; --fixed:#5cc08c;
+  --kritik-bg:#2a161a; --yuksek-bg:#2a2013; --orta-bg:#282213; --dusuk-bg:#1a2029; --fixed-bg:#152a20;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.28);
+}}
+:root[data-theme="dark"]{
+  --ground:#0d1017; --panel:#151a22; --panel-2:#1b212b; --ink:#e7ecf3; --ink-soft:#98a4b4;
+  --line:#262e3a; --line-soft:#1f2732; --accent:#4bb3c9; --accent-ink:#8ad6e6;
+  --kritik:#f0616f; --yuksek:#e79a4a; --orta:#d6b955; --dusuk:#8593a8; --fixed:#5cc08c;
+  --kritik-bg:#2a161a; --yuksek-bg:#2a2013; --orta-bg:#282213; --dusuk-bg:#1a2029; --fixed-bg:#152a20;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Hanken Grotesk",-apple-system,system-ui,sans-serif;line-height:1.55;
+  -webkit-font-smoothing:antialiased;}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.wrap{max-width:1000px;margin:0 auto;padding:clamp(24px,5vw,56px) clamp(16px,4vw,32px) 80px}
+
+/* header */
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 14px}
+h1{font-size:clamp(1.9rem,5vw,2.9rem);line-height:1.05;font-weight:800;letter-spacing:-.02em;
+  margin:0 0 12px;text-wrap:balance}
+.lede{font-size:1.06rem;color:var(--ink-soft);max-width:64ch;margin:0 0 6px}
+.stamp{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-soft);margin-top:14px}
+.stamp b{color:var(--ink);font-weight:600}
+
+/* summary tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:34px 0 8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden}
+.tile .n{font-size:2.1rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.tile .l{font-size:.8rem;color:var(--ink-soft);margin-top:6px;font-weight:500}
+.tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tc,var(--accent))}
+.tile.k{--tc:var(--kritik)} .tile.y{--tc:var(--yuksek)} .tile.o{--tc:var(--orta)}
+.tile.d{--tc:var(--dusuk)} .tile.f{--tc:var(--fixed)}
+.tile.f .n{color:var(--fixed)}
+
+.note{background:var(--panel-2);border:1px solid var(--line-soft);border-left:3px solid var(--accent);
+  border-radius:10px;padding:14px 18px;margin:24px 0 4px;font-size:.92rem;color:var(--ink-soft)}
+.note b{color:var(--ink)}
+
+/* filter bar */
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:30px 0 18px;
+  position:sticky;top:0;padding:14px 0;background:linear-gradient(var(--ground) 78%,transparent);z-index:5}
+.bar .grp{display:flex;gap:6px;flex-wrap:wrap}
+.fb{font-family:inherit;font-size:.82rem;font-weight:600;color:var(--ink-soft);cursor:pointer;
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 13px;
+  transition:.13s}
+.fb:hover{border-color:var(--accent);color:var(--ink)}
+.fb[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .fb[aria-pressed="true"],
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb[aria-pressed="true"]{color:#08252b}}
+.bar .sp{flex:1}
+.count{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-soft)}
+
+/* findings */
+.section-h{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+  font-family:"IBM Plex Mono",monospace;font-weight:600;margin:34px 0 14px;padding-bottom:8px;
+  border-bottom:1px solid var(--line)}
+.list{display:flex;flex-direction:column;gap:10px}
+.finding{background:var(--panel);border:1px solid var(--line);border-radius:13px;
+  box-shadow:var(--shadow);overflow:hidden}
+.finding.durum-fixed{opacity:.82}
+.fhead{width:100%;display:flex;align-items:stretch;gap:0;background:none;border:0;cursor:pointer;
+  text-align:left;padding:0;color:inherit;font-family:inherit}
+.stripe{width:4px;flex:none;background:var(--sv,var(--dusuk))}
+.sev-kritik .stripe{background:var(--kritik)} .sev-yuksek .stripe{background:var(--yuksek)}
+.sev-orta .stripe{background:var(--orta)} .sev-dusuk .stripe{background:var(--dusuk)}
+.refuted .stripe{background:var(--line)}
+.fmeta{flex:1;padding:15px 16px;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chip{font-size:.7rem;font-weight:600;padding:2px 9px;border-radius:999px;letter-spacing:.01em;
+  font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+.sevchip{color:#fff}
+.sc-kritik{background:var(--kritik)} .sc-yuksek{background:var(--yuksek)}
+.sc-orta{background:var(--orta)} .sc-dusuk{background:var(--dusuk)}
+.chip.alan{background:var(--panel-2);color:var(--ink-soft);border:1px solid var(--line)}
+.st-fixed{background:var(--fixed-bg);color:var(--fixed);border:1px solid transparent}
+.st-open{background:transparent;color:var(--ink-soft);border:1px solid var(--line)}
+.st-note{background:transparent;color:var(--ink-soft);border:1px dashed var(--line)}
+.st-refuted{background:var(--dusuk-bg);color:var(--dusuk)}
+.ftitle{display:block;font-size:1.02rem;font-weight:600;letter-spacing:-.01em;color:var(--ink);
+  margin-bottom:5px;text-wrap:pretty}
+.floc{display:block;font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--accent);
+  word-break:break-all}
+.caret{flex:none;display:flex;align-items:center;padding:0 16px;font-size:1.5rem;color:var(--ink-soft);
+  transition:transform .18s}
+.fhead[aria-expanded="true"] .caret{transform:rotate(90deg)}
+.fbody{display:none;padding:4px 20px 20px 20px;border-top:1px solid var(--line-soft)}
+.finding.open-x .fbody{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.block{margin-top:16px}
+.block h4{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+  font-family:"IBM Plex Mono",monospace;font-weight:600;margin:0 0 5px}
+.block p{margin:0;font-size:.92rem;color:var(--ink);line-height:1.6}
+.block:last-child h4{color:var(--accent)}
+.durum-fixed .block:last-child h4{color:var(--fixed)}
+.hidden{display:none!important}
+footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);
+  font-size:.82rem;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Pazar öncesi güvenlik &amp; doğruluk denetimi</p>
+<h1>Vault — çıkış öncesi bulgu raporu</h1>
+<p class="lede">10 alan uzmanı depoyu paralel taradı; her ciddi bulgu bağımsız bir hakem tarafından çürütülmeye çalışıldı. Yalnızca kodun içinde doğrulanmış, gerçek kusurlar listelendi — stil ve zevk tercihleri değil.</p>
+<p class="stamp">24 Ağustos 2026 · <b>68</b> onaylanmış bulgu · <b>2</b> çürütüldü · kapsam: uygulama + araçlar + relay</p>
+
+<div class="tiles">
+<div class="tile k"><div class="n">3</div><div class="l">Kritik — veri kaybı / sızıntı</div></div>
+<div class="tile y"><div class="n">10</div><div class="l">Yüksek — zafiyet / çökme</div></div>
+<div class="tile o"><div class="n">30</div><div class="l">Orta — doğruluk / yanıltma</div></div>
+<div class="tile d"><div class="n">25</div><div class="l">Düşük — pürüz</div></div>
+<div class="tile f"><div class="n">7</div><div class="l">Bu turda düzeltildi</div></div>
+</div>
+
+<div class="note">Üç <b>kritik</b> bulgunun tamamı tek kök nedene bakıyordu — "Tümünü değiştir" ile içe aktarma, yazmadan önce kasayı siliyordu — ve bu turda düzeltilip regresyon testleriyle kapatıldı. Kalanlar önem sırasına dizili; her kartı açınca sorun, tetikleyen senaryo ve önerilen düzeltme görünür.</div>
+
+<div class="bar">
+  <div class="grp" id="sevf">
+    <button class="fb" aria-pressed="true" data-f="all">Tümü</button>
+    <button class="fb" data-f="kritik">Kritik</button>
+    <button class="fb" data-f="yuksek">Yüksek</button>
+    <button class="fb" data-f="orta">Orta</button>
+    <button class="fb" data-f="dusuk">Düşük</button>
+  </div>
+  <span class="sp"></span>
+  <div class="grp" id="durf">
+    <button class="fb" aria-pressed="true" data-d="all">Her durum</button>
+    <button class="fb" data-d="open">Açık</button>
+    <button class="fb" data-d="fixed">Düzeltildi</button>
+  </div>
+</div>
+<div class="count" id="count"></div>
+
+<div class="list" id="list">
+<article class="finding sev-kritik durum-fixed" data-sev="kritik" data-alan="aktarim" data-durum="fixed">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-kritik">Kritik</span><span class="chip alan">Aktarım</span><span class="chip st-fixed">✓ düzeltildi</span></span>
+<span class="ftitle">replaceAll önce siler sonra şifreler: içe aktarma yarıda kalırsa kasanın tamamı gider</span>
+<span class="floc">app/src/main/java/com/afgover/vault/data/VaultRepository.kt:194</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>replaceAll (193-197) iki ayrı DAO çağrısıdır ve ortak bir Room transaction&#x27;ı yoktur: önce dao.deleteAll() koşar, SONRA entries.map { it.toEntity(...) } değerlendirilip dao.insertAll() çağrılır. toEntity içindeki checkSize (satır 263-264) yedekteki 256 KB&#x27;yi aşan tek bir kayıtta EntryTooLargeException fırlatır; bu istisna deleteAll işlendikten sonra geldiği için mevcut kayıtların hepsi silinmiş, yenilerin hiçbiri yazılmamış olur. Aynı pencerede süreç ölümü (sistemin uygulamayı öldürmesi, kullanıcı uygulamadan çıkması) da aynı sonucu verir: iki DAO çağrısı ayrı transaction&#x27;larda işlendiğinden deleteAll kalıcılaşır, insertAll hiç koşmaz.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı B-040 sınırı eklenmeden önceki sürümle alınmış (ya da aktar.html&#x27;de üretilmiş) ve 256 KB&#x27;yi aşan bir not içeren yedeği &#x27;Tümünü değiştir&#x27; ile içe aktarır: deleteAll biter, üçüncü kaydın toEntity&#x27;sinde EntryTooLargeException fırlar, ekranda &#x27;İçe aktarma başarısız: ... çok büyük&#x27; görünür ve kasa artık BOŞTUR. Alternatif: 500 kayıtlık içe aktarma sırasında Android süreci öldürür; kullanıcı uygulamayı açtığında eski kayıtlar silinmiş, yeniler yazılmamıştır.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Entity listesini deleteAll&#x27;dan ÖNCE kur (val yeni = entries.map { it.toEntity(key, resolve(it)) }), sonra deleteAll + insertAll&#x27;u tek atomik blokta koştur: RoomDatabase.withTransaction { dao.deleteAll(); dao.insertAll(yeni) } ya da EntryDao&#x27;ya @Transaction&#x27;lı tek bir replaceAll(entries) metodu ekle. Böylece hem doğrulama/şifreleme hatası hem süreç ölümü eski veriyi korur.</p></div>
+</div></article>
+<article class="finding sev-kritik durum-fixed" data-sev="kritik" data-alan="aktarim" data-durum="fixed">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-kritik">Kritik</span><span class="chip alan">Aktarım</span><span class="chip st-fixed">✓ düzeltildi</span></span>
+<span class="ftitle">&#x27;Tümünü değiştir&#x27; + boş zarf: kasa silinir, mesaj hiçbir şey olmamış gibi konuşur</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:493</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>importBackupText&#x27;te replaceAll/addAll çağrısı (491-495) count==0 denetiminden (497-501) ÖNCE koşar. Zarf geçerli ve parola doğru ama entries boşsa, replace=true iken repo.replaceAll(emptyList) mevcut TÜM kayıtları siler; ardından kullanıcıya &#x27;Zarf açıldı ama içinde kayıt yok — gönderen tarafta alanlar boş kalmış olabilir&#x27; denir ve onSuccess çağrılmaz — mesaj hiçbir şeyin değişmediğini ima eder, oysa kasa boşaltılmıştır. Dosya yolu importBackup&#x27;ta (543) aynı sıra sorunu vardır; orada da boş yedek + replace tüm kasayı silip yalnız &#x27;0 kayıt geri yüklendi&#x27; der.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı bilgisayarda aktar.html&#x27;e yanlışlıkla boş içerik yapıştırıp şifreler (ya da içi boş eski bir .vaultbak seçer), telefonda &#x27;Tümünü değiştir&#x27;i işaretleyip içe aktarır: parola doğru, zarf geçerli, entries=[] → replaceAll tüm kayıtları siler → ekran &#x27;içinde kayıt yok&#x27; der. Kullanıcı bir şey olmadığını sanır; kasası artık boştur ve (yakın tarihli yedeği yoksa) veri kurtarılamaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>imported.entries.isEmpty() denetimini repo çağrısının ÖNÜNE al: boş zarfta hiçbir depo işlemi yapmadan hatayı göster. Aynı düzeltmeyi importBackup (dosya) yoluna da uygula; istenirse boş zarfla &#x27;Tümünü değiştir&#x27; için ayrı, açık bir onay iste.</p></div>
+</div></article>
+<article class="finding sev-kritik durum-fixed" data-sev="kritik" data-alan="veri" data-durum="fixed">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-kritik">Kritik</span><span class="chip alan">Veri / Göç</span><span class="chip st-fixed">✓ düzeltildi</span></span>
+<span class="ftitle">replaceAll: silme ile yazma tek transaction değil, doğrulama silmeden sonra — &#x27;değiştir&#x27; modunda içe aktarma tüm kasayı kalıcı silebilir</span>
+<span class="floc">app/src/main/java/com/afgover/vault/data/VaultRepository.kt:194</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>replaceAll önce dao.deleteAll() çağırıyor (satır 194), sonra entries.map { it.toEntity(key, ...) } değerlendiriliyor. toEntity içindeki checkSize (satır 264) kayıt 256KB sınırını aşarsa EntryTooLargeException fırlatıyor; şifreleme hatası da aynı noktada patlayabilir. deleteAll ve insertAll iki ayrı örtük transaction olduğu için istisna anında mevcut kayıtlar çoktan silinmiş, yenileri hiç yazılmamış oluyor. Çağıran VaultViewModel.importBackup / importBackupText genel catch ile yalnızca &#x27;Geri yükleme başarısız&#x27; diyor — kasanın boşaldığını söylemiyor. BackupManager.import boyut denetimi yapmadığı için sınırı aşan kayıt içeren bir yedek (sınır eklenmeden önceki sürümde oluşturulmuş ya da elle düzenlenmiş zarf) bu yolu tetikler. İki çağrı arasında süreç ölümü de aynı sonucu verir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı &#x27;değiştir&#x27; (replace) seçeneğiyle, içinde 300KB&#x27;lik tek bir not bulunan eski bir .vaultbak yedeğini içe aktarır: deleteAll koşar, üçüncü kaydın toEntity&#x27;sinde EntryTooLargeException fırlar, ekranda &#x27;Geri yükleme başarısız&#x27; görünür — ama kasadaki TÜM mevcut kayıtlar silinmiştir ve yedekten hiçbir kayıt yazılmamıştır. Ana kasa boş, tek kopya (varsa) o hatalı yedek.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Önce listeyi hazırla: val hazir = entries.map { it.toEntity(key, resolve(it)) } (checkSize burada patlarsa henüz hiçbir şey silinmemiş olur). Sonra androidx.room.withTransaction (room-ktx zaten bağımlılıkta) içinde deleteAll() + insertAll(hazir) çalıştır. VaultRepository&#x27;ye VaultDatabase referansı ekleyip suspend fun replaceAll(...) = db.withTransaction { ... } biçiminde yaz.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="aktarim" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Aktarım</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Tek düşman QR karesi uygulamayı çökertebiliyor: kare sayısına ve inflate çıktısına sınır yok</span>
+<span class="floc">app/src/main/java/com/afgover/vault/core/QrTransfer.kt:45</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>parse yalnız i&gt;=1, n&gt;=1, i&lt;=n denetler (satır 45); toplam kare sayısının üst sınırı yoktur. QrScanScreen her karede QrTransfer.missing&#x27;i çağırır (QrScanScreen.kt:142) ve missing (satır 97-101) (1..total).filter ile eksiklerin TAMAMINI liste olarak kurar: total=2.147.483.647 olan tek bir kare, milyarlarca kutulanmış Int&#x27;lik liste denemesiyle OutOfMemoryError üretir; OOM bir Error olduğu için hiçbir catch&#x27;e takılmaz ve analiz iş parçacığında süreç ölür. Ek olarak inflate (79-94) çıktı boyutunu sınırlamaz: deflate ~1032:1 açılabildiğinden çok kareli düşman bir küme (ör. birkaç yüz kare) yüz MB&#x27;larca metin üretip yine OOM&#x27;a gider; 1 MB&#x27;lik zarf sınırı ViewModel&#x27;de, yani inflate&#x27;ten SONRA denetlenir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kurban &#x27;sana kayıtlarımı QR ile aktarayım&#x27; denilerek VLT1|1/2000000000|P|x içerikli tek bir kare okutulur: missing() dev listeyi kurmaya çalışırken OutOfMemoryError fırlar ve Vault çöker. (İkincil yol: döngüyle oynatılan yüzlerce Z bayraklı kare, inflate&#x27;te yüz MB&#x27;larca metne açılıp aynı sonucu verir.)</p></div>
+<div class="block"><h4>Düzeltme</h4><p>parse&#x27;ta makul bir tavan koy (ör. n &gt; 512 ise null döndür; 512 kare ≈ 600 KB base64, meşru her aktarımın çok üstü). missing&#x27;i tembelleştir ya da ilk N eksiği döndürecek şekilde sınırla; QrScanScreen&#x27;deki &#x27;Eksik kare&#x27; metnini de kırp. inflate&#x27;te toplam çıktıyı ~2 MB ile sınırla ve aşınca null döndür.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Bütünlük zinciri, import edilen segno modüllerinin çoğunu ve listelenmemiş araç dosyalarını kapsamıyor</span>
+<span class="floc">tools/dogrula.sh:16</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>DOSYALAR/SHA256SUMS yalnız segno/__init__.py ve segno/encoder.py&#x27;yi listeliyor; oysa `import segno` sırasında consts.py, utils.py ve writers.py de yükleniyor (tools/vendor/segno/__pycache__ içindeki .pyc&#x27;ler bunu kanıtlıyor). Ayrıca .githooks/pre-commit (satır 9) yalnız LİSTEDEKİ dosyaların bozulmasını yakalıyor: tools/ altına eklenen ya da listede olmayan bir dosya değiştiğinde `shasum -c` yine geçer ve kanca sessizce onaylar (apk-hizalama.py bugün bile zincirin dışında). SEC-023&#x27;ün amacı &#x27;ele geçmiş Mac&#x27;in araç değiştirmesini yakalamak; halka 1 ve çıpa (halka 4) bu dosyalara kör, halka 3 ise ağ yokken sessizce atlanıyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Saldırgan tools/vendor/segno/writers.py&#x27;ye (QR&#x27;ı terminale çizen modül) birkaç satır ekler. vault-clip.py çalıştığında bu kod, prosesin içinde yedek parolasına (getpass) ve düz metin sırra erişir. `tools/dogrula.sh` koşulur: halka 1 &#x27;✓ temiz&#x27;, çıpa değeri değişmemiş; Mac o an çevrimdışıysa halka 3 de koşmaz — SONUÇ: temiz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>DOSYALAR ve SHA256SUMS&#x27;a segno&#x27;nun import zincirindeki TÜM .py dosyalarını ekle (consts, utils, writers, helpers, cli) ya da listeyi elle saymak yerine `find tools -name &#x27;*.py&#x27; -o -name &#x27;*.html&#x27; -o -name &#x27;*.sh&#x27;` çıktısından üret. pre-commit&#x27;te de &#x27;tools/ altında SHA256SUMS&#x27;ta OLMAYAN izlenen dosya var mı&#x27; kontrolü ekle (git ls-files tools/ ile listeyi karşılaştır).</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">__pycache__ ile dört halkanın hepsi atlatılabiliyor (planted .pyc)</span>
+<span class="floc">tools/dogrula.sh:36</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Halka 1 yalnız .py KAYNAKLARINI karmalıyor; Python ise import&#x27;ta __pycache__/&lt;ad&gt;.cpython-XYZ.pyc&#x27;nin başlığındaki kaynak mtime+boyut tutuyorsa .py&#x27;yi hiç okumadan .pyc&#x27;yi çalıştırır. __pycache__/ .gitignore&#x27;da (satır 11) olduğundan halka 3 (origin ile git diff) de bu dosyaları hiç görmez; çıpa (halka 4) yalnız SHA256SUMS&#x27;ı imzalar. Yani başlığı eşleştirilmiş kötücül bir .pyc, zincirin DÖRT halkasını birden geçer — listede olan encoder.py için bile.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Saldırgan tools/vendor/segno/__pycache__/encoder.cpython-314.pyc&#x27;yi, başlığındaki mtime/size alanları encoder.py ile eşleşen kötücül bir .pyc ile değiştirir. vault-clip.py her çalıştığında saldırgan kodu parola ve düz metinle aynı proseste koşar; dogrula.sh tüm halkalarda &#x27;temiz&#x27; der, git status da temizdir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>vault-clip.py&#x27;yi bytecode önbelleğini yok sayarak çalıştır: shebang&#x27;i `python3 -B` yerine `#!/usr/bin/env -S python3 -B` yap (ya da başta `sys.dont_write_bytecode` + vendor için importlib ayarı) ve dogrula.sh&#x27;a &#x27;tools/ altında __pycache__ varsa sil/uyar&#x27; adımı ekle. En basiti: dogrula.sh başında `find tools -name __pycache__ -type d` boş değilse FARK VAR say.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Belgedeki örnek komut sırrı kabuk geçmişine (diske) düz metin yazdırıyor</span>
+<span class="floc">docs/kendi-zarfini-uret.md:49</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>&#x27;Çıplak betik&#x27; yolunun kullanım örneği `printf &#x27;%s&#x27; &#x27;GİZLİ METİN&#x27; | python3 zarf-uret.py ...`. Kullanıcı bunu gerçek sırla çalıştırdığında komut satırının tamamı ~/.zsh_history dosyasına düz metin olarak kalıcı yazılır ve komut çalışırken `ps` çıktısında görünür. Bu, aracın kendi vaadiyle (&#x27;panodaki değer diske hiç düz metin olarak yazılmaz&#x27;) doğrudan çelişir; belgenin varlık sebebi zaten sırrın diske değmeden taşınması.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı belgeyi izleyip `printf &#x27;%s&#x27; &#x27;AKfj9...gerçek-SSH-anahtar-parolası&#x27; | python3 zarf-uret.py &quot;Sunucu&quot; &gt; zarf.json` yazar. Sır süresiz olarak ~/.zsh_history&#x27;de kalır; Time Machine/yedeklerle çoğalır. Zarfın şifreli olmasının bir önemi kalmaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Örneği stdin-etkileşimli hâle getir: `python3 zarf-uret.py &quot;Başlık&quot; &gt; zarf.json` deyip sırrı terminale yapıştırıp Ctrl-D ile bitirmeyi anlat, ya da `pbpaste | python3 zarf-uret.py &quot;Başlık&quot;` öner. Komut satırına sır yazdıran hiçbir örnek bırakma.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="autofill" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Otomatik doldurma</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">onSaveRequest içinde save() istisnası süreci çökertir ve SaveCallback sözleşmesini bozar</span>
+<span class="floc">app/src/main/java/com/afgover/vault/autofill/VaultAutofillService.kt:121</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Kaydetme akışı `scope.launch { withContext(IO){ repository.save(...) }; callback.onSuccess() }` şeklinde, try/catch olmadan yazılmış. Scope `CoroutineScope(SupervisorJob() + Dispatchers.Main)` ve hiçbir CoroutineExceptionHandler yok. repository.save() bir istisna fırlatırsa (en somut yollar: kaydedilecek alan değeri MAX_PLAIN_BYTES=256KB sınırını aşınca fırlatılan EntryTooLargeException; ya da Room/SQLite hatası — disk dolu, DB kilitli) istisna hiçbir yerde yakalanmadığından thread&#x27;in varsayılan uncaught handler&#x27;ına gider ve SÜRECİ çökertir. Bu süreç aynı zamanda IME servisini (VaultImeService) ve uygulamayı barındırır. Ayrıca `callback.onSuccess()` da `callback.onFailure()` da çağrılmaz; SaveCallback sözleşmesi tam olarak birinin çağrılmasını şart koşar, sistemin kaydet arayüzü asılı kalır. Aynı desen onFillRequest&#x27;te (satır 67-73) de var; orada getAllDecrypted içindeki decrypt istisnaları yutuluyor ama dao.getAll() DB hatası yine çökme üretebilir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kötü niyetli (ya da bozuk) bir uygulama/site parola alanı olarak beyan edilen bir input&#x27;a ~300KB metin doldurur, kullanıcı sistemin &#x27;Vault&#x27;a kaydet&#x27; istemine dokunur. onSaveRequest çalışır, repository.save() checkSize&#x27;da EntryTooLargeException fırlatır, istisna scope.launch içinde yakalanmadığı için tüm süreç çöker; kaydet arayüzü de yanıtsız kalır. Aynı şekilde cihaz depolaması doluyken sıradan bir parola kaydı da Room insert hatasıyla çökebilir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>scope.launch bloklarını try/catch ile sar: hata durumunda onSaveRequest&#x27;te callback.onFailure(mesaj), onFillRequest&#x27;te callback.onSuccess(null) çağır. Ek olarak scope&#x27;a bir CoroutineExceptionHandler ekleyerek beklenmedik istisnaların süreci çökertmesini engelle. EntryTooLargeException&#x27;ı özel olarak yakalayıp kullanıcıya anlaşılır mesaj döndür.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="autofill" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Otomatik doldurma</span><span class="chip st-open">açık</span><span class="chip st-note">bulan:orta</span></span>
+<span class="ftitle">Parola değeri, &#x27;password&#x27; içeren gizli-olmayan alanlara doldurulup açığa çıkabilir</span>
+<span class="floc">app/src/main/java/com/afgover/vault/autofill/AutofillResponses.kt:78</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>dataset() tek bir parola değerini, forma ait PASSWORD sınıflı TÜM alanlara yazar (satır 76-79: values[PASSWORD]=d.password, sonra satır 94-101 filled listesindeki her PASSWORD alanına setValue). StructureParser.fromHeuristics (StructureParser.kt satır 148) bir alanı yalnız inputType password ise değil, id/hint/placeholder metninde &#x27;password/parola/sifre/pwd/passwd&#x27; geçtiğinde de PASSWORD sayar. Bu yüzden gerçek parola alanı olmayan ama adında bu kelimeleri taşıyan görünür (maskesiz) alanlar da PASSWORD sınıflanır ve kullanıcı öneriyi seçtiğinde gerçek parola bu görünür alana da yazılır.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Bir kayıt/oluşturma formunda &#x27;Parola&#x27; (password input) ile birlikte &#x27;Parola ipucu&#x27; (idEntry=&#x27;passwordHint&#x27;, düz metin, maskesiz) alanı bulunur. StructureParser ikisini de PASSWORD sınıflar. Kullanıcı Vault önerisine dokunduğunda gerçek parola hem parola alanına hem de ipucu alanına doldurulur; ipucu alanı ekranda açık görünür ve çoğu sitede sunucuya/e-postaya düz metin olarak gider — parola sızıntısı.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>PASSWORD sınıflamasını yalnız inputType password varyasyonuna ya da tam eşleşen autofillHint&#x27;lere güvenerek daralt; heuristik anahtar kelime eşleşmesinde &#x27;hint/ipucu/reminder/hatirlatici&#x27; içeren alanları PASSWORD dışında tut. Ayrıca doldurmada aynı parola değerini birden fazla PASSWORD alanına yazmadan önce, formda gerçek bir tek/ikili (parola+parola tekrar) desen olup olmadığını kontrol etmeyi değerlendir.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="ime" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Klavye</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Kilitlenme aninda klavye durumu temizlenmiyor; tazeleme kosulu tek yonlu</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ime/VaultImeService.kt:151</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>onWindowShown yalnizca &#x27;locked &amp;&amp; VaultSession.isUnlocked&#x27; (kilitli -&gt; acik) yonunu tazeliyor; acik -&gt; kilitli gecisi hicbir yerde ele alinmiyor. Ekran kapaninca VaultApp anahtari siler ama servis alanlari (satir 63 &#x27;entries&#x27;, satir 65 &#x27;selected&#x27;) tum cozulmus kayitlarla (sifreler, kart no, CVV dahil) dolu kalir. Klavye sureci uygulamayi surekli ayakta tuttugu icin (VaultApp.kt:21-23 yorumunda belirtiliyor) bu duz metin, klavye bir sonraki acilisina kadar suresiz bellekte durur. Daha kotusu: koruma tamamen onStartInputView&#x27;in her gosterimde tetiklenecegi varsayimina dayanir; IMS penceresi ekran kapanip acildiginda gizlenmemisse (ozellikle kilit ekrani &#x27;yok/kaydir&#x27; olan cihazlarda ya da bazi OEM yasam dongulerinde) onStartInputView cagrilmaz, onWindowShown&#x27;daki kosul da locked=false oldugu icin refresh etmez ve klavye kasa KILITLIYKEN tum kayitlari listeleyip yazmaya devam eder.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici kasayi acip klavyeyle bir uygulamada sifre yazar (entries = tum kayitlar). Ekran kapanir, VaultSession.lock() calisir. Telefonu eline alan kisi (cihaz kilidi &#x27;yok/kaydir&#x27; ise dogrudan; cihaz PIN&#x27;ini bilen ama kasa parolasini bilmeyen kisi PIN&#x27;le) ayni uygulamaya doner; IMS penceresi gizlenmemisse klavye eski listeyi gosterir ve &#x27;Sifre yaz&#x27; dugmeleri calisir: belgelenmis guven siniri (kilitliyken yalniz hizli erisim) atlanir. Bagimsiz olarak: pencere gizlense bile cozulmus tum kasa, kilitli goruntude saatlerce IME sureci heap&#x27;inde kalir (bellek dokumu/adli inceleme senaryosu) — &#x27;ekran kapaninca anahtar silinir&#x27; modelinin arkasindan dolanir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>onWindowShown&#x27;da kosulsuz refresh() cagir (kilit durumu her gosterimde yeniden okunur). Ek olarak unlocked-&gt;locked gecisini yakala: onFinishInputView/onWindowHidden icinde ya da serviste ACTION_SCREEN_OFF alicisiyla entries = emptyList(); selected = null; render() yap. Boylece hem gorunur liste hem heap&#x27;teki duz metin kilitle birlikte temizlenir.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="pazar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Pazar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Play hedef API engeli: 31 Agustos 2026&#x27;dan itibaren yeni uygulamalar API 36 hedeflemeli, uygulama 35&#x27;te</span>
+<span class="floc">app/build.gradle.kts:15</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Google Play kurali: 31 Agustos 2026&#x27;dan itibaren YENI uygulamalar ve guncellemeler Android 16 (API 36) hedeflemek zorunda; targetSdk 35 yalnizca halihazirda yayinda olan uygulamalarin gorunur kalmasi icin yeterli. Bugun 24 Agustos 2026 — son tarihe 7 gun var ve uygulama henuz yayinda degil. Kapali test zorunlulugu (ayri bulgu) nedeniyle prodüksiyon yayini 31 Agustos&#x27;tan once tamamlamak pratikte imkansiz; yani ilk gercek gonderim buyuk olasilikla API 36 sartina takilacak. compileSdk da 35 (satir 10) ve AGP 8.7.3 (gradle/libs.versions.toml satir 2) compileSdk 36&#x27;yi resmi desteklemiyor. Not: bagimlilik CVE taramasinin sonucu ayri bir dusuk bulguda ozetlendi — pinli surumlerde bilinen zafiyet cikmadi.</p></div>
+<div class="block"><h4>Senaryo</h4><p>1 Eylul 2026 veya sonrasinda Play Console&#x27;a targetSdk 35 ile derlenmis AAB yuklenir → Console &#x27;must target API level 36&#x27; hatasiyla surumu reddeder; kapali test 14 gun surecegi icin bu tarihten once prodüksiyona cikmak zaten mumkun degil ve yayin plani belirsiz sure kilitlenir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Simdiden compileSdk = 36, targetSdk = 36 yap; bunun icin AGP&#x27;yi en az 8.9.x&#x27;e (tercihen guncel 8.11+) ve gerekiyorsa Gradle/Kotlin surumlerini birlikte yukselt (JetBrains&#x27;in Mayis 2026 stdlib guvenlik destek politikasi geregi eski Kotlin hatlari guvenlik yamasi almiyor — bu yukseltmeyle birlikte Kotlin&#x27;i de guncelle). Android 16 davranis degisikliklerini cihazda test et (ozellikle targetSdk 36 ile varsayilan acilan predictive back — MainActivity singleTask + kilit akislari etkilenebilir). Gecikilirse Play Console&#x27;dan 1 Kasim 2026&#x27;ya kadar uzatma istenebilir ama yeni uygulama icin en temiz yol dogrudan 36 ile cikmak.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Pano temizleme isi (45 sn) surec/ViewModel olumunde calismiyor; sifre panoda kaliyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:420</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>copyToClipboard, 45 saniyelik temizleme isini viewModelScope.launch ile kuruyor (satir 419-427). viewModelScope, MainActivity kapaninca (Home&#x27;da geri tusu aktiviteyi bitirir, kullanici uygulamayi son uygulamalardan kaydirip atarsa surec olur) iptal edilir; delay(45_000) hic tamamlanmaz ve clearPrimaryClip cagrilmaz. Oysa kullaniciya &#x27;45 sn sonra silinecek&#x27; sozu veriliyor (satir 417). Kasa kilitlense de (lock/ekran kapanmasi) pano ayrica temizlenmiyor. EXTRA_IS_SENSITIVE (33+) ve Android 13+ sistem oto-temizligi kismi hafifletme saglar ama eski surumlerde sinirsiz kalir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici bir sifreyi kopyalar, hedef uygulamaya yapistirmak icin Vault&#x27;tan geri tusuyla cikar (aktivite biter) ya da aliskanlikla uygulamayi son uygulamalardan kaydirir. 45 sn&#x27;lik is iptal olur; sifre panoda suresiz kalir ve sonradan on plana gelen herhangi bir uygulama (Android 10+ da on plandaki uygulama panoyu okuyabilir) sifreyi okuyabilir. Android 12 ve alti cihazlarda sistem oto-temizligi de yoktur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Temizligi surec yasamina baglamayan bir mekanizma kullan: WorkManager/AlarmManager ile 45 sn sonra temizlik tetikle, ya da en azindan VaultSession.lock() ve Activity.onDestroy aninda panoyu (yalniz kendi ClipData&#x27;niz duruyorsa - clip label kontrolu ile) hemen temizle. Toast metnini gercek davranisla eslestir.</p></div>
+</div></article>
+<article class="finding sev-yuksek durum-fixed" data-sev="yuksek" data-alan="veri" data-durum="fixed">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Veri / Göç</span><span class="chip st-fixed">✓ düzeltildi</span></span>
+<span class="ftitle">Dosyadan içe aktarmada boyut sınırı yok: readBytes() ile OOM çökmesi</span>
+<span class="floc">app/src/main/java/com/afgover/vault/backup/BackupManager.kt:125</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>BackupManager.import gelen akışın tamamını input.readBytes() ile belleğe okuyor. Panodan yapıştırma yolunda 1MB sınırı var (VaultViewModel.kt:473) ama dosya yolunda (VaultViewModel.kt:534 importBackup) hiçbir sınır yok. Yanlış dosya seçimi tek başına uygulamayı düşürür; Play&#x27;e çıkınca yabancı kullanıcıların dosya seçicide yanlış dosyaya basması kaçınılmaz.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı geri yükleme ekranında yanlışlıkla 1-2 GB&#x27;lik bir video/ZIP dosyası seçer: readBytes() + toString(UTF_8) yığını doldurur, OutOfMemoryError ile uygulama çöker. Hata mesajı yerine crash görülür; Play konsolunda ANR/crash istatistiğine yazılır.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>import&#x27;a girmeden (ya da import&#x27;un başında) üst sınır koy: örn. akıştan en fazla 16 MB oku, aşılırsa InvalidFormatException benzeri açıklayıcı bir hata fırlat (&#x27;Bu dosya bir Vault yedeği olamayacak kadar büyük&#x27;). VaultViewModel.importBackup bu hatayı mevcut catch dallarıyla kullanıcıya gösterir.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="aktarim" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Aktarım</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">QR taramadan çıkınca kamera kapanmıyor: bağlama çözülmediği için kamera göstergesi yanık kalıyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/screens/QrScanScreen.kt:89</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>DisposableEffect&#x27;in onDispose&#x27;u yalnız executor&#x27;ı kapatır (satır 89); provider.bindToLifecycle (161-166) Activity&#x27;nin yaşam döngüsüne bağlanır ve composable ekrandan kalkarken hiçbir yerde unbindAll çağrılmaz. Tarama bitince (onEnvelope → qrTarama=false) ya da &#x27;Vazgeç&#x27; denince kamera boru hattı açık kalır: Android&#x27;in yeşil kamera-kullanımda göstergesi kullanıcı parola listesinde gezerken de yanmaya devam eder ve analiz karesi kapatılmış executor&#x27;a gönderildiği için CameraX arka planda sürekli RejectedExecutionException loglar. Kamera ancak ekran kapanınca/Activity durunca serbest kalır. Play&#x27;e çıkan bir parola kasasında &#x27;uygulama QR ekranı kapandıktan sonra da kamerayı açık tutuyor&#x27; görüntüsü hem kullanıcı güvenini hem mağaza incelemesini doğrudan etkiler.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı QR ile aktarımı bitirir, parola listesine döner ve kayıtlarını düzenlerken durum çubuğundaki yeşil kamera göstergesinin hâlâ yandığını görür; &#x27;parola uygulamam beni mi izliyor?&#x27; diye kötü yorum/şikâyet bırakır.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>ProcessCameraProvider referansını tut ve DisposableEffect onDispose&#x27;unda provider.unbindAll() + executor.shutdown() çağır (future henüz sonuçlanmadıysa listener&#x27;ı iptal et). Böylece ekran kapanır kapanmaz kamera serbest kalır.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="aktarim" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Aktarım</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Kamera izni kalıcı reddedildiğinde &#x27;İzin ver&#x27; düğmesi sessizce hiçbir şey yapmıyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/screens/QrScanScreen.kt:183</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>İzin reddedildiğinde gösterilen ekrandaki düğme yalnız izinIstegi.launch&#x27;ı yeniden çağırır. Android 11+ kullanıcı izni iki kez reddettikten sonra sistem diyaloğunu bir daha göstermez; launcher anında &#x27;reddedildi&#x27; döner. Sonuç: düğmeye basmak görünür hiçbir tepki üretmez — ne diyalog açılır, ne açıklama değişir, ne uygulama ayarlarına yol gösterilir. Kullanıcı QR akışına bu ekrandan bir daha giremez ve nedenini göremez (sessiz başarısızlık).</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı ilk açılışta iki kez &#x27;İzin verme&#x27; der; günler sonra bilgisayardan aktarım için QR taramayı açar, &#x27;İzin ver&#x27;e defalarca basar, hiçbir şey olmaz — özelliğin bozuk olduğunu düşünür (Play yorumu: &#x27;QR çalışmıyor&#x27;).</p></div>
+<div class="block"><h4>Düzeltme</h4><p>İzin sonucu reddedildiğinde Activity.shouldShowRequestPermissionRationale(CAMERA) false ise kalıcı ret say: metni &#x27;İzin sistem ayarlarından verilmeli&#x27; olarak değiştir ve düğmeyi ACTION_APPLICATION_DETAILS_SETTINGS intent&#x27;iyle uygulama ayarlarına yönlendir.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Adı boş bırakılan ek alan sessizce aktarım dışı kalıyor</span>
+<span class="floc">tools/aktar.html:231</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>ekAlanlariTopla() `filter((f) =&gt; f.label !== &quot;&quot;)` ile etiketi boş satırları değeriyle birlikte SESSİZCE atıyor. Başka bir alan doluysa doluMu denetimi de geçer; kullanıcıya hiçbir uyarı çıkmaz ve sırrın o parçası zarfa hiç girmez.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı &#x27;Hesap&#x27; kaydına şifreyi girer, &#x27;+ Alan ekle&#x27; ile açtığı satıra 2FA kurtarma kodlarını yapıştırır ama &#x27;Alan adı&#x27; kutusunu boş bırakır. Şifrele-ve-aktar başarılı görünür; telefonda kayıt açıldığında kurtarma kodları yoktur. Kullanıcı aktarıldı sanıp kaynağı silerse veri kaybına dönüşür.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Filtrelemek yerine engelle: gonder işleyicisinde `değeri dolu ama etiketi boş ek alan` varsa hata göster (&#x27;Ek alanın adı boş — adlandır ya da satırı kaldır&#x27;) ve aktarımı durdur.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">aktar.html toplam kayıt boyutunu hiç doğrulamıyor; QR yolunda sınır yok, ikili dosyada base64 şişmesi hesaplanmıyor</span>
+<span class="floc">tools/aktar.html:309</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Tek boyut denetimi dosya SEÇİLİRKEN ham boyuta bakıyor (f.size &gt; 256 KB) ve relay yolunda zarfın 64 KB&#x27;ı (satır 461). İkili dosya base64&#x27;e çevrilince 4/3 şişer (satır 321) ve nihai payload yeniden ölçülmez; QR yolunda ise hiçbir üst sınır yok. Uygulama içe aktarmada kaydı 256 KB üstündeyse reddeder (app/src/main/java/com/afgover/vault/data/VaultRepository.kt:45). vault-clip.py aynı durumu şifrelemeden ÖNCE yakalıyor (satır 351); aktar.html yakalamıyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı 220 KB&#x27;lık ikili bir dosya seçer (ham denetimi geçer), base64&#x27;te ~293 KB olur. QR kipinde ~250 kare, tur başına ~5 dakika kamerayla taranır; tüm kareler toplandıktan ve parola girildikten sonra telefon &#x27;kayıt sınırı 256 KB&#x27; diyerek reddeder. Dakikalarca süren aktarım en son adımda boşa çıkar.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>gonder işleyicisinde şifrelemeden önce `new TextEncoder().encode(girdiyiKur()).length &gt; 256*1024` ise hata verip durdur (vault-clip.py:351 ile aynı kural); dosya denetimini de ikili dosyalar için 4/3 şişmeyi hesaba katarak yap (ham ~190 KB üstünü reddet).</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Relay&#x27;e yayında zayıf/insan-uydurması parola engellenmiyor — belgelenmiş modelin şartı uygulanmıyor</span>
+<span class="floc">tools/aktar.html:434</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>docs/kendi-zarfini-uret.md (satır 17-22) relay modelinde insan uydurması parolanın YETERSİZ olduğunu açıkça kural yapıyor (&#x27;herkese açık blob&#x27;a karşı saldırganın sınırsız zamanı olur&#x27;, ~119 bit üretilmiş parola şart). Ama iki üretici araç da yalnız &#x27;en az 8 ASCII karakter&#x27; istiyor (aktar.html:434, vault-clip.py:140-141) ve relay yolunda hiçbir ek uyarı/eşik yok. Bu, belgelenmiş bir takasın kabulü değil; belgenin koyduğu şartın araçlarda uygulanmaması. Market bağlamında zarfları alacak sunucu kanalı büyüdükçe risk de büyür.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı aktar.html&#x27;de &#x27;Bağlantı&#x27; yolunu seçer ve parola olarak &#x27;password1&#x27; girer — form kabul eder. TTL süresi içinde zarfı ele geçiren biri (relay/hesap tarafında görünürlüğü olan biri ya da URL&#x27;yi gören herhangi biri) çevrimdışı sözlük saldırısıyla PBKDF2-310k&#x27;ya rağmen bu parolayı saatler içinde kırar; sır açığa çıkar.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Relay yolunda asgariyi yükselt: ör. 12+ karakter ve sözlük-dışılık, ya da en azından yol &#x27;relay&#x27; iken belgenin komutuyla parola ÜRETMEYİ öneren zorunlu bir uyarı/onay kutusu göster. Aynı eşiği vault-clip.py --yayinla için de uygula.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Gizli alanlarda spellcheck kapatılmamış — &#x27;internete hiçbir şey gitmez&#x27; vaadi tarayıcı ayarıyla deliniyor</span>
+<span class="floc">tools/aktar.html:108</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>notes textarea&#x27;sı ve username/cardNumber/iban gibi metin girdilerinde `spellcheck=&quot;false&quot;` yok. Chrome&#x27;un &#x27;Gelişmiş yazım denetimi&#x27; (ve Edge&#x27;in MS Editor&#x27;ü) açıksa bu alanlara yazılan/yapıştırılan İÇERİK yazım denetimi için Google/Microsoft sunucularına gönderilir (bilinen &#x27;spell-jacking&#x27; davranışı). Sayfanın QR kipindeki temel vaadi &#x27;alanlar bu bilgisayarda şifrelenir, internete hiçbir şey gitmez&#x27; — bu vaat kullanıcının haberi olmadan bozulur.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Gelişmiş yazım denetimi açık bir Chrome&#x27;da kullanıcı SSH özel anahtarını notes alanına yapıştırır ve QR kipiyle &#x27;ağsız&#x27; aktarım yapar. Anahtar metni, kullanıcı farkında olmadan yazım denetimi isteğiyle Google&#x27;a gider.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Sır taşıyan tüm input/textarea&#x27;lara `spellcheck=&quot;false&quot;` (ve textarea&#x27;lara `autocapitalize=&quot;off&quot; autocorrect=&quot;off&quot;`) ekle; en pratik yol body ya da form kapsayıcısına `spellcheck=&quot;false&quot;` koymak.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="autofill" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Otomatik doldurma</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Otomatik doldurma, isteyen her uygulamaya tüm kayıtları öneriyor; uygulama/alan kimliği doğrulanmıyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/autofill/AutofillResponses.kt:62</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>datasets() çözülmüş tüm kayıtları score&#x27;a göre sıralayıp ilk 20&#x27;sini sunar. score() eşleşme bulamadığında 0 döndürür (satır 171) ama kayıt yine de listede kalır — yani istekte bulunan uygulama/site ile hiçbir alan/paket eşleşmesi olmasa bile kayıtlar öneri olarak gösterilir. İstekte bulunan uygulamanın paket imzası ya da (tarayıcılar için) Digital Asset Links ile alan sahipliği hiç doğrulanmıyor; parsed.webDomain doğrudan yapıdan alınıp yalnız sıralama puanında kullanılıyor, bir güvenlik kapısı değil. Tek kişilik kullanımda kabul edilebilir; Play&#x27;de yabancı uygulamaların da göreceği bir yüzey olduğu için kimlik avı vektörüne dönüşür (takas ama market bağlamında yeniden değerlendirilmeli).</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kötü niyetli bir uygulama, banka giriş ekranını taklit eden bir form (username+password alanları) gösterir. Kullanıcı alana dokununca Vault, alan/paket eşleşmesi olmasa bile banka dahil tüm giriş kayıtlarını öneri olarak listeler. Kullanıcı yanlışlıkla gerçek banka kaydına dokunursa, kimlik bilgileri sahte uygulamanın kendi alanlarına doldurulur ve uygulamaya teslim edilir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Eşleşmeyen (score 0) kayıtları önerilerden çıkar veya en azından alan/host eşleşmesi olmayanları varsayılan olarak gizle; tarayıcı bağlamında webDomain&#x27;i, uygulama bağlamında ise paket imzasını (Digital Asset Links / imza karşılaştırması) doğrulayarak yalnız ilgili kayıtları öner. Eşleşmesiz tüm kayıtlara erişimi ayrı bir açık kullanıcı eylemine (ör. &#x27;diğer kayıtlarda ara&#x27;) bağla.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="bt" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Bluetooth</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Hedef cihaz yazma anında sabitlenmiyor: sır, kullanıcının seçmediği eşleşmiş bilgisayara gidebilir</span>
+<span class="floc">app/src/main/java/com/afgover/vault/bt/BtHidManager.kt:173</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>onConnectionStateChanged, STATE_CONNECTED gelen HER cihazı sorgusuz connectedDevice yapar (satır 173-176) — kullanıcı diyalogdan hiçbir cihaz seçmemiş olsa bile. HID uygulaması kaydolur kaydolmaz telefon &#x27;Vault Klavye&#x27; olarak bağlanılabilir hâle gelir ve daha önce eşleşmiş bir host (ör. Windows, tanıdığı giriş cihazına kendiliğinden yeniden bağlanabilir) bağlantıyı başlatabilir. Ayrıca typeText hedefi çağrı anında okur (satır 254-255), kullanıcının Yaz&#x27;a bastığı andaki cihazı değil: 3 saniyelik geri sayım (BtTypeDialog.kt satır 160-163) boyunca başka bir eşleşmiş host bağlanıp connectedDevice&#x27;ı ezerse sır o cihaza yazılır. Geri sayım ekranı hedef adını göstermez ve kullanıcının gözü o sırada bilgisayardadır.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcının hem ev PC&#x27;si hem ofis dizüstü telefona eşleşmiş. Diyalog açılır, HID kaydı biter; kullanıcı ev PC&#x27;sini seçer, Yaz&#x27;a basar. Geri sayım sırasında ofis dizüstü (açık ve Bluetooth&#x27;u telefonu tanıyor) HID bağlantısını kapar → connectedDevice ofis dizüstü olur → parola, ofis makinesinde o an odakta olan alana (belki bir sohbet penceresine) tuş tuş yazılır.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Yaz&#x27;a basıldığı anda hedef BluetoothDevice&#x27;ı yakalayıp typeText&#x27;e parametre olarak geçir; typeText yalnız o cihaza yazsın, connectedDevice o cihaz değilse iptal etsin. Ek olarak kullanıcı bu oturumda açıkça bir cihaz seçmeden gelen (istenmeyen) bağlantıları Connected durumuna terfi ettirme ya da &#x27;X bağlandı — bu cihaza mı yazılacak?&#x27; onayı iste.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="bt" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Bluetooth</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Abort yolunda tuş bırakma raporu tek denemelik: bilgisayar son karakteri sonsuz tekrar yazabilir</span>
+<span class="floc">app/src/main/java/com/afgover/vault/bt/BtHidManager.kt:272</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>typeText&#x27;te basma raporu başarılı gönderilip bırakma raporu 6 geri çekilmeli denemede de başarısız olursa (satır 296-301) akış birak()&#x27;a düşer; birak() ise bırakma raporunu geri çekilmesiz TEK deneme ile gönderir (satır 272). Abort&#x27;un sebebi zaten gönderim kuyruğunun dolu olmasıdır — yani bu tek deneme tam da o koşulda neredeyse kesin başarısız olur. Sonuç: host&#x27;a basma iletilmiş, bırakma hiç iletilmemiş olur; L2CAP tıkanıklığı açıldığında host tuşu basılı sanır ve işletim sisteminin tuş tekrarı (~500 ms sonra) devreye girip odaktaki alana aynı karakteri durmaksızın yazar. Diyalog açık ve HID bağlı kaldığı için tuşu bırakacak hiçbir şey kalmaz; satır 213-217&#x27;deki &#x27;126 ms tekrar eşiğinin altında&#x27; gerekçesi yalnız başarı yolunu kapsıyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Çok hızlı (2 ms) temposunda 5.000 karakterlik anahtar yazılırken kuyruk dolar: 1.200. karakterin basması iletilir, bırakması 6 denemede de reddedilir, birak() da reddedilir → uygulama &#x27;yazma durdu, daha yavaş hız seç&#x27; der; bilgisayar ise tıkanıklık açılınca parola alanına &#x27;ssssssss…&#x27; şeklinde son karakteri sonsuza dek doldurur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>birak() ham sendReport yerine geri çekilmeli sendReport(...)&#x27;u kullansın ve abort yolunda daha uzun (ör. 1-2 sn&#x27;ye kadar) tekrar denesin; yine başarısızsa HID bağlantısını kopar (hid.disconnect(device) veya unregisterApp) — host, klavye ayrılınca tüm tuşları serbest bırakır. Abort mesajına &#x27;bilgisayarda basılı kalan tuş olabilir&#x27; uyarısı da eklenebilir.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="bt" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Bluetooth</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">TR haritasındaki &#x27;^&#x27; gerçek klavyelerde ölü tuş: sessizce yanlış karakter üretir</span>
+<span class="floc">app/src/main/java/com/afgover/vault/bt/HidLayouts.kt:108</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>TR haritası &#x27;^&#x27; karakterini Shift+3 (usage 0x20) olarak eşliyor (satır 108-110). Türkçe Q düzeninde Shift+3 Windows, macOS ve Linux&#x27;ta DÜZELTME İŞARETİ ölü tuşudur: tek başına karakter basmaz, sonraki sesli harfle birleşir (Shift+3 sonra a → â). Yani &#x27;^&#x27; içeren bir değer TR düzeninde hem &#x27;^&#x27; karakterini yutar hem ardındaki harfi bozar. layoutSensitiveChars uyarısı &#x27;^&#x27; için &#x27;düzen testi yap&#x27; der ama LAYOUT_TEST_TEXT &#x27;^&#x27; içermez ve DOĞRU düzen seçiliyken bile çıktı yanlıştır — mevcut güvenlik ağı bu hatayı yakalayamaz.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Parola &#x27;G^u7x!&#x27; TR düzeniyle yazılır: bilgisayara &#x27;Gû7x!&#x27; düşer (5 karakter, &#x27;^&#x27; yok, &#x27;u&#x27; → &#x27;û&#x27;). Kullanıcı karakter sayısını saymazsa fark etmez; giriş denemesi &#x27;yanlış parola&#x27; ile sonuçlanır ve neden anlaşılamaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Ya &#x27;^&#x27; TR haritasından çıkarılıp &#x27;bu düzende yazılamadı&#x27; listesine düşürülsün (en güvenlisi), ya da KeyStroke&#x27;a &#x27;ölü tuş — ardından Space bas&#x27; bayrağı eklenip typeText &#x27;^&#x27; için Shift+3 + Space dizisini göndersin (üç işletim sisteminde de ölü tuş + boşluk tek &#x27;^&#x27; üretir).</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="bt" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Bluetooth</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Uzun yazma ekran zaman aşımıyla sessizce yarıda kesiliyor; ekran açık tutulmuyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/screens/BtTypeDialog.kt:148</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Diyalog dakikalar süren aktarımları destekliyor (5.000 karakter Güvenli temposunda ~2 dk) ama yazma sırasında FLAG_KEEP_SCREEN_ON ayarlanmıyor. Kullanıcı bu süreçte telefona değil bilgisayara bakar; ekran zaman aşımına uğrar → ACTION_SCREEN_OFF ile kasa kilitlenir (VaultApp.kt:27). Yazma o an ölmez (IO iş parçacığı ve kompozisyon ayakta kalır; sır, kasa &#x27;kilitliyken&#x27; Bluetooth&#x27;tan akmaya devam eder — kilit modeliyle tutarsız), ama kullanıcı ekranı açtığı anda onResume → refreshLockState → LOCKED (MainActivity.kt:54, VaultViewModel.kt:171-174) kompozisyonu UnlockScreen&#x27;e çevirir; DetailScreen ve diyalog atılır, DisposableEffect iptal+stop çağırır ve yazma o karakterde kesilir. LaunchedEffect de iptal edildiği için &#x27;Durduruldu / metin EKSİK&#x27; özeti HİÇ gösterilmez: kilidi açan kullanıcı Home&#x27;a düşer, bilgisayarda nerede kesildiği belirsiz yarım bir sır kalır. Ekran kapanınca kilitlenme kabul edilmiş takastır; burada bulgu, uzun BT aktarımının bu takasla sessizce çakışması ve ekranın açık tutulmamasıdır — market bağlamında yeniden değerlendirilmeli.</p></div>
+<div class="block"><h4>Senaryo</h4><p>30 sn ekran zaman aşımlı telefonda 5.000 karakterlik SSH anahtarı yazdırılır; kullanıcı bilgisayarı izlerken ekran 30. saniyede kapanır; 45. saniyede ilerlemeyi görmek için telefona dokunur → kilit ekranı gelir, yazma ~1.800. karakterde sessizce ölür; ne telefonda ne bilgisayarda &#x27;eksik&#x27; uyarısı vardır.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>typing || countdown &gt; 0 iken pencereye FLAG_KEEP_SCREEN_ON ekleyen bir DisposableEffect koy (LocalView.current üzerinden window&#x27;a eriş; bitince/dispose&#x27;da kaldır). Bu hem ekranın kapanmasını hem de dolaylı olarak aktarım ortasında kilitlenmeyi önler. İstenirse ek önlem: kilitlenme yazma sırasında gerçekleşirse özerti kaybettirmeden önce sonucu bir yere (ör. lastError) yazıp kilit açılınca göster.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="ime" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Klavye</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Klavye penceresinde FLAG_SECURE yok: kasa icerigi ekran kaydina acik</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ime/VaultImeService.kt:73</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>MainActivity, ImeUnlockActivity ve AutofillUnlockActivity FLAG_SECURE koyarken IME penceresi korumasiz tek yuzey. Klavye kasadaki TUM kayit basliklarini (hangi bankalar, hangi siteler, ozel alan etiketleri) ve arama sorgusunu gosterir. Deger gosterilmiyor, ama kayit listesi + alan etiketleri + hedef uygulama birlikte &#x27;kimde hangi hesaplar var&#x27; haritasidir. Market baglaminda MediaProjection tabanli ekran kaydi uygulamalari, uzaktan destek/ekran paylasim dolandiriciligi ve otomatik ekran goruntusu alan araclar bu pencereyi aynen yakalar.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici bir goruntulu gorusme/uzak destek uygulamasiyla ekranini paylasirken (ya da cihazda ekran kaydi izni verilmis herhangi bir uygulama calisirken) Vault Klavyesi&#x27;ni acar: kasadaki tum kayit basliklari ve o an aradigi site adi karsi tarafa/kayda gecer. Ana uygulamada ayni liste FLAG_SECURE ile korunurken klavyede korunmaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>InputMethodService.onCreate icinde window?.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE) cagir (IME&#x27;nin Dialog penceresi bu bayragi destekler; parola yoneticisi klavyelerinde yerlesik pratik). Kullanicinin kendi ekran goruntusunde klavyenin kararmasi kabul edilebilir bir bedeldir; istenirse ayarlanabilir yapilir.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="kripto" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Kripto</span><span class="chip st-open">açık</span><span class="chip st-note">bulan:yuksek</span></span>
+<span class="ftitle">PIN ikinci kapısında deneme sınırı ve kilitlenme yok — tek parmak izi geçişi sınırsız kaba kuvvete açılıyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:243</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>unlockWithPin (VaultViewModel.kt:243-263) ve PinScreen (app/src/main/java/com/afgover/vault/ui/screens/PinScreen.kt:100) hicbir deneme sayaci, gecikme (backoff) ya da kilitlenme icermiyor; yanlis PIN yalnizca &#x27;PIN yanlis&#x27; metni uretiyor ve pendingInner (ic sargi) bellekte kaliyor, yani biyometrik BIR KEZ gecildikten sonra deneme sayisi sinirsiz. PIN katmaninin tasarim amaci tam olarak &#x27;biri parmagimi kullanir&#x27; senaryosu (PinLock.kt:19-23); bu senaryoda saldirgan parmak izini bir kez gecirir ve sonra 4 haneli PIN&#x27;i serbestce dener. PBKDF2 310k tur denemeyi cihazda ~0.3-0.5 sn&#x27;ye yavaslatir ama 10.000 kombinasyon otomasyonla (adb input) bir saatin altinda, elle bile bir gunde biter. Ikinci kapi fiilen atlatilabilir durumda. Play baglaminda yabanci kullanicilar bu katmana guvenecegi icin bosluk artik kabul edilebilir bir kisisel takas degil.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kurbanin telefonunu elinde tutan biri (uyurken/zorla) parmak izini bir kez okutur; PIN ekrani acilir. pendingInner bellekte kaldigi icin ayni oturumda 0000&#x27;dan 9999&#x27;a kadar tum PIN&#x27;leri sirayla dener — hicbir sinir, gecikme veya silme tetiklenmez; dogru PIN bulununca kasa tamamen acilir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Kalici (SharedPreferences&#x27;ta tutulan) bir deneme sayaci ekle: orn. 5 yanlis denemeden sonra pendingInner&#x27;i sifirla ve LOCKED durumuna dus (yeniden biyometrik gerektir), ustune ussel bekleme (30sn/1dk/5dk) uygula; istege bagli olarak N esiginde clearBiometric() cagirarak parmak izi yolunu tamamen kapat. Sayac yalniz dogru PIN&#x27;de sifirlanmali ve surec olumunden etkilenmemeli.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="kripto" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Kripto</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">pin_check blobu PIN icin cevrimdisi kaba kuvvet kahini olusturuyor ve belgelenmis guvenlik gerekcesiyle celisiyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/core/KeyManager.kt:110</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>enablePin, PREF_PIN_CHECK altina Enc(K_pin, &quot;vault-pin-ok&quot;) blobunu (PinLock.wrapCheck, core/PinLock.kt:48-49) pin_salt ile birlikte duz SharedPreferences dosyasina yaziyor. PinLock.kt:21-23&#x27;teki guvenlik gerekcesi acikca &#x27;PIN&#x27;i tek basina deneyecek saldirgan icin elde blob yoktur&#x27; diyor — bu iddia artik yanlis: pin_check tam olarak o blob. Cihaz dokumunu (root, adli kopya; allowBackup=false oldugu icin normal yedeklerle sizmasa da) ele geciren saldirgan, Keystore&#x27;a hic dokunmadan PIN&#x27;i cevrimdisi dener: aday PIN -&gt; PBKDF2(310k) -&gt; GCM coz -&gt; &#x27;vault-pin-ok&#x27; cikarsa PIN bulundu. GPU ile 4 hane saniyeler, 6 hane dakikalar icinde duser. dataKey bu yolla acilmaz, ama (a) kullanicinin cogu zaman ekran kilidi/banka kartiyla ortak sectigi PIN ifsa olur, (b) ikinci kapinin getirdigi koruma ayni dokuma sahip bir saldirgan icin sifirlanir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Root&#x27;lu/adli kopyasi alinan cihazdan shared_prefs/vault_keys.xml cikarilir; pin_salt + pin_check ile hashcat benzeri aracta 4-6 haneli tum PIN&#x27;ler cevrimdisi taranir ve kullanicinin PIN&#x27;i dakikalar icinde ogrenilir — uygulama hicbir deneme kaydi goremez.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>pin_check blobunu kaldir: PIN dogrulugu zaten unwrap denemesinin GCM etiketiyle sinaniyor (unlockWithPin&#x27;in bayat-kayit ayrimi korunabilir). wrapForBiometric&#x27;teki dogrulama ihtiyaci icin PIN&#x27;i kayit aninda ic sargiyi cozerek dogrula; check blobu mutlaka kalacaksa onu Keystore&#x27;a bagli bir anahtarla (quickKey benzeri) sarmala ki cevrimdisi test edilemesin. PinLock.kt&#x27;deki gerekce metnini de gercek durumla eslestir.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="kripto" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Kripto</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Eski (legacy) PIN kasasinda parola ile acilis gecersiz 60 baytlik anahtari oturuma koyuyor: kasa bos gorunuyor, kayit/gunluk yazmada cokme</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:231</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>isPinLegacy durumunda (KeyManager.kt:72-74; ead5d0f surumu kasasi) unlockStage1 ana parola sargisindan dataKey yerine 60 baytlik ic sargiyi (12 IV + 32 anahtar + 16 tag) dondurur. unlock() bunu boyut kontrolu yapmadan SecretKeySpec(payload, &quot;AES&quot;) ile oturuma koyar (VaultViewModel.kt:231). Sonuc: (1) tum kayit cozmeleri Crypto.decrypt&#x27;in genel catch&#x27;i yuzunden sessizce null olur, kasa &#x27;acik ama bos/cozulemez&#x27; gorunur; (2) Crypto.encrypt (core/Crypto.kt:44-46) istisna YAKALAMAZ — 60 baytlik anahtar Cipher.init&#x27;te InvalidKeyException firlatir: onUnlocked&#x27;in arka plan isi usageLog.foldBuffer(key) (UsageLogRepository.kt:80) tamponda olay varsa her acilista, saveEntry ise try&#x27;inin yalniz EntryTooLargeException yakalamasi nedeniyle her kayitta yakalanmamis istisnayla uygulamayi COKERTIR. KeyManager belgesi yalniz &#x27;kayitlar cozulemez&#x27; durumunu biliyor; gecersiz anahtarla acilmis oturum ve cokme belgelenmemis. Etkilenen kume kucuk (yayindan kalkmis surumde PIN acmis kasalar) ama duzeltme cok ucuz.</p></div>
+<div class="block"><h4>Senaryo</h4><p>ead5d0f doneminde PIN acilmis bir kasa yeni surumde ana parolayla acilir: liste basliklari gorunur, icerikler bos/cozulemez; kilitliyken birikmis kullanim olayi varsa acilis aninda, yoksa ilk kayit denemesinde InvalidKeyException ile uygulama coker.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>unlock() ve onStage1Payload&#x27;da SecretKeySpec&#x27;e sarmadan once payload.size == 32 dogrulamasi yap; degilse oturumu ACMA, isPinLegacy ise kullaniciyi dogrudan onarim akisina (migrateLegacyPin) yonlendir. Ek guvence olarak Crypto.encrypt&#x27;e anahtar uzunluk on-kontrolu (16/24/32) eklenebilir.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="kripto" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Kripto</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Parmak izi anahtari gecersizlesince kilit ekrani sessizce calismiyor: dugme duruyor, hicbir aciklama yok</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/BiometricAuth.kt:27</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Biyometrik anahtar setInvalidatedByBiometricEnrollment(true) ile kurulu (KeyManager.kt:295); telefona YENI BIR PARMAK IZI eklemek gibi cok siradan bir olay anahtari kalici gecersizlestirir. Bu durumda biometricDecryptCipher clearBiometric() cagirip null doner (KeyManager.kt:329-331), BiometricAuth.unlock ise &#x27;?: return&#x27; ile sessizce cikar (BiometricAuth.kt:27). UnlockScreen&#x27;deki &#x27;Biyometrik ile aç&#x27; dugmesi viewModel.biometricEnabled durumundan beslenir ve bu durum tazelenmez (clearBiometric ViewModel&#x27;e haber vermez): dugme ekranda kalir, her dokunus hicbir sey yapmaz, acilistaki otomatik istem de sessizce gelmez. Ayni sessizlik zinciri onAuthenticationSucceeded icindeki iki &#x27;?: return&#x27; icin de gecerli (BiometricAuth.kt:33-34): dogrulama gectigi halde sargi cozulmezse kullaniciya hicbir sey soylenmez. Kullanici &#x27;uygulama bozuldu&#x27; sanir; parmak izini yeniden etkinlestirmesi gerektigini ogrenecegi hicbir yol yok.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici telefon ayarlarindan yeni bir parmak izi ekler; Vault&#x27;u acar, &#x27;Biyometrik ile aç&#x27; dugmesine defalarca basar — hicbir sey olmaz, hata da gorunmez. Ana parolayi hatirlamiyorsa (aylardir parmak iziyle aciyordu) kasaya erisemedigini dusunur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>BiometricAuth.unlock&#x27;a onUnavailable/onFailed geri cagrisi ekle: cipher null oldugunda ve stage1 null dondugunde viewModel.refreshLockOptions() cagrilip &#x27;Parmak izi kaydi gecersizlesti (yeni parmak izi eklenmis olabilir). Ana parolanla ac ve parmak izini yeniden etkinlestir.&#x27; mesaji gosterilsin; UnlockScreen dugmesi tazelenen duruma gore gizlensin.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="pazar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Pazar</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Gizlilik politikasi URL&#x27;i ve Data Safety formu zorunlu; depoda/planda hicbiri yok</span>
+<span class="floc">README.md:4</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Play, hic veri toplamayan uygulamalar dahil TUM uygulamalardan Data Safety formunun doldurulmasini ve gecerli bir gizlilik politikasi URL&#x27;ini istiyor; depoda ve README&#x27;de gizlilik politikasi yok. Uygulamanin lehine olan gercekler: INTERNET izni olmadigi icin cihaz disina veri cikmiyor → formda &#x27;veri toplanmiyor / paylasilmiyor&#x27; beyani savunulabilir (Data Safety&#x27;de &#x27;toplama&#x27; cihaz disina iletim demek; kullanicinin kendi aldigi sifreli yedek buna girmez). Diger odak sorularin cevabi: (a) uygulama ici hesap olusturma OLMADIGI icin hesap silme politikasi UYGULANMAZ (yalnizca cihaz-yerel veri; politika kapsam disi), (b) IME ve Autofill servisi icin Play Console&#x27;da ayri bir beyan formu YOK (Accessibility/VPN&#x27;deki gibi bir form yok; klavyenin tus verisini cihaz disina gondermemesi yeterli — gondermiyor), (c) CAMERA izni beyan formu gerektirmiyor, QR ozelligi mesru kullanim, (d) 16 KB sayfa boyutu sarti (Kasim 2025&#x27;ten beri, targetSdk 35+) saglaniyor: CameraX 1.4.x 16 KB uyumlu ve depoda hizalama kontrol araci var. Kalan tek eksik gizlilik politikasi + formun kendisi.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Store listing olusturulurken gizlilik politikasi URL&#x27;i bos birakilir veya Data Safety formu tamamlanmazsa Console yayina gondermeye izin vermez; formda beyan ile gercek davranis tutarsiz olursa (ör. yanlislikla &#x27;veri toplaniyor&#x27; isaretlemek) reddetme/kaldirma sebebi olur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Kisa bir gizlilik politikasi yaz (hangi veriler cihazda tutulur, hicbir verinin cihazi terk etmedigi, INTERNET izni olmadigi, verinin uygulamayi silerek/uygulama icinden tamamen silinebildigi) ve kalici bir URL&#x27;de yayinla (vault.gover.us uygun). Data Safety formunu &#x27;no data collected / no data shared&#x27; olarak doldur; guvenlik uygulamalari bolumunde cihaz ici sifrelemeyi belirt. Politika metni ile form birebir tutarli olsun.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Biyometrik kilit acma yollari sessizce basarisiz oluyor (gecersizlesen Keystore anahtari dahil)</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/BiometricAuth.kt:27</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>BiometricAuth.unlock icinde &#x27;biometricDecryptCipher() ?: return&#x27; (satir 27) ve &#x27;unlockWithBiometricStage1(c) ?: return&#x27; (satir 34) hicbir geri bildirim uretmiyor. Ayrica MainActivity.biometricEnable&#x27;da cipher hazirlanamazsa &#x27;catch (e: Exception) { return }&#x27; (MainActivity.kt satir 70-74) yine sessiz. Keystore anahtari yeni parmak izi kaydiyla gecersizlesince (setInvalidatedByBiometricEnrollment=true) biometricDecryptCipher clearBiometric() cagirip null doner; ama ViewModel&#x27;deki biometricEnabled durumu tazelenmedigi icin kilit ekranindaki &#x27;Biyometrik ile ac&#x27; dugmesi gorunmeye devam eder ve basildiginda hicbir sey olmaz.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici telefona yeni bir parmak izi ekler. Sonraki acilista kilit ekrani biyometrik istemi otomatik baslatmaya calisir, cipher null doner, hicbir sey olmaz; dugmeye basmak da tepkisizdir. Aciklama gosterilmedigi icin ana parolasini biyometrige guvenip az kullanan bir kullanici &#x27;uygulama bozuldu&#x27; sanir; kaydin silindigini ve yeniden etkinlestirme gerektigini ogrenemez.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>biometricDecryptCipher null dondugunde kullaniciya durum bildir (or. viewModel.error = &#x27;Parmak izi kaydi gecersizlesti - ana parolanla ac ve yeniden etkinlestir&#x27;) ve refreshLockOptions() cagir; MainActivity.biometricEnable&#x27;daki bos catch blogunda da error set et. unlockWithBiometricStage1 null yolunda da ayni sekilde mesaj uret.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">disableBiometric UI durumunu tazelemiyor: kapatildiktan sonra dugme &#x27;kapat&#x27; demeye devam ediyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:569</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>disableBiometric (satir 569-572) keyManager.clearBiometric() cagiriyor ama refreshLockOptions() cagirmiyor; biometricEnabled mutableState&#x27;i true kaliyor. Satir 81-85&#x27;teki yorum tam da bu hatayi onlemek icin bu state&#x27;in var oldugunu anlatiyor, ancak bu cagri unutulmus. SettingsScreen &#x27;if (viewModel.biometricEnabled)&#x27; ile dugme metnini secildigi icin kapatma sonrasi ekran hala &#x27;Biyometrik kilit acmayi kapat&#x27; gosterir. Ayni kalip unlockWithPin&#x27;in bayat-kayit yolunda da (satir 255: clearBiometric sonrasi refresh yok) kilit ekraninin sonuçsuz bir otomatik biyometrik denemesi baslatmasina yol acar.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici Ayarlar&#x27;da &#x27;Biyometrik kilit acmayi kapat&#x27;a basar; toast cikar ama dugme degismez. Kullanici kapanmadigini sanip tekrar basar ya da guvenlik amacli kapattigina emin olamaz. Uygulama yeniden baslatilana veya baska bir kilit ayari islemine kadar UI gercek durumu yansitmaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>disableBiometric icine refreshLockOptions() ekle; genel onlem olarak clearBiometric cagrisi yapan her ViewModel yolunun ardindan refreshLockOptions() cagrildigini garanti et (veya clearBiometric&#x27;i ViewModel uzerinden tek noktadan gecir).</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">QR taramadan cikinca kamera birakilmiyor; oturum boyunca acik kaliyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/screens/QrScanScreen.kt:161</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Kamera use-case&#x27;leri activity&#x27;nin lifecycleOwner&#x27;ina baglaniyor (satir 161-166) ve composable birakilirken yalniz analiz executor&#x27;u kapatiliyor (satir 89: DisposableEffect sadece executor.shutdown() yapiyor). provider.unbindAll() yalniz baglamadan ONCE cagriliyor. QrScanScreen kapaninca (basarili tarama ya da Vazgec) kamera activity STARTED oldugu surece calismaya devam eder; ekran kapatilip acilsa bile yeniden baslar, ancak surec olunce ya da QR ekranina tekrar girilince serbest kalir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici QR ile aktarimi tamamlar ve ana listeye doner. Android 12+ durum cubugundaki yesil kamera gostergesi yanmaya devam eder: bir sifre yoneticisinin kayitlar gezilirken kamerayi acik tutmasi kullanicilar ve Play degerlendirmeleri icin ciddi bir guven sorunudur; ayrica pil tuketir. Uygulama acik kaldigi surece bu boyle surer.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>ProcessCameraProvider referansini sakla ve DisposableEffect&#x27;in onDispose&#x27;unda provider.unbindAll() cagir (executor.shutdown ile birlikte). Ayrica future.addListener&#x27;in composable birakildiktan sonra calisma ihtimaline karsi dispose bayragi kontrol et.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">EditScreen kaydedilmemis degisiklikte onaysiz cikis: geri jesti/tusu tum girilenleri kaybettiriyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/screens/EditScreen.kt:126</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Ust cubuktaki geri oku (satir 125-128) ve MainActivity&#x27;deki BackHandler (MainActivity.kt satir 128-135) hicbir kirlilik (dirty) kontrolu yapmadan dogrudan navigasyonu degistiriyor; tum alanlar &#x27;remember&#x27; oldugu icin yazilanlar aninda kaybolur. Ayni sekilde ekran zaman asimiyla kapaninca kasa kilitlenir, doniste EditScreen composition&#x27;dan atilir ve o ana kadar yazilan her sey kaybolur - kilitlenme kabul edilmis takas ama yazilan taslagin uyarisiz atilmasi bu takasin belgelenmis parcasi degil ve market kullanicisi icin veri kaybi olarak yasanir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici uzun bir guvenli not (kurtarma kodlari, .pem vb.) yazarken yanlislikla sistem geri jestini yapar: her sey sessizce silinir, onay sorulmaz. Ya da yazarken ekran zaman asimina ugrar; ekrani acinca kilit ekrani gelir ve butun girilenler gitmistir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Alanlarin yuklenen degerlerden farklilastigini izleyen bir dirty bayragi ekle; geri cikista &#x27;Kaydedilmemis degisiklikler atilsin mi?&#x27; onayi goster (BackHandler&#x27;i EditScreen icinde ele al). Kilitlenme yolunda ise taslagi bellekte (ViewModel&#x27;de, diske yazmadan) tutup kilit acilinca geri sunmayi degerlendir.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">NEEDS_PIN asamasi ekran kapaninca sifirlanmiyor; PIN icin deneme siniri yok</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:171</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>refreshLockState yalniz UNLOCKED durumunu kontrol ediyor (satir 171-175): ekran kapandiginda VaultSession kilitlenir ama lockState NEEDS_PIN ise oyle kalir ve pendingInner (PIN ile sarilmis ic sargi) bellekte tutulmaya devam eder. Ayrica unlockWithPin (satir 243-264) yanlis denemeleri saymaz ve geciktirmez. PIN&#x27;in belgelenmis tehdit modeli &#x27;biri parmagimi kullanir&#x27; senaryosu ve dusuk entropinin kabul edilebilirligi &#x27;saldirganin elinde blob yok&#x27; varsayimina dayaniyor - oysa bir kez stage1 gecildikten sonra saldirgan sinirsiz PIN denemesi yapabilir; PBKDF2 310k tur denemede ~0,3-1 sn oldugu icin 4 haneli PIN otomatiklestirilmis girisle saatler mertebesinde taranabilir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Saldirgan uyuyan kullanicinin parmagiyla parmak izi asamasini bir kez gecer, telefon PIN ekraninda kalir. Ekrani kapatip cebine koyar; ekran kapanmasi bu asamayi sifirlamadigi icin daha sonra istedigi kadar PIN dener (dogum yili gibi zayif PIN&#x27;ler birkac denemede duser, tam uzay bile pratik surede taranabilir). Belgelenen &#x27;her deneme icin biyometrik gerekir&#x27; varsayimi gecersizlesir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>refreshLockState&#x27;te lockState == NEEDS_PIN iken de (ekran kapanmissa) pendingInner&#x27;i temizleyip LOCKED&#x27;a dus (cancelPinStage mantigi). Ek olarak unlockWithPin&#x27;e deneme sayaci koy: or. 5 yanlis denemede pendingInner&#x27;i sil ve LOCKED&#x27;a don - dogru davranis zaten &#x27;ana parolayla ac&#x27; oldugu icin kullanici kaybi yok.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Basarisiz yedek alma, secilen konumda bos/yarim .vaultbak dosyasi birakiyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/screens/SettingsScreen.kt:348</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>CreateDocument sozlesmesi kullanici konum secer secmez bos dosyayi olusturur. PasswordDialog parola uzunlugunu dogrulamaz (yalniz bos olmama + eslesme, satir 447-451); exportBackup 8 karakter altini reddedip (VaultViewModel.kt satir 434-437) hicbir sey yazmadan doner ve dosyayi silmez. Yazma sirasinda istisna cikarsa da (VaultViewModel.kt satir 449-450) yarim dosya oldugu gibi kalir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici &#x27;Sifreli yedek al&#x27; der, Drive&#x27;da konum secer, 6 karakterlik parola girer. Ayarlar ekraninda hata metni cikar ama Drive&#x27;da vault-20260824-1200.vaultbak adinda 0 baytlik dosya kalmistir. Kullanici hatayi gozden kacirir ya da sonradan dosyayi gorup yedegi var sanir; telefon sifirlandiginda geri yukleyecek hicbir sey yoktur - kalici veri kaybi.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Parola kurallarini (&gt;= 8 karakter) diyalogda dogrula ve saglanmadan &#x27;Tamam&#x27;i etkinlestirme; exportBackup&#x27;in her basarisizlik yolunda DocumentsContract.deleteDocument(contentResolver, uri) ile olusan dosyayi sil (silinemezse hata metninde dosyanin gecersiz oldugunu acikca soyle).</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="veri" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Veri / Göç</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">save() güncelleme yolunda sortIndex her düzenlemede max+1&#x27;e taşınıyor: elle kurulan sıra bozulur</span>
+<span class="floc">app/src/main/java/com/afgover/vault/data/VaultRepository.kt:122</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Güncelleme dalında existing.copy(... sortIndex = (dao.getAll().maxOfOrNull { it.sortIndex } ?: 0) + 1) yazılmış; üstündeki yorum bile yeni-kayıt dalından kopyalanmış (&#x27;Yeni kayıt kullanıcı sırasında en sona düşer&#x27;). Yeni kayıt için doğru olan bu davranış, var olan kaydın her düzenlenişinde onu kullanıcı sırasının sonuna atıyor. EntrySort.MANUAL sortIndex&#x27;e göre dizdiği için (EntrySort.kt:45) sürükleyerek kurulan düzen her kayıtta bozuluyor; hem ana liste hem klavye etkileniyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı MANUAL sıralamayı seçip 30 kaydı sürükleyerek dizer; sonra ilk sıradaki kaydın başlığındaki yazım hatasını düzeltip kaydeder — kayıt listenin en sonuna düşer. Her düzenleme sırayı biraz daha bozar; kullanıcı &#x27;sürükleme çalışmıyor&#x27; sanır.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Güncelleme dalından sortIndex satırını kaldır: existing.copy(...) zaten mevcut sortIndex&#x27;i korur. (Yan kazanç: her güncellemede tüm tabloyu blob&#x27;larıyla yükleyen dao.getAll() çağrısı da güncelleme yolundan kalkar.)</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="veri" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Veri / Göç</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">foldBuffer yarışı: getBuffered() ile clearBuffer() arasına giren olay taşınmadan silinir; yarım kalan taşıma çift kayıt üretir</span>
+<span class="floc">app/src/main/java/com/afgover/vault/data/UsageLogRepository.kt:84</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>foldBuffer tamponu getBuffered() ile okuyup satırları günlüğe taşıdıktan sonra clearBuffer() ile TÜM tamponu siliyor — okuduğu satırları değil. record() ise VaultSession.key() null gördüğünde insertBuffered ile tampona yazıyor (satır 53-58). İkisi de Dispatchers.IO&#x27;da ayrı coroutine&#x27;lerde koşuyor (IME logUsage: VaultImeService.kt:228-241; kilit açılışı: VaultViewModel.onUnlocked satır 184-188). Ayrıca taşıma transaction içinde değil: insert&#x27;ler tamamlanıp clearBuffer&#x27;a gelmeden süreç ölürse taşınan olaylar hem günlükte kalır hem tamponda durur; sonraki açılışta yeniden taşınıp çiftlenir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı kilitli kasada klavyeden hızlı erişim şifresini yazar (record key&#x27;i null görüp tampon yolunu seçer) ve hemen ardından uygulamaya geçip kasayı açar: foldBuffer getBuffered&#x27;ı olay eklenmeden çalıştırır, insertBuffered araya girer, clearBuffer o olayı da siler — &#x27;bilgisayara/uygulamaya ne gitti&#x27; listesinden olay sessizce kaybolur. Tersi durumda (taşıma ortasında süreç ölümü) aynı olay günlükte iki kez görünür.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>clearBuffer() yerine dao.deleteBufferedByIds(buffered.map { it.id }) çağır; taşımanın tamamını (insert&#x27;ler + silme) db.withTransaction içine al. Böylece hem sonradan gelen satır dokunulmadan kalır hem yarım taşıma çiftlenme üretmez.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="veri" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Veri / Göç</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Blob çözme başarısızlığı her katmanda sessiz: kayıt listede var, detayı boş; dışa aktarılan yedeğe de sessizce girmiyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/data/VaultRepository.kt:62</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Crypto.decrypt her hatada null döner; toDecrypted null&#x27;ı yutar; getAllDecrypted mapNotNull ile kaydı düşürür (satır 62). Sonuçlar: (1) DetailScreen çözülemeyen kayıtta başlıksız bomboş bir sayfa gösterir (DetailScreen.kt:95 &#x27;if (e == null) return@Scaffold&#x27;) — hata mesajı yok; (2) klavye ve otomatik doldurma kaydı sessizce listelemez; (3) en tehlikelisi, exportBackup getAllDecrypted kullandığı için (VaultViewModel.kt:442) bozuk kayıt YEDEĞE de sessizce girmez ve &#x27;Yedek kaydedildi&#x27; denir. Depolama bozulması tek kaydı okunmaz yaptığında kullanıcı bunu ancak o sırrı aradığı gün öğrenir; o güne dek aldığı &#x27;tam&#x27; sandığı yedekler de eksiktir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Bir kaydın blob&#x27;unda tek baytlık bozulma oluşur (flash hatası). Kayıt ana listede başlığıyla durur, açınca boş sayfa gelir; kullanıcı &#x27;garip ama önemli değil&#x27; der ve yeni yedek alır — bozuk kayıt yedekte yoktur. Eski yedeklerin üzerine yazıla yazıla kayıt kalıcı olarak kaybolur, hiçbir aşamada tek bir uyarı görülmez.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Çözme başarısızlığını yüzeye çıkar: getAllDecrypted çözülemeyen kayıtların sayısını/id&#x27;lerini de dönsün (örn. data class DecryptResult(entries, failed)). DetailScreen null&#x27;da &#x27;Bu kayıt çözülemedi — veri bozulmuş olabilir, yedeğinizden geri yükleyin&#x27; desin; exportBackup failed &gt; 0 iken &#x27;N kayıt çözülemedi, yedek eksik&#x27; uyarısı göstersin ve &#x27;Yedek kaydedildi&#x27; mesajını koşullandırsın.</p></div>
+</div></article>
+<article class="finding sev-orta durum-open" data-sev="orta" data-alan="yapi" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Yapı / Market</span><span class="chip st-open">açık</span></span>
+<span class="ftitle">Release imza yapılandırması yok — çıktı imzasız, Play&#x27;e yüklenemez</span>
+<span class="floc">app/build.gradle.kts:22</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>buildTypes.release bloğunda (satır 22-29) signingConfig tanımlı değil ve android bloğunda hiçbir signingConfigs yok. assembleRelease fiilen çalıştırıldı: çıktı &#x27;app-release-unsigned.apk&#x27; ve apksigner verify imza bulamıyor. Play Console imzasız AAB/APK kabul etmez; bundleRelease de aynı şekilde imzasız üretir. Keystore sırlarının depoda olmaması doğru, ancak şu an imzalı release üretecek HİÇBİR tanımlı yol yok — market çıkışının teknik ön koşulu eksik.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Yarın &#x27;./gradlew bundleRelease&#x27; çalıştırılıp çıktı Play Console&#x27;a yüklendiğinde konsol &#x27;APK/AAB imzalı değil&#x27; hatasıyla yüklemeyi reddeder; son dakikada aceleyle anahtar üretme baskısı doğar. Aceleyle üretilen upload anahtarı güvensiz saklanırsa ya da Play App Signing&#x27;e kaydolmadan ilk sürüm imzalanırsa anahtar kaybında uygulama bir daha güncellenemez.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Bir upload keystore üret, .gitignore&#x27;a eklenen bir keystore.properties dosyasından (storeFile/storePassword/keyAlias/keyPassword) okuyan signingConfigs { create(&quot;release&quot;) { ... } } tanımla ve release buildType&#x27;a signingConfig = signingConfigs.getByName(&quot;release&quot;) bağla; dosya yoksa derleme açık bir hata ile dursun. İlk yüklemede Play App Signing&#x27;e kaydol ki upload anahtarı kaybolsa bile uygulama anahtarı Google&#x27;da korunmuş olsun.</p></div>
+</div></article>
+<article class="finding sev-orta durum-fixed" data-sev="orta" data-alan="aktarim" data-durum="fixed">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Aktarım</span><span class="chip st-fixed">✓ düzeltildi</span></span>
+<span class="ftitle">Zarftaki iterations alanı denetimsiz: düşman zarf KDF&#x27;yi saatlerce koşturup uygulamayı kilitliyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/backup/BackupManager.kt:139</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>iterations, GCM doğrulamasından ÖNCE, kimliği doğrulanmamış zarftan okunur (kdf.optInt(&quot;iterations&quot;, ...)) ve hiçbir aralık denetimi yoktur; değer doğrudan PBKDF2&#x27;ye gider (satır 146). 2 milyar gibi bir değer Dispatchers.IO iş parçacığını saatlerce meşgul eder; busy=true kalıcılaşır, TransferWizard busy iken kapatılamaz (TransferWizard.kt:58) ve sonraki tüm içe/dışa aktarma düğmeleri süresiz kilitli kalır — tek çıkış uygulamayı öldürmek. iterations&lt;=0 ya da boş/eksik salt ise PBEKeySpec&#x27;in IllegalArgumentException&#x27;ı genel catch&#x27;e düşer ve kullanıcıya &#x27;İçe aktarma başarısız: the salt parameter must not be empty&#x27; gibi ham, İngilizce bir iç mesaj gösterilir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kurbana &#x27;kayıtlarını buradan geri yükle&#x27; diye iterations=2000000000 yazılmış, biçimce geçerli bir zarf metni gönderilir; kurban yapıştırıp &#x27;İçe aktar&#x27; der: KDF saatlerce döner, arayüz &#x27;Aktarılıyor…&#x27; durumunda kilitlenir, iptal yolu yoktur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>iterations&#x27;ı makul aralığa bağla (ör. 1_000..5_000_000 dışıysa InvalidFormatException) ve salt uzunluğunu denetle (ör. 8-64 bayt dışıysa InvalidFormatException). Böylece hem askıda kalma hem ham istisna metni sızması kapanır.</p></div>
+</div></article>
+<article class="finding sev-orta durum-fixed" data-sev="orta" data-alan="aktarim" data-durum="fixed">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Aktarım</span><span class="chip st-fixed">✓ düzeltildi</span></span>
+<span class="ftitle">Dosyadan geri yüklemede boyut sınırı yok: yanlışlıkla seçilen dev dosya OOM ile çökertir</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:540</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>importBackup, OpenDocument&#x27;ı &quot;*/*&quot; süzgeciyle açan seçiciden (SettingsScreen.kt:150) gelen URI&#x27;yi doğrudan BackupManager.import&#x27;a verir; import ise input.readBytes() ile DOSYANIN TAMAMINI belleğe okur (BackupManager.kt:125). Yapıştırma yolundaki 1 MB sınırının dosya yolunda karşılığı yoktur. Büyük bir dosya OutOfMemoryError üretir; OOM bir Error olduğundan buradaki catch (e: Exception) blokları yakalamaz ve uygulama çöker.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı geri yükleme seçicisinde .vaultbak yerine yanlışlıkla 1,5 GB&#x27;lik bir videoyu seçer: readBytes tüm dosyayı belleğe almaya çalışır, OutOfMemoryError fırlar ve Vault kilit ekranı dahi gösteremeden çöker. Kullanıcı &#x27;geri yükleme uygulamayı bozuyor&#x27; sanır.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>readBytes&#x27;tan önce boyutu denetle: ContentResolver üzerinden OpenableColumns.SIZE sorgula ya da akıştan en fazla ~4 MB oku ve aşılırsa InvalidFormatException fırlat (&#x27;Bu dosya bir Vault yedeği olamayacak kadar büyük&#x27;).</p></div>
+</div></article>
+<article class="finding sev-orta durum-fixed" data-sev="orta" data-alan="kripto" data-durum="fixed">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-orta">Orta</span><span class="chip alan">Kripto</span><span class="chip st-fixed">✓ düzeltildi</span></span>
+<span class="ftitle">Yedek zarfindaki iterations alanina sinirsiz guven: sahte zarf ile saatlerce asili kalma (DoS)</span>
+<span class="floc">app/src/main/java/com/afgover/vault/backup/BackupManager.kt:139</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>import(), kdf.iterations degerini dogrulamadan okuyor (BackupManager.kt:139) ve deriveKey&#x27;i parola dogrulamasindan ONCE bu degerle calistiriyor (BackupManager.kt:146). Deger Int.MAX_VALUE&#x27;ya kadar cikabilir; PBKDF2 2 milyar turda telefonda saatler surer. importBackupText panodan yapistirilan herhangi bir zarfi kabul ettigi ve QR aktarim ozelligi baskasindan zarf almayi acikca destekledigi icin girdi saldirgan kontrolundedir; 1 MB metin siniri bu alani sinirlamaz. Islem Dispatchers.IO&#x27;da iptal edilemez sekilde koser, busy=true kalir, kullanici uygulamayi oldurmek zorunda kalir. Ayrica iterations&lt;=0 PBEKeySpec&#x27;ten IllegalArgumentException uretir ve genel catch&#x27;e duser (yaniltici &#x27;icе aktarma basarisiz&#x27; mesaji).</p></div>
+<div class="block"><h4>Senaryo</h4><p>Birisi kurbana &#x27;kayitlarimi aktariyorum&#x27; diye iterations: 2000000000 iceren gecerli gorunumlu bir zarf metni/QR seti gonderir; kurban yapistirip herhangi bir parola girer girmez PBKDF2 saatlerce doner — ekranda sonsuz spinner, iptal yolu yok.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>iterations&#x27;i makul aralikla sinirla (orn. 10_000..1_000_000; disindaysa InvalidFormatException) ve hata metninde nedeni soyle. Ayni duzenlemede importBackup(uri) yolundaki sinirsiz readBytes() icin de ust boyut siniri koy (asagidaki ayri bulgu).</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">komutKokuyor&#x27;un komut-öneki denetimi ölü kod — L-009 pano kazası koruması fiilen çalışmıyor</span>
+<span class="floc">tools/aktar.html:444</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Koruma `komutKokuyor(JSON.stringify(icerik))` ile çağrılıyor; stringify çıktısı her zaman `{` ile başladığından satır 339&#x27;daki `/^\s*(cd|curl|ssh|sudo|python3?)\s/` deseni HİÇBİR girdide eşleşemez. Geriye yalnız &#x27;vault-clip&#x27;/&#x27;aktar.html&#x27; içerme denetimi kalıyor. Bu koruma, yaşanmış bir kaza (yanlışlıkla komutun kendisini aktarma) üzerine kondu ve asıl hedeflediği durumda sessizce devre dışı.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı aktarmak istediği sır yerine az önce kopyaladığı `curl -sS -X POST ...` komutunu notes alanına yapıştırır. Uyarı çıkmaz, komut metni şifrelenip aktarılır; asıl sır hiç taşınmamış olur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Denetimi ham alan değerleri üzerinde koş: `Object.values(icerik).some(v =&gt; komutKokuyor(String(v)))` (custom alan değerleri dahil).</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Relay upload token&#x27;ı file:// localStorage&#x27;ında — Chromium&#x27;da tüm yerel HTML dosyaları okuyabilir</span>
+<span class="floc">tools/aktar.html:348</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Token `localStorage[&#x27;vault-relay-token&#x27;]`a yazılıyor. Chromium tabanlı tarayıcılarda tüm file:// sayfaları aynı &#x27;file://&#x27; origin&#x27;inin localStorage&#x27;ını paylaşır: diskten açılan HERHANGİ bir HTML dosyası token&#x27;ı okuyabilir. Sayfadaki &#x27;yalnız bu tarayıcıya kaydedilir&#x27; notu bu paylaşımı söylemiyor. Token yalnız yüklemeyi açtığı için etki sınırlı (relay&#x27;i çöp zarfla doldurma / kota kötüye kullanımı), sır okunamaz.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı internetten indirdiği bir HTML dosyasını (fatura, e-bilet vs.) aynı tarayıcıda file:// ile açar. İçindeki script `localStorage.getItem(&#x27;vault-relay-token&#x27;)` ile token&#x27;ı okur ve görüntü isteğine iliştirip dışarı sızdırır; saldırgan artık vault.gover.us&#x27;a istediği zarfı yükleyebilir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Token&#x27;ı localStorage yerine her oturumda sorup sessionStorage&#x27;da tutmak da aynı origin&#x27;i paylaşır; en sağlamı token&#x27;ı hiç saklamayıp her yayında yapıştırtmak ya da sayfayı file:// yerine tekil bir localhost origin&#x27;inden (örn. `python3 -m http.server`) açtırmak. En azından sayfadaki nota bu paylaşım gerçeğini yaz.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">--ttl doğrulanmıyor; başarı mesajı sunucunun kırptığı değil kullanıcının istediği süreyi yazıyor</span>
+<span class="floc">tools/vault-clip.py:391</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>argparse --ttl için aralık denetimi yok (yardım metni 60-86400 diyor); relay değeri 60-86400&#x27;e sessizce kırpıyor. publish() sunucu cevabındaki gerçek `ttl` alanını atıyor (satır 226-228) ve mesaj `hours = args.ttl / 3600` ile yazılıyor. aktar.html bunu doğru yapıyor (kabulTtl kullanıyor); vault-clip yanlış süre bildiriyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı `--yayinla --ttl 604800` der (1 hafta). Betik &#x27;Tek kullanımlık bağlantı (168.0 saat geçerli)&#x27; yazar; gerçekte blob 24 saatte silinir. Kullanıcı bağlantıyı 3. gün telefonda açmayı planlar — 404 alır ve sırrın neden gittiğini anlayamaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>publish() dönen JSON&#x27;dan `ttl`yi de al ve mesajı onunla yaz; ayrıca argparse&#x27;ta `--ttl` için 60-86400 aralık denetimi ekleyip aralık dışında açıkça hata ver.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">relay_token docstring&#x27;i &#x27;dosyaya yazılmaz&#x27; diyor ama publish token&#x27;ı geçici dosyaya yazıyor</span>
+<span class="floc">tools/vault-clip.py:192</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Satır 192 &#x27;Yükleme token&#x27;ı yalnız Keychain&#x27;de durur; dosyaya/argümana yazılmaz&#x27; derken publish() (satır 210-213) token&#x27;ı curl&#x27;e vermek için 0600 izinli geçici bir .hdr dosyasına yazıyor (ps sızıntısını önlemek için bilinçli, sonra unlink ediliyor). Davranışın kendisi savunulabilir; sorun, güvenlik denetiminde yanılgı yaratan çelişkili belgeleme ve dosyanın kısa ömürlü de olsa diskte iz bırakması.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Betik curl çalışırken kill -9 ile ölürse finally koşmaz mı? (Python&#x27;da subprocess.run bitmeden SIGKILL gelirse unlink çalışmaz) — TMPDIR&#x27;de token içeren .hdr dosyası kalır; sonraki denetimde &#x27;token asla dosyaya yazılmaz&#x27; notuna güvenen kişi bu izi aramaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Docstring&#x27;i gerçeğe uydur (&#x27;ps&#x27;te görünmesin diye kısa ömürlü 0600 dosya kullanılır&#x27;); istenirse dosyayı tamamen kaldırıp token&#x27;ı `curl --config -` ile stdin&#x27;e yazılan config üzerinden ver (gövdeyi de aynı config&#x27;te `data = @dosya` yaparak) ya da os.pipe ile fd üzerinden geçir.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Upload token karşılaştırması sabit zamanlı değil</span>
+<span class="floc">relay/src/index.js:63</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>`auth !== `Bearer ${env.UPLOAD_TOKEN}`` erken çıkan string karşılaştırması. Ağ üzerinden pratik sömürüsü zor (V8 karşılaştırma farkı ağ gürültüsünün çok altında) ama Workers&#x27;ta ücretsiz düzeltmesi var; tek kullanıcılık kapının tek kimlik doğrulaması bu satır.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Sabırlı bir saldırgan çok sayıda istekle bayt-bayt zamanlama farkı toplayarak token&#x27;ı öğrenmeye çalışır; teorik kalır ama savunma maliyetsizken açık bırakılmış olur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>İki değeri TextEncoder ile bayta çevirip uzunlukları eşitse `crypto.subtle.timingSafeEqual(a, b)` ile karşılaştır (Workers destekliyor).</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Belgedeki curl örneği token&#x27;ı komut argümanına açıyor (ps&#x27;te görünür)</span>
+<span class="floc">docs/kendi-zarfini-uret.md:82</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>`-H &quot;Authorization: Bearer $(security ...)&quot;` — kabuk, komut yerine geçirmeyi curl exec edilmeden çözer; curl&#x27;ün argv&#x27;sinde token DÜZ olarak durur ve çalışma süresince `ps aux` ile aynı makinedeki her prosese görünür. vault-clip.py aynı sızıntıyı önlemek için bilinçli olarak header dosyası kullanıyor (vault-clip.py:206-213); belgenin elle yolu bu önlemi geri alıyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Yükleme sürerken (büyük zarf/yavaş ağ) aynı Mac&#x27;te koşan herhangi bir proses `ps aux | grep curl` ile token&#x27;ı okur; artık relay&#x27;e istediği zarfı yükleyebilir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Örneği header dosyası/stdin config ile ver: `security ... -w | { read t; curl -H @&lt;(printf &#x27;Authorization: Bearer %s\n&#x27; &quot;$t&quot;) ... }` yerine en sadesi vault-clip&#x27;in yaptığı gibi 0600 geçici header dosyası; ya da doğrudan &#x27;bu adım için Yol 1&#x27;deki betiği kullan&#x27; de.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="araclar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Araçlar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">apk-hizalama.py yalnız arm64 .so&#x27;ları ölçüyor; APK&#x27;daki x86_64 kütüphaneler denetim dışı</span>
+<span class="floc">tools/apk-hizalama.py:38</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Filtre `&quot;arm64&quot; in n`. Mevcut debug APK&#x27;da lib/x86_64 altında 3 adet .so var (unzip ile doğrulandı); Google Play&#x27;in 16 KB sayfa boyutu şartı TÜM 64-bit ABI&#x27;lara (arm64-v8a VE x86_64) uygulanır. Bir bağımlılık güncellemesi x86_64 .so&#x27;yu 4 KB hizalı getirirse betik yine &#x27;TÜMÜ 16 KB UYUMLU&#x27; der; sorun ilk kez Play Console&#x27;un ön denetiminde/yayın engelinde görünür — betiğin varlık sebebi tam da bunu erkenden yakalamaktı (B-074).</p></div>
+<div class="block"><h4>Senaryo</h4><p>CameraX/graphics-path güncellemesi x86_64 için 4 KB hizalı .so getirir, arm64 kopyası düzgündür. `tools/apk-hizalama.py app-release.apk` → &#x27;TÜMÜ 16 KB UYUMLU&#x27;. Yükleme Play Console&#x27;da 16 KB uyumsuzluk uyarısına/engeline takılır, çıkış günü sürpriz olur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Filtreyi 64-bit ABI&#x27;ların tamamına genişlet: `(&quot;arm64&quot; in n or &quot;x86_64&quot; in n)` — çıktıda ABI&#x27;yi de yazdır ki hangi kopyanın bozuk olduğu görünsün.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="bt" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Bluetooth</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Hızlı kapat/aç yarışları: askıda kalan HID kaydı ve bayat callback&#x27;lerin durum kirletmesi</span>
+<span class="floc">app/src/main/java/com/afgover/vault/bt/BtHidManager.kt:132</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>İki yarış var. (1) getProfileProxy bağlanması asenkron: kullanıcı diyalogu proxy bağlanmadan kapatırsa stop() hid==null ile no-op olur (satır 310-320); ardından gelen onServiceConnected (satır 132-137) koşulsuz hid ata­yıp registerApp çağırır → arayüzü olmayan bir &#x27;Vault Klavye&#x27; HID kaydı süreç ömrü boyunca açık kalır ve eşleşmiş host&#x27;lar telefona klavye olarak bağlanabilir. (2) stop() sonrası hızla yeniden açılırsa, eski kaydın asenkron onAppStatusChanged(registered=false) callback&#x27;i (satır 167-169) yeni kaydın Ready durumundan SONRA gelip _state&#x27;i Idle&#x27;a çekebilir; diyalog &#x27;Bluetooth klavye hazırlanıyor…&#x27; ekranında takılı kalır (start yeniden tetiklenmez).</p></div>
+<div class="block"><h4>Senaryo</h4><p>(1) Kullanıcı &#x27;Bilgisayara yaz&#x27;a yanlışlıkla basıp anında geri hareketiyle kapatır: proxy ~50-100 ms sonra bağlanır, kayıt yapılır, telefon o günün geri kalanında görünmez bir Bluetooth klavye olarak kayıtlı kalır. (2) Diyalog kapatılıp hemen yeniden açılır: eski unregister callback&#x27;i geç gelir, durum Idle&#x27;a döner, kullanıcı sonsuz &#x27;hazırlanıyor…&#x27; görür; ancak diyalogu kapatıp bir daha açınca düzelir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>BtHidManager&#x27;a bir nesil sayacı (generation/token) ekle: start() her çağrıldığında artar, ServiceListener ve BluetoothHidDevice.Callback kendi neslini yakalar, güncel nesille eşleşmeyen her callback yok sayılır. onServiceConnected&#x27;da nesil bayatsa registerApp çağırmak yerine proxy hemen kapatılsın.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="bt" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Bluetooth</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Kullanım günlüğüne hedef adı bitiş anındaki durumdan yazılıyor: &#x27;bilinmeyen cihaz&#x27; kaydı</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/screens/BtTypeDialog.kt:192</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>onTyped hedef adını yazma BİTTİKTEN sonra o anki state&#x27;ten okur: (state as? Connected)?.name ?: &quot;bilinmeyen cihaz&quot;. Yazma başarıyla tamamlanıp host bağlantıyı hemen kapatırsa (ya da son karakter sonrası kopma olursa) state Ready&#x27;ye dönmüş olur ve günlüğe &#x27;bilinmeyen cihaz&#x27; düşer — oysa hedef tüm yazma boyunca biliniyordu. Parola kasasının denetim izinde hedefin kaybolması, günlüğün amacını (hangi sır nereye gitti) zayıflatır.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı parolayı dizüstüne yazdırır, son karakter iletilir iletilmez dizüstünün kapağını kapatır → host HID bağlantısını koparır → onConnectionStateChanged state&#x27;i Ready yapar → onTyped &#x27;bilinmeyen cihaz&#x27; ile çağrılır; günlükte &#x27;BT ile yazıldı → bilinmeyen cihaz&#x27; görünür.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Hedef adını (ve cihazı) yazma başlamadan önce, pending DEGER olduğunda yakala ve onTyped&#x27;a o değeri geçir; bitiş anındaki state&#x27;e bakma.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="bt" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Bluetooth</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">İzin reddi ve Bluetooth kapalı durumlarından diyalog içinde çıkış yolu yok</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/screens/BtTypeDialog.kt:102</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>İki çıkmaz: (1) BLUETOOTH_CONNECT izni LaunchedEffect(Unit) ile diyalog başına bir kez istenir; kullanıcı iki kez reddettikten sonra Android istemi hiç göstermeden reddeder ve diyalog yalnız &#x27;Bluetooth izni gerekli&#x27; metninde kalır — uygulama ayarlarına götüren bir düğme yoktur, özellik kalıcı olarak ölü görünür. (2) İzin verilmiş ama Bluetooth kapalıysa start() &#x27;Bluetooth kapalı. Önce Bluetooth&#x27;u aç.&#x27; hatası bırakıp Idle&#x27;da kalır; kullanıcı Bluetooth&#x27;u açıp döndüğünde hiçbir şey start()&#x27;ı yeniden tetiklemez (LaunchedEffect(permissionGranted) tekrar koşmaz) — diyalog, talimata uyulmasına rağmen süresiz &#x27;hazırlanıyor…&#x27; + bayat hata gösterir. İkisi de yanlış davranış değil ama kullanıcıyı çıkışı olmayan, yönergesi işe yaramayan ekranda bırakır; market kullanıcısı bunu &#x27;özellik bozuk&#x27; diye okur.</p></div>
+<div class="block"><h4>Senaryo</h4><p>(2) için: kullanıcı BT kapalıyken diyalogu açar, hatayı okur, bildirim panelinden Bluetooth&#x27;u açar, diyaloga döner → ekran hâlâ &#x27;hazırlanıyor…&#x27; ve &#x27;Bluetooth kapalı&#x27; der; ancak diyalogu kapatıp yeniden açınca çalışır.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>(1) shouldShowRequestPermissionRationale false + reddedilmiş durumda &#x27;Uygulama ayarlarını aç&#x27; düğmesi ekle (ACTION_APPLICATION_DETAILS_SETTINGS). (2) State Idle + hata varken &#x27;Tekrar dene&#x27; düğmesi göster ya da ON_RESUME&#x27;da (LifecycleEventObserver) permissionGranted &amp;&amp; state==Idle ise start()&#x27;ı yeniden çağır.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="ime" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Klavye</span><span class="chip st-open">açık</span><span class="chip st-note">bulan:orta</span></span>
+<span class="ftitle">commitText sonucu yoksayiliyor: yazma basarisiz olsa da gunluge &#x27;yazildi&#x27; dusuyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ime/VaultImeService.kt:217</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>renderFields icinde currentInputConnection?.commitText(value, 1) cagrisinin hem null-baglanti hali hem Boolean donusu yoksayiliyor ve hemen ardindan (satir 218) logUsage kosulsuz KLAVYE_YAZILDI olayi kaydediyor. InputConnection, hedef uygulama editoru kapattiginda/yeniden baslattiginda null ya da gecersiz olabilir; bu durumda alan yazilmaz, kullaniciya hicbir geri bildirim verilmez (sessiz basarisizlik) ve gunluk yanlis pozitif icerir. Gunlugun belgelenmis amaci rotasyon listesi (&#x27;hangi sir nereye gitti&#x27;) oldugundan yanlis pozitif dogrudan amaci zedeler.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici klavyede kayit secip alan listesine bakarken hedef uygulama arka planda oturumu dusurup editoru kapatir (banka uygulamalarinda yaygin). &#x27;Sifre yaz&#x27;a basar: alana hicbir sey yazilmaz, hata da gorunmez; kullanici sifrenin yazilmadigini fark etmez ama gunlukte &#x27;Sifre - com.ornek.banka - Klavyeden yazildi&#x27; kaydi olusur. Bilgisayar ele gecirme sonrasi rotasyon listesi yanlis yonlendirir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>val ic = currentInputConnection; if (ic != null &amp;&amp; ic.commitText(value, 1)) logUsage(...) else kullaniciya kisa bir uyari goster (ornegin content&#x27;e &#x27;Yazilamadi - metin kutusuna dokunup yeniden deneyin&#x27; ipucu satiri) ve loglama.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="ime" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Klavye</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Ust cubuktaki silme tusu surrogate cifti boluyor (emoji bozuyor)</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ime/VaultImeService.kt:96</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Basli tutunca tekrarlayan silme dugmesi deleteSurroundingText(1, 0) ile Java char bazinda siliyor. Emoji ve BMP disi karakterler iki char&#x27;lik surrogate cifti oldugundan tek basim ciftin yalniz yarisini siler; hedef alanda gecersiz yarim karakter (U+FFFD gorunumu) kalir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici Vault Klavyesi acikken imleci bir emojinin arkasina koyup silme tusuna basar: emoji silinmek yerine bozuk karaktere donusur; tekrarlayan silmede her 55 ms&#x27;de bir yarim kod noktasi silinerek alan gecici olarak bozuk icerikle dolar.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Silmeyi sendKeyEvent(KeyEvent ACTION_DOWN/ACTION_UP, KEYCODE_DEL) ile yap (editorun kendi silme mantigi surrogate&#x27;i dogru ele alir) ya da getTextBeforeCursor(2,0) ile son kod noktasinin uzunluguna bakip 1 veya 2 char sil.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="ime" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Klavye</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Kullanim gunlugu yazimi servis scope&#x27;unda: onDestroy aninda olay sessizce kaybolur</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ime/VaultImeService.kt:230</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>logUsage olayi scope.launch(Dispatchers.IO) ile servise bagli scope&#x27;ta yazar; onDestroy (satir 156) scope.cancel() cagirir. Kullanici bir alani yazdirdiktan hemen sonra sistem IME&#x27;yi yok ederse (klavye degisimi, dusuk bellek) Room insert&#x27;i tamamlanmadan iptal edilir ve rotasyon listesinden o olay sessizce dusur. Kabul edilen takas gunlugun kurcalanabilirligi; buradaki fark, kullanici hicbir sey yapmadan kaydin hic olusmamasi.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici &#x27;Sifre yaz&#x27;a basar, hemen ardindan ABC ile sistem klavyesine doner ve sistem VaultImeService&#x27;i yok eder: coroutine iptal olur, KLAVYE_YAZILDI olayi gunluge hic yazilmaz; rotasyon listesi o kullanimdan habersiz kalir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Gunluk yazimini servise degil surece bagla: VaultApp&#x27;te bir applicationScope (SupervisorJob + Dispatchers.IO) tut ve usageLog.record cagrilarini oradan baslat; ya da scope.launch icinde withContext(NonCancellable) kullan.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="kripto" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Kripto</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Icе aktarma dosya yolunda boyut siniri yok: buyuk dosya secimi OOM cokmesi</span>
+<span class="floc">app/src/main/java/com/afgover/vault/backup/BackupManager.kt:125</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>import() girisi input.use { it.readBytes() } ile tamamen belege okur (BackupManager.kt:125). Pano yolunda (importBackupText) 1 MB siniri var ama dosya yolunda (VaultViewModel.importBackup, uri ile) hicbir sinir yok; belge secici herhangi bir dosyayi secmeye izin verir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici &#x27;Geri yukle&#x27; derken yanlislikla 2 GB&#x27;lik bir video dosyasi secer; readBytes tum dosyayi RAM&#x27;e cekmeye calisir ve uygulama OutOfMemoryError ile coker — &#x27;gecersiz dosya&#x27; mesaji yerine cokme yasanir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>import oncesi akisi sinirli oku (orn. ilk 8-16 MB; asiliyorsa InvalidFormatException) ya da ContentResolver&#x27;dan boyutu sorgulayip esigi asan dosyayi dostca reddet.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="kripto" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Kripto</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">migrateLegacyPin iki ayri prefs yazimi arasinda surec olurse onarim kalici olarak basarisiz bir ara durumda kaliyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/core/KeyManager.kt:86</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>migrateLegacyPin once storePayload ile ana sargiyi yazar (kendi apply&#x27;i, KeyManager.kt:85 -&gt; 181-190), sonra AYRI bir edit ile PIN kayitlarini siler (KeyManager.kt:86). Iki apply arasinda surec olurse (yaris durumu) kalici durum: sargi ham dataKey tasir ama pin_salt hala durur, pin_check yoktur -&gt; isPinLegacy true kalir. Bu durumda &#x27;PIN kaydini onar&#x27; artik HER ZAMAN basarisiz olur (unlockStage1 32 baytlik ham anahtari dondurur, PinLock.unwrap GCM etiketi tutmadigi icin null verir) ve SettingsScreen legacy kipinde yalniz onarim secenegini gosterdigi icin (SettingsScreen.kt:243-247) kullanicinin bu bayragi temizleyecek hicbir yolu kalmaz; parolayla acilis calisir ama PIN bir daha acilamaz (enablePin isPinEnabled&#x27;a takilir).</p></div>
+<div class="block"><h4>Senaryo</h4><p>Onarim tam calisirken uygulama oldurulur/telefon kapanir; ilk apply diske ulasmis, ikincisi ulasmamistir. Sonraki acilislarda ayarlar surekli &#x27;PIN kaydini onar&#x27; der, onarim &#x27;parola ya da PIN yanlis&#x27; ile hep basarisiz olur ve PIN ozelligi kalici kilitlenir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Iki degisiklik ayni prefs dosyasinda: storePayload&#x27;in yazdigi alanlarla PIN silme islemini TEK SharedPreferences.Editor uzerinde birlestir (storePayload&#x27;a istege bagli editor parametresi ekle). Ek olarak migrateLegacyPin, unlockStage1 ciktisi 32 bayt ise durumu &#x27;zaten tasinmis&#x27; sayip yalniz PIN kayitlarini silerek kendini onarabilmeli.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="kripto" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Kripto</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Parola/PIN ve anahtar baytlari bellekte temizlenmiyor (String kullanimi, sifirlanmayan kopyalar)</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:218</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Ana parola ve PIN tum akislarda olumsuz-temizlenebilir Kotlin String olarak tasiniyor (unlock VaultViewModel.kt:218-233, unlockWithPin :243, enablePin/disablePin/changePassword, Compose alanlari); toCharArray() kopyalari kullanimdan sonra sifirlanmiyor. Crypto.deriveKey PBEKeySpec&#x27;i temizliyor (dogru) ama factory.generateSecret(spec).encoded ara kopyasi sifirlanmadan SecretKeySpec&#x27;e kopyalaniyor (core/Crypto.kt:35); dataKey.encoded kopyalari (KeyManager.kt:85, :131, :175) ve stage1 payload baytlari da oyle. Cihaz belleği dokumu alinabilen (root/adli) senaryoda parola/PIN/anahtar kalintilari bulunabilir. Ekran-kapaninca-kilitleme takasindan bagimsiz, capraz bir hijyen eksigi; Android&#x27;de GC kopyalari yuzunden tam cozum yoktur ama mevcut durum hic caba gostermiyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kilitli ama sureci yasayan uygulamanin bellek dokumu (root&#x27;lu cihaz, adli arac) alinir; heap&#x27;te onceki oturumun ana parola String&#x27;i, PIN&#x27;i ve dataKey bayt kopyalari bulunur — kasa &#x27;kilitli&#x27; oldugu halde sirlar bellekte durur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Kullanim sonrasi tum toCharArray()/encoded kopyalarini Arrays.fill ile sifirla (deriveKey icinde ara diziyi try/finally ile temizle, unlockStage1/unlock cagiranlarinda payload&#x27;i SecretKeySpec&#x27;e kopyaladiktan sonra sifirla); ViewModel API&#x27;lerini CharArray alacak sekilde daralt. Compose TextField&#x27;in String uretmesi kalan kabul edilmis sinir olarak belgelensin.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="pazar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Pazar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Kullanilmayan navigation-compose 2.8.5 APK&#x27;ya giriyor; Navigation&#x27;in ortuk deep-link zayifligi bekleyen risk</span>
+<span class="floc">app/build.gradle.kts:54</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>navigation-compose 2.8.5 bagimlilik olarak ekli ama kaynak kodda hicbir androidx.navigation kullanimi yok (NavHost/rememberNavController araması bos donuyor; ekranlar setContent ile elle yonetiliyor). Jetpack Navigation&#x27;in belgelenmis bir zayifligi var: her destinasyon icin kendiliginden &#x27;android-app://androidx.navigation/&lt;route&gt;&#x27; ortuk deep link uretir ve disa acik bir Activity&#x27;ye gonderilen intent&#x27;le ic destinasyona dogrudan atlanabilir. Bugun NavHost olmadigi icin istismar edilemez; ama kutuphane olu agirlik olarak sifre kasasi APK&#x27;sinda tasiniyor ve ileride biri NavHost ekledigi anda bu zayiflik kilit akisinin onune gecebilir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Ileride bir surumde ekran yonetimi NavHost&#x27;a tasinirsa, kotu niyetli bir uygulama exported MainActivity&#x27;ye android-app://androidx.navigation/&lt;route&gt; URI&#x27;li intent gondererek kilit ekrani atlanmis bir ic ekrana dusurebilir (veri dataKey olmadan cozulmese de cokme/durum karisikligi olur); bugunku somut etki ise gereksiz APK boyutu ve saldiri yuzeyi.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>implementation(libs.androidx.navigation.compose) satirini ve libs.versions.toml&#x27;daki navigationCompose girdisini kaldir; ileride Navigation&#x27;a gecilirse ortuk deep-link davranisini kapatan guncel bir surum kullan ve kilit kapisinin NavHost&#x27;un DISINDA (ust seviye koşul olarak) durdugundan emin ol.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="pazar" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Pazar</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Bagimlilik CVE taramasi bugun temiz, ancak surekli tarama mekanizmasi yok</span>
+<span class="floc">gradle/libs.versions.toml:1</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>Web taramasi sonucu (24 Agustos 2026): androidx.biometric 1.1.0 (hala en guncel KARARLI surum), room 2.6.1, fragment 1.7.1, camerax 1.4.2, compose BOM 2024.12.01 ve zxing core 3.5.3 icin bilinen CVE/danismanlik YOK. org.json 20240303, CVE-2023-5072&#x27;nin (DoS) duzeltmesinden (20231013) sonraki surum ve zaten yalnizca testImplementation — APK&#x27;ya girmiyor. kotlin-stdlib CVE&#x27;leri (CVE-2020-29582, CVE-2022-24329) 2.0.21&#x27;den cok once kapatilmis. Kisit: bu, arama motoru uzerinden yapilan noktasal bir kontrol; tam NVD/OSV taramasi degil ve dusuk profilli danismanliklari kacirmis olabilir. Asil kusur surec tarafinda: markete cikinca binlerce cihaza dagitilacak surumler icin depoda hicbir otomatik zafiyet takibi yok.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Yayindan uc ay sonra ornegin zxing veya CameraX icin bir CVE duyurulur; haber alacak mekanizma olmadigi icin markette dagitilmis surum zafiyetli kalir ve kimse fark etmez.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Depoya otomatik bagimlilik taramasi ekle: GitHub&#x27;da Dependabot alerts + gradle icin OSV-Scanner (veya OWASP dependency-check-gradle) calistiran basit bir CI adimi; her surum oncesi &#x27;tarama temiz mi&#x27; kontrolunu surum listesine yaz. Ayrica JetBrains&#x27;in Mayis 2026 stdlib guvenlik destek politikasina gore yalnizca guncel Kotlin hatlari yama aliyor — hedef API 36 yukseltmesiyle birlikte Kotlin&#x27;i de guncel hattaki surume tasi.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Bos panoda clipboardText &#x27;null&#x27; metnini donduruyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:521</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>clipboardText&#x27;te &#x27;cm.primaryClip?.getItemAt(0)?.coerceToText(...).toString()&#x27; zinciri, pano bos oldugunda null uzerinde Any?.toString() cagirir ve &#x27;null&#x27; dizesini dondurur. PasteImportDialog ve TransferWizard&#x27;daki &#x27;Panodan al&#x27; dugmesi alani &#x27;null&#x27; metniyle doldurur.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici panoya henuz bir sey kopyalamadan &#x27;Panodan al&#x27;a basar; zarf alaninda &#x27;null&#x27; yazar. Ic aktarma denenirse &#x27;Bu, sifreli bir Vault zarfi degil&#x27; hatasi alinir - kullanici neyin yanlis gittigini anlayamaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Zinciri &#x27;cm.primaryClip?.getItemAt(0)?.coerceToText(getApplication())?.toString() ?: &quot;&quot;&#x27; yap; bos donuste &#x27;Pano bos&#x27; bilgisi goster.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="ui" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Arayüz</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">Global error durumu ekranlar arasi tasiniyor: kilit ekrani onceki islemin hatasiyla aciliyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:72</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>viewModel.error tek ve paylasilan bir state (satir 72); UnlockScreen (UnlockScreen.kt satir 131-134), PinScreen ve Ayarlar ayni degeri gosteriyor. lock() (satir 318-321) ve refreshLockState kilide dusururken error&#x27;u temizlemiyor; dialoglar da kapanirken temizlemiyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanici &#x27;Metinden ice aktar&#x27;da yanlis parola girer (&#x27;Yedek parolasi yanlis&#x27; set edilir), vazgecer, sonra kasayi kilitler. Kilit ekrani daha hicbir sey yazilmadan kirmizi &#x27;Yedek parolasi yanlis&#x27; metniyle acilir - kullanici ana parolasinin yanlis oldugunu sanabilir.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>lock() ve refreshLockState&#x27;in LOCKED&#x27;a dusen yollarinda error = null yap; dialog kapanislarinda (onDismiss) kendi urettikleri hatayi temizle. Orta vadede ekran-yerel hata durumlarina gecmek kalici cozum.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="veri" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Veri / Göç</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">replaceAll eski kayıtların kullanım günlüğünü silmiyor: &#x27;değiştir&#x27; içe aktarmadan sonra önceki kasanın etkinlik izi kalıyor</span>
+<span class="floc">app/src/main/java/com/afgover/vault/data/VaultRepository.kt:193</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>delete() &#x27;kayıt silinince günlüğü de silinir; sahipsiz olay okunmaz veridir&#x27; sözleşmesini uyguluyor (satır 158-162), ama replaceAll tüm kayıtları deleteAll ile silerken usage_log ve usage_buffer&#x27;a dokunmuyor. Eski olaylar dataKey ile çözülebilir durumda kalıyor ve günlük ekranında &#x27;(silinmiş kayıt)&#x27; etiketiyle listeleniyor (UsageLogDialog.kt:115,129): hangi alan, ne zaman, hangi hedefe gitti bilgisi önceki kasadan kalma.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı kasasını &#x27;değiştir&#x27; modunda başka bir yedekle tamamen yenisiyle değiştirir (örn. cihazı aile üyesine devrederken). Kilidi açan yeni sahibi kullanım günlüğünde eski kasanın izlerini görür: &#x27;(silinmiş kayıt) · Şifre · Chrome&#x27;a yazıldı&#x27; gibi satırlar — silindiği sanılan etkinlik geçmişi duruyordur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>replaceAll&#x27;ın (transaction&#x27;a alınmış hâlinin) içinde usageLogDao.clear() ve clearBuffer() da çağrılsın; ya da bu davranış bilinçli bir takas olarak belgelenip kullanıcıya içe aktarma ekranında söylenmeli.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="veri" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Veri / Göç</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">sortIndex yedeğe yazılmıyor: elle kurulan sıra geri yüklemede kaybolur</span>
+<span class="floc">app/src/main/java/com/afgover/vault/backup/BackupManager.kt:56</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>export kayıt başına type/title/createdAt/updatedAt/quick/data/noteKind/tags yazıyor ama sortIndex&#x27;i yazmıyor; import da DecryptedEntry&#x27;yi sortIndex vermeden kuruyor (satır 160-175) — hepsi 0 gelir. MANUAL sıralama kullanan bir kullanıcının düzeni yedek+geri yükleme (ya da cihaz değişimi) sonrasında tamamen kaybolur; sıra başlık kırılımına düşer (EntrySort.kt:45).</p></div>
+<div class="block"><h4>Senaryo</h4><p>Kullanıcı 50 kaydı sürükleyerek kendine göre dizer, yedek alır, telefon değiştirir ve geri yükler: tüm kayıtlar sortIndex=0 ile gelir, &#x27;Kullanıcı sırası&#x27; seçili olsa da liste alfabetik görünür; kurduğu düzen geri gelmez.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>export&#x27;a put(&quot;sortIndex&quot;, e.sortIndex) ekle (0 ise yazmamak da olur), import&#x27;ta sortIndex = o.optInt(&quot;sortIndex&quot;, 0) oku. Alan eklemeli olduğu için zarf sürümü 1 kalır, eski yedekler etkilenmez.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="yapi" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Yapı / Market</span><span class="chip st-open">açık</span><span class="chip st-note">bulan:orta</span></span>
+<span class="ftitle">İma edilen donanım gereksinimleri uygulamayı Play&#x27;de birçok cihazdan gizliyor</span>
+<span class="floc">app/src/main/AndroidManifest.xml:9</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>CAMERA izni, manifestte açıkça geçersiz kılınmadıkça &#x27;android.hardware.camera&#x27; (arka kamera) özelliğini ZORUNLU olarak ima eder; BLUETOOTH/BLUETOOTH_CONNECT izinleri de &#x27;android.hardware.bluetooth&#x27; özelliğini zorunlu kılar. Manifest yalnız &#x27;android.hardware.camera.any&#x27; için required=false bildiriyor (satır 9) — bu, ima edilen &#x27;android.hardware.camera&#x27; gereksinimini GEÇERSİZ KILMAZ. Hem debug hem release APK&#x27;sında aapt2 dump badging ile doğrulandı: &#x27;uses-implied-feature: android.hardware.camera — requested android.permission.CAMERA permission&#x27; ve &#x27;uses-implied-feature: android.hardware.bluetooth&#x27; zorunlu özellik olarak yazılmış. camera.any&#x27;ye required=false konması geliştiricinin kameranın isteğe bağlı olduğu niyetini açıkça gösteriyor; ima mekanizması bu niyeti sessizce eziyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Uygulama Play&#x27;e yüklendiğinde, arka kamerası olmayan cihazlar (yalnız ön kameralı tabletler, bazı Chromebook/Android masaüstü cihazları) ve Bluetooth&#x27;suz cihazlar mağazada uygulamayı hiç GÖREMEZ — &#x27;cihazınızla uyumlu değil&#x27; der. Kamera (QR aktarımı) ve Bluetooth (PC&#x27;ye yazma) uygulamada isteğe bağlı özellikler olduğu hâlde bir şifre kasası bu cihazlarda tamamen erişilmez olur; hiçbir hata veya uyarı üretilmediği için fark edilmesi de zordur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>AndroidManifest.xml&#x27;e camera.any satırının yanına iki açık bildirim ekle: &lt;uses-feature android:name=&quot;android.hardware.camera&quot; android:required=&quot;false&quot; /&gt; ve &lt;uses-feature android:name=&quot;android.hardware.bluetooth&quot; android:required=&quot;false&quot; /&gt;. Ardından aapt2 dump badging ile release APK&#x27;sında hiçbir &#x27;uses-implied-feature&#x27; satırının zorunlu kalmadığını doğrula; bu kontrolü checkApkAlignment benzeri bir derleme görevine eklemek tekrarını önler.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="yapi" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Yapı / Market</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">app/build.gradle.kts&#x27;te bozuk constraints bloğu: kopya yapıştık artığı ve yanlış yere bağlanmış because açıklaması</span>
+<span class="floc">app/build.gradle.kts:83</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>constraints { } bloğunun içine (satır 83-107) dependencies bloğundaki satır 68-81&#x27;in birebir kopyası yapıştırılmış: camera/zxing/junit/test bağımlılıkları yorumlarıyla birlikte kısıt olarak yineleniyor. Asıl niyet (satır 84-85&#x27;teki yorum) yalnız fragment &gt;= 1.7.1 kısıtıydı; ama fragment kısıtının gerekçesi olan because(&quot;fragment 1.7.1&#x27;den eskisi ActivityResultRegistry&#x27;nin ürettiği requestCode&#x27;ları reddediyor&quot;) metni satır 101-105&#x27;te androidx.test.runner kısıtına bağlanmış durumda. Derleme geçiyor ve fragment kısıtı (satır 86) hâlâ etkili; bugün işlevsel bir kırılma yok, ancak yapı dosyası fiilen bozuk bir birleştirme içeriyor.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Gelecekte biri &#x27;test.runner&#x27;daki fragment açıklaması saçma&#x27; diyerek satır 101-106&#x27;yı silerse gerekçe tamamen kaybolur; ya da kataloğdan doğrudan camera bağımlılığı kaldırılırsa constraints bloğundaki kopya kısıtlar kafa karıştırıp sürüm çözümlemesini beklenmedik şekilde etkiler. Dependency raporlarında test bağımlılıklarında &#x27;because: fragment...&#x27; gibi anlamsız gerekçeler görünür ve gerçek kısıtın nedeni izlenemez olur.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>constraints bloğunu tek kısıta indir: constraints { implementation(libs.androidx.fragment) { because(&quot;fragment 1.7.1&#x27;den eskisi ActivityResultRegistry&#x27;nin ürettiği requestCode&#x27;ları reddediyor&quot;) } } — satır 88-106 arasındaki yinelenen camera/zxing/test satırlarını ve yorumlarını sil.</p></div>
+</div></article>
+<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="yapi" data-durum="open">
+<button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span>
+<span class="fmeta">
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Yapı / Market</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="ftitle">16 KB hizalama kontrolü yalnız debug APK&#x27;sına bağlı, market&#x27;e giden çıktıyı denetlemiyor</span>
+<span class="floc">app/build.gradle.kts:117</span>
+</span>
+<span class="caret" aria-hidden="true">›</span>
+</button>
+<div class="fbody">
+<div class="block"><h4>Sorun</h4><p>checkApkAlignment görevi (satır 116-123) assembleDebug&#x27;a bağımlı ve yalnız app-debug.apk&#x27;yı ölçüyor; release APK/AAB hiçbir yerde denetlenmiyor ve görev hiçbir derleme akışına otomatik bağlı değil (elle çağrılmalı). Play, Kasım 2025&#x27;ten beri targetSdk 35 hedefleyen yeni uygulamalarda 16 KB sayfa desteğini zorunlu tutuyor; bugünkü release çıktısını elle kontrol ettim ve geçiyor, ancak koruma tam da &#x27;sessizce bozulmasın&#x27; diye yazılmışken market&#x27;e giden artefaktı kapsamıyor. Görevin varlık nedeni (CameraX 1.3.4 vakası, yorumda) release yolunda tekrarlanabilir.</p></div>
+<div class="block"><h4>Senaryo</h4><p>Bir bağımlılık güncellemesi 4 KB hizalı bir .so getirir; geliştirici yalnız bundleRelease çalıştırıp Play&#x27;e yüklerse yerel koruma hiç tetiklenmez ve sorun ilk kez Play Console yükleme reddinde (ya da daha kötüsü, incelemeden geçmiş eski bir sürümün cihaz uyarısında) görünür — yani koruma tam ihtiyaç anında devrede olmaz.</p></div>
+<div class="block"><h4>Düzeltme</h4><p>Görevi release çıktısına da bağla: assembleRelease sonrası app-release-unsigned.apk&#x27;yı ölçen ikinci bir Exec görevi tanımla (ya da görevi APK yolunu parametre alacak şekilde çoğalt) ve tasks.named(&quot;assembleRelease&quot;) { finalizedBy(&quot;checkReleaseApkAlignment&quot;) } ile otomatikleştir; böylece market&#x27;e giden her derleme aynı korumadan geçer.</p></div>
+</div></article>
+</div>
+
+<h2 class="section-h">Çürütülen bulgular — hakem gerçek olmadığını gösterdi</h2>
+<div class="list">
+<article class="finding refuted"><button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span><span class="fmeta"><span class="chips"><span class="chip st-refuted">çürütüldü</span><span class="chip alan">Aktarım</span></span>
+<span class="ftitle">Yedek dosyası &#x27;w&#x27; kipiyle yazılıyor: var olan dosyanın üstüne yazınca bazı sağlayıcılarda dosya kesilmez, yedek sessizce bozulur</span><span class="floc">app/src/main/java/com/afgover/vault/ui/VaultViewModel.kt:444</span></span>
+<span class="caret">›</span></button>
+<div class="fbody"><div class="block"><h4>Hakem neden reddetti</h4><p>Bulgunun öncülü doğru ama sonucu yanlış. VaultViewModel.kt:444&#x27;te openOutputStream(uri) gerçekten kipsiz çağrılıyor ve Android belgeleri varsayılan &#x27;w&#x27; kipinin bazı DocumentsProvider&#x27;larda dosyayı kesmeyebileceği konusunda uyarıyor; SettingsScreen.kt:75&#x27;teki CreateDocument akışıyla var olan dosyanın üstüne yazmak da erişilebilir bir yol. ANCAK bulgunun iddia ettiği bozulma zinciri kodda gerçekleşmiyor. BackupManager.kt:117-122 (normalize) ve 124-130 (import ayrıştırması) okundu ve senaryo birebir simüle edildi: kısa yeni zarf + eski zarfın 3000 karakterlik artık kuyruğu normalize&#x27;dan geçirilip JSONObject&#x27;e verildi — ayrıştırma BAŞARILI oldu ve YENİ zarfın alanlarını (yeni salt, yeni data) döndürdü. Sebep: org.json, ilk tam üst-düzey nesneyi ayrıştırdıktan sonra kuyruktaki artığı yok sayar (Android libcore&#x27;daki JSONObject(JSONTokener) kurucusu nextValue() sonrası girdi-sonu denetimi yapmaz; JSON-java jar&#x27;ıyla deneysel olarak da doğrulandı). BackupManager.kt:105&#x27;te export zarfın tamamını dosyanın başına yazdığı için dosya başı her zaman kendi içinde geçerli, tam bir JSON nesnesidir; kuyruk ayrıştırıcıya görünmez. Şifre çözme yeni zarfın salt/blob&#x27;unu kullanır ve GCM içeriği doğrular — geri yükleme taze yedeği eksiksiz döndürür. Dosya içe aktarma yolunda (VaultViewModel.kt:534-559) kuyruğun takılabileceği boyut sınırı da yok (1MB sınırı yalnızca pano yolunda, importBackupText&#x27;te). Yani &#x27;Geçersiz yedek dosyası&#x27; hatası ve &#x27;tüm veri gider&#x27; senaryosu bu kod tabanında tetiklenmiyor; bulgu yuksek ciddiyetli veri kaybı olarak gerçek değil. Geriye kalan tek şey &#x27;wt&#x27; kipine geçmenin bedava bir hijyen iyileştirmesi olması (dosyada bayat şifreli bayt bırakmamak) — bu da en fazla dusuk pürüz.</p></div></div></article>
+<article class="finding refuted"><button class="fhead" aria-expanded="false" onclick="tog(this)">
+<span class="stripe"></span><span class="fmeta"><span class="chips"><span class="chip st-refuted">çürütüldü</span><span class="chip alan">Pazar</span></span>
+<span class="ftitle">Yeni bireysel gelistirici hesabiysa: 12 testci / 14 kesintisiz gun kapali test sarti yayini geciktirir</span><span class="floc">README.md:86</span></span>
+<span class="caret">›</span></button>
+<div class="fbody"><div class="block"><h4>Hakem neden reddetti</h4><p>Bulguyu dogrulamak icin README.md&#x27;nin tamamini (298 satir), docs/ klasorunu (tek dosya: kendi-zarfini-uret.md), app/build.gradle.kts&#x27;yi ve git gecmisini (tum dallar, ~30 commit) inceledim. Cürutme gerekceleri: (1) Bulgunun bagladigi satir README.md:86 &quot;APK&#x27;yi elle kuruyorsan bilinmeyen kaynaklara izin vermen gerekir&quot; — yani depodaki tek belgelenmis dagitim modeli elle APK kurulumudur ve README:3 acikca &quot;Kisisel kullanim icin&quot; der; Play Store&#x27;a cikma niyeti depoda hicbir yerde gecmiyor (grep ile README, docs, gradle dosyalari ve commit mesajlarinda &quot;play/console/market/store&quot; arandi, sifir sonuc). (2) app/build.gradle.kts:13-17&#x27;de versionCode=1, release imza yapilandirmasi yok, Play Services/Billing bagimliligi yok — Play&#x27;e yukleme hazirligi izi de yok. (3) Bulgunun senaryosu (&quot;yarin Play Console&#x27;a yuklenir&quot;) deponun disindaki uc dogrulanamaz varsayima dayaniyor: yayin niyeti var mi, bir Play gelistirici hesabi var mi, o hesap 13 Kasim 2023&#x27;ten sonra acilmis bireysel hesap mi. Ucunu de depodan dogrulamak imkansiz ve bulgu kendi metninde bile &quot;hesap eskiyse dusurulebilir&quot; diyerek kosulsallugunu kabul ediyor. (4) Depoda yanlis bir iddia da yok: README Play&#x27;de yayimlanacagini soylemiyor, dolayisiyla duzeltilecek bir dogruluk hatasi, tetiklenebilir bir senaryo veya kod davranisi mevcut degil. Google&#x27;in 12 testci / 14 gun politikasi bilgi olarak buyuk olcude dogru olabilir, ama bu onu bu deponun bir bulgusu yapmaz — olsa olsa ileride Play&#x27;e cikilirsa gecerli olacak bir planlama notudur. Kesin kanit bulunamadigi (aksine, depo aksini belgeledigi) icin real=false; tutulsaydi bile ciddiyeti orta degil dusuk olurdu cunku sir sizintisi, veri kaybi, zafiyet veya dogruluk hatasi icermiyor.</p></div></div></article>
+</div>
+
+<footer>Çok ajanlı denetim · 10 bulucu + hakem doğrulaması · afgover/Vault</footer>
+</div>
+
+<script>
+function tog(btn){var f=btn.parentElement;var on=f.classList.toggle('open-x');
+  btn.setAttribute('aria-expanded',on?'true':'false');}
+var sev='all',dur='all';
+function apply(){
+  var n=0;
+  document.querySelectorAll('#list .finding').forEach(function(f){
+    var okS=sev==='all'||f.dataset.sev===sev;
+    var okD=dur==='all'||f.dataset.durum===dur;
+    var show=okS&&okD;f.classList.toggle('hidden',!show);if(show)n++;
+  });
+  document.getElementById('count').textContent=n+' bulgu gösteriliyor';
+}
+document.querySelectorAll('#sevf .fb').forEach(function(b){b.onclick=function(){
+  sev=b.dataset.f;document.querySelectorAll('#sevf .fb').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});apply();}});
+document.querySelectorAll('#durf .fb').forEach(function(b){b.onclick=function(){
+  dur=b.dataset.d;document.querySelectorAll('#durf .fb').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});apply();}});
+apply();
+</script>

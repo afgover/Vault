@@ -136,4 +136,32 @@ class BackupManagerTest {
         val sonuc = BackupManager.import(kompakt.byteInputStream(), password)
         assertEquals("sk-123", sonuc.entries[0].data.custom[0].value)
     }
+
+    // ---- Denetim regresyonları (pazar öncesi A-Z) ----
+
+    @Test
+    fun `iterations disi zarf gecersiz sayilir - DoS engeli`() {
+        val zarf = org.json.JSONObject(disaVer())
+        zarf.getJSONObject("kdf").put("iterations", 500_000_000)
+        assertThrows(BackupManager.InvalidFormatException::class.java) {
+            BackupManager.import(zarf.toString().byteInputStream(), password)
+        }
+    }
+
+    @Test
+    fun `cok kucuk iterations da reddedilir`() {
+        val zarf = org.json.JSONObject(disaVer())
+        zarf.getJSONObject("kdf").put("iterations", 10)
+        assertThrows(BackupManager.InvalidFormatException::class.java) {
+            BackupManager.import(zarf.toString().byteInputStream(), password)
+        }
+    }
+
+    @Test
+    fun `boyut siniri asan girdi gurultulu duser - OOM yerine mesaj`() {
+        val dev = ByteArray(BackupManager.MAX_ENVELOPE_BYTES + 1) { '{'.code.toByte() }
+        assertThrows(BackupManager.InvalidFormatException::class.java) {
+            BackupManager.import(dev.inputStream(), password)
+        }
+    }
 }

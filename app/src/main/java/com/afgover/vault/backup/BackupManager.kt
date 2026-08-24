@@ -32,6 +32,23 @@ object BackupManager {
     class WrongPasswordException : Exception("Yedek parolası yanlış")
     class InvalidFormatException : Exception("Geçersiz yedek dosyası")
 
+    /**
+     * Girdi üst sınırı. Meşru bir yedek (256 KB/kayıt) bunun çok altındadır;
+     * amaç yanlış seçilen dev dosyanın (video, ZIP) belleği doldurup uygulamayı
+     * çökertmesini engellemek (denetim: OOM). Panodan yapıştırmada 1 MB ayrıca
+     * sınırlıdır; bu, dosya yolunun tavanıdır.
+     */
+    const val MAX_ENVELOPE_BYTES = 16 * 1024 * 1024
+
+    /**
+     * PBKDF2 tur sayısı için kabul aralığı. Düşman bir zarf iterations alanına
+     * çok büyük bir değer koyup türetmeyi dakikalarca kilitleyebilir (denetim:
+     * DoS). Kendi ürettiğimiz zarf her zaman 310.000 kullanır; aralık makul
+     * bir tavan bırakır.
+     */
+    const val MIN_ITERATIONS = 10_000
+    const val MAX_ITERATIONS = 1_000_000
+
     /** İçe aktarma sonucu: kayıtlar + yedekteki etiket renkleri (ad → ARGB). */
     data class ImportResult(
         val entries: List<DecryptedEntry>,
@@ -121,8 +138,27 @@ object BackupManager {
         return if (bas >= 0 && son > bas) temiz.substring(bas, son + 1) else temiz
     }
 
+    /**
+     * Akıştan en fazla [limit] bayt okur; aşılırsa yedek olamayacak kadar büyük
+     * demektir ve açık bir hata fırlatılır (çökme yerine mesaj).
+     */
+    private fun readCapped(input: InputStream, limit: Int): ByteArray {
+        val out = java.io.ByteArrayOutputStream()
+        val chunk = ByteArray(64 * 1024)
+        var total = 0
+        while (true) {
+            val n = input.read(chunk)
+            if (n < 0) break
+            total += n
+            if (total > limit) throw InvalidFormatException()
+            out.write(chunk, 0, n)
+        }
+        return out.toByteArray()
+    }
+
     fun import(input: InputStream, password: CharArray): ImportResult {
-        val text = normalize(input.use { it.readBytes().toString(Charsets.UTF_8) })
+        val bytes = input.use { readCapped(it, MAX_ENVELOPE_BYTES) }
+        val text = normalize(bytes.toString(Charsets.UTF_8))
         val envelope = try {
             JSONObject(text)
         } catch (e: Exception) {
@@ -137,6 +173,9 @@ object BackupManager {
             throw InvalidFormatException()
         }
         val iterations = kdf.optInt("iterations", Crypto.KDF_ITERATIONS)
+        if (iterations < MIN_ITERATIONS || iterations > MAX_ITERATIONS) {
+            throw InvalidFormatException()
+        }
         val blob = try {
             Base64.getDecoder().decode(envelope.optString("data"))
         } catch (e: Exception) {
