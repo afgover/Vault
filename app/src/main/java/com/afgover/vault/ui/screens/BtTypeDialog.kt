@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -127,11 +128,7 @@ fun BtTypeDialog(
         context.getSharedPreferences("vault_settings", Context.MODE_PRIVATE)
     }
     var layout by remember {
-        mutableStateOf(
-            runCatching {
-                HidLayouts.Layout.valueOf(prefs.getString("pc_layout", "TR") ?: "TR")
-            }.getOrDefault(HidLayouts.Layout.TR)
-        )
+        mutableStateOf(HidLayouts.readLayout(prefs.getString("pc_layout", null)))
     }
     var speed by remember {
         mutableStateOf(
@@ -297,7 +294,8 @@ fun BtTypeDialog(
                             color = MaterialTheme.colorScheme.error
                         )
                         Spacer(Modifier.height(4.dp))
-                        Row {
+                        // Yedi düzen tek satıra sığmıyor; kaydırılabilir olsun.
+                        Row(Modifier.horizontalScroll(rememberScrollState())) {
                             HidLayouts.Layout.entries.forEach { l ->
                                 SecimCipi(
                                     secili = layout == l,
@@ -321,7 +319,7 @@ fun BtTypeDialog(
                         )
                         Spacer(Modifier.height(8.dp))
                         val riskli = remember(value, layout) {
-                            HidLayouts.layoutSensitiveChars(value)
+                            HidLayouts.layoutSensitiveChars(value, layout)
                         }
                         if (riskli.isNotEmpty() && !testTyped) {
                             Text(

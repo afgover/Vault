@@ -19,121 +19,438 @@ object HidLayouts {
     data class KeyStroke(val usage: Int, val modifier: Int)
 
     enum class Layout(@StringRes val labelRes: Int) {
-        US(R.string.bt_layout_us), TR(R.string.bt_layout_tr)
+        US(R.string.bt_layout_us),
+        UK(R.string.bt_layout_uk),
+        TR_Q(R.string.bt_layout_tr),
+        DE(R.string.bt_layout_de),
+        FR(R.string.bt_layout_fr),
+        ES(R.string.bt_layout_es),
+        IT(R.string.bt_layout_it)
+    }
+
+    /**
+     * Saklanmış düzen tercihini okur. Eski sürümler Türkçe Q'yu `"TR"` diye
+     * yazıyordu; düzen sayısı artınca ad `TR_Q` oldu. Eski tercih sessizce
+     * varsayılana düşmemeli — kullanıcı bir daha seçmek zorunda kalmasın.
+     */
+    fun readLayout(stored: String?): Layout = when (stored) {
+        null -> Layout.TR_Q
+        "TR" -> Layout.TR_Q
+        else -> runCatching { Layout.valueOf(stored) }.getOrDefault(Layout.TR_Q)
     }
 
     fun map(layout: Layout): Map<Char, KeyStroke> =
         when (layout) {
             Layout.US -> US
-            Layout.TR -> TR
+            Layout.UK -> UK
+            Layout.TR_Q -> TR
+            Layout.DE -> DE
+            Layout.FR -> FR
+            Layout.ES -> ES
+            Layout.IT -> IT
         }
 
     /**
-     * İki düzende FARKLI tuşa düşen (ya da yalnız birinde bulunan) karakterler.
-     * Yanlış düzen seçilirse tam bu karakterler sessizce başka karaktere
-     * dönüşür — harfler ve rakamlar iki düzende aynıdır, tehlike simgelerde.
+     * Seçili düzende yazıldığında, BAŞKA bir düzende farklı tuşa düşen
+     * karakterler: "düzeni yanlış seçtiysen bunlar bozuk çıkar" listesi.
+     *
+     * Eskiden yalnız US ile TR-Q karşılaştırılıyordu ve yorum "harfler ve
+     * rakamlar iki düzende aynıdır, tehlike simgelerde" diyordu. Bu, düzen
+     * sayısı ikiyken doğruydu; AZERTY'de A↔Q ve Z↔W yer değiştirir, rakamlar
+     * Shift ister, QWERTZ'de Y↔Z değişir — yani artık HARFLER DE duyarlıdır.
+     * Şifreler çoğunlukla harf ve rakamdan oluştuğu için yanlış düzen artık
+     * birkaç simgeyi değil neredeyse her karakteri bozar.
      */
-    fun layoutSensitiveChars(text: String): List<Char> =
-        text.toSet().filter { US[it] != TR[it] }.sorted()
+    fun layoutSensitiveChars(text: String, selected: Layout): List<Char> {
+        val secili = map(selected)
+        val digerleri = Layout.entries.filter { it != selected }.map { map(it) }
+        return text.toSet()
+            .filter { ch -> digerleri.any { it[ch] != secili[ch] } }
+            .sorted()
+    }
 
     /**
-     * Düzen testi için örnek metin: iki düzende de yazılabilen ama farklı
-     * tuşlara düşen simgelerden seçildi. Bilgisayarda birebir bu çıkıyorsa
-     * seçili düzen doğrudur.
+     * Bu metin, DESTEKLENEN HER DÜZENDE farklı bir tuş dizisine düşer; yani
+     * bilgisayarda beklenenden farklı çıkması "yanlış düzen" demektir.
+     * Harfleri de içerir: AZERTY/QWERTZ ile birlikte harfler de ayırt edici
+     * oldu, yalnız simgelerden oluşan bir test artık yetmiyor.
      */
-    const val LAYOUT_TEST_TEXT = "vault: @ \" ' ( ) = ? - _ ; , ."
+    const val LAYOUT_TEST_TEXT = "azqwym1! @ - _ ; : / ? . , ( ) ="
+
+    /** Her düzen çifti bu metinde farklı tuş dizisi üretiyor mu (test güvencesi). */
+    internal fun testTextKeystrokes(layout: Layout): List<KeyStroke?> =
+        LAYOUT_TEST_TEXT.map { map(layout)[it] }
 
     /**
-     * Hız testi bloğu ve metni: iki düzende de aynı tuşa düşen harf ve
-     * rakamlardan — düzeni değil TAŞIMAyı ölçer ('i' bilerek yok, TR-Q'da
-     * başka tuştadır). Boşlukla ayrılmış 10 özdeş blok; seçilen tempoda
-     * rapor düşerse ya da tuş tekrarı olursa bloklardan biri diğerlerine
-     * benzemez, gözle anında görülür.
+     * Hız testi bloğu ve metni: TAŞIMAyı ölçer, düzeni değil. Boşlukla
+     * ayrılmış 10 özdeş blok; seçilen tempoda rapor düşerse ya da tuş tekrarı
+     * olursa bloklardan biri diğerlerine benzemez, gözle anında görülür.
+     *
+     * DİKKAT: düzenden bağımsız DEĞİLDİR — AZERTY'de harfler, QWERTZ'de y/z
+     * yer değiştirir. Bu yüzden hız testi ancak DÜZEN TESTİ geçtikten sonra
+     * anlamlıdır; arayüz bu sırayı gözetir.
      */
     const val SPEED_TEST_BLOCK = "abcdefghjk0123456789"
     val SPEED_TEST_TEXT: String = List(10) { SPEED_TEST_BLOCK }.joinToString(" ")
 
-    private fun MutableMap<Char, KeyStroke>.putLetters(overrides: Map<Char, KeyStroke> = emptyMap()) {
-        for (c in 'a'..'z') {
-            val usage = 0x04 + (c - 'a')
-            put(c, KeyStroke(usage, MOD_NONE))
-            put(c.uppercaseChar(), KeyStroke(usage, MOD_SHIFT))
-        }
-        putAll(overrides)
-    }
-
-    private fun MutableMap<Char, KeyStroke>.putDigitsAndCommon() {
-        for (c in '1'..'9') put(c, KeyStroke(0x1E + (c - '1'), MOD_NONE))
-        put('0', KeyStroke(0x27, MOD_NONE))
-        put(' ', KeyStroke(0x2C, MOD_NONE))
-        put('\n', KeyStroke(0x28, MOD_NONE))
-        put('\t', KeyStroke(0x2B, MOD_NONE))
-    }
-
-    private val US: Map<Char, KeyStroke> = buildMap {
-        putLetters()
-        putDigitsAndCommon()
-        // Shift + rakam satırı
-        "!@#\$%^&*()".forEachIndexed { i, c ->
-            put(c, KeyStroke(if (i == 9) 0x27 else 0x1E + i, MOD_SHIFT))
-        }
-        put('-', KeyStroke(0x2D, MOD_NONE)); put('_', KeyStroke(0x2D, MOD_SHIFT))
-        put('=', KeyStroke(0x2E, MOD_NONE)); put('+', KeyStroke(0x2E, MOD_SHIFT))
-        put('[', KeyStroke(0x2F, MOD_NONE)); put('{', KeyStroke(0x2F, MOD_SHIFT))
-        put(']', KeyStroke(0x30, MOD_NONE)); put('}', KeyStroke(0x30, MOD_SHIFT))
-        put('\\', KeyStroke(0x31, MOD_NONE)); put('|', KeyStroke(0x31, MOD_SHIFT))
-        put(';', KeyStroke(0x33, MOD_NONE)); put(':', KeyStroke(0x33, MOD_SHIFT))
-        put('\'', KeyStroke(0x34, MOD_NONE)); put('"', KeyStroke(0x34, MOD_SHIFT))
-        put('`', KeyStroke(0x35, MOD_NONE)); put('~', KeyStroke(0x35, MOD_SHIFT))
-        put(',', KeyStroke(0x36, MOD_NONE)); put('<', KeyStroke(0x36, MOD_SHIFT))
-        put('.', KeyStroke(0x37, MOD_NONE)); put('>', KeyStroke(0x37, MOD_SHIFT))
-        put('/', KeyStroke(0x38, MOD_NONE)); put('?', KeyStroke(0x38, MOD_SHIFT))
-    }
+    /**
+     * ABD (ANSI) düzeni — konum tablosu. Mevcut, cihazda doğrulanmış haritadan
+     * birebir türetildi; eşdeğerliği [com.afgover.vault.data.HidLayoutsTest]
+     * koruyor.
+     */
+    private val US_TABLE = KeyTable(
+        KeyTable.latinHarfler() + KeyTable.ORTAK + listOf(
+            KeyCap(0x1E, '1', '!'), KeyCap(0x1F, '2', '@'), KeyCap(0x20, '3', '#'),
+            KeyCap(0x21, '4', '$'), KeyCap(0x22, '5', '%'), KeyCap(0x23, '6', '^'),
+            KeyCap(0x24, '7', '&'), KeyCap(0x25, '8', '*'), KeyCap(0x26, '9', '('),
+            KeyCap(0x27, '0', ')'),
+            KeyCap(0x2D, '-', '_'), KeyCap(0x2E, '=', '+'),
+            KeyCap(0x2F, '[', '{'), KeyCap(0x30, ']', '}'), KeyCap(0x31, '\\', '|'),
+            KeyCap(0x33, ';', ':'), KeyCap(0x34, '\'', '"'), KeyCap(0x35, '`', '~'),
+            KeyCap(0x36, ',', '<'), KeyCap(0x37, '.', '>'), KeyCap(0x38, '/', '?')
+        )
+    )
 
     /**
-     * Türkçe Q düzeni. Emin olunmayan birkaç özel karakter bilinçli olarak
-     * haritada yok; yazılamayan karakterler kullanıcıya bildirilir
-     * (gerekirse US moduna geçilir).
+     * Türkçe Q (ISO) — konum tablosu. Cihazda doğrulandı (vault_takip B-050).
+     * `^` (Shift+3) ÖLÜ TUŞTUR: tek başına karakter basmaz, sonraki sesliyle
+     * birleşir (â). Bu yüzden tabloda yok — yazılamayan karakter olarak
+     * bildirilmesi, sessizce yanlış üretilmesinden iyidir.
      */
-    private val TR: Map<Char, KeyStroke> = buildMap {
-        putLetters(
-            overrides = mapOf(
+    private val TR_Q_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(
                 // TR-Q'da fiziksel I tuşu 'ı', home-row'daki ek tuş 'i' üretir
-                'ı' to KeyStroke(0x0C, MOD_NONE), 'I' to KeyStroke(0x0C, MOD_SHIFT),
-                'i' to KeyStroke(0x34, MOD_NONE), 'İ' to KeyStroke(0x34, MOD_SHIFT)
+                0x0C to KeyCap(0x0C, 'ı', 'I'),
+                0x14 to KeyCap(0x14, 'q', 'Q', altgr = '@')
             )
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x1E, '1', '!'), KeyCap(0x1F, '2', '\''),
+            KeyCap(0x20, '3', null, altgr = '#'),          // Shift+3 = ^ ölü tuş
+            KeyCap(0x21, '4', '+', altgr = '$'),
+            KeyCap(0x22, '5', '%'), KeyCap(0x23, '6', '&'),
+            KeyCap(0x24, '7', '/', altgr = '{'), KeyCap(0x25, '8', '(', altgr = '['),
+            KeyCap(0x26, '9', ')', altgr = ']'), KeyCap(0x27, '0', '=', altgr = '}'),
+            KeyCap(0x2D, '*', '?', altgr = '\\'),
+            KeyCap(0x2E, '-', '_'),
+            KeyCap(0x2F, 'ğ', 'Ğ'), KeyCap(0x30, 'ü', 'Ü'),
+            KeyCap(0x32, ',', ';'), KeyCap(0x33, 'ş', 'Ş'),
+            KeyCap(0x34, 'i', 'İ'), KeyCap(0x35, '"'),
+            KeyCap(0x36, 'ö', 'Ö'), KeyCap(0x37, 'ç', 'Ç'),
+            KeyCap(0x38, '.', ':'),
+            KeyCap(0x64, '<', '>', altgr = '|')
         )
-        putDigitsAndCommon()
-        put('ğ', KeyStroke(0x2F, MOD_NONE)); put('Ğ', KeyStroke(0x2F, MOD_SHIFT))
-        put('ü', KeyStroke(0x30, MOD_NONE)); put('Ü', KeyStroke(0x30, MOD_SHIFT))
-        put('ş', KeyStroke(0x33, MOD_NONE)); put('Ş', KeyStroke(0x33, MOD_SHIFT))
-        put('ö', KeyStroke(0x36, MOD_NONE)); put('Ö', KeyStroke(0x36, MOD_SHIFT))
-        put('ç', KeyStroke(0x37, MOD_NONE)); put('Ç', KeyStroke(0x37, MOD_SHIFT))
-        // Shift + rakam satırı: ! ' ^ + % & / ( ) =
-        "!'^+%&/()=".forEachIndexed { i, c ->
-            put(c, KeyStroke(if (i == 9) 0x27 else 0x1E + i, MOD_SHIFT))
-        }
-        // '^' TR-Q'da Shift+3 = DÜZELTME İŞARETİ ölü tuşudur: tek başına
-        // karakter basmaz, sonraki harfle birleşir (â). Sessizce yanlış üretmek
-        // yerine haritadan çıkar; "bu düzende yazılamadı" uyarısına düşsün (denetim).
-        remove('^')
-        put('*', KeyStroke(0x2D, MOD_NONE)); put('?', KeyStroke(0x2D, MOD_SHIFT))
-        put('\\', KeyStroke(0x2D, MOD_ALTGR))
-        put('-', KeyStroke(0x2E, MOD_NONE)); put('_', KeyStroke(0x2E, MOD_SHIFT))
-        put('.', KeyStroke(0x38, MOD_NONE)); put(':', KeyStroke(0x38, MOD_SHIFT))
-        // AltGr karakterleri
-        put('@', KeyStroke(0x14, MOD_ALTGR))       // AltGr+Q
-        put('#', KeyStroke(0x20, MOD_ALTGR))       // AltGr+3
-        put('$', KeyStroke(0x21, MOD_ALTGR))       // AltGr+4
-        put('{', KeyStroke(0x24, MOD_ALTGR))       // AltGr+7
-        put('[', KeyStroke(0x25, MOD_ALTGR))       // AltGr+8
-        put(']', KeyStroke(0x26, MOD_ALTGR))       // AltGr+9
-        put('}', KeyStroke(0x27, MOD_ALTGR))       // AltGr+0
-        put('<', KeyStroke(0x64, MOD_NONE)); put('>', KeyStroke(0x64, MOD_SHIFT))
-        put('|', KeyStroke(0x64, MOD_ALTGR))
-        // ISO TR-Q: Enter'ın solundaki tuş (0x32) ',' ve ';'; 1'in solundaki (0x35) '"'.
-        // Eksiklikleri HidLayoutsTest yakaladı: bu karakterler "yazılamaz" sanılıyordu.
-        put(',', KeyStroke(0x32, MOD_NONE)); put(';', KeyStroke(0x32, MOD_SHIFT))
-        put('"', KeyStroke(0x35, MOD_NONE))
-    }
+    )
+
+    private val US: Map<Char, KeyStroke> = US_TABLE.toMap()
+    private val TR: Map<Char, KeyStroke> = TR_Q_TABLE.toMap()
+
+    /**
+     * İngiliz (UK, ISO) — konum tablosu.
+     * UK ISO, US ile aynı QWERTY harf sırasını ve aynı rakam sırası tabanını kullanır; farklar noktalamada toplanır ve tam olarak şifrelerde sık geçen karak
+     *
+     * Hakem doğrulaması: onaylandı.
+     */
+    private val UK_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x04, 'a', shift = 'A'),
+            KeyCap(0x05, 'b', shift = 'B'),
+            KeyCap(0x06, 'c', shift = 'C'),
+            KeyCap(0x07, 'd', shift = 'D'),
+            KeyCap(0x08, 'e', shift = 'E'),
+            KeyCap(0x09, 'f', shift = 'F'),
+            KeyCap(0x0A, 'g', shift = 'G'),
+            KeyCap(0x0B, 'h', shift = 'H'),
+            KeyCap(0x0C, 'i', shift = 'I'),
+            KeyCap(0x0D, 'j', shift = 'J'),
+            KeyCap(0x0E, 'k', shift = 'K'),
+            KeyCap(0x0F, 'l', shift = 'L'),
+            KeyCap(0x10, 'm', shift = 'M'),
+            KeyCap(0x11, 'n', shift = 'N'),
+            KeyCap(0x12, 'o', shift = 'O'),
+            KeyCap(0x13, 'p', shift = 'P'),
+            KeyCap(0x14, 'q', shift = 'Q'),
+            KeyCap(0x15, 'r', shift = 'R'),
+            KeyCap(0x16, 's', shift = 'S'),
+            KeyCap(0x17, 't', shift = 'T'),
+            KeyCap(0x18, 'u', shift = 'U'),
+            KeyCap(0x19, 'v', shift = 'V'),
+            KeyCap(0x1A, 'w', shift = 'W'),
+            KeyCap(0x1B, 'x', shift = 'X'),
+            KeyCap(0x1C, 'y', shift = 'Y'),
+            KeyCap(0x1D, 'z', shift = 'Z'),
+            KeyCap(0x1E, '1', shift = '!'),
+            KeyCap(0x1F, '2', shift = '"'),
+            KeyCap(0x20, '3', shift = '£'),
+            KeyCap(0x21, '4', shift = '$', altgr = '€'),
+            KeyCap(0x22, '5', shift = '%'),
+            KeyCap(0x23, '6', shift = '^'),
+            KeyCap(0x24, '7', shift = '&'),
+            KeyCap(0x25, '8', shift = '*'),
+            KeyCap(0x26, '9', shift = '('),
+            KeyCap(0x27, '0', shift = ')'),
+            KeyCap(0x2D, '-', shift = '_'),
+            KeyCap(0x2E, '=', shift = '+'),
+            KeyCap(0x2F, '[', shift = '{'),
+            KeyCap(0x30, ']', shift = '}'),
+            KeyCap(0x31, '#', shift = '~'),
+            KeyCap(0x33, ';', shift = ':'),
+            KeyCap(0x34, '\'', shift = '@'),
+            KeyCap(0x35, '`', shift = '¬'),
+            KeyCap(0x36, ',', shift = '<'),
+            KeyCap(0x37, '.', shift = '>'),
+            KeyCap(0x38, '/', shift = '?'),
+            KeyCap(0x64, '\\', shift = '|')
+        )
+    )
+
+
+    /**
+     * Almanca (QWERTZ, ISO) — konum tablosu.
+     * Almanca T1 (QWERTZ, ISO) düzeninin US'ten farkları, KONUM bazında: (1) 0x1C konumu (US-Y) 'z', 0x1D konumu (US-Z) 'y' üretir — Y/Z yer değiştirir. (2)
+     *
+     * Hakem doğrulaması: onaylandı.
+     */
+    private val DE_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x04, 'a', shift = 'A'),
+            KeyCap(0x05, 'b', shift = 'B'),
+            KeyCap(0x06, 'c', shift = 'C'),
+            KeyCap(0x07, 'd', shift = 'D'),
+            KeyCap(0x08, 'e', shift = 'E', altgr = '€'),
+            KeyCap(0x09, 'f', shift = 'F'),
+            KeyCap(0x0A, 'g', shift = 'G'),
+            KeyCap(0x0B, 'h', shift = 'H'),
+            KeyCap(0x0C, 'i', shift = 'I'),
+            KeyCap(0x0D, 'j', shift = 'J'),
+            KeyCap(0x0E, 'k', shift = 'K'),
+            KeyCap(0x0F, 'l', shift = 'L'),
+            KeyCap(0x10, 'm', shift = 'M'),
+            KeyCap(0x11, 'n', shift = 'N'),
+            KeyCap(0x12, 'o', shift = 'O'),
+            KeyCap(0x13, 'p', shift = 'P'),
+            KeyCap(0x14, 'q', shift = 'Q', altgr = '@'),
+            KeyCap(0x15, 'r', shift = 'R'),
+            KeyCap(0x16, 's', shift = 'S'),
+            KeyCap(0x17, 't', shift = 'T'),
+            KeyCap(0x18, 'u', shift = 'U'),
+            KeyCap(0x19, 'v', shift = 'V'),
+            KeyCap(0x1A, 'w', shift = 'W'),
+            KeyCap(0x1B, 'x', shift = 'X'),
+            KeyCap(0x1C, 'z', shift = 'Z'),
+            KeyCap(0x1D, 'y', shift = 'Y'),
+            KeyCap(0x1E, '1', shift = '!'),
+            KeyCap(0x1F, '2', shift = '"'),
+            KeyCap(0x20, '3', shift = '§'),
+            KeyCap(0x21, '4', shift = '$'),
+            KeyCap(0x22, '5', shift = '%'),
+            KeyCap(0x23, '6', shift = '&'),
+            KeyCap(0x24, '7', shift = '/', altgr = '{'),
+            KeyCap(0x25, '8', shift = '(', altgr = '['),
+            KeyCap(0x26, '9', shift = ')', altgr = ']'),
+            KeyCap(0x27, '0', shift = '=', altgr = '}'),
+            KeyCap(0x2D, 'ß', shift = '?', altgr = '\\'),
+            KeyCap(0x2F, 'ü', shift = 'Ü'),
+            KeyCap(0x30, '+', shift = '*', altgr = '~'),
+            KeyCap(0x31, '#', shift = '\''),
+            KeyCap(0x33, 'ö', shift = 'Ö'),
+            KeyCap(0x34, 'ä', shift = 'Ä'),
+            KeyCap(0x36, ',', shift = ';'),
+            KeyCap(0x37, '.', shift = ':'),
+            KeyCap(0x38, '-', shift = '_'),
+            KeyCap(0x64, '<', shift = '>', altgr = '|')
+        )
+    )
+
+
+    /**
+     * Fransızca (AZERTY, ISO) — konum tablosu.
+     * US'e göre en kritik farklar: (1) Harf konumları kayıyor — 0x14 (US-Q) = a, 0x04 (US-A) = q, 0x1A (US-W) = z, 0x1D (US-Z) = w, ve M harfi 0x33'te (US-;
+     *
+     * Hakem doğrulaması: onaylandı.
+     */
+    private val FR_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x04, 'q', shift = 'Q'),
+            KeyCap(0x05, 'b', shift = 'B'),
+            KeyCap(0x06, 'c', shift = 'C'),
+            KeyCap(0x07, 'd', shift = 'D'),
+            KeyCap(0x08, 'e', shift = 'E', altgr = '€'),
+            KeyCap(0x09, 'f', shift = 'F'),
+            KeyCap(0x0A, 'g', shift = 'G'),
+            KeyCap(0x0B, 'h', shift = 'H'),
+            KeyCap(0x0C, 'i', shift = 'I'),
+            KeyCap(0x0D, 'j', shift = 'J'),
+            KeyCap(0x0E, 'k', shift = 'K'),
+            KeyCap(0x0F, 'l', shift = 'L'),
+            KeyCap(0x10, ',', shift = '?'),
+            KeyCap(0x11, 'n', shift = 'N'),
+            KeyCap(0x12, 'o', shift = 'O'),
+            KeyCap(0x13, 'p', shift = 'P'),
+            KeyCap(0x14, 'a', shift = 'A'),
+            KeyCap(0x15, 'r', shift = 'R'),
+            KeyCap(0x16, 's', shift = 'S'),
+            KeyCap(0x17, 't', shift = 'T'),
+            KeyCap(0x18, 'u', shift = 'U'),
+            KeyCap(0x19, 'v', shift = 'V'),
+            KeyCap(0x1A, 'z', shift = 'Z'),
+            KeyCap(0x1B, 'x', shift = 'X'),
+            KeyCap(0x1C, 'y', shift = 'Y'),
+            KeyCap(0x1D, 'w', shift = 'W'),
+            KeyCap(0x1E, '&', shift = '1'),
+            KeyCap(0x1F, 'é', shift = '2'),
+            KeyCap(0x20, '"', shift = '3', altgr = '#'),
+            KeyCap(0x21, '\'', shift = '4', altgr = '{'),
+            KeyCap(0x22, '(', shift = '5', altgr = '['),
+            KeyCap(0x23, '-', shift = '6', altgr = '|'),
+            KeyCap(0x24, 'è', shift = '7'),
+            KeyCap(0x25, '_', shift = '8', altgr = '\\'),
+            KeyCap(0x26, 'ç', shift = '9'),
+            KeyCap(0x27, 'à', shift = '0', altgr = '@'),
+            KeyCap(0x2D, ')', shift = '°', altgr = ']'),
+            KeyCap(0x2E, '=', shift = '+', altgr = '}'),
+            KeyCap(0x30, '$', shift = '£', altgr = '¤'),
+            KeyCap(0x31, '*', shift = 'µ'),
+            KeyCap(0x33, 'm', shift = 'M'),
+            KeyCap(0x34, 'ù', shift = '%'),
+            KeyCap(0x35, '²'),
+            KeyCap(0x36, ';', shift = '.'),
+            KeyCap(0x37, ':', shift = '/'),
+            KeyCap(0x38, '!', shift = '§'),
+            KeyCap(0x64, '<', shift = '>')
+        )
+    )
+
+
+    /**
+     * İspanyolca (ISO) — konum tablosu.
+     * İspanyol ISO düzeninin US'ten kritik farkları: (1) Noktalama tamamen kaymış — US'te ;: olan 0x33 konumu Ñ, US'te '" olan 0x34 konumu ÖLÜ ´/¨, US'te \|
+     *
+     * Hakem doğrulaması: onaylandı.
+     */
+    private val ES_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x04, 'a', shift = 'A'),
+            KeyCap(0x05, 'b', shift = 'B'),
+            KeyCap(0x06, 'c', shift = 'C'),
+            KeyCap(0x07, 'd', shift = 'D'),
+            KeyCap(0x08, 'e', shift = 'E', altgr = '€'),
+            KeyCap(0x09, 'f', shift = 'F'),
+            KeyCap(0x0A, 'g', shift = 'G'),
+            KeyCap(0x0B, 'h', shift = 'H'),
+            KeyCap(0x0C, 'i', shift = 'I'),
+            KeyCap(0x0D, 'j', shift = 'J'),
+            KeyCap(0x0E, 'k', shift = 'K'),
+            KeyCap(0x0F, 'l', shift = 'L'),
+            KeyCap(0x10, 'm', shift = 'M'),
+            KeyCap(0x11, 'n', shift = 'N'),
+            KeyCap(0x12, 'o', shift = 'O'),
+            KeyCap(0x13, 'p', shift = 'P'),
+            KeyCap(0x14, 'q', shift = 'Q'),
+            KeyCap(0x15, 'r', shift = 'R'),
+            KeyCap(0x16, 's', shift = 'S'),
+            KeyCap(0x17, 't', shift = 'T'),
+            KeyCap(0x18, 'u', shift = 'U'),
+            KeyCap(0x19, 'v', shift = 'V'),
+            KeyCap(0x1A, 'w', shift = 'W'),
+            KeyCap(0x1B, 'x', shift = 'X'),
+            KeyCap(0x1C, 'y', shift = 'Y'),
+            KeyCap(0x1D, 'z', shift = 'Z'),
+            KeyCap(0x1E, '1', shift = '!', altgr = '|'),
+            KeyCap(0x1F, '2', shift = '"', altgr = '@'),
+            KeyCap(0x20, '3', shift = '·', altgr = '#'),
+            KeyCap(0x21, '4', shift = '$', altgr = '~'),
+            KeyCap(0x22, '5', shift = '%'),
+            KeyCap(0x23, '6', shift = '&'),
+            KeyCap(0x24, '7', shift = '/'),
+            KeyCap(0x25, '8', shift = '('),
+            KeyCap(0x26, '9', shift = ')'),
+            KeyCap(0x27, '0', shift = '='),
+            KeyCap(0x2D, '\'', shift = '?'),
+            KeyCap(0x2E, '¡', shift = '¿'),
+            KeyCap(0x2F, null, shift = null, altgr = '['),
+            KeyCap(0x30, '+', shift = '*', altgr = ']'),
+            KeyCap(0x31, 'ç', shift = 'Ç', altgr = '}'),
+            KeyCap(0x33, 'ñ', shift = 'Ñ'),
+            KeyCap(0x34, null, shift = null, altgr = '{'),
+            KeyCap(0x35, 'º', shift = 'ª', altgr = '\\'),
+            KeyCap(0x36, ',', shift = ';'),
+            KeyCap(0x37, '.', shift = ':'),
+            KeyCap(0x38, '-', shift = '_'),
+            KeyCap(0x64, '<', shift = '>')
+        )
+    )
+
+
+    /**
+     * İtalyanca (ISO) — konum tablosu.
+     * İtalyan ISO düzeni tam QWERTY'dir: harflerin (0x04-0x1D) ve rakamların base değerleri US ile birebir aynıdır — tehlike tamamen simgelerdedir. US'ten f
+     *
+     * Hakem doğrulaması: onaylandı.
+     */
+    private val IT_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x04, 'a', shift = 'A'),
+            KeyCap(0x05, 'b', shift = 'B'),
+            KeyCap(0x06, 'c', shift = 'C'),
+            KeyCap(0x07, 'd', shift = 'D'),
+            KeyCap(0x08, 'e', shift = 'E', altgr = '€'),
+            KeyCap(0x09, 'f', shift = 'F'),
+            KeyCap(0x0A, 'g', shift = 'G'),
+            KeyCap(0x0B, 'h', shift = 'H'),
+            KeyCap(0x0C, 'i', shift = 'I'),
+            KeyCap(0x0D, 'j', shift = 'J'),
+            KeyCap(0x0E, 'k', shift = 'K'),
+            KeyCap(0x0F, 'l', shift = 'L'),
+            KeyCap(0x10, 'm', shift = 'M'),
+            KeyCap(0x11, 'n', shift = 'N'),
+            KeyCap(0x12, 'o', shift = 'O'),
+            KeyCap(0x13, 'p', shift = 'P'),
+            KeyCap(0x14, 'q', shift = 'Q'),
+            KeyCap(0x15, 'r', shift = 'R'),
+            KeyCap(0x16, 's', shift = 'S'),
+            KeyCap(0x17, 't', shift = 'T'),
+            KeyCap(0x18, 'u', shift = 'U'),
+            KeyCap(0x19, 'v', shift = 'V'),
+            KeyCap(0x1A, 'w', shift = 'W'),
+            KeyCap(0x1B, 'x', shift = 'X'),
+            KeyCap(0x1C, 'y', shift = 'Y'),
+            KeyCap(0x1D, 'z', shift = 'Z'),
+            KeyCap(0x1E, '1', shift = '!'),
+            KeyCap(0x1F, '2', shift = '"'),
+            KeyCap(0x20, '3', shift = '£'),
+            KeyCap(0x21, '4', shift = '$'),
+            KeyCap(0x22, '5', shift = '%'),
+            KeyCap(0x23, '6', shift = '&'),
+            KeyCap(0x24, '7', shift = '/'),
+            KeyCap(0x25, '8', shift = '('),
+            KeyCap(0x26, '9', shift = ')'),
+            KeyCap(0x27, '0', shift = '='),
+            KeyCap(0x2D, '\'', shift = '?'),
+            KeyCap(0x2E, 'ì', shift = '^'),
+            KeyCap(0x2F, 'è', shift = 'é', altgr = '[', altgrShift = '{'),
+            KeyCap(0x30, '+', shift = '*', altgr = ']', altgrShift = '}'),
+            KeyCap(0x31, 'ù', shift = '§'),
+            KeyCap(0x33, 'ò', shift = 'ç', altgr = '@'),
+            KeyCap(0x34, 'à', shift = '°', altgr = '#'),
+            KeyCap(0x35, '\\', shift = '|'),
+            KeyCap(0x36, ',', shift = ';'),
+            KeyCap(0x37, '.', shift = ':'),
+            KeyCap(0x38, '-', shift = '_'),
+            KeyCap(0x64, '<', shift = '>')
+        )
+    )
+
+    private val UK: Map<Char, KeyStroke> = UK_TABLE.toMap()
+    private val DE: Map<Char, KeyStroke> = DE_TABLE.toMap()
+    private val FR: Map<Char, KeyStroke> = FR_TABLE.toMap()
+    private val ES: Map<Char, KeyStroke> = ES_TABLE.toMap()
+    private val IT: Map<Char, KeyStroke> = IT_TABLE.toMap()
+
+    /** Tablolar: tutarlılık testleri buradan geçer. */
+    internal val TABLES: Map<Layout, KeyTable> = mapOf(
+        Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
+        Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
+        Layout.IT to IT_TABLE
+    )
 }
