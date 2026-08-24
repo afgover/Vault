@@ -38,6 +38,10 @@ object AppLocale {
     private fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
+    /** O anki tercih etiketi ("" = sistem). Servislerin değişimi görmesi için. */
+    fun currentTag(context: Context): String =
+        prefs(context).getString(KEY, "").orEmpty()
+
     fun current(context: Context): Option =
         Option.of(prefs(context).getString(KEY, ""))
 
@@ -59,7 +63,15 @@ object AppLocale {
         // uygulama bağlamı bu noktada hazırdır.
         val tag = base.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getString(KEY, "").orEmpty()
-        if (tag.isEmpty()) return base
+        if (tag.isEmpty()) {
+            // "Sistem dili"ne DÖNERKEN de varsayılanı geri koymak gerekiyor:
+            // erken çıkılırsa Locale.setDefault önceki seçimde kalır ve arayüz
+            // Türkçeye dönerken tarihler İngilizce biçimlenirdi (denetim).
+            // base.resources.configuration setDefault'tan etkilenmez, sistemin
+            // gerçek dilini taşır.
+            Locale.setDefault(base.resources.configuration.locales[0])
+            return base
+        }
         val locale = Locale.forLanguageTag(tag)
         Locale.setDefault(locale)
         val config = Configuration(base.resources.configuration)

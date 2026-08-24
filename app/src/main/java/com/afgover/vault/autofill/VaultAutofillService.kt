@@ -45,6 +45,9 @@ class VaultAutofillService : AutofillService() {
     // Beklenmedik bir istisna (şifreleme, boyut sınırı, veritabanı) süreci
     // çökertip SaveCallback/FillCallback sözleşmesini bozmasın: yakala ve yut,
     // her giriş noktası zaten kendi hata yolunu bildiriyor (denetim).
+    /** Uzun ömürlü servis: metinler her istekte sarılmış context'ten (denetim). */
+    private fun yerel(): Context = AppLocale.wrap(this)
+
     private val hata = CoroutineExceptionHandler { _, _ -> }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main + hata)
 
@@ -72,7 +75,7 @@ class VaultAutofillService : AutofillService() {
 
         val key = VaultSession.key()
         if (key == null) {
-            callback.onSuccess(AutofillResponses.authResponse(this, parsed, unlockSender()))
+            callback.onSuccess(AutofillResponses.authResponse(yerel(), parsed, unlockSender()))
             return
         }
 
@@ -85,7 +88,7 @@ class VaultAutofillService : AutofillService() {
                     VaultApp.from(this@VaultAutofillService).repository.getAllDecrypted(key)
                 }
                 if (cancelled) return@launch
-                callback.onSuccess(AutofillResponses.fillResponse(this@VaultAutofillService, parsed, entries))
+                callback.onSuccess(AutofillResponses.fillResponse(yerel(), parsed, entries))
             } catch (e: Exception) {
                 if (!cancelled) callback.onSuccess(null)
             }
@@ -95,13 +98,13 @@ class VaultAutofillService : AutofillService() {
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
         val structure = request.fillContexts.lastOrNull()?.structure
         if (structure == null) {
-            callback.onFailure(getString(R.string.backup_autofill_form_unreadable))
+            callback.onFailure(yerel().getString(R.string.backup_autofill_form_unreadable))
             return
         }
         val parsed = StructureParser.parse(structure)
         val key = VaultSession.key()
         if (key == null) {
-            callback.onFailure(getString(R.string.backup_autofill_locked_save))
+            callback.onFailure(yerel().getString(R.string.backup_autofill_locked_save))
             return
         }
 
@@ -110,7 +113,7 @@ class VaultAutofillService : AutofillService() {
         val cardNumber = parsed.valueOf(FieldKind.CARD_NUMBER).orEmpty()
         val isCard = cardNumber.isNotEmpty()
         if (!isCard && username.isEmpty() && password.isEmpty()) {
-            callback.onFailure(getString(R.string.backup_autofill_nothing_to_save))
+            callback.onFailure(yerel().getString(R.string.backup_autofill_nothing_to_save))
             return
         }
 
@@ -153,7 +156,7 @@ class VaultAutofillService : AutofillService() {
                 callback.onSuccess()
             } catch (e: Exception) {
                 callback.onFailure(
-                    getString(R.string.backup_autofill_save_failed, e.message.orEmpty())
+                    yerel().getString(R.string.backup_autofill_save_failed, e.message.orEmpty())
                 )
             }
         }

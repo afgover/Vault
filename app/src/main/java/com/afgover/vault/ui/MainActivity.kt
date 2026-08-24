@@ -137,7 +137,11 @@ fun VaultRoot(
     onBiometricEnable: (String?) -> Unit
 ) {
     // Basit gezinme: durum bellekte tutulur; süreç yeniden başlarsa Home'a döner.
-    var nav by remember { mutableStateOf<Nav>(Nav.Home) }
+    // Dil değişimi Activity'yi recreate ediyor; nav burada tutulursa kullanıcı
+    // Ayarlar'dan ana listeye düşerdi (denetim). ViewModel recreate'ten sağ
+    // çıktığı için konum orada saklanıyor.
+    var nav by remember { mutableStateOf<Nav>(viewModel.acilacakEkran as? Nav ?: Nav.Home) }
+    LaunchedEffect(nav) { viewModel.acilacakEkran = nav }
 
     // Sistem geri tuşu üst çubuktaki ok ile aynı yere döner; uygulamadan yalnız
     // Home'dayken çıkılır. (Ok'suz sistem geri'si doğrudan uygulamayı kapatıyordu.)

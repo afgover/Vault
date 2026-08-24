@@ -2,6 +2,7 @@ package com.afgover.vault.data
 
 import com.afgover.vault.bt.HidLayouts
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -14,37 +15,59 @@ class LayoutSelectionTest {
     @Test
     fun `tercih yoksa hepsi acik - kimsenin duzeni gizlenmez`() {
         assertEquals(HidLayouts.Layout.entries, HidLayouts.enabledLayouts(null))
-    }
-
-    @Test
-    fun `secilenler okunur ve sira korunur`() {
-        val secilen = HidLayouts.enabledLayouts("US,DE")
-        assertEquals(listOf(HidLayouts.Layout.US, HidLayouts.Layout.DE), secilen)
-    }
-
-    @Test
-    fun `bos ya da bozuk tercih hepsine duser - aktarim ekrani kullanilamaz kalmaz`() {
         assertEquals(HidLayouts.Layout.entries, HidLayouts.enabledLayouts(""))
-        assertEquals(HidLayouts.Layout.entries, HidLayouts.enabledLayouts("OLMAYAN,DUZEN"))
     }
 
     @Test
-    fun `bilinmeyen ad atlanir ama bilinenler kalir`() {
-        assertEquals(listOf(HidLayouts.Layout.FR), HidLayouts.enabledLayouts("OLMAYAN,FR"))
+    fun `kapatilanlar dislanir`() {
+        val acik = HidLayouts.enabledLayouts("FR,IT")
+        assertFalse(HidLayouts.Layout.FR in acik)
+        assertFalse(HidLayouts.Layout.IT in acik)
+        assertTrue(HidLayouts.Layout.US in acik)
+        assertEquals(HidLayouts.Layout.entries.size - 2, acik.size)
+    }
+
+    /**
+     * Sıra her zaman enum sırasıdır: aç/kapa geçmişine göre kayan bir liste,
+     * çipleri her açılışta başka sırada gösterir ve geri düşüşü değiştirirdi.
+     */
+    @Test
+    fun `sira her zaman enum sirasi - acma kapama gecmisine gore kaymaz`() {
+        val a = HidLayouts.enabledLayouts("DE")
+        val b = HidLayouts.enabledLayouts("DE")
+        assertEquals(a, b)
+        assertEquals(a, a.sortedBy { it.ordinal })
+    }
+
+    @Test
+    fun `bilinmeyen ad yok sayilir`() {
+        assertEquals(HidLayouts.Layout.entries, HidLayouts.enabledLayouts("OLMAYAN,DUZEN"))
     }
 
     @Test
     fun `gidis donus - saklanan metin geri okunur`() {
         val kume = listOf(HidLayouts.Layout.TR_Q, HidLayouts.Layout.IT)
-        assertEquals(kume, HidLayouts.enabledLayouts(HidLayouts.storeEnabled(kume)))
+        assertEquals(kume, HidLayouts.enabledLayouts(HidLayouts.storeDisabled(kume)))
     }
 
     @Test
-    fun `hicbiri secilmezse saklarken hepsi yazilir`() {
+    fun `hicbiri acik degilse hepsine duser - aktarim ekrani kullanilamaz kalmaz`() {
         assertEquals(
             HidLayouts.Layout.entries,
-            HidLayouts.enabledLayouts(HidLayouts.storeEnabled(emptyList()))
+            HidLayouts.enabledLayouts(HidLayouts.storeDisabled(emptyList()))
         )
+    }
+
+    /**
+     * KAPATILANLAR saklanıyor: ileride eklenen bir düzen mevcut kullanıcıda
+     * kendiliğinden görünmeli. İzin listesi saklansaydı gizli kalırdı.
+     */
+    @Test
+    fun `yeni eklenen bir duzen mevcut kullanicida gorunur`() {
+        // Kullanıcı yalnız FR'yi kapatmış; kalan her şey (sonradan eklenenler
+        // dahil) açık kalmalı.
+        val acik = HidLayouts.enabledLayouts("FR")
+        assertEquals(HidLayouts.Layout.entries.filter { it != HidLayouts.Layout.FR }, acik)
     }
 
     /**

@@ -38,16 +38,26 @@ object HidLayouts {
      * En az bir düzen her zaman açık kalır: hiçbiri seçilmezse aktarım ekranı
      * kullanılamaz hâle gelirdi.
      */
-    fun enabledLayouts(stored: String?): List<Layout> {
-        if (stored == null) return Layout.entries
-        val secilen = stored.split(",").mapNotNull { ad ->
+    fun enabledLayouts(storedDisabled: String?): List<Layout> {
+        val kapali = storedDisabled.orEmpty().split(",").mapNotNull { ad ->
             runCatching { Layout.valueOf(ad.trim()) }.getOrNull()
-        }
-        return secilen.ifEmpty { Layout.entries }
+        }.toSet()
+        // Sıra HER ZAMAN enum sırasıdır: tercih, açma-kapama geçmişine göre
+        // kayan bir liste olarak saklanırsa çipler her açılışta başka sırada
+        // görünür ve geri düşüş başka bir düzene denk gelir (denetim).
+        val acik = Layout.entries.filter { it !in kapali }
+        return acik.ifEmpty { Layout.entries }
     }
 
-    fun storeEnabled(layouts: Collection<Layout>): String =
-        layouts.ifEmpty { Layout.entries }.joinToString(",") { it.name }
+    /**
+     * KAPATILAN düzenler saklanır, açıklar değil: ileride yeni bir düzen
+     * eklendiğinde mevcut kullanıcılarda kendiliğinden görünür. İzin listesi
+     * saklansaydı yeni düzen herkeste gizli kalırdı (denetim).
+     */
+    fun storeDisabled(layouts: Collection<Layout>): String {
+        val kapali = Layout.entries.filter { it !in layouts }
+        return kapali.joinToString(",") { it.name }
+    }
 
     /**
      * Saklanmış düzen tercihini okur. Eski sürümler Türkçe Q'yu `"TR"` diye

@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.afgover.vault.core.AppLocale
 
 data class EntryListItem(
     val id: Long,
@@ -59,6 +60,13 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     val keyManager = app.keyManager
     private val repo = app.repository
     private val usageLog = app.usageLog
+
+    /**
+     * Dil değişimi Activity'yi recreate ettiği için gezinme konumu burada
+     * saklanır — ViewModel recreate'ten sağ çıkar, `remember` çıkmaz (denetim).
+     * Tipi arayüz katmanında tanımlı olduğundan Any? tutulur.
+     */
+    var acilacakEkran: Any? = null
 
     var lockState by mutableStateOf(
         when {
@@ -652,18 +660,26 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** Yerelleştirilmiş metin: ViewModel'de Composable bağlamı yok. */
+    /**
+     * Application context uygulama diline SARILMAMIŞTIR: ViewModel'in ürettiği
+     * hata ve toast metinleri, arayüz İngilizceyken bile cihaz dilinde çıkardı
+     * (denetim — yüksek). Her çağrıda sarılmış context'ten çöz; ViewModel
+     * recreate'ten sağ çıktığı için tek seferlik önbellek eski dile takılırdı.
+     */
+    private val yerel: Context get() = AppLocale.wrap(getApplication())
+
     private fun str(@StringRes id: Int, vararg args: Any): String =
-        getApplication<Application>().getString(id, *args)
+        yerel.getString(id, *args)
 
     /**
      * Sayıya bağlı metin: İngilizcede "1 entries" gibi bozuk dilbilgisini
      * önler (Türkçede tek biçim yeterli, çeviri dosyası öyle tanımlı).
      */
     private fun cogul(@PluralsRes id: Int, adet: Int): String =
-        getApplication<Application>().resources.getQuantityString(id, adet, adet)
+        yerel.resources.getQuantityString(id, adet, adet)
 
     private fun toast(msg: String) {
-        Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT).show()
+        Toast.makeText(yerel, msg, Toast.LENGTH_SHORT).show()
     }
 
     // ---- Kullanım günlüğü ----

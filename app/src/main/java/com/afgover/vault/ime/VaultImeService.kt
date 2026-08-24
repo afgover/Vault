@@ -57,6 +57,16 @@ class VaultImeService : InputMethodService() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+    /**
+     * `attachBaseContext` yalnız BİR KEZ çalışır; servis ayakta kalırken
+     * kullanıcı dili değiştirirse klavye eski dilde kalırdı (denetim).
+     * Metinler her seferinde sarılmış context'ten okunur ve dil değişmişse
+     * girdi görünümü yeniden kurulur.
+     */
+    private fun yerel(): Context = AppLocale.wrap(baseContext)
+
+    private var uygulananDil: String? = null
+
     private lateinit var root: LinearLayout
     private lateinit var content: LinearLayout
     private lateinit var searchRow: LinearLayout
@@ -80,6 +90,7 @@ class VaultImeService : InputMethodService() {
     private fun color(res: Int): Int = ContextCompat.getColor(this, res)
 
     override fun onCreateInputView(): View {
+        uygulananDil = AppLocale.currentTag(this)
         // Klavye penceresi kasa içeriğini gösterebiliyor; ekran görüntüsü ve
         // ekran kaydına kapat (uygulama ekranlarındaki FLAG_SECURE ile aynı).
         window?.window?.setFlags(
@@ -105,7 +116,7 @@ class VaultImeService : InputMethodService() {
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         header.addView(flatButton("🔍") { toggleSearch() })
-        header.addView(flatButton(getString(R.string.ime_switch_keyboard)) { switchBackToKeyboard() })
+        header.addView(flatButton(yerel().getString(R.string.ime_switch_keyboard)) { switchBackToKeyboard() })
         // Basılı tutunca sistem klavyesindeki gibi silmeye devam eder.
         header.addView(repeatingButton("⌫") {
             currentInputConnection?.deleteSurroundingText(1, 0)
@@ -153,6 +164,12 @@ class VaultImeService : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        // Dil değiştiyse görünümdeki metinler bayattır: baştan kur.
+        val simdikiDil = AppLocale.currentTag(this)
+        if (uygulananDil != null && uygulananDil != simdikiDil) {
+            setInputView(onCreateInputView())
+        }
+        uygulananDil = simdikiDil
         selected = null
         searching = false
         query = ""
@@ -211,15 +228,15 @@ class VaultImeService : InputMethodService() {
         }
 
         if (locked) {
-            content.addView(hint(getString(R.string.ime_locked_quick_only)))
-            content.addView(actionButton(getString(R.string.ime_unlock_all)) { startUnlock() })
+            content.addView(hint(yerel().getString(R.string.ime_locked_quick_only)))
+            content.addView(actionButton(yerel().getString(R.string.ime_unlock_all)) { startUnlock() })
         }
 
         if (entries.isEmpty()) {
             content.addView(
                 hint(
-                    if (locked) getString(R.string.ime_no_quick_entries)
-                    else getString(R.string.ime_no_entries)
+                    if (locked) yerel().getString(R.string.ime_no_quick_entries)
+                    else yerel().getString(R.string.ime_no_entries)
                 )
             )
             return
@@ -227,20 +244,20 @@ class VaultImeService : InputMethodService() {
 
         val matches = filtered()
         if (matches.isEmpty()) {
-            content.addView(hint(getString(R.string.ime_no_match, query)))
+            content.addView(hint(yerel().getString(R.string.ime_no_match, query)))
             return
         }
         matches.forEach { content.addView(entryButton(it)) }
     }
 
     private fun renderFields(entry: DecryptedEntry) {
-        content.addView(actionButton(getString(R.string.ime_back_to_list, entry.title)) {
+        content.addView(actionButton(yerel().getString(R.string.ime_back_to_list, entry.title)) {
             selected = null
             render()
         })
         entry.data.fields().forEach { alan ->
             val gosterilen = alan.customLabel ?: getString(alan.key!!.labelRes)
-            content.addView(actionButton(getString(R.string.ime_write_field, gosterilen)) {
+            content.addView(actionButton(yerel().getString(R.string.ime_write_field, gosterilen)) {
                 // commitText false dönerse (bağlantı yok) yazma olmamıştır;
                 // günlüğe 'yazıldı' düşme (denetim).
                 val yazildi = currentInputConnection?.commitText(alan.value, 1) == true
@@ -312,7 +329,7 @@ class VaultImeService : InputMethodService() {
     }
 
     private fun updateSearchLabel() {
-        searchLabel.text = query.ifEmpty { getString(R.string.ime_search_hint) }
+        searchLabel.text = query.ifEmpty { yerel().getString(R.string.ime_search_hint) }
         searchLabel.alpha = if (query.isEmpty()) 0.6f else 1f
     }
 

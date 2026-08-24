@@ -130,10 +130,18 @@ fun BtTypeDialog(
     // Kullanıcının ayarlardan açtığı düzenler; aktarım ekranında yalnız bunlar
     // görünür (istemediği düzen yoluna çıkmasın).
     val acikDuzenler = remember {
-        HidLayouts.enabledLayouts(prefs.getString("pc_layouts", null))
+        HidLayouts.enabledLayouts(prefs.getString("pc_layouts_off", null))
     }
     var layout by remember {
         mutableStateOf(HidLayouts.readLayout(prefs.getString("pc_layout", null), acikDuzenler))
+    }
+    // Kapalı bir düzen seçiliyken açık olana düşüldüyse bunu KALICI yap: yoksa
+    // tercih kapalı düzeni göstermeye devam eder ve bir dahaki açılışta yine
+    // sessizce başka bir düzene düşülür (denetim).
+    LaunchedEffect(Unit) {
+        if (prefs.getString("pc_layout", null) != layout.name) {
+            prefs.edit().putString("pc_layout", layout.name).apply()
+        }
     }
     var speed by remember {
         mutableStateOf(

@@ -82,7 +82,7 @@ fun SettingsScreen(
     }
     var dilSecimi by remember { mutableStateOf(AppLocale.current(context)) }
     var acikDuzenler by remember {
-        mutableStateOf(HidLayouts.enabledLayouts(prefs.getString("pc_layouts", null)).toSet())
+        mutableStateOf(HidLayouts.enabledLayouts(prefs.getString("pc_layouts_off", null)).toSet())
     }
     var sonDuzenUyarisi by remember { mutableStateOf(false) }
 
@@ -211,7 +211,7 @@ fun SettingsScreen(
                                 acikDuzenler = yeniKume
                                 sonDuzenUyarisi = false
                                 prefs.edit()
-                                    .putString("pc_layouts", HidLayouts.storeEnabled(yeniKume))
+                                    .putString("pc_layouts_off", HidLayouts.storeDisabled(yeniKume))
                                     .apply()
                             }
                         }

@@ -15,6 +15,7 @@ import androidx.annotation.StringRes
 import com.afgover.vault.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import com.afgover.vault.core.AppLocale
 
 /**
  * Telefonu bilgisayara Bluetooth klavye (HID cihazı) olarak tanıtır ve
@@ -166,9 +167,12 @@ object BtHidManager {
     private fun registerApp(context: Context, hidDevice: BluetoothHidDevice) {
         // Bu ad ve açıklama KARŞI BİLGİSAYARDA görünür (eşleşme listesinde),
         // yani telefonun dilinde olmalı — Context burada var (yerelleştirme).
+        // Buraya applicationContext geliyor ve o uygulama diline sarılmamıştır
+        // (denetim): karşı bilgisayarda ad yanlış dilde görünürdü.
+        val yerel = AppLocale.wrap(context)
         val sdp = BluetoothHidDeviceAppSdpSettings(
-            context.getString(R.string.bt_sdp_name),
-            context.getString(R.string.bt_sdp_description),
+            yerel.getString(R.string.bt_sdp_name),
+            yerel.getString(R.string.bt_sdp_description),
             "Vault",
             BluetoothHidDevice.SUBCLASS1_KEYBOARD,
             KEYBOARD_DESCRIPTOR
