@@ -8,12 +8,14 @@ import android.content.IntentFilter
 import androidx.core.content.ContextCompat
 import com.afgover.vault.core.KeyManager
 import com.afgover.vault.core.VaultSession
+import com.afgover.vault.data.UsageLogRepository
 import com.afgover.vault.data.VaultRepository
 
 class VaultApp : Application() {
 
     val keyManager by lazy { KeyManager(this) }
-    val repository by lazy { VaultRepository(this, keyManager) }
+    val usageLog by lazy { UsageLogRepository(this, keyManager) }
+    val repository by lazy { VaultRepository(this, keyManager, usageLog) }
 
     /**
      * Kasa yalnızca ekran kapandığında kilitlenir. Klavye eklentisi süreci

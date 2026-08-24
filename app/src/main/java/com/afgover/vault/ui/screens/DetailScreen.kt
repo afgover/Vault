@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -43,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import com.afgover.vault.core.Fingerprint
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryType
+import com.afgover.vault.data.UsageEvent
+import com.afgover.vault.data.UsageKind
 import com.afgover.vault.ui.VaultViewModel
 
 private val HIDDEN_LABELS = setOf("Şifre", "CVV")
@@ -58,9 +61,15 @@ fun DetailScreen(
     var entry by remember { mutableStateOf<DecryptedEntry?>(null) }
     val tags by viewModel.tags.collectAsState()
     var btField by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var usage by remember { mutableStateOf<List<UsageEvent>>(emptyList()) }
+    var usageTick by remember { mutableStateOf(0) }
+    var usageExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(id) {
         entry = viewModel.loadEntry(id)
+    }
+    LaunchedEffect(id, usageTick) {
+        usage = viewModel.usageFor(id)
     }
 
     val e = entry
@@ -116,7 +125,10 @@ fun DetailScreen(
                     label = label,
                     value = value,
                     hiddenByDefault = label in HIDDEN_LABELS,
-                    onCopy = { viewModel.copyToClipboard(label, value) },
+                    onCopy = {
+                        viewModel.copyToClipboard(label, value, e.id)
+                        usageTick++
+                    },
                     onTypeToPc = { btField = label to value },
                     onCopyFingerprint = { viewModel.copyToClipboard("$label parmak izi", it) }
                 )
@@ -150,6 +162,7 @@ fun DetailScreen(
                         onCheckedChange = { value ->
                             entry = e.copy(quick = value)
                             viewModel.setQuick(e.id, value)
+                            usageTick++
                         }
                     )
                 }
@@ -169,6 +182,39 @@ fun DetailScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
+
+            Spacer(Modifier.padding(8.dp))
+            HorizontalDivider()
+            Spacer(Modifier.padding(4.dp))
+            Text("Son kullanımlar", style = MaterialTheme.typography.titleSmall)
+            Text(
+                "Bu kaydın uygulama içinden nereye gittiği. Ekrandan okunan, " +
+                    "fotoğraflanan ya da otomatik doldurmayla seçilen değerler " +
+                    "burada GÖRÜNMEZ — günlük yalnız uygulamanın yaptığını bilir.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            Spacer(Modifier.padding(2.dp))
+            if (usage.isEmpty()) {
+                Text("Henüz kullanım yok.", style = MaterialTheme.typography.bodySmall)
+            } else {
+                (if (usageExpanded) usage else usage.take(5)).forEach { ev ->
+                    Text(
+                        buildString {
+                            append(df.format(java.util.Date(ev.at)))
+                            append(" · ").append(ev.kind.label)
+                            ev.fieldLabel?.let { append(" (").append(it).append(")") }
+                            ev.target?.let { append(" → ").append(it) }
+                        },
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                if (usage.size > 5) {
+                    TextButton(onClick = { usageExpanded = !usageExpanded }) {
+                        Text(if (usageExpanded) "Daha az göster" else "Tümünü göster (${usage.size})")
+                    }
+                }
+            }
         }
     }
 
@@ -176,7 +222,11 @@ fun DetailScreen(
         BtTypeDialog(
             label = label,
             value = value,
-            onDismiss = { btField = null }
+            onDismiss = { btField = null },
+            onTyped = { target ->
+                entry?.let { viewModel.logUsage(it.id, UsageKind.BT_YAZILDI, label, target) }
+                usageTick++
+            }
         )
     }
 }

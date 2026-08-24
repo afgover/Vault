@@ -23,6 +23,8 @@ import com.afgover.vault.data.EntrySort
 import com.afgover.vault.data.NoteKind
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.data.TagEntity
+import com.afgover.vault.data.UsageEvent
+import com.afgover.vault.data.UsageKind
 import com.afgover.vault.data.VaultRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -53,6 +55,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as VaultApp
     val keyManager = app.keyManager
     private val repo = app.repository
+    private val usageLog = app.usageLog
 
     var lockState by mutableStateOf(
         when {
@@ -174,11 +177,15 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Kilit açıldığında hızlı erişim kopyaları da tazelenir: Keystore anahtarı
      * kaybolmuş ya da kopya hiç üretilememişse kaydın aslından yeniden yazılır.
+     * Kilitliyken biriken kullanım olayları da bu anda günlüğe taşınır.
      */
     private fun onUnlocked(key: javax.crypto.SecretKey) {
         VaultSession.unlock(key)
         lockState = LockState.UNLOCKED
-        viewModelScope.launch(Dispatchers.IO) { repo.repairQuickCopies(key) }
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.repairQuickCopies(key)
+            usageLog.foldBuffer(key)
+        }
     }
 
     private fun SecretKeySpec(bytes: ByteArray, algo: String) =
@@ -397,7 +404,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     private var clipboardClearJob: Job? = null
 
-    fun copyToClipboard(label: String, value: String) {
+    fun copyToClipboard(label: String, value: String, entryId: Long? = null) {
         val cm = getApplication<Application>()
             .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText(label, value)
@@ -408,6 +415,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         }
         cm.setPrimaryClip(clip)
         toast("$label kopyalandı (45 sn sonra silinecek)")
+        entryId?.let { logUsage(it, UsageKind.KOPYALANDI, label) }
         clipboardClearJob?.cancel()
         clipboardClearJob = viewModelScope.launch {
             delay(45_000)
@@ -565,5 +573,40 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun toast(msg: String) {
         Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT).show()
+    }
+
+    // ---- Kullanım günlüğü ----
+
+    /**
+     * Olayı arka planda kaydeder. Günlüğe yazamamak asıl işi (kopyalama,
+     * yazma) hiçbir zaman engellemez; bu yüzden sonucu beklenmez.
+     */
+    fun logUsage(entryId: Long, kind: UsageKind, fieldLabel: String? = null, target: String? = null) {
+        viewModelScope.launch(Dispatchers.IO) {
+            usageLog.record(
+                UsageEvent(entryId, kind, System.currentTimeMillis(), fieldLabel, target)
+            )
+        }
+    }
+
+    suspend fun usageFor(entryId: Long): List<UsageEvent> {
+        val key = VaultSession.key() ?: return emptyList()
+        return withContext(Dispatchers.IO) { usageLog.eventsFor(entryId, key) }
+    }
+
+    suspend fun allUsage(): List<UsageEvent> {
+        val key = VaultSession.key() ?: return emptyList()
+        return withContext(Dispatchers.IO) { usageLog.events(key) }
+    }
+
+    /** Kilitliyken birikmiş, henüz günlüğe taşınmamış olay sayısı. */
+    suspend fun pendingUsage(): Int = withContext(Dispatchers.IO) { usageLog.pendingCount() }
+
+    fun clearUsageLog(onDone: () -> Unit = {}) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { usageLog.clearAll() }
+            toast("Kullanım günlüğü silindi")
+            onDone()
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.afgover.vault.data
 import android.content.Context
 import com.afgover.vault.core.Crypto
 import com.afgover.vault.core.KeyManager
+import com.afgover.vault.core.VaultSession
 import kotlinx.coroutines.flow.Flow
 import org.json.JSONObject
 import javax.crypto.SecretKey
@@ -15,7 +16,11 @@ import javax.crypto.SecretKey
  * kopyası vardır; o kopya Keystore'daki kimlik doğrulama istemeyen anahtarla
  * şifrelenir ve klavyenin kasa kilitliyken okuyabildiği tek şeydir.
  */
-class VaultRepository(context: Context, private val keys: KeyManager) {
+class VaultRepository(
+    context: Context,
+    private val keys: KeyManager,
+    private val usage: UsageLogRepository = UsageLogRepository(context, keys)
+) {
 
     companion object {
         /**
@@ -85,7 +90,7 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
         val quickBlob = quickCopy(plain, quick)
         val now = System.currentTimeMillis()
         if (id == 0L) {
-            dao.insert(
+            val newId = dao.insert(
                 EntryEntity(
                     type = type.name,
                     title = title,
@@ -100,6 +105,7 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
                     sortIndex = (dao.getAll().maxOfOrNull { it.sortIndex } ?: 0) + 1
                 )
             )
+            usage.record(UsageEvent(newId, UsageKind.OLUSTURULDU, now))
         } else {
             val existing = dao.getById(id) ?: return
             dao.update(
@@ -116,6 +122,7 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
                     sortIndex = (dao.getAll().maxOfOrNull { it.sortIndex } ?: 0) + 1
                 )
             )
+            usage.record(UsageEvent(id, UsageKind.DEGISTIRILDI, now))
         }
     }
 
@@ -124,6 +131,13 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
         val existing = dao.getById(id) ?: return
         val plain = Crypto.decrypt(key, existing.blob) ?: return
         dao.update(existing.copy(quick = quick, quickBlob = quickCopy(plain, quick)))
+        usage.record(
+            UsageEvent(
+                id,
+                if (quick) UsageKind.HIZLI_ERISIM_ACILDI else UsageKind.HIZLI_ERISIM_KAPATILDI,
+                System.currentTimeMillis()
+            )
+        )
     }
 
     /**
@@ -141,7 +155,11 @@ class VaultRepository(context: Context, private val keys: KeyManager) {
         }
     }
 
-    suspend fun delete(id: Long) = dao.deleteById(id)
+    /** Kayıt silinince günlüğü de silinir; sahipsiz olay okunmaz veridir. */
+    suspend fun delete(id: Long) {
+        VaultSession.key()?.let { usage.deleteFor(id, it) }
+        dao.deleteById(id)
+    }
 
     /** Kullanıcı sırasını verilen id dizilimine göre yeniden yazar. */
     suspend fun applyManualOrder(idsInOrder: List<Long>) {

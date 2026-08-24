@@ -18,6 +18,8 @@ import com.afgover.vault.R
 import com.afgover.vault.VaultApp
 import com.afgover.vault.core.VaultSession
 import com.afgover.vault.data.DecryptedEntry
+import com.afgover.vault.data.UsageEvent
+import com.afgover.vault.data.UsageKind
 import com.afgover.vault.data.EntrySort
 import com.afgover.vault.data.sortedBy
 import kotlinx.coroutines.CoroutineScope
@@ -213,7 +215,28 @@ class VaultImeService : InputMethodService() {
         entry.data.fields().forEach { (label, value) ->
             content.addView(actionButton("$label yaz") {
                 currentInputConnection?.commitText(value, 1)
+                logUsage(entry.id, label)
             })
+        }
+    }
+
+    /**
+     * Klavyeden yazma günlüğe düşer. Kasa kilitliyken (hızlı erişim kayıtları)
+     * olay Keystore tamponuna yazılır ve ilk kilit açılışında günlüğe taşınır.
+     */
+    private fun logUsage(entryId: Long, label: String) {
+        val target = currentInputEditorInfo?.packageName
+        val app = VaultApp.from(this)
+        scope.launch(Dispatchers.IO) {
+            app.usageLog.record(
+                UsageEvent(
+                    entryId,
+                    UsageKind.KLAVYE_YAZILDI,
+                    System.currentTimeMillis(),
+                    label,
+                    target
+                )
+            )
         }
     }
 

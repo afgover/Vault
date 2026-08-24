@@ -38,6 +38,11 @@ Tamamen çevrimdışı çalışır; hiçbir veri internete gönderilmez.
   şifre üretimi; karakter sınıfı seçimi, karışan karakterleri eleme ve entropi
   (bit) göstergesi. Ana ekrandaki 🎲 simgesinden ya da kayıt düzenlerken şifre
   alanının yanından erişilir
+- **Kullanım günlüğü**: Hangi kaydın hangi alanı, ne zaman, nereye gitti —
+  panoya, Bluetooth ile bilgisayara (hedef cihaz adıyla) ya da klavyeden hangi
+  uygulamaya. Bir bilgisayar ele geçtiğinde "oraya ne gitti, neyi değiştirmeliyim"
+  sorusunun cevabı olur. Günlük kayıtlarla aynı anahtarla şifrelidir; **değerlerin
+  kendisi hiçbir koşulda yazılmaz**
 - **Pano koruması**: Kopyalanan değerler 45 saniye sonra panodan otomatik silinir,
   Android 13+ pano önizlemesinde gizli işaretlenir
 - Ekran görüntüsü ve "son uygulamalar" önizlemesi engellenir (`FLAG_SECURE`)
@@ -137,6 +142,36 @@ Ana parola ──PBKDF2(310k)──▶ KEK ──AES-GCM sarma──▶ dataKey 
 > yine olmazsa yazma **durur ve söyler** — karakter sessizce kaybolmaz. Türkçe Q düzeninde birkaç nadir özel karakter yazılamazsa
 > uygulama uyarır — o durumda US düzenini seçip bilgisayarı da geçici olarak
 > İngilizce düzene almak yeterlidir.
+
+### Kullanım günlüğü
+
+Kayıt detayında **Son kullanımlar**, Ayarlar → **Kullanım günlüğünü aç**'ta ise
+tamamı durur. Olaylar: oluşturuldu, değiştirildi, panoya kopyalandı,
+bilgisayara yazıldı (hedef cihaz adıyla), klavyeden yazıldı (hedef uygulamayla),
+hızlı erişim açıldı/kapatıldı.
+
+Günlükte **hedefe göre süzme** vardır: bir bilgisayarı seçtiğinde oraya hangi
+kayıtların gittiğini tek satırda listeler — rotasyon listesi budur.
+
+Güvenlik tarafı:
+
+- Günlük satırının **tamamı** kayıtlarla aynı anahtarla (dataKey) şifrelidir;
+  satırda açık duran tek şey birincil anahtardır. Kasa kilitliyken günlük
+  "kaç olay var" dışında hiçbir şey söylemez.
+- Değer, değerin parçası ya da uzunluğu **hiçbir olayda** yazılmaz; yalnız alan
+  adı ("Şifre") ve hedef adı ("MacBook Pro", `com.android.chrome`).
+- Kasa kilitliyken klavyeden yapılan hızlı erişim kullanımları o anda dataKey
+  bellekte olmadığı için Keystore anahtarıyla küçük bir tampona yazılır ve ilk
+  kilit açılışında günlüğe taşınır. Tampon, hızlı erişim kopyalarıyla aynı güven
+  sınıfındadır (telefonun ekran kilidi).
+- Kayıt başına en fazla 50, toplamda 2.000 olay saklanır; kayıt silinince
+  günlüğü de silinir. "Günlüğü sil" ile tamamı temizlenir.
+
+> **Günlüğün göremedikleri.** Ekrandan okunan, fotoğrafı çekilen ya da elle
+> yazılan bir değer iz bırakmaz. Otomatik doldurmada hangi kaydı seçtiğin de
+> kaydedilemez: Android, kullanıcının seçtiği `Dataset`'i servise bildirmiyor.
+> Ayrıca kasa açıkken günlük silinebilir — bu kurcalanamaz bir denetim izi
+> değil, kendi kullanımını hatırlatan bir kayıttır.
 
 ## Yedekleme / Geri yükleme
 

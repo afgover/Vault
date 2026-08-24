@@ -104,6 +104,70 @@ class MigrationTest {
         }
     }
 
+    private fun v4VeritabaniKur(): ByteArray {
+        val blob = byteArrayOf(4, 4, 4, 4)
+        val db = SQLiteDatabase.openOrCreateDatabase(context.getDatabasePath(dbName), null)
+        db.execSQL(
+            "CREATE TABLE entries (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "type TEXT NOT NULL, title TEXT NOT NULL, blob BLOB NOT NULL, " +
+                "createdAt INTEGER NOT NULL, updatedAt INTEGER NOT NULL, " +
+                "quick INTEGER NOT NULL DEFAULT 0, quickBlob BLOB DEFAULT NULL, " +
+                "tags TEXT NOT NULL DEFAULT '[]', " +
+                "noteKind TEXT NOT NULL DEFAULT 'GENEL', " +
+                "sortIndex INTEGER NOT NULL DEFAULT 0)"
+        )
+        db.execSQL(
+            "CREATE TABLE tags (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "name TEXT NOT NULL, color INTEGER NOT NULL)"
+        )
+        db.execSQL(
+            "INSERT INTO entries (type, title, blob, createdAt, updatedAt, quick, tags) " +
+                "VALUES ('LOGIN', 'v4 kaydı', x'04040404', 1, 2, 0, '[]')"
+        )
+        db.version = 4
+        db.close()
+        return blob
+    }
+
+    /** Günlük tabloları eklemeli gelir; mevcut kayıt hiç değişmez (R-004). */
+    @Test
+    fun goc4ten5e_gunlukTablolariniEklerVeKayitlaraDokunmaz() {
+        val beklenenBlob = v4VeritabaniKur()
+
+        val helper = FrameworkSQLiteOpenHelperFactory().create(
+            SupportSQLiteOpenHelper.Configuration.builder(context)
+                .name(dbName)
+                .callback(object : SupportSQLiteOpenHelper.Callback(5) {
+                    override fun onCreate(db: SupportSQLiteDatabase) =
+                        error("v4 veritabanı vardı; onCreate çağrılmamalıydı")
+
+                    override fun onUpgrade(db: SupportSQLiteDatabase, old: Int, new: Int) {
+                        assertEquals(4, old)
+                        VaultDatabase.MIGRATION_4_5.migrate(db)
+                    }
+                })
+                .build()
+        )
+
+        helper.writableDatabase.use { db ->
+            db.query("SELECT title, blob FROM entries").use { c ->
+                assertEquals(1, c.count)
+                c.moveToFirst()
+                assertEquals("v4 kaydı", c.getString(0))
+                assertArrayEquals(beklenenBlob, c.getBlob(1))
+            }
+            db.execSQL("INSERT INTO usage_log (blob) VALUES (x'AABB')")
+            db.execSQL("INSERT INTO usage_buffer (blob) VALUES (x'CCDD')")
+            db.query("SELECT COUNT(*) FROM usage_log").use { c ->
+                c.moveToFirst(); assertEquals(1, c.getInt(0))
+            }
+            db.query("SELECT COUNT(*) FROM usage_buffer").use { c ->
+                c.moveToFirst(); assertEquals(1, c.getInt(0))
+            }
+        }
+    }
+
     @Test
     fun goc2den3e_veriKaybetmedenTagsKolonuEkler() {
         val beklenenBlob = v2VeritabaniKur()

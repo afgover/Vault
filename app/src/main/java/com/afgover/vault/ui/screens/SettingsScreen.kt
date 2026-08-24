@@ -69,6 +69,7 @@ fun SettingsScreen(
     var showPasteImport by remember { mutableStateOf(false) }
     var showPinDialog by remember { mutableStateOf(false) }
     var showBiometricPin by remember { mutableStateOf(false) }
+    var showUsageLog by remember { mutableStateOf(false) }
 
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -154,6 +155,26 @@ fun SettingsScreen(
                 onClick = { showPasteImport = true },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Metinden içe aktar (yapıştır)") }
+
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+
+            Text("Kullanım günlüğü", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "Hangi kaydın hangi alanı, ne zaman, nereye gitti — panoya, " +
+                    "bilgisayara ya da klavyeden. Bir bilgisayar ele geçtiğinde " +
+                    "\"oraya ne gitti, neyi değiştirmeliyim\" sorusunun cevabı burada. " +
+                    "Günlük kayıtlarla aynı anahtarla şifreli durur; değerlerin " +
+                    "kendisi hiçbir koşulda yazılmaz.",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { showUsageLog = true },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Kullanım günlüğünü aç") }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
@@ -384,6 +405,10 @@ fun SettingsScreen(
             onarimKipi = viewModel.isPinLegacy,
             onDismiss = { showPinDialog = false }
         )
+    }
+
+    if (showUsageLog) {
+        UsageLogDialog(viewModel = viewModel, onDismiss = { showUsageLog = false })
     }
 
     if (showPasteImport) {

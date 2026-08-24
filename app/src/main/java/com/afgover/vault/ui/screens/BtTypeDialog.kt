@@ -66,7 +66,9 @@ private fun sureMetni(ms: Long): String {
 fun BtTypeDialog(
     label: String,
     value: String,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    /** Asıl değer yazıldığında hedef bilgisayarın adıyla çağrılır (günlük). */
+    onTyped: (target: String) -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -185,6 +187,9 @@ fun BtTypeDialog(
                 if (kind == Gonderim.HIZ_TESTI) {
                     hizSonucu = "${sonuc.typed} karakter, ${sureMetni(sonuc.elapsedMs)} " +
                         "(${sonuc.charsPerSecond} karakter/sn)"
+                }
+                if (kind == Gonderim.DEGER) {
+                    onTyped((state as? BtHidManager.State.Connected)?.name ?: "bilinmeyen cihaz")
                 }
                 if (sonuc.untyped.isNotEmpty()) {
                     untypedWarning = "Şu karakterler bu düzende yazılamadı: " +

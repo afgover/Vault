@@ -7,12 +7,23 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [EntryEntity::class, TagEntity::class], version = 4, exportSchema = false)
+@Database(
+    entities = [
+        EntryEntity::class,
+        TagEntity::class,
+        UsageLogEntity::class,
+        UsageBufferEntity::class
+    ],
+    version = 5,
+    exportSchema = false
+)
 abstract class VaultDatabase : RoomDatabase() {
 
     abstract fun entryDao(): EntryDao
 
     abstract fun tagDao(): TagDao
+
+    abstract fun usageLogDao(): UsageLogDao
 
     companion object {
         @Volatile
@@ -60,6 +71,25 @@ abstract class VaultDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Kullanım günlüğü ve kilitliyken biriken tamponu. İki tablo da yalnız
+         * birincil anahtar + şifreli blob taşır; mevcut veriye dokunulmaz.
+         */
+        internal val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `usage_log` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`blob` BLOB NOT NULL)"
+                )
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `usage_buffer` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`blob` BLOB NOT NULL)"
+                )
+            }
+        }
+
         fun get(context: Context): VaultDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -68,7 +98,7 @@ abstract class VaultDatabase : RoomDatabase() {
                     "vault.db"
                 )
                     // Yıkıcı geçiş YOK: şema değişince veriler silinmemeli.
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build()
                     .also { instance = it }
             }
