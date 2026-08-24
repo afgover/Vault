@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.R
 import com.afgover.vault.data.EntrySort
 import com.afgover.vault.ui.VaultViewModel
 import java.text.SimpleDateFormat
@@ -92,10 +93,13 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ayarlar") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.settings_back)
+                        )
                     }
                 }
             )
@@ -117,12 +121,13 @@ fun SettingsScreen(
                 Spacer(Modifier.height(8.dp))
             }
 
-            Text("Görünüm", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_appearance), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
-                "Sıralama ana ekrana taşındı: başlığın yanındaki ⇅ simgesinden " +
-                    "seçilir ve hem listede hem Vault Klavyesi'nde geçerli olur.\n" +
-                    "Şu anki sıra: " + stringResource(viewModel.sort.labelRes),
+                stringResource(
+                    R.string.settings_sort_moved,
+                    stringResource(viewModel.sort.labelRes)
+                ),
                 style = MaterialTheme.typography.bodySmall
             )
 
@@ -130,12 +135,10 @@ fun SettingsScreen(
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
 
-            Text("Yedekleme", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_backup), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
-                "Yedek dosyası AES-256 ile şifrelenir ve yalnızca yedek parolasıyla açılır. " +
-                    "Dosyayı Drive, SD kart vb. istediğin yere kaydedebilirsin; telefon " +
-                    "sıfırlansa bile dosya + parola ile her şey geri yüklenir.",
+                stringResource(R.string.settings_backup_desc),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(Modifier.height(8.dp))
@@ -145,53 +148,45 @@ fun SettingsScreen(
                     exportLauncher.launch("vault-$stamp.vaultbak")
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Şifreli yedek al") }
+            ) { Text(stringResource(R.string.settings_backup_export)) }
             Spacer(Modifier.height(8.dp))
             OutlinedButton(
                 onClick = { importLauncher.launch(arrayOf("*/*")) },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Yedekten geri yükle") }
+            ) { Text(stringResource(R.string.settings_backup_restore)) }
             Spacer(Modifier.height(8.dp))
             OutlinedButton(
                 onClick = { showPasteImport = true },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Metinden içe aktar (yapıştır)") }
+            ) { Text(stringResource(R.string.settings_import_paste)) }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
 
-            Text("Kullanım günlüğü", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_usage_log), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
-                "Hangi kaydın hangi alanı, ne zaman, nereye gitti — panoya, " +
-                    "bilgisayara ya da klavyeden. Bir bilgisayar ele geçtiğinde " +
-                    "\"oraya ne gitti, neyi değiştirmeliyim\" sorusunun cevabı burada. " +
-                    "Günlük kayıtlarla aynı anahtarla şifreli durur; değerlerin " +
-                    "kendisi hiçbir koşulda yazılmaz.",
+                stringResource(R.string.settings_usage_log_desc),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(Modifier.height(8.dp))
             OutlinedButton(
                 onClick = { showUsageLog = true },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Kullanım günlüğünü aç") }
+            ) { Text(stringResource(R.string.settings_usage_log_open)) }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
 
-            Text("Güvenlik", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_security), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
 
-            Text("Kilitlenme", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.settings_locking), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(4.dp))
             Text(
-                "Kasa, ekran kapandığı anda kilitlenir; anahtar bellekten silinir. " +
-                    "Ekran açık kaldığı sürece parola veya parmak izi tekrar sorulmaz.\n\n" +
-                    "Klavyede \"parolasız kullan\" işaretli kayıtlar kasa kilitliyken de " +
-                    "kullanılabilir; işaretlemeyi her kaydın kendi ekranından açıp " +
-                    "kapatabilirsin.",
+                stringResource(R.string.settings_locking_desc),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(Modifier.height(12.dp))
@@ -201,7 +196,7 @@ fun SettingsScreen(
                     OutlinedButton(
                         onClick = { viewModel.disableBiometric() },
                         modifier = Modifier.fillMaxWidth()
-                    ) { Text("Biyometrik kilit açmayı kapat") }
+                    ) { Text(stringResource(R.string.settings_biometric_disable)) }
                 } else {
                     OutlinedButton(
                         onClick = {
@@ -209,28 +204,24 @@ fun SettingsScreen(
                             else onBiometricEnable(null)
                         },
                         modifier = Modifier.fillMaxWidth()
-                    ) { Text("Biyometrik kilit açmayı etkinleştir") }
+                    ) { Text(stringResource(R.string.settings_biometric_enable)) }
                 }
                 Spacer(Modifier.height(12.dp))
                 // PIN, parmak izi yolunun ikinci kapısıdır — bu yüzden onun
                 // altında duruyor, ayrı bir bölümde değil.
-                Text("PIN (parmak izi için ikinci kapı)", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.settings_pin_heading), style = MaterialTheme.typography.titleSmall)
                 if (viewModel.isPinLegacy) {
                     Text(
-                        "⚠ Bu PIN kaydı eski sürümde açıldı ve bu sürümle uyumsuz: " +
-                            "kayıtlar açılamaz ve PIN kapatılamaz. Ana parola + PIN ile onar.",
+                        stringResource(R.string.settings_pin_legacy_warning),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
                 } else {
                     Text(
                         if (viewModel.isPinEnabled)
-                            "Açık: parmak izini okuttuktan sonra PIN sorulur. Ana parola " +
-                                "ile açarken sorulmaz — parola zaten güçlü sırdır."
+                            stringResource(R.string.settings_pin_on_desc)
                         else
-                            "İsteğe bağlı. Açarsan parmak izi kaydı PIN ile şifrelenir ve " +
-                                "açılışta parmak izinden sonra PIN sorulur. Varsayılan: kapalı.\n" +
-                                "Sıra önemli: önce PIN belirle, sonra parmak izini etkinleştir.",
+                            stringResource(R.string.settings_pin_off_desc),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -241,29 +232,27 @@ fun SettingsScreen(
                 ) {
                     Text(
                         when {
-                            viewModel.isPinLegacy -> "PIN kaydını onar"
-                            viewModel.isPinEnabled -> "PIN'i kapat"
-                            else -> "PIN belirle"
+                            viewModel.isPinLegacy -> stringResource(R.string.settings_pin_repair)
+                            viewModel.isPinEnabled -> stringResource(R.string.settings_pin_turn_off)
+                            else -> stringResource(R.string.settings_pin_set)
                         }
                     )
                 }
 
                 Spacer(Modifier.height(12.dp))
-                Text("Ana parola hatırlatıcısı", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.settings_reminder_heading), style = MaterialTheme.typography.titleSmall)
                 Text(
-                    "Parmak izi kullanırken ana parola aylarca yazılmaz ve unutulur — " +
-                        "oysa yedekleri açan da odur. Seçtiğin aralıkta bir kez parmak " +
-                        "izi yerine parola istenir. Varsayılan: süresiz.",
+                    stringResource(R.string.settings_reminder_desc),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(Modifier.height(6.dp))
                 Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                    listOf(0 to "Süresiz", 30 to "30 gün", 60 to "60 gün", 90 to "90 gün",
-                        180 to "180 gün").forEach { (gun, etiket) ->
+                    listOf(0, 30, 60, 90, 180).forEach { gun ->
                         SecimCipi(
                             secili = viewModel.reminderDays == gun,
                             onClick = { viewModel.setReminderDays(gun) },
-                            label = etiket,
+                            label = if (gun == 0) stringResource(R.string.settings_reminder_never)
+                            else stringResource(R.string.settings_reminder_days, gun),
                             modifier = Modifier.padding(end = 8.dp)
                         )
                     }
@@ -275,28 +264,17 @@ fun SettingsScreen(
             OutlinedButton(
                 onClick = { showChangePassword = true },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Ana parolayı değiştir") }
+            ) { Text(stringResource(R.string.settings_change_password)) }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
 
-            Text("Otomatik doldurma", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_autofill), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
-                if (autofillEnabled) {
-                    "Etkin. Uygulama ve tarayıcılardaki giriş/kart formlarına dokununca " +
-                        "Vault kayıtların doldurma seçeneği olarak çıkar. Kasa kilitliyse " +
-                        "önce kilit açma ekranı gelir; hiçbir değer kilitliyken sisteme verilmez."
-                } else {
-                    "Etkinleştirirsen uygulama ve tarayıcılardaki giriş/kart formlarına " +
-                        "dokununca Vault kayıtların doğrudan doldurma seçeneği olarak çıkar. " +
-                        "Ayrıca yeni girdiğin bilgileri Vault'a kaydetmeyi teklif eder.\n\n" +
-                        "Aşağıdaki düğme sistem ayarlarını açar. Açılan listenin adı " +
-                        "cihaza göre değişir (\"Tercih edilen servis\", \"Otomatik doldurma " +
-                        "servisi\" ya da \"Şifreler, parolalar ve otomatik doldurma\"); " +
-                        "o listeden Vault'u seçmen yeterli."
-                },
+                if (autofillEnabled) stringResource(R.string.settings_autofill_on_desc)
+                else stringResource(R.string.settings_autofill_off_desc),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(Modifier.height(8.dp))
@@ -311,8 +289,8 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    if (autofillEnabled) "Otomatik doldurma ayarlarını aç"
-                    else "Otomatik doldurmayı etkinleştir"
+                    if (autofillEnabled) stringResource(R.string.settings_autofill_open)
+                    else stringResource(R.string.settings_autofill_enable)
                 )
             }
 
@@ -320,12 +298,10 @@ fun SettingsScreen(
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
 
-            Text("Vault Klavyesi", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_keyboard), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
-                "Klavye eklentisini etkinleştirirsen herhangi bir uygulamada klavye " +
-                    "değiştiriciden Vault Klavyesi'ni seçip kayıtlı bilgilerini doğrudan " +
-                    "ilgili alana yazdırabilirsin.",
+                stringResource(R.string.settings_keyboard_desc),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(Modifier.height(8.dp))
@@ -334,17 +310,15 @@ fun SettingsScreen(
                     context.startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Klavye ayarlarını aç") }
+            ) { Text(stringResource(R.string.settings_keyboard_open)) }
         }
     }
 
     // Yedek alma: parola iste
     exportUri?.let { uri ->
         PasswordDialog(
-            title = "Yedek parolası belirle",
-            description = "Bu parola olmadan yedek dosyası AÇILAMAZ. " +
-                "Ana parolandan FARKLI olsun: yedek parolası bilgisayarlarda " +
-                "yazılabiliyor, ana parola hiçbir bilgisayara girmiyor.",
+            title = stringResource(R.string.settings_export_pw_title),
+            description = stringResource(R.string.settings_export_pw_desc),
             confirmField = true,
             onConfirm = { pw ->
                 viewModel.exportBackup(uri, pw)
@@ -376,25 +350,31 @@ fun SettingsScreen(
         var pin by remember { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { showBiometricPin = false },
-            title = { Text("Parmak izini PIN'e bağla") },
+            title = { Text(stringResource(R.string.settings_biometric_pin_title)) },
             text = {
                 Column {
                     Text(
-                        "Parmak izi kaydı PIN ile şifrelenecek: açılışta önce " +
-                            "parmak izi, sonra bu PIN sorulur.",
+                        stringResource(R.string.settings_biometric_pin_desc),
                         style = MaterialTheme.typography.bodySmall
                     )
-                    SecretField(value = pin, onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y }, label = "PIN", numeric = true)
+                    SecretField(
+                        value = pin,
+                        onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y },
+                        label = stringResource(R.string.settings_label_pin),
+                        numeric = true
+                    )
                 }
             },
             confirmButton = {
                 TextButton(
                     onClick = { showBiometricPin = false; onBiometricEnable(pin) },
                     enabled = pin.length >= 4
-                ) { Text("Devam") }
+                ) { Text(stringResource(R.string.settings_continue)) }
             },
             dismissButton = {
-                TextButton(onClick = { showBiometricPin = false }) { Text("Vazgeç") }
+                TextButton(onClick = { showBiometricPin = false }) {
+                    Text(stringResource(R.string.settings_cancel))
+                }
             }
         )
     }
@@ -438,10 +418,18 @@ private fun PasswordDialog(
             Column {
                 Text(description, style = MaterialTheme.typography.bodySmall)
                 Spacer(Modifier.height(8.dp))
-                SecretField(value = pw, onValueChange = { pw = it }, label = "Parola")
+                SecretField(
+                    value = pw,
+                    onValueChange = { pw = it },
+                    label = stringResource(R.string.settings_label_password)
+                )
                 if (confirmField) {
                     Spacer(Modifier.height(8.dp))
-                    SecretField(value = pw2, onValueChange = { pw2 = it }, label = "Parola (tekrar)")
+                    SecretField(
+                        value = pw2,
+                        onValueChange = { pw2 = it },
+                        label = stringResource(R.string.settings_label_password_again)
+                    )
                 }
             }
         },
@@ -449,9 +437,11 @@ private fun PasswordDialog(
             TextButton(
                 onClick = { onConfirm(pw) },
                 enabled = pw.isNotEmpty() && (!confirmField || pw == pw2)
-            ) { Text("Tamam") }
+            ) { Text(stringResource(R.string.settings_ok)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) }
+        }
     )
 }
 
@@ -463,30 +453,36 @@ private fun ImportDialog(
     var pw by remember { mutableStateOf("") }
     var hata by remember { mutableStateOf<String?>(null) }
     var replace by remember { mutableIntStateOf(0) } // 0 = ekle, 1 = değiştir
+    // onClick @Composable değil: metni burada çözüp lambdaya kapatıyoruz.
+    val parolaYokMesaji = stringResource(R.string.settings_import_pw_missing)
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Yedekten geri yükle") },
+        title = { Text(stringResource(R.string.settings_backup_restore)) },
         text = {
             Column {
-                SecretField(value = pw, onValueChange = { pw = it }, label = "Yedek parolası")
+                SecretField(
+                    value = pw,
+                    onValueChange = { pw = it },
+                    label = stringResource(R.string.settings_label_backup_password)
+                )
                 Spacer(Modifier.height(8.dp))
                 Row {
                     SecimCipi(
                         secili = replace == 0,
                         onClick = { replace = 0 },
-                        label = "Mevcuta ekle",
+                        label = stringResource(R.string.settings_import_merge),
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     SecimCipi(
                         secili = replace == 1,
                         onClick = { replace = 1 },
-                        label = "Tümünü değiştir"
+                        label = stringResource(R.string.settings_import_replace)
                     )
                 }
                 if (replace == 1) {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Dikkat: mevcut tüm kayıtlar silinip yedektekiler yazılır.",
+                        stringResource(R.string.settings_import_replace_warning),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -500,12 +496,14 @@ private fun ImportDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (pw.isEmpty()) hata = "Yedek parolası girilmedi."
+                    if (pw.isEmpty()) hata = parolaYokMesaji
                     else onConfirm(pw, replace == 1)
                 }
-            ) { Text("Geri yükle") }
+            ) { Text(stringResource(R.string.settings_import_confirm)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) }
+        }
     )
 }
 
@@ -519,14 +517,26 @@ private fun ChangePasswordDialog(
     var confirm by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Ana parolayı değiştir") },
+        title = { Text(stringResource(R.string.settings_change_password)) },
         text = {
             Column {
-                SecretField(value = old, onValueChange = { old = it }, label = "Mevcut parola")
+                SecretField(
+                    value = old,
+                    onValueChange = { old = it },
+                    label = stringResource(R.string.settings_label_current_password)
+                )
                 Spacer(Modifier.height(8.dp))
-                SecretField(value = new, onValueChange = { new = it }, label = "Yeni parola")
+                SecretField(
+                    value = new,
+                    onValueChange = { new = it },
+                    label = stringResource(R.string.settings_label_new_password)
+                )
                 Spacer(Modifier.height(8.dp))
-                SecretField(value = confirm, onValueChange = { confirm = it }, label = "Yeni parola (tekrar)")
+                SecretField(
+                    value = confirm,
+                    onValueChange = { confirm = it },
+                    label = stringResource(R.string.settings_label_new_password_again)
+                )
                 viewModel.error?.let {
                     Spacer(Modifier.height(8.dp))
                     Text(it, color = MaterialTheme.colorScheme.error)
@@ -537,9 +547,11 @@ private fun ChangePasswordDialog(
             TextButton(
                 onClick = { viewModel.changePassword(old, new, confirm, onDismiss) },
                 enabled = old.isNotEmpty() && new.isNotEmpty() && !viewModel.busy
-            ) { Text("Değiştir") }
+            ) { Text(stringResource(R.string.settings_change)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) }
+        }
     )
 }
 
@@ -567,32 +579,31 @@ private fun PinSetupDialog(
         title = {
             Text(
                 when {
-                    onarimKipi -> "PIN kaydını onar"
-                    kapatmaKipi -> "PIN'i kapat"
-                    else -> "PIN belirle"
+                    onarimKipi -> stringResource(R.string.settings_pin_repair)
+                    kapatmaKipi -> stringResource(R.string.settings_pin_turn_off)
+                    else -> stringResource(R.string.settings_pin_set)
                 }
             )
         },
         text = {
             Column {
                 Text(
-                    if (kapatmaKipi)
-                        "PIN kapatılınca kayıtlar yalnız ana parola/parmak izi ile " +
-                            "açılır. PIN'i hatırlaman gerekmiyor: ana parola yeter. " +
-                            "İşlem sonrası parmak izini yeniden etkinleştir."
-                    else
-                        "PIN 4-12 rakam olmalı. Unutursan ana parola TEK BAŞINA " +
-                            "yetmez — PIN'i yedek parolan gibi güvenli bir yerde tut. " +
-                            "İşlem sonrası parmak izini yeniden etkinleştirmen gerekir.",
+                    if (kapatmaKipi) stringResource(R.string.settings_pin_disable_desc)
+                    else stringResource(R.string.settings_pin_set_desc),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(Modifier.height(8.dp))
-                SecretField(value = parola, onValueChange = { parola = it }, label = "Ana parola")
+                SecretField(
+                    value = parola,
+                    onValueChange = { parola = it },
+                    label = stringResource(R.string.settings_label_master_password)
+                )
                 if (pinGerekli) {
                     SecretField(
                         value = pin,
                         onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin = y },
-                        label = if (onarimKipi) "Mevcut PIN" else "PIN",
+                        label = if (onarimKipi) stringResource(R.string.settings_label_current_pin)
+                        else stringResource(R.string.settings_label_pin),
                         numeric = true
                     )
                 }
@@ -600,7 +611,7 @@ private fun PinSetupDialog(
                     SecretField(
                         value = pin2,
                         onValueChange = { y -> if (y.all { it.isDigit() } && y.length <= 12) pin2 = y },
-                        label = "PIN (tekrar)",
+                        label = stringResource(R.string.settings_label_pin_again),
                         numeric = true
                     )
                 }
@@ -623,13 +634,15 @@ private fun PinSetupDialog(
             ) {
                 Text(
                     when {
-                        onarimKipi -> "Onar"
-                        kapatmaKipi -> "Kapat"
-                        else -> "Belirle"
+                        onarimKipi -> stringResource(R.string.settings_repair)
+                        kapatmaKipi -> stringResource(R.string.settings_turn_off)
+                        else -> stringResource(R.string.settings_set)
                     }
                 )
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Vazgeç") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) }
+        }
     )
 }

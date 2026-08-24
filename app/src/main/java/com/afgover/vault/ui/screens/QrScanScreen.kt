@@ -37,10 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.afgover.vault.R
 import com.afgover.vault.core.QrTransfer
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.BinaryBitmap
@@ -78,7 +80,9 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
     }
 
     val toplanan = remember { mutableStateOf(mapOf<Int, QrTransfer.Frame>()) }
-    var durum by remember { mutableStateOf("QR'ı çerçeveye al") }
+    // `remember` hesap lambdası @Composable değil: metni dışarıda çözüp içeri veriyoruz.
+    val ilkDurum = stringResource(R.string.qr_status_aim)
+    var durum by remember { mutableStateOf(ilkDurum) }
     var cozunurluk by remember { mutableStateOf("") }
     var bitti by remember { mutableStateOf(false) }
 
@@ -151,8 +155,15 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                                                 val yeni = toplanan.value + (kare.index to kare)
                                                 toplanan.value = yeni
                                                 val eksik = QrTransfer.missing(yeni.values)
-                                                durum = if (eksik.isEmpty()) "Tamam"
-                                                else "${yeni.size}/${kare.total} alındı"
+                                                // Analiz geri çağrısı @Composable değil:
+                                                // metinler Context üzerinden alınır.
+                                                durum = if (eksik.isEmpty())
+                                                    context.getString(R.string.qr_status_done)
+                                                else context.getString(
+                                                    R.string.qr_status_received,
+                                                    yeni.size,
+                                                    kare.total
+                                                )
                                                 if (eksik.isEmpty()) {
                                                     val zarf = QrTransfer.assemble(yeni.values)
                                                     if (zarf != null) {
@@ -160,7 +171,9 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                                                         onEnvelope(zarf)
                                                     } else {
                                                         toplanan.value = emptyMap()
-                                                        durum = "Kareler tutmadı, baştan"
+                                                        durum = context.getString(
+                                                            R.string.qr_status_frames_mismatch
+                                                        )
                                                     }
                                                 }
                                             }
@@ -186,8 +199,7 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            "Kamera izni gerekli. Görüntü cihazdan çıkmaz: " +
-                                "çözücü uygulamanın içinde ve uygulamanın ağ izni yok.",
+                            stringResource(R.string.qr_permission_rationale),
                             textAlign = TextAlign.Center
                         )
                         Spacer(Modifier.height(12.dp))
@@ -207,7 +219,12 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                                 izinIstegi.launch(Manifest.permission.CAMERA)
                             }
                         }) {
-                            Text(if (istendi) "Ayarlardan izin ver" else "İzin ver")
+                            Text(
+                                stringResource(
+                                    if (istendi) R.string.qr_grant_in_settings
+                                    else R.string.qr_grant_permission
+                                )
+                            )
                         }
                     }
                 }
@@ -217,8 +234,7 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                 Text(durum, style = MaterialTheme.typography.titleMedium)
                 if (cozunurluk.isNotEmpty()) {
                     Text(
-                        "Kamera analizi: $cozunurluk · kareyi ekranın yarısını " +
-                            "kaplayacak kadar yakın tut",
+                        stringResource(R.string.qr_camera_analysis, cozunurluk),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -233,13 +249,18 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Eksik kare: " + QrTransfer.missing(kareler).joinToString(", "),
+                        stringResource(
+                            R.string.qr_missing_frames,
+                            QrTransfer.missing(kareler).joinToString(", ")
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Spacer(Modifier.height(12.dp))
-                Button(onClick = onCancel, modifier = Modifier.fillMaxWidth()) { Text("Vazgeç") }
+                Button(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.qr_cancel))
+                }
             }
         }
     }

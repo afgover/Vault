@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.R
 import com.afgover.vault.core.Fingerprint
 import com.afgover.vault.data.DecryptedEntry
 import com.afgover.vault.data.EntryType
@@ -85,13 +86,19 @@ fun DetailScreen(
                 title = { Text(e?.title ?: "") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.detail_back)
+                        )
                     }
                 },
                 actions = {
                     if (e != null) {
                         IconButton(onClick = { onEdit(e.id, e.type) }) {
-                            Icon(Icons.Filled.Edit, contentDescription = "Düzenle")
+                            Icon(
+                                Icons.Filled.Edit,
+                                contentDescription = stringResource(R.string.detail_edit)
+                            )
                         }
                     }
                 }
@@ -151,16 +158,15 @@ fun DetailScreen(
                 ) {
                     Column(Modifier.weight(1f)) {
                         Text(
-                            "Klavyede parolasız kullan",
+                            stringResource(R.string.detail_quick_title),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             if (e.quick) {
-                                "Kasa kilitliyken de Vault Klavyesi'nde çıkar; koruması " +
-                                    "telefonun ekran kilidi kadardır."
+                                stringResource(R.string.detail_quick_on)
                             } else {
-                                "Yalnızca kasa kilidi açıkken kullanılabilir."
+                                stringResource(R.string.detail_quick_off)
                             },
                             style = MaterialTheme.typography.bodySmall
                         )
@@ -177,16 +183,26 @@ fun DetailScreen(
             }
 
             Spacer(Modifier.padding(6.dp))
-            val df = remember { java.text.SimpleDateFormat("d MMM yyyy HH:mm", java.util.Locale("tr")) }
+            // Tarih biçimi cihazın diline uyar: "tr" sabiti İngilizce arayüzde
+            // Türkçe ay adı gösteriyordu.
+            val df = remember {
+                java.text.SimpleDateFormat("d MMM yyyy HH:mm", java.util.Locale.getDefault())
+            }
+            val tarihSatiri = stringResource(
+                R.string.detail_dates,
+                df.format(java.util.Date(e.createdAt)),
+                df.format(java.util.Date(e.updatedAt))
+            )
+            val sifreSatiri = if (e.data.passwordChangedAt > 0) {
+                "\n" + stringResource(
+                    R.string.detail_password_changed,
+                    df.format(java.util.Date(e.data.passwordChangedAt))
+                )
+            } else {
+                ""
+            }
             Text(
-                buildString {
-                    append("Eklendi: ").append(df.format(java.util.Date(e.createdAt)))
-                    append(" · Güncellendi: ").append(df.format(java.util.Date(e.updatedAt)))
-                    if (e.data.passwordChangedAt > 0) {
-                        append("\nŞifre son değişti: ")
-                        append(df.format(java.util.Date(e.data.passwordChangedAt)))
-                    }
-                },
+                tarihSatiri + sifreSatiri,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
@@ -194,17 +210,21 @@ fun DetailScreen(
             Spacer(Modifier.padding(8.dp))
             HorizontalDivider()
             Spacer(Modifier.padding(4.dp))
-            Text("Son kullanımlar", style = MaterialTheme.typography.titleSmall)
             Text(
-                "Bu kaydın uygulama içinden nereye gittiği. Ekrandan okunan, " +
-                    "fotoğraflanan ya da otomatik doldurmayla seçilen değerler " +
-                    "burada GÖRÜNMEZ — günlük yalnız uygulamanın yaptığını bilir.",
+                stringResource(R.string.detail_usage_title),
+                style = MaterialTheme.typography.titleSmall
+            )
+            Text(
+                stringResource(R.string.detail_usage_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
             Spacer(Modifier.padding(2.dp))
             if (usage.isEmpty()) {
-                Text("Henüz kullanım yok.", style = MaterialTheme.typography.bodySmall)
+                Text(
+                    stringResource(R.string.detail_usage_empty),
+                    style = MaterialTheme.typography.bodySmall
+                )
             } else {
                 (if (usageExpanded) usage else usage.take(5)).forEach { ev ->
                     Text(
@@ -219,7 +239,13 @@ fun DetailScreen(
                 }
                 if (usage.size > 5) {
                     TextButton(onClick = { usageExpanded = !usageExpanded }) {
-                        Text(if (usageExpanded) "Daha az göster" else "Tümünü göster (${usage.size})")
+                        Text(
+                            if (usageExpanded) {
+                                stringResource(R.string.detail_show_less)
+                            } else {
+                                stringResource(R.string.detail_show_all, usage.size)
+                            }
+                        )
                     }
                 }
             }
@@ -282,15 +308,25 @@ private fun FieldCard(
                     IconButton(onClick = { visible = !visible }) {
                         Icon(
                             if (visible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                            contentDescription = if (visible) "Gizle" else "Göster"
+                            contentDescription = if (visible) {
+                                stringResource(R.string.detail_hide)
+                            } else {
+                                stringResource(R.string.detail_show)
+                            }
                         )
                     }
                 }
                 IconButton(onClick = onCopy) {
-                    Icon(Icons.Filled.ContentCopy, contentDescription = "Kopyala")
+                    Icon(
+                        Icons.Filled.ContentCopy,
+                        contentDescription = stringResource(R.string.detail_copy)
+                    )
                 }
                 IconButton(onClick = onTypeToPc) {
-                    Icon(Icons.Filled.Computer, contentDescription = "Bilgisayara yaz")
+                    Icon(
+                        Icons.Filled.Computer,
+                        contentDescription = stringResource(R.string.detail_type_to_pc)
+                    )
                 }
             }
             Text(
@@ -303,7 +339,7 @@ private fun FieldCard(
             )
             if (!uzun && !showShortFp && visible) {
                 Text(
-                    "SHA-256 parmak izini göster",
+                    stringResource(R.string.detail_show_fingerprint),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
@@ -322,8 +358,14 @@ private fun FieldCard(
                 ) {
                     Column(Modifier.weight(1f)) {
                         Text(
-                            if (uzun) "SHA-256 parmak izi · ${value.length} karakter"
-                            else "SHA-256 parmak izi · ${value.length} karakter · kısa değer",
+                            if (uzun) {
+                                stringResource(R.string.detail_fingerprint_len, value.length)
+                            } else {
+                                stringResource(
+                                    R.string.detail_fingerprint_len_short,
+                                    value.length
+                                )
+                            },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -335,18 +377,18 @@ private fun FieldCard(
                         )
                         if (!uzun) {
                             Text(
-                                "Kısa değerlerin özeti kaba kuvvetle geri çözülebilir — " +
-                                    "bu parmak izini paylaşma.",
+                                stringResource(R.string.detail_fingerprint_warning),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.padding(top = 4.dp)
                             )
                         }
                         if (fullFingerprint) {
+                            // printf'in "%s"i biçim argümanı olarak geçiyor: kaynak
+                            // dizesinde ham % bırakırsak aapt/lint biçim uyuşmazlığı
+                            // sanıyor, %% yazarsak da ekranda %% görünüyor.
                             Text(
-                                "Bilgisayarda: shasum -a 256 dosya\n" +
-                                    "(elle yapıştırdıysan son satır sonu düşmüş olabilir: " +
-                                    "printf '%s' \"\$(cat dosya)\" | shasum -a 256)",
+                                stringResource(R.string.detail_fingerprint_verify, "%s"),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 4.dp)
@@ -356,7 +398,7 @@ private fun FieldCard(
                     IconButton(onClick = { onCopyFingerprint(hex) }) {
                         Icon(
                             Icons.Filled.ContentCopy,
-                            contentDescription = "Parmak izini kopyala",
+                            contentDescription = stringResource(R.string.detail_copy_fingerprint),
                             modifier = Modifier.size(18.dp)
                         )
                     }

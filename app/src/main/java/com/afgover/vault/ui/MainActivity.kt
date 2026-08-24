@@ -14,8 +14,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.afgover.vault.R
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.ui.screens.EditScreen
 import com.afgover.vault.ui.screens.DetailScreen
@@ -67,7 +69,7 @@ class MainActivity : FragmentActivity() {
         // PIN açıkken parmak izi kaydı, ham anahtarı değil PIN ile sarılmış
         // iç sargıyı taşımalı; yoksa açılışta PIN aşaması hiç geçilemez.
         val payload = viewModel.biometricPayload(pin) ?: run {
-            viewModel.error = "Parmak izi kaydı için PIN gerekli"
+            viewModel.error = getString(R.string.main_biometric_needs_pin)
             return
         }
         val cipher = try {
@@ -94,15 +96,17 @@ class MainActivity : FragmentActivity() {
                     if (code != BiometricPrompt.ERROR_USER_CANCELED &&
                         code != BiometricPrompt.ERROR_NEGATIVE_BUTTON
                     ) {
-                        viewModel.error = "Parmak izi etkinleştirilemedi: $msg"
+                        viewModel.error = this@MainActivity.getString(
+                            R.string.main_biometric_enable_failed, msg.toString()
+                        )
                     }
                     viewModel.refreshLockOptions()
                 }
             }
         )
         val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biyometrik kilit açmayı etkinleştir")
-            .setNegativeButtonText("Vazgeç")
+            .setTitle(getString(R.string.main_biometric_enroll_title))
+            .setNegativeButtonText(getString(R.string.main_cancel))
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
         prompt.authenticate(info, BiometricPrompt.CryptoObject(cipher))
@@ -147,24 +151,32 @@ fun VaultRoot(
                         contentDescription = null
                     )
                 },
-                title = { androidx.compose.material3.Text("Parmak izi ile aç") },
+                title = {
+                    androidx.compose.material3.Text(
+                        stringResource(R.string.main_biometric_offer_title)
+                    )
+                },
                 text = {
                     androidx.compose.material3.Text(
-                        "Kasayı her açışta ana parolayı yazmak yerine parmak izini " +
-                            "kullanabilirsin. Ana parola kaybolmaz: gerektiğinde her " +
-                            "zaman çalışır ve yedekleri açan da odur — unutma."
+                        stringResource(R.string.main_biometric_offer_body)
                     )
                 },
                 confirmButton = {
                     androidx.compose.material3.TextButton(onClick = {
                         viewModel.offerBiometric = false
                         onBiometricEnable(null)
-                    }) { androidx.compose.material3.Text("Etkinleştir") }
+                    }) {
+                        androidx.compose.material3.Text(stringResource(R.string.main_enable))
+                    }
                 },
                 dismissButton = {
                     androidx.compose.material3.TextButton(onClick = {
                         viewModel.offerBiometric = false
-                    }) { androidx.compose.material3.Text("Şimdilik parola ile") }
+                    }) {
+                        androidx.compose.material3.Text(
+                            stringResource(R.string.main_password_for_now)
+                        )
+                    }
                 }
             )
         } else {

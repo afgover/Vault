@@ -199,7 +199,10 @@ fun HomeScreen(
                             IconButton(onClick = { sortMenuOpen = true }) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.Sort,
-                                    contentDescription = "Sıralama: " + stringResource(viewModel.sort.labelRes)
+                                    contentDescription = stringResource(
+                                        R.string.home_sort_cd,
+                                        stringResource(viewModel.sort.labelRes)
+                                    )
                                 )
                             }
                             DropdownMenu(
@@ -213,7 +216,8 @@ fun HomeScreen(
                                             if (viewModel.sort == secenek) {
                                                 Icon(
                                                     Icons.Filled.Check,
-                                                    contentDescription = "Seçili"
+                                                    contentDescription =
+                                                        stringResource(R.string.home_selected)
                                                 )
                                             }
                                         },
@@ -229,16 +233,28 @@ fun HomeScreen(
                 },
                 actions = {
                     IconButton(onClick = { showTransferWizard = true }) {
-                        Icon(Icons.Filled.SwapHoriz, contentDescription = "Bilgisayardan aktar")
+                        Icon(
+                            Icons.Filled.SwapHoriz,
+                            contentDescription = stringResource(R.string.home_transfer_cd)
+                        )
                     }
                     IconButton(onClick = { showGenerator = true }) {
-                        Icon(Icons.Filled.Casino, contentDescription = "Şifre üretici")
+                        Icon(
+                            Icons.Filled.Casino,
+                            contentDescription = stringResource(R.string.home_generator_cd)
+                        )
                     }
                     IconButton(onClick = { viewModel.lock() }) {
-                        Icon(Icons.Filled.Lock, contentDescription = "Kilitle")
+                        Icon(
+                            Icons.Filled.Lock,
+                            contentDescription = stringResource(R.string.home_lock_cd)
+                        )
                     }
                     IconButton(onClick = onSettings) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Ayarlar")
+                        Icon(
+                            Icons.Filled.Settings,
+                            contentDescription = stringResource(R.string.home_settings_cd)
+                        )
                     }
                 }
             )
@@ -261,7 +277,7 @@ fun HomeScreen(
                     }
                     HorizontalDivider()
                     DropdownMenuItem(
-                        text = { Text("QR ile aktar") },
+                        text = { Text(stringResource(R.string.home_import_qr)) },
                         leadingIcon = {
                             Icon(Icons.Filled.QrCodeScanner, contentDescription = null)
                         },
@@ -272,7 +288,7 @@ fun HomeScreen(
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Metinden içe aktar") },
+                        text = { Text(stringResource(R.string.home_import_text)) },
                         leadingIcon = {
                             Icon(Icons.Filled.ContentPaste, contentDescription = null)
                         },
@@ -287,7 +303,10 @@ fun HomeScreen(
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                 ) {
-                    Icon(Icons.Filled.Add, contentDescription = "Ekle")
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.home_add_cd)
+                    )
                 }
             }
         }
@@ -301,7 +320,7 @@ fun HomeScreen(
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                placeholder = { Text("Kayıtlarda ara") },
+                placeholder = { Text(stringResource(R.string.home_search_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 singleLine = true,
                 shape = RoundedCornerShape(28.dp),
@@ -332,14 +351,17 @@ fun HomeScreen(
                     )
                 }
                 IconButton(onClick = { manageTags = true }) {
-                    Icon(Icons.Filled.Sell, contentDescription = "Etiketleri yönet")
+                    Icon(
+                        Icons.Filled.Sell,
+                        contentDescription = stringResource(R.string.home_manage_tags_cd)
+                    )
                 }
             }
             Spacer(Modifier.height(4.dp))
 
             if (manuel) {
                 Text(
-                    "Kullanıcı sırası: satırdaki ⠿ kolunu basılı tutup sürükle.",
+                    stringResource(R.string.home_manual_hint),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 4.dp)
@@ -361,8 +383,8 @@ fun HomeScreen(
                     Spacer(Modifier.height(12.dp))
                     Text(
                         text = if (entries.isEmpty())
-                            "Kasa hazır — ilk kaydını sağ alttaki + ile ekle."
-                        else "Bu filtrelerle eşleşen kayıt yok.",
+                            stringResource(R.string.home_empty_vault)
+                        else stringResource(R.string.home_empty_filter),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -393,7 +415,7 @@ fun HomeScreen(
                                 if (manuel) {
                                     Icon(
                                         Icons.Filled.DragHandle,
-                                        contentDescription = "Sürükle",
+                                        contentDescription = stringResource(R.string.home_drag_cd),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier
                                             .padding(end = 6.dp)
@@ -498,9 +520,10 @@ fun HomeScreen(
     }
 
     if (showGenerator) {
+        val sifreEtiketi = stringResource(R.string.field_password)
         GeneratorDialog(
             onDismiss = { showGenerator = false },
-            onCopy = { viewModel.copyToClipboard("Şifre", it) }
+            onCopy = { viewModel.copyToClipboard(sifreEtiketi, it) }
         )
     }
 }

@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.R
 import com.afgover.vault.data.UsageEvent
 import com.afgover.vault.ui.VaultViewModel
 import androidx.compose.ui.res.stringResource
@@ -55,26 +56,23 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
         if (target == null) events else events.filter { it.target == target }
     }
     val df = remember { java.text.SimpleDateFormat("d MMM yyyy HH:mm", java.util.Locale("tr")) }
+    // Silinmiş kaydın etiketi: buildString içinde stringResource çağırmamak için dışarı alındı.
+    val deletedLabel = stringResource(R.string.log_deleted_entry)
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Kullanım günlüğü") },
+        title = { Text(stringResource(R.string.log_title)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 Text(
-                    "Günlük yalnız uygulamanın yaptığını görür: ekrandan okunan, " +
-                        "fotoğraflanan ya da elle yazılan bir değer iz bırakmaz. " +
-                        "Otomatik doldurmada hangi kaydı seçtiğin de Android " +
-                        "tarafından uygulamaya bildirilmediği için kaydedilemiyor. " +
-                        "Kasa açıkken bu günlük silinebilir — kurcalanamaz bir kayıt değildir.",
+                    stringResource(R.string.log_scope_note),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
                 if (pending > 0) {
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        "$pending olay kilitliyken oluştu ve henüz günlüğe taşınmadı; " +
-                            "kasa açıldığında listeye girecek.",
+                        stringResource(R.string.log_pending_note, pending),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -82,13 +80,16 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
 
                 if (targets.isNotEmpty()) {
                     Spacer(Modifier.height(10.dp))
-                    Text("Hedefe göre süz:", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        stringResource(R.string.log_filter_by_target),
+                        style = MaterialTheme.typography.titleSmall
+                    )
                     Spacer(Modifier.height(4.dp))
                     Row(Modifier.horizontalScroll(rememberScrollState())) {
                         SecimCipi(
                             secili = target == null,
                             onClick = { target = null },
-                            label = "Hepsi",
+                            label = stringResource(R.string.log_filter_all),
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         targets.forEach { t ->
@@ -108,15 +109,21 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
 
                 if (shown.isEmpty()) {
                     Text(
-                        if (events.isEmpty()) "Günlük boş." else "Bu hedefe giden kayıt yok.",
+                        if (events.isEmpty()) stringResource(R.string.log_empty)
+                        else stringResource(R.string.log_empty_for_target),
                         style = MaterialTheme.typography.bodySmall
                     )
                 } else {
-                    if (target != null) {
-                        val kayitlar = shown.map { titles[it.entryId] ?: "(silinmiş kayıt)" }
+                    val secilenHedef = target
+                    if (secilenHedef != null) {
+                        val kayitlar = shown.map { titles[it.entryId] ?: deletedLabel }
                             .distinct()
                         Text(
-                            "\"$target\" hedefine giden kayıtlar: " + kayitlar.joinToString(", "),
+                            stringResource(
+                                R.string.log_entries_to_target,
+                                secilenHedef,
+                                kayitlar.joinToString(", ")
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -127,7 +134,7 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                         Text(
                             buildString {
                                 append(df.format(java.util.Date(ev.at)))
-                                append(" · ").append(titles[ev.entryId] ?: "(silinmiş kayıt)")
+                                append(" · ").append(titles[ev.entryId] ?: deletedLabel)
                                 append(" · ").append(stringResource(ev.kind.labelRes))
                                 ev.fieldLabel?.let { append(" (").append(it).append(")") }
                                 ev.target?.let { append(" → ").append(it) }
@@ -137,7 +144,7 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                     }
                     if (shown.size > 200) {
                         Text(
-                            "… ve ${shown.size - 200} olay daha (listede ilk 200 gösteriliyor).",
+                            stringResource(R.string.log_more_events, shown.size - 200),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
@@ -147,8 +154,7 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                 if (confirmClear) {
                     Spacer(Modifier.height(10.dp))
                     Text(
-                        "Günlüğün tamamı silinsin mi? Geri alınamaz; kayıtların " +
-                            "kendisi etkilenmez.",
+                        stringResource(R.string.log_clear_confirm),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -156,16 +162,22 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                         TextButton(onClick = {
                             viewModel.clearUsageLog { tick++ }
                             confirmClear = false
-                        }) { Text("Evet, sil") }
-                        TextButton(onClick = { confirmClear = false }) { Text("Vazgeç") }
+                        }) { Text(stringResource(R.string.log_clear_yes)) }
+                        TextButton(onClick = { confirmClear = false }) {
+                            Text(stringResource(R.string.log_cancel))
+                        }
                     }
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Kapat") } },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.log_close)) }
+        },
         dismissButton = {
             if (!confirmClear) {
-                TextButton(onClick = { confirmClear = true }) { Text("Günlüğü sil") }
+                TextButton(onClick = { confirmClear = true }) {
+                    Text(stringResource(R.string.log_clear))
+                }
             }
         }
     )

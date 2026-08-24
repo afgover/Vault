@@ -28,11 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
+import com.afgover.vault.R
 import com.afgover.vault.core.PinLock
 import com.afgover.vault.ui.VaultViewModel
 
@@ -67,11 +69,13 @@ fun PinScreen(viewModel: VaultViewModel) {
             )
         }
         Spacer(Modifier.height(20.dp))
-        Text("İkinci kapı", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            stringResource(R.string.unlock_pin_title),
+            style = MaterialTheme.typography.headlineSmall
+        )
         Spacer(Modifier.height(8.dp))
         Text(
-            "PIN kodunu gir. Bu kod olmadan kayıtlar çözülemez — " +
-                "ana parola tek başına yetmez.",
+            stringResource(R.string.unlock_pin_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -85,7 +89,11 @@ fun PinScreen(viewModel: VaultViewModel) {
                     viewModel.error = null
                 }
             },
-            label = "PIN (${PinLock.MIN_LENGTH}-${PinLock.MAX_LENGTH} rakam)",
+            label = stringResource(
+                R.string.unlock_pin_label,
+                PinLock.MIN_LENGTH,
+                PinLock.MAX_LENGTH
+            ),
             numeric = true
         )
         viewModel.error?.let {
@@ -100,8 +108,10 @@ fun PinScreen(viewModel: VaultViewModel) {
                 onClick = { viewModel.unlockWithPin(pin) },
                 enabled = pin.length >= PinLock.MIN_LENGTH,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Aç") }
-            TextButton(onClick = { viewModel.cancelPinStage() }) { Text("Vazgeç") }
+            ) { Text(stringResource(R.string.unlock_pin_open)) }
+            TextButton(onClick = { viewModel.cancelPinStage() }) {
+                Text(stringResource(R.string.unlock_pin_cancel))
+            }
         }
     }
 }

@@ -164,9 +164,11 @@ object BtHidManager {
 
     @RequiresApi(28)
     private fun registerApp(context: Context, hidDevice: BluetoothHidDevice) {
+        // Bu ad ve açıklama KARŞI BİLGİSAYARDA görünür (eşleşme listesinde),
+        // yani telefonun dilinde olmalı — Context burada var (yerelleştirme).
         val sdp = BluetoothHidDeviceAppSdpSettings(
-            "Vault Klavye",
-            "Vault güvenli tuş aktarımı",
+            context.getString(R.string.bt_sdp_name),
+            context.getString(R.string.bt_sdp_description),
             "Vault",
             BluetoothHidDevice.SUBCLASS1_KEYBOARD,
             KEYBOARD_DESCRIPTOR

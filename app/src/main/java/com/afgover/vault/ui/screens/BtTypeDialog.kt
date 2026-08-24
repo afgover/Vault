@@ -52,9 +52,10 @@ private enum class Gonderim { DUZEN_TESTI, HIZ_TESTI, DEGER }
 private const val KISA_DEGER = 100
 
 /** "42 sn" / "2 dk 15 sn". */
-private fun sureMetni(ms: Long): String {
+private fun sureMetni(context: Context, ms: Long): String {
     val sn = ((ms + 999L) / 1000L).toInt()
-    return if (sn < 60) "$sn sn" else "${sn / 60} dk ${sn % 60} sn"
+    return if (sn < 60) context.getString(R.string.bt_duration_seconds, sn)
+    else context.getString(R.string.bt_duration_minutes, sn / 60, sn % 60)
 }
 
 /**
@@ -77,9 +78,11 @@ fun BtTypeDialog(
     if (!BtHidManager.isSupported) {
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("Desteklenmiyor") },
-            text = { Text("Bluetooth klavye özelliği Android 9 ve üzeri gerektirir.") },
-            confirmButton = { TextButton(onClick = onDismiss) { Text("Tamam") } }
+            title = { Text(stringResource(R.string.bt_unsupported_title)) },
+            text = { Text(stringResource(R.string.bt_unsupported_body)) },
+            confirmButton = {
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.bt_ok)) }
+            }
         )
         return
     }
@@ -190,34 +193,45 @@ fun BtTypeDialog(
         pending = null
 
         when {
-            sonuc.cancelled -> summary =
-                "Durduruldu: ${sonuc.typed} / ${metin.length} karakter yazıldı. " +
-                    "Bilgisayardaki metin EKSİK — sil ve baştan yaz."
+            sonuc.cancelled -> summary = context.getString(
+                R.string.bt_stopped_summary, sonuc.typed, metin.length
+            )
 
-            sonuc.aborted -> summary =
-                "Yazma yarıda kesildi: ${sonuc.typed} / ${metin.length} karakter. " +
-                    "Bilgisayardaki metin EKSİK — sil, daha yavaş bir hız seçip tekrar dene."
+            sonuc.aborted -> summary = context.getString(
+                R.string.bt_aborted_summary, sonuc.typed, metin.length
+            )
 
             else -> {
                 if (kind == Gonderim.DUZEN_TESTI) testTyped = true
                 if (kind == Gonderim.HIZ_TESTI) {
-                    hizSonucu = "${sonuc.typed} karakter, ${sureMetni(sonuc.elapsedMs)} " +
-                        "(${sonuc.charsPerSecond} karakter/sn)"
+                    hizSonucu = context.getString(
+                        R.string.bt_speed_result,
+                        sonuc.typed,
+                        sureMetni(context, sonuc.elapsedMs),
+                        sonuc.charsPerSecond
+                    )
                 }
                 if (kind == Gonderim.DEGER) {
-                    onTyped((state as? BtHidManager.State.Connected)?.name ?: "bilinmeyen cihaz")
+                    onTyped(
+                        (state as? BtHidManager.State.Connected)?.name
+                            ?: context.getString(R.string.bt_unknown_device)
+                    )
                 }
                 if (sonuc.untyped.isNotEmpty()) {
-                    untypedWarning = "Şu karakterler bu düzende yazılamadı: " +
-                        sonuc.untyped.distinct().joinToString(" ") +
-                        " — diğer düzeni deneyebilirsin."
+                    untypedWarning = context.getString(
+                        R.string.bt_untyped_warning,
+                        sonuc.untyped.distinct().joinToString(" ")
+                    )
                 } else if (kind == Gonderim.DEGER) {
                     if (value.length <= KISA_DEGER) {
                         onDismiss()
                     } else {
-                        summary = "✓ ${sonuc.typed} karakter yazıldı — " +
-                            "${sureMetni(sonuc.elapsedMs)}, ${sonuc.charsPerSecond} karakter/sn. " +
-                            "Bilgisayarda karakter sayısını doğrula."
+                        summary = context.getString(
+                            R.string.bt_done_summary,
+                            sonuc.typed,
+                            sureMetni(context, sonuc.elapsedMs),
+                            sonuc.charsPerSecond
+                        )
                     }
                 }
             }
@@ -226,18 +240,18 @@ fun BtTypeDialog(
 
     AlertDialog(
         onDismissRequest = { if (!typing) onDismiss() },
-        title = { Text("Bilgisayara yaz: $label") },
+        title = { Text(stringResource(R.string.bt_title, label)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 if (!permissionGranted) {
-                    Text("Bluetooth izni gerekli. İzin vermeden bu özellik çalışamaz.")
+                    Text(stringResource(R.string.bt_permission_required))
                     return@Column
                 }
 
                 when (val s = state) {
                     is BtHidManager.State.Idle,
                     is BtHidManager.State.Registering ->
-                        Text("Bluetooth klavye hazırlanıyor…")
+                        Text(stringResource(R.string.bt_preparing))
 
                     is BtHidManager.State.Unsupported ->
                         Text(error?.let { stringResource(it.res, *it.args.toTypedArray()) }
@@ -245,16 +259,13 @@ fun BtTypeDialog(
 
                     is BtHidManager.State.Ready -> {
                         Text(
-                            "Bilgisayarını seç (önce telefonla Bluetooth'tan eşleştirilmiş olmalı):",
+                            stringResource(R.string.bt_pick_computer),
                             style = MaterialTheme.typography.bodySmall
                         )
                         Spacer(Modifier.height(8.dp))
                         val devices = remember(state) { BtHidManager.bondedDevices() }
                         if (devices.isEmpty()) {
-                            Text(
-                                "Eşleştirilmiş cihaz yok. Telefonun Bluetooth ayarlarından " +
-                                    "bilgisayarınla eşleştir, sonra tekrar dene."
-                            )
+                            Text(stringResource(R.string.bt_no_bonded_devices))
                         }
                         devices.forEach { (name, device) ->
                             OutlinedButton(
@@ -267,18 +278,20 @@ fun BtTypeDialog(
                     }
 
                     is BtHidManager.State.Connecting ->
-                        Text("${s.name} cihazına bağlanılıyor…")
+                        Text(stringResource(R.string.bt_connecting, s.name))
 
                     is BtHidManager.State.Connected -> {
-                        Text("✓ ${s.name} bağlı", color = MaterialTheme.colorScheme.primary)
+                        Text(
+                            stringResource(R.string.bt_connected, s.name),
+                            color = MaterialTheme.colorScheme.primary
+                        )
                         Spacer(Modifier.height(12.dp))
                         Text(
-                            "BİLGİSAYARIN klavye düzeni (telefonun değil):",
+                            stringResource(R.string.bt_layout_heading),
                             style = MaterialTheme.typography.titleSmall
                         )
                         Text(
-                            "Tuş kodlarını bilgisayar yorumlar — yanlış düzen seçersen " +
-                                "@ \" ? gibi karakterler SESSİZCE başka karaktere dönüşür.",
+                            stringResource(R.string.bt_layout_warning),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -298,7 +311,9 @@ fun BtTypeDialog(
                             }
                         }
                         Text(
-                            "Seçili düzen: " + stringResource(layout.labelRes),
+                            stringResource(
+                                R.string.bt_selected_layout, stringResource(layout.labelRes)
+                            ),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -309,9 +324,9 @@ fun BtTypeDialog(
                         }
                         if (riskli.isNotEmpty() && !testTyped) {
                             Text(
-                                "Bu metinde düzene duyarlı karakterler var: " +
-                                    riskli.joinToString(" ") +
-                                    " — göndermeden önce test yazmanı öneririm.",
+                                stringResource(
+                                    R.string.bt_sensitive_chars, riskli.joinToString(" ")
+                                ),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.error
                             )
@@ -321,22 +336,28 @@ fun BtTypeDialog(
                             enabled = !typing && countdown == 0,
                             onClick = { pending = Gonderim.DUZEN_TESTI },
                             modifier = Modifier.fillMaxWidth()
-                        ) { Text(if (testTyped) "✓ Test yazıldı — tekrar dene" else "🧪 Önce test yaz (önerilir)") }
+                        ) {
+                            Text(
+                                if (testTyped) stringResource(R.string.bt_test_done)
+                                else stringResource(R.string.bt_test_first)
+                            )
+                        }
                         if (testTyped) {
                             Text(
-                                "Bilgisayarda TAM OLARAK şu çıkmış olmalı:\n" +
-                                    HidLayouts.LAYOUT_TEST_TEXT +
-                                    "\nFarklıysa üstteki diğer düzeni seç ve testi tekrarla.",
+                                stringResource(
+                                    R.string.bt_test_expected, HidLayouts.LAYOUT_TEST_TEXT
+                                ),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
 
                         Spacer(Modifier.height(12.dp))
-                        Text("Yazma hızı:", style = MaterialTheme.typography.titleSmall)
                         Text(
-                            "Tuşlar tek tek gönderilir. Hız, bağlantının taşıyabileceğinden " +
-                                "yüksek olursa yazma durur (karakter kaybolmaz) — hangisinin " +
-                                "çalıştığını hız testiyle ölç.",
+                            stringResource(R.string.bt_speed_heading),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            stringResource(R.string.bt_speed_desc),
                             style = MaterialTheme.typography.bodySmall
                         )
                         Spacer(Modifier.height(4.dp))
@@ -355,8 +376,11 @@ fun BtTypeDialog(
                             }
                         }
                         Text(
-                            "${value.length} karakter ≈ " +
-                                sureMetni(value.length * speed.perCharMs),
+                            stringResource(
+                                R.string.bt_estimate,
+                                value.length,
+                                sureMetni(context, value.length * speed.perCharMs)
+                            ),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -366,12 +390,21 @@ fun BtTypeDialog(
                             enabled = !typing && countdown == 0,
                             onClick = { pending = Gonderim.HIZ_TESTI },
                             modifier = Modifier.fillMaxWidth()
-                        ) { Text("⏱ Hız testi (${HidLayouts.SPEED_TEST_TEXT.length} karakter)") }
+                        ) {
+                            Text(
+                                stringResource(
+                                    R.string.bt_speed_test_button,
+                                    HidLayouts.SPEED_TEST_TEXT.length
+                                )
+                            )
+                        }
                         hizSonucu?.let {
                             Text(
-                                "$it\nBilgisayarda boşlukla ayrılmış 10 grup olmalı ve her biri " +
-                                    "birebir ${HidLayouts.SPEED_TEST_BLOCK} — biri bile farklıysa " +
-                                    "bir alt hızı seç ve testi tekrarla.",
+                                stringResource(
+                                    R.string.bt_speed_result_detail,
+                                    it,
+                                    HidLayouts.SPEED_TEST_BLOCK
+                                ),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -379,7 +412,11 @@ fun BtTypeDialog(
                         Spacer(Modifier.height(12.dp))
                         when {
                             typing -> {
-                                Text("Yazılıyor… $progress / $total karakter")
+                                Text(
+                                    stringResource(
+                                        R.string.bt_typing_progress, progress, total
+                                    )
+                                )
                                 Spacer(Modifier.height(4.dp))
                                 LinearProgressIndicator(
                                     progress = {
@@ -389,19 +426,21 @@ fun BtTypeDialog(
                                 )
                                 Spacer(Modifier.height(4.dp))
                                 Text(
-                                    "~" + sureMetni((total - progress) * speed.perCharMs) +
-                                        " kaldı — bitene kadar bilgisayarda imleci oynatma.",
+                                    stringResource(
+                                        R.string.bt_remaining,
+                                        sureMetni(
+                                            context, (total - progress) * speed.perCharMs
+                                        )
+                                    ),
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
                             countdown > 0 -> Text(
-                                "$countdown saniye içinde yazılacak — bilgisayarda imleci " +
-                                    "ilgili alana getir!",
+                                stringResource(R.string.bt_countdown, countdown),
                                 color = MaterialTheme.colorScheme.primary
                             )
                             else -> Text(
-                                "Bilgisayarda imleci yazılacak alana getir, sonra düğmeye " +
-                                    "bas. 3 saniye sonra yazma başlar.",
+                                stringResource(R.string.bt_before_start),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -430,14 +469,21 @@ fun BtTypeDialog(
                 Button(
                     enabled = !typing && countdown == 0,
                     onClick = { pending = Gonderim.DEGER }
-                ) { Text(if (countdown > 0) "$countdown…" else "Yaz") }
+                ) {
+                    Text(
+                        if (countdown > 0) stringResource(R.string.bt_countdown_short, countdown)
+                        else stringResource(R.string.bt_type)
+                    )
+                }
             }
         },
         dismissButton = {
             if (typing) {
-                TextButton(onClick = { iptal.set(true) }) { Text("Durdur") }
+                TextButton(onClick = { iptal.set(true) }) {
+                    Text(stringResource(R.string.bt_stop))
+                }
             } else {
-                TextButton(onClick = onDismiss) { Text("Kapat") }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.bt_close)) }
             }
         }
     )

@@ -24,8 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.R
 import com.afgover.vault.core.PasswordGenerator
 
 /**
@@ -50,7 +52,7 @@ fun GeneratorDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Şifre üretici") },
+        title = { Text(stringResource(R.string.unlock_generator_title)) },
         text = {
             Column {
                 Surface(
@@ -74,14 +76,26 @@ fun GeneratorDialog(
                                 .padding(12.dp)
                         )
                         IconButton(onClick = { update(options) }) {
-                            Icon(Icons.Filled.Refresh, contentDescription = "Yenile")
+                            Icon(
+                                Icons.Filled.Refresh,
+                                contentDescription =
+                                    stringResource(R.string.unlock_generator_refresh)
+                            )
                         }
                     }
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Uzunluk: ${options.length} • Güç: ~$entropy bit " +
-                        if (entropy >= 90) "(çok güçlü)" else if (entropy >= 60) "(güçlü)" else "(zayıf)",
+                    text = stringResource(
+                        R.string.unlock_generator_summary,
+                        options.length,
+                        entropy,
+                        stringResource(
+                            if (entropy >= 90) R.string.unlock_generator_very_strong
+                            else if (entropy >= 60) R.string.unlock_generator_strong
+                            else R.string.unlock_generator_weak
+                        )
+                    ),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Slider(
@@ -117,22 +131,30 @@ fun GeneratorDialog(
                 FilterChip(
                     selected = options.avoidAmbiguous,
                     onClick = { update(options.copy(avoidAmbiguous = !options.avoidAmbiguous)) },
-                    label = { Text("Karışan karakterleri eleme (l, 1, O, 0)") }
+                    label = { Text(stringResource(R.string.unlock_generator_avoid_ambiguous)) }
                 )
             }
         },
         confirmButton = {
             if (onUse != null) {
-                TextButton(onClick = { onUse(password); onDismiss() }) { Text("Kullan") }
+                TextButton(onClick = { onUse(password); onDismiss() }) {
+                    Text(stringResource(R.string.unlock_generator_use))
+                }
             } else {
-                TextButton(onClick = { onCopy(password) }) { Text("Kopyala") }
+                TextButton(onClick = { onCopy(password) }) {
+                    Text(stringResource(R.string.unlock_generator_copy))
+                }
             }
         },
         dismissButton = {
             if (onUse != null) {
-                TextButton(onClick = { onCopy(password) }) { Text("Kopyala") }
+                TextButton(onClick = { onCopy(password) }) {
+                    Text(stringResource(R.string.unlock_generator_copy))
+                }
             } else {
-                TextButton(onClick = onDismiss) { Text("Kapat") }
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.unlock_generator_close))
+                }
             }
         }
     )
