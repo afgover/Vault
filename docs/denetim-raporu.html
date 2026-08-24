@@ -128,7 +128,7 @@ footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);
 <div class="tile y"><div class="n">10</div><div class="l">Yüksek — zafiyet / çökme</div></div>
 <div class="tile o"><div class="n">30</div><div class="l">Orta — doğruluk / yanıltma</div></div>
 <div class="tile d"><div class="n">25</div><div class="l">Düşük — pürüz</div></div>
-<div class="tile f"><div class="n">45</div><div class="l">Bu turda düzeltildi</div></div>
+<div class="tile f"><div class="n">47</div><div class="l">Bu turda düzeltildi</div></div>
 </div>
 
 <div class="note">Üç <b>kritik</b> bulgunun tamamı tek kök nedene bakıyordu — "Tümünü değiştir" ile içe aktarma, yazmadan önce kasayı siliyordu — ve bu turda düzeltilip regresyon testleriyle kapatıldı. Kalanlar önem sırasına dizili; her kartı açınca sorun, tetikleyen senaryo ve önerilen düzeltme görünür.</div>
@@ -196,11 +196,11 @@ footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);
 <div class="block"><h4>Senaryo</h4><p>Kullanıcı &#x27;değiştir&#x27; (replace) seçeneğiyle, içinde 300KB&#x27;lik tek bir not bulunan eski bir .vaultbak yedeğini içe aktarır: deleteAll koşar, üçüncü kaydın toEntity&#x27;sinde EntryTooLargeException fırlar, ekranda &#x27;Geri yükleme başarısız&#x27; görünür — ama kasadaki TÜM mevcut kayıtlar silinmiştir ve yedekten hiçbir kayıt yazılmamıştır. Ana kasa boş, tek kopya (varsa) o hatalı yedek.</p></div>
 <div class="block"><h4>Düzeltme</h4><p>Önce listeyi hazırla: val hazir = entries.map { it.toEntity(key, resolve(it)) } (checkSize burada patlarsa henüz hiçbir şey silinmemiş olur). Sonra androidx.room.withTransaction (room-ktx zaten bağımlılıkta) içinde deleteAll() + insertAll(hazir) çalıştır. VaultRepository&#x27;ye VaultDatabase referansı ekleyip suspend fun replaceAll(...) = db.withTransaction { ... } biçiminde yaz.</p></div>
 </div></article>
-<article class="finding sev-yuksek durum-open" data-sev="yuksek" data-alan="pazar" data-durum="open">
+<article class="finding sev-yuksek durum-fixed" data-sev="yuksek" data-alan="pazar" data-durum="fixed">
 <button class="fhead" aria-expanded="false" onclick="tog(this)">
 <span class="stripe"></span>
 <span class="fmeta">
-<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Pazar</span><span class="chip st-open">açık</span></span>
+<span class="chips"><span class="chip sevchip sc-yuksek">Yüksek</span><span class="chip alan">Pazar</span><span class="chip st-fixed">✓ düzeltildi</span></span>
 <span class="ftitle">Play hedef API engeli: 31 Agustos 2026&#x27;dan itibaren yeni uygulamalar API 36 hedeflemeli, uygulama 35&#x27;te</span>
 <span class="floc">app/build.gradle.kts:15</span>
 </span>
@@ -1066,11 +1066,11 @@ footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);
 <div class="block"><h4>Senaryo</h4><p>Kullanici &#x27;Metinden ice aktar&#x27;da yanlis parola girer (&#x27;Yedek parolasi yanlis&#x27; set edilir), vazgecer, sonra kasayi kilitler. Kilit ekrani daha hicbir sey yazilmadan kirmizi &#x27;Yedek parolasi yanlis&#x27; metniyle acilir - kullanici ana parolasinin yanlis oldugunu sanabilir.</p></div>
 <div class="block"><h4>Düzeltme</h4><p>lock() ve refreshLockState&#x27;in LOCKED&#x27;a dusen yollarinda error = null yap; dialog kapanislarinda (onDismiss) kendi urettikleri hatayi temizle. Orta vadede ekran-yerel hata durumlarina gecmek kalici cozum.</p></div>
 </div></article>
-<article class="finding sev-dusuk durum-open" data-sev="dusuk" data-alan="yapi" data-durum="open">
+<article class="finding sev-dusuk durum-fixed" data-sev="dusuk" data-alan="yapi" data-durum="fixed">
 <button class="fhead" aria-expanded="false" onclick="tog(this)">
 <span class="stripe"></span>
 <span class="fmeta">
-<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Yapı / Market</span><span class="chip st-open">açık</span><span class="chip st-note">doğrulanmadı</span></span>
+<span class="chips"><span class="chip sevchip sc-dusuk">Düşük</span><span class="chip alan">Yapı / Market</span><span class="chip st-fixed">✓ düzeltildi</span><span class="chip st-note">doğrulanmadı</span></span>
 <span class="ftitle">16 KB hizalama kontrolü yalnız debug APK&#x27;sına bağlı, market&#x27;e giden çıktıyı denetlemiyor</span>
 <span class="floc">app/build.gradle.kts:117</span>
 </span>
