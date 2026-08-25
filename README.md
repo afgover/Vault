@@ -3,10 +3,10 @@
 *Your secure vault.*
 
 Sekuvo is a fully offline password, card and secret vault for Android.
-Website: **[sekuvo.com](https://sekuvo.com)**. It does not request the `INTERNET` permission — your data is technically
+It does not request the `INTERNET` permission — your data is technically
 incapable of leaving the device.
 
-*English — [Türkçe](README.tr.md)*
+*English — [Türkçe](README.tr.md) · [sekuvo.com](https://sekuvo.com)*
 
 ## Highlights
 
