@@ -22,7 +22,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.afgover.vault"
+        // Marka: Sekuvo (2026-08-25). Paket kimliği sahip olunan alan adından;
+        // ilk Play yüklemesinden sonra SONSUZA DEK değişemez. Kod paketleri
+        // (namespace com.afgover.vault) bilinçli olarak eski adda — applicationId
+        // ile namespace'in ayrışması desteklenen ve maliyetsiz yoldur.
+        applicationId = "com.sekuvo.app"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

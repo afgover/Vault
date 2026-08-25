@@ -8,9 +8,9 @@
 -->
 <resources>
     <!-- Brand name: not translated. -->
-    <string name="app_name" translatable="false">Vault</string>
-    <string name="ime_label">Vault Keyboard</string>
-    <string name="autofill_label" translatable="false">Vault</string>
+    <string name="app_name" translatable="false">Sekuvo</string>
+    <string name="ime_label">Sekuvo Keyboard</string>
+    <string name="autofill_label" translatable="false">Sekuvo</string>
 
     <!-- Built-in field labels. These are DISPLAY text only: what gets stored
          in the usage log and the clipboard label is the stable key, never
@@ -81,7 +81,7 @@
 
     <!-- backup -->
     <string name="backup_autofill_form_unreadable">Could not read the form</string>
-    <string name="backup_autofill_locked_save">The vault is locked. Unlock Vault first to save.</string>
+    <string name="backup_autofill_locked_save">The vault is locked. Unlock Sekuvo first to save.</string>
     <string name="backup_autofill_nothing_to_save">No information found to save</string>
     <string name="backup_autofill_save_failed">Could not save: %1$s</string>
     <string name="backup_autofill_unlock_to_fill">Unlock to fill</string>
@@ -127,7 +127,7 @@
     <string name="detail_back">Back</string>
     <string name="detail_edit">Edit</string>
     <string name="detail_quick_title">Use on the keyboard without a password</string>
-    <string name="detail_quick_on">Appears in the Vault Keyboard even while the vault is locked; its protection is only as strong as your phone\'s screen lock.</string>
+    <string name="detail_quick_on">Appears in the Sekuvo Keyboard even while the vault is locked; its protection is only as strong as your phone\'s screen lock.</string>
     <string name="detail_quick_off">Available only while the vault is unlocked.</string>
     <string name="detail_dates">Added: %1$s · Updated: %2$s</string>
     <string name="detail_password_changed">Password last changed: %1$s</string>
@@ -165,7 +165,7 @@
     <string name="edit_add_field">+ Add field</string>
     <string name="edit_field_notes">Notes</string>
     <string name="edit_quick_title">Use on the keyboard without a password</string>
-    <string name="edit_quick_desc">When on, this entry appears in the Vault Keyboard even while the vault is locked. It is then protected only by your phone\'s screen lock; leave it off for sensitive data such as passwords.</string>
+    <string name="edit_quick_desc">When on, this entry appears in the Sekuvo Keyboard even while the vault is locked. It is then protected only by your phone\'s screen lock; leave it off for sensitive data such as passwords.</string>
     <string name="edit_tags">Tags</string>
     <string name="edit_new_tag">+ New</string>
     <string name="edit_save">Save</string>
@@ -230,7 +230,7 @@
     <string name="log_close">Close</string>
     <string name="log_clear">Delete log</string>
     <!-- main -->
-    <string name="main_biometric_needs_pin">Your Vault PIN is required to save the fingerprint record</string>
+    <string name="main_biometric_needs_pin">Your Sekuvo PIN is required to save the fingerprint record</string>
     <string name="main_biometric_enable_failed">Could not enable fingerprint: %1$s</string>
     <string name="main_biometric_enroll_title">Enable biometric unlock</string>
     <string name="main_cancel">Cancel</string>
@@ -240,7 +240,7 @@
     <string name="main_password_for_now">Password for now</string>
     <string name="main_biometric_invalidated">Fingerprint unlock is no longer valid (e.g. a new fingerprint was added). Unlock with your password.</string>
     <string name="main_biometric_decrypt_failed">Fingerprint verified, but the key could not be decrypted. Unlock with your password.</string>
-    <string name="main_unlock_title">Unlock Vault</string>
+    <string name="main_unlock_title">Unlock Sekuvo</string>
     <string name="main_use_password">Use password</string>
     <string name="main_hide">Hide</string>
     <string name="main_show">Show</string>
@@ -277,7 +277,7 @@
     <string name="settings_title">Settings</string>
     <string name="settings_back">Back</string>
     <string name="settings_appearance">Appearance</string>
-    <string name="settings_sort_moved">Sorting moved to the home screen: you pick it from the ⇅ icon next to the title, and it applies both in the list and in the Vault Keyboard.\nCurrent order: %1$s</string>
+    <string name="settings_sort_moved">Sorting moved to the home screen: you pick it from the ⇅ icon next to the title, and it applies both in the list and in the Sekuvo Keyboard.\nCurrent order: %1$s</string>
     <string name="settings_backup">Backup</string>
     <string name="settings_backup_desc">The backup file is encrypted with AES-256 and opens only with the backup password. You can save the file anywhere you like — Drive, SD card and so on; even if the phone is wiped, the file plus the password restores everything.</string>
     <string name="settings_backup_export">Create encrypted backup</string>
@@ -304,12 +304,12 @@
     <string name="settings_reminder_days">%1$d days</string>
     <string name="settings_change_password">Change master password</string>
     <string name="settings_autofill">Autofill</string>
-    <string name="settings_autofill_on_desc">On. When you tap a sign-in or card form in apps and browsers, your Vault entries appear as a fill option. If the vault is locked, the unlock screen comes first; no value is handed to the system while locked.</string>
-    <string name="settings_autofill_off_desc">If you enable it, tapping a sign-in or card form in apps and browsers offers your Vault entries directly as a fill option. It also offers to save newly entered details to Vault.\n\nThe button below opens system settings. The name of the list that opens varies by device (\"Preferred service\", \"Autofill service\" or \"Passwords, passkeys &amp; autofill\"); just pick Vault from that list.</string>
+    <string name="settings_autofill_on_desc">On. When you tap a sign-in or card form in apps and browsers, your Sekuvo entries appear as a fill option. If the vault is locked, the unlock screen comes first; no value is handed to the system while locked.</string>
+    <string name="settings_autofill_off_desc">If you enable it, tapping a sign-in or card form in apps and browsers offers your Sekuvo entries directly as a fill option. It also offers to save newly entered details to Sekuvo.\n\nThe button below opens system settings. The name of the list that opens varies by device (\"Preferred service\", \"Autofill service\" or \"Passwords, passkeys &amp; autofill\"); just pick Sekuvo from that list.</string>
     <string name="settings_autofill_open">Open autofill settings</string>
     <string name="settings_autofill_enable">Enable autofill</string>
-    <string name="settings_keyboard">Vault Keyboard</string>
-    <string name="settings_keyboard_desc">If you enable the keyboard add-on, you can pick Vault Keyboard from the keyboard switcher in any app and type your saved details straight into the field.</string>
+    <string name="settings_keyboard">Sekuvo Keyboard</string>
+    <string name="settings_keyboard_desc">If you enable the keyboard add-on, you can pick Sekuvo Keyboard from the keyboard switcher in any app and type your saved details straight into the field.</string>
     <string name="settings_keyboard_open">Open keyboard settings</string>
     <string name="settings_export_pw_title">Set backup password</string>
     <string name="settings_export_pw_desc">Without this password the backup file CANNOT be opened. Make it DIFFERENT from your master password: the backup password gets typed on computers, the master password never touches a computer.</string>
@@ -360,8 +360,9 @@
     <string name="transfer_cancel">Cancel</string>
     <string name="transfer_bt_label">Transfer password (into both fields, with Tab)</string>
     <!-- unlock -->
-    <string name="unlock_welcome_title">Welcome to Vault</string>
-    <string name="unlock_locked_title">Vault is locked</string>
+    <string name="unlock_welcome_title">Welcome to Sekuvo</string>
+    <string name="unlock_slogan">Your secure vault.</string>
+    <string name="unlock_locked_title">Sekuvo is locked</string>
     <string name="unlock_setup_desc">Set a master password. All your data is encrypted with a key derived from this password. If you forget it, your data becomes permanently INACCESSIBLE.</string>
     <string name="unlock_enter_desc">Enter your master password to continue.</string>
     <string name="unlock_master_reminder">Reminder: type your master password this time instead of your fingerprint. A forgotten master password locks the vault and the backups alike.</string>
@@ -418,9 +419,9 @@
     <string name="vm_backup_failed">Backup failed: %1$s — delete the file it created and try again.</string>
     <string name="vm_vault_locked_retry">The vault has locked — unlock it with your master password and try again.</string>
     <string name="vm_pasted_text_empty">The pasted text is empty</string>
-    <string name="vm_text_too_large">The text is too large — this cannot be a Vault envelope</string>
+    <string name="vm_text_too_large">The text is too large — this cannot be a Sekuvo envelope</string>
     <string name="vm_pasted_is_link">This is a link, not the envelope itself. Open the link in the phone\'s browser and copy the TEXT it shows.</string>
-    <string name="vm_not_an_envelope">This is not an encrypted Vault envelope — the copied text may be incomplete, or it may be something else. Copy ALL of the text on the page.</string>
+    <string name="vm_not_an_envelope">This is not an encrypted Sekuvo envelope — the copied text may be incomplete, or it may be something else. Copy ALL of the text on the page.</string>
     <string name="vm_envelope_empty">The envelope opened but holds no entries — the fields may have been left empty on the sending side. Your vault is untouched.</string>
     <string name="vm_backup_password_wrong">Wrong backup password</string>
     <string name="vm_invalid_envelope">Invalid envelope — the text may have been copied incompletely</string>
@@ -432,8 +433,8 @@
     <string name="vm_biometric_enable_failed">Could not enable the fingerprint</string>
     <string name="vm_biometric_disabled">Biometric unlock turned off</string>
     <string name="vm_usage_log_cleared">Usage log deleted</string>
-    <string name="bt_sdp_name">Vault Keyboard</string>
-    <string name="bt_sdp_description">Vault secure keystroke transfer</string>
+    <string name="bt_sdp_name">Sekuvo Keyboard</string>
+    <string name="bt_sdp_description">Sekuvo secure keystroke transfer</string>
 
     <!-- Çoğul biçimler: İngilizcede "1 entries" gibi bozuk dilbilgisini
          önler. Türkçede tek biçim (other) yeterlidir. -->
@@ -477,7 +478,7 @@
     <string name="bt_layout_tr_f">Turkish F</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">Language</string>
-    <string name="settings_language_desc">Choose the app language. It applies to Vault only, not the rest of the phone.</string>
+    <string name="settings_language_desc">Choose the app language. It applies to Sekuvo only, not the rest of the phone.</string>
     <string name="settings_lang_system">System language</string>
     <string name="settings_lang_tr">Türkçe</string>
     <string name="settings_lang_en">English</string>

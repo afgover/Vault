@@ -4,7 +4,7 @@
   cihazlarda kullanılır. Anahtarlar koddan çağrılıyor, değiştirme.
 -->
 <resources>
-    <string name="ime_label">Vault Klavyesi</string>
+    <string name="ime_label">Sekuvo Klavyesi</string>
 
     <!-- Yerleşik alan etiketleri. Bunlar YALNIZ görüntü metnidir: kullanım
          günlüğüne ve pano etiketine kararlı anahtar yazılır, bu metin değil
@@ -75,7 +75,7 @@
 
     <!-- backup -->
     <string name="backup_autofill_form_unreadable">Form okunamadı</string>
-    <string name="backup_autofill_locked_save">Kasa kilitli. Kaydetmek için önce Vault\'un kilidini aç.</string>
+    <string name="backup_autofill_locked_save">Kasa kilitli. Kaydetmek için önce Sekuvo\'nun kilidini aç.</string>
     <string name="backup_autofill_nothing_to_save">Kaydedilecek bilgi bulunamadı</string>
     <string name="backup_autofill_save_failed">Kaydedilemedi: %1$s</string>
     <string name="backup_autofill_unlock_to_fill">Doldurmak için kilidi aç</string>
@@ -121,7 +121,7 @@
     <string name="detail_back">Geri</string>
     <string name="detail_edit">Düzenle</string>
     <string name="detail_quick_title">Klavyede parolasız kullan</string>
-    <string name="detail_quick_on">Kasa kilitliyken de Vault Klavyesi\'nde çıkar; koruması telefonun ekran kilidi kadardır.</string>
+    <string name="detail_quick_on">Kasa kilitliyken de Sekuvo Klavyesi\'nde çıkar; koruması telefonun ekran kilidi kadardır.</string>
     <string name="detail_quick_off">Yalnızca kasa kilidi açıkken kullanılabilir.</string>
     <string name="detail_dates">Eklendi: %1$s · Güncellendi: %2$s</string>
     <string name="detail_password_changed">Şifre son değişti: %1$s</string>
@@ -159,7 +159,7 @@
     <string name="edit_add_field">+ Alan ekle</string>
     <string name="edit_field_notes">Notlar</string>
     <string name="edit_quick_title">Klavyede parolasız kullan</string>
-    <string name="edit_quick_desc">Açıkken bu kayıt, kasa kilitliyken de Vault Klavyesi\'nde çıkar. Koruması telefonun ekran kilidi kadardır; şifre gibi hassas bilgiler için kapalı bırak.</string>
+    <string name="edit_quick_desc">Açıkken bu kayıt, kasa kilitliyken de Sekuvo Klavyesi\'nde çıkar. Koruması telefonun ekran kilidi kadardır; şifre gibi hassas bilgiler için kapalı bırak.</string>
     <string name="edit_tags">Etiketler</string>
     <string name="edit_new_tag">+ Yeni</string>
     <string name="edit_save">Kaydet</string>
@@ -234,7 +234,7 @@
     <string name="main_password_for_now">Şimdilik parola ile</string>
     <string name="main_biometric_invalidated">Parmak izi kilidi geçersizleşmiş (ör. yeni parmak izi eklendi). Parolayla aç.</string>
     <string name="main_biometric_decrypt_failed">Parmak izi doğrulandı ama anahtar çözülemedi. Parolayla aç.</string>
-    <string name="main_unlock_title">Vault kilidini aç</string>
+    <string name="main_unlock_title">Sekuvo kilidini aç</string>
     <string name="main_use_password">Parola kullan</string>
     <string name="main_hide">Gizle</string>
     <string name="main_show">Göster</string>
@@ -271,7 +271,7 @@
     <string name="settings_title">Ayarlar</string>
     <string name="settings_back">Geri</string>
     <string name="settings_appearance">Görünüm</string>
-    <string name="settings_sort_moved">Sıralama ana ekrana taşındı: başlığın yanındaki ⇅ simgesinden seçilir ve hem listede hem Vault Klavyesi\'nde geçerli olur.\nŞu anki sıra: %1$s</string>
+    <string name="settings_sort_moved">Sıralama ana ekrana taşındı: başlığın yanındaki ⇅ simgesinden seçilir ve hem listede hem Sekuvo Klavyesi\'nde geçerli olur.\nŞu anki sıra: %1$s</string>
     <string name="settings_backup">Yedekleme</string>
     <string name="settings_backup_desc">Yedek dosyası AES-256 ile şifrelenir ve yalnızca yedek parolasıyla açılır. Dosyayı Drive, SD kart vb. istediğin yere kaydedebilirsin; telefon sıfırlansa bile dosya + parola ile her şey geri yüklenir.</string>
     <string name="settings_backup_export">Şifreli yedek al</string>
@@ -298,12 +298,12 @@
     <string name="settings_reminder_days">%1$d gün</string>
     <string name="settings_change_password">Ana parolayı değiştir</string>
     <string name="settings_autofill">Otomatik doldurma</string>
-    <string name="settings_autofill_on_desc">Etkin. Uygulama ve tarayıcılardaki giriş/kart formlarına dokununca Vault kayıtların doldurma seçeneği olarak çıkar. Kasa kilitliyse önce kilit açma ekranı gelir; hiçbir değer kilitliyken sisteme verilmez.</string>
-    <string name="settings_autofill_off_desc">Etkinleştirirsen uygulama ve tarayıcılardaki giriş/kart formlarına dokununca Vault kayıtların doğrudan doldurma seçeneği olarak çıkar. Ayrıca yeni girdiğin bilgileri Vault\'a kaydetmeyi teklif eder.\n\nAşağıdaki düğme sistem ayarlarını açar. Açılan listenin adı cihaza göre değişir (\"Tercih edilen servis\", \"Otomatik doldurma servisi\" ya da \"Şifreler, parolalar ve otomatik doldurma\"); o listeden Vault\'u seçmen yeterli.</string>
+    <string name="settings_autofill_on_desc">Etkin. Uygulama ve tarayıcılardaki giriş/kart formlarına dokununca Sekuvo kayıtların doldurma seçeneği olarak çıkar. Kasa kilitliyse önce kilit açma ekranı gelir; hiçbir değer kilitliyken sisteme verilmez.</string>
+    <string name="settings_autofill_off_desc">Etkinleştirirsen uygulama ve tarayıcılardaki giriş/kart formlarına dokununca Sekuvo kayıtların doğrudan doldurma seçeneği olarak çıkar. Ayrıca yeni girdiğin bilgileri Sekuvo\'ya kaydetmeyi teklif eder.\n\nAşağıdaki düğme sistem ayarlarını açar. Açılan listenin adı cihaza göre değişir (\"Tercih edilen servis\", \"Otomatik doldurma servisi\" ya da \"Şifreler, parolalar ve otomatik doldurma\"); o listeden Sekuvo\'yu seçmen yeterli.</string>
     <string name="settings_autofill_open">Otomatik doldurma ayarlarını aç</string>
     <string name="settings_autofill_enable">Otomatik doldurmayı etkinleştir</string>
-    <string name="settings_keyboard">Vault Klavyesi</string>
-    <string name="settings_keyboard_desc">Klavye eklentisini etkinleştirirsen herhangi bir uygulamada klavye değiştiriciden Vault Klavyesi\'ni seçip kayıtlı bilgilerini doğrudan ilgili alana yazdırabilirsin.</string>
+    <string name="settings_keyboard">Sekuvo Klavyesi</string>
+    <string name="settings_keyboard_desc">Klavye eklentisini etkinleştirirsen herhangi bir uygulamada klavye değiştiriciden Sekuvo Klavyesi\'ni seçip kayıtlı bilgilerini doğrudan ilgili alana yazdırabilirsin.</string>
     <string name="settings_keyboard_open">Klavye ayarlarını aç</string>
     <string name="settings_export_pw_title">Yedek parolası belirle</string>
     <string name="settings_export_pw_desc">Bu parola olmadan yedek dosyası AÇILAMAZ. Ana parolandan FARKLI olsun: yedek parolası bilgisayarlarda yazılabiliyor, ana parola hiçbir bilgisayara girmiyor.</string>
@@ -354,8 +354,9 @@
     <string name="transfer_cancel">Vazgeç</string>
     <string name="transfer_bt_label">Aktarım parolası (iki alana, Tab ile)</string>
     <!-- unlock -->
-    <string name="unlock_welcome_title">Vault\'a hoş geldin</string>
-    <string name="unlock_locked_title">Vault kilitli</string>
+    <string name="unlock_welcome_title">Sekuvo\'ya hoş geldin</string>
+    <string name="unlock_slogan">Güvenli kasan.</string>
+    <string name="unlock_locked_title">Sekuvo kilitli</string>
     <string name="unlock_setup_desc">Bir ana parola belirle. Tüm verilerin bu paroladan türetilen anahtarla şifrelenir. Bu parolayı unutursan verilerine ERİŞİLEMEZ.</string>
     <string name="unlock_enter_desc">Devam etmek için ana parolanı gir.</string>
     <string name="unlock_master_reminder">Hatırlatma: parmak izi yerine bu sefer ana parolanı yaz. Unutulan ana parola kasayı da yedekleri de kilitler.</string>
@@ -412,9 +413,9 @@
     <string name="vm_backup_failed">Yedekleme başarısız: %1$s — oluşan dosyayı silip tekrar dene.</string>
     <string name="vm_vault_locked_retry">Kasa kilitlendi — ana parolanla açıp tekrar dene.</string>
     <string name="vm_pasted_text_empty">Yapıştırılan metin boş</string>
-    <string name="vm_text_too_large">Metin çok büyük — bu bir Vault zarfı olamaz</string>
+    <string name="vm_text_too_large">Metin çok büyük — bu bir Sekuvo zarfı olamaz</string>
     <string name="vm_pasted_is_link">Bu bir bağlantı, zarfın kendisi değil. Bağlantıyı telefonun tarayıcısında aç ve açılan METNİ kopyala.</string>
-    <string name="vm_not_an_envelope">Bu, şifreli bir Vault zarfı değil — kopyalanan metin eksik ya da farklı bir şey olabilir. Sayfadaki metnin TAMAMINI kopyala.</string>
+    <string name="vm_not_an_envelope">Bu, şifreli bir Sekuvo zarfı değil — kopyalanan metin eksik ya da farklı bir şey olabilir. Sayfadaki metnin TAMAMINI kopyala.</string>
     <string name="vm_envelope_empty">Zarf açıldı ama içinde kayıt yok — gönderen tarafta alanlar boş kalmış olabilir. Kasan olduğu gibi duruyor.</string>
     <string name="vm_backup_password_wrong">Yedek parolası yanlış</string>
     <string name="vm_invalid_envelope">Geçersiz zarf — metin eksik kopyalanmış olabilir</string>
@@ -426,8 +427,8 @@
     <string name="vm_biometric_enable_failed">Parmak izi etkinleştirilemedi</string>
     <string name="vm_biometric_disabled">Biyometrik kilit açma kapatıldı</string>
     <string name="vm_usage_log_cleared">Kullanım günlüğü silindi</string>
-    <string name="bt_sdp_name">Vault Klavye</string>
-    <string name="bt_sdp_description">Vault güvenli tuş aktarımı</string>
+    <string name="bt_sdp_name">Sekuvo Klavye</string>
+    <string name="bt_sdp_description">Sekuvo güvenli tuş aktarımı</string>
 
     <plurals name="vm_import_added">
         <item quantity="one">%1$d kayıt eklendi · pano temizlendi</item>
@@ -469,7 +470,7 @@
     <string name="bt_layout_tr_f">Türkçe F</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">Dil</string>
-    <string name="settings_language_desc">Uygulamanın dilini seç. Yalnız Vault için geçerlidir, telefonun geri kalanını değiştirmez.</string>
+    <string name="settings_language_desc">Uygulamanın dilini seç. Yalnız Sekuvo için geçerlidir, telefonun geri kalanını değiştirmez.</string>
     <string name="settings_lang_system">Sistem dili</string>
     <string name="settings_lang_tr">Türkçe</string>
     <string name="settings_lang_en">English</string>

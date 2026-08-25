@@ -96,6 +96,14 @@ fun UnlockScreen(
             ),
             style = MaterialTheme.typography.headlineSmall
         )
+        if (isSetup) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.unlock_slogan),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+        }
         Spacer(Modifier.height(8.dp))
         Text(
             text = stringResource(
