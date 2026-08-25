@@ -138,12 +138,15 @@ tasks.register<Exec>("checkApkAlignment") {
 
 // Asıl önemli olan MARKET'e giden çıktı: release APK'yı da ölç (denetim —
 // eskiden yalnız debug denetleniyordu). assembleRelease sonrası otomatik koşar.
+// Dosya adı imza yapılandırmasına bağlı: imza varsa app-release.apk, yoksa
+// app-release-unsigned.apk.
 tasks.register<Exec>("checkReleaseApkAlignment") {
     dependsOn("assembleRelease")
+    val apkName = if (releaseStoreFile != null) "app-release.apk" else "app-release-unsigned.apk"
     commandLine(
         "python3",
         "${rootDir}/tools/apk-hizalama.py",
-        "${layout.buildDirectory.get()}/outputs/apk/release/app-release-unsigned.apk"
+        "${layout.buildDirectory.get()}/outputs/apk/release/$apkName"
     )
 }
 tasks.matching { it.name == "assembleRelease" }.configureEach {
