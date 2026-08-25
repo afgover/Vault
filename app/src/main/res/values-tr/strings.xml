@@ -363,6 +363,10 @@
     <string name="unlock_password_label">Parola</string>
     <string name="unlock_password_again_label">Parola (tekrar)</string>
     <string name="unlock_create_vault">Kasayı oluştur</string>
+    <string name="unlock_have_backup">Yedeğim var — geri yükle</string>
+    <string name="unlock_restore_selected">Kurulumdan sonra geri yüklenecek ✓ (vazgeçmek için dokun)</string>
+    <string name="unlock_restore_hint">Önce bu cihaz için bir ana parola belirle. Hemen ardından yedek dosyanı seçip yedek parolasını gireceksin; yedekteki her şey geri gelir.</string>
+    <string name="unlock_create_and_restore">Oluştur ve geri yükle</string>
     <string name="unlock_open_button">Kilidi aç</string>
     <string name="unlock_biometric_button">Biyometrik ile aç</string>
     <string name="unlock_pin_title">İkinci kapı</string>

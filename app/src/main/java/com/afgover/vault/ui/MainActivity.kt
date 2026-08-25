@@ -249,7 +249,13 @@ fun VaultRoot(
             )
         }
 
-        LockState.UNLOCKED -> when (val screen = nav) {
+        LockState.UNLOCKED -> {
+            // Karşılamada "Yedeğim var" seçildiyse kurulum sonrası doğrudan
+            // Ayarlar'a: dosya seçiciyi orası açar (bayrağı da orası tüketir).
+            LaunchedEffect(Unit) {
+                if (viewModel.restoreAfterSetup) nav = Nav.Settings
+            }
+            when (val screen = nav) {
             is Nav.Home -> HomeScreen(
                 viewModel = viewModel,
                 onOpen = { nav = Nav.Detail(it) },
@@ -278,6 +284,7 @@ fun VaultRoot(
                 onBiometricEnable = onBiometricEnable,
                 onBack = { nav = Nav.Home }
             )
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -150,10 +151,34 @@ fun UnlockScreen(
             ) {
                 Text(
                     stringResource(
-                        if (isSetup) R.string.unlock_create_vault
-                        else R.string.unlock_open_button
+                        if (isSetup) {
+                            if (viewModel.restoreAfterSetup) R.string.unlock_create_and_restore
+                            else R.string.unlock_create_vault
+                        } else R.string.unlock_open_button
                     )
                 )
+            }
+            if (isSetup) {
+                Spacer(Modifier.height(8.dp))
+                TextButton(
+                    onClick = { viewModel.restoreAfterSetup = !viewModel.restoreAfterSetup },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        stringResource(
+                            if (viewModel.restoreAfterSetup) R.string.unlock_restore_selected
+                            else R.string.unlock_have_backup
+                        )
+                    )
+                }
+                if (viewModel.restoreAfterSetup) {
+                    Text(
+                        stringResource(R.string.unlock_restore_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
             if (biometricAvailable) {
                 Spacer(Modifier.height(8.dp))

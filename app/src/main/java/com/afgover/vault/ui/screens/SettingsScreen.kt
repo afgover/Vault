@@ -94,6 +94,16 @@ fun SettingsScreen(
         ActivityResultContracts.OpenDocument()
     ) { uri -> if (uri != null) importUri = uri }
 
+    // Karşılama ekranından "Yedeğim var" ile gelindiyse dosya seçici
+    // kendiliğinden açılır; bayrak burada tüketilir ki kilitlen-aç
+    // döngüsünde seçici ikinci kez fırlamasın.
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        if (viewModel.restoreAfterSetup) {
+            viewModel.restoreAfterSetup = false
+            importLauncher.launch(arrayOf("*/*"))
+        }
+    }
+
     fun autofillIsEnabled(): Boolean =
         context.getSystemService(AutofillManager::class.java)
             ?.let { it.isAutofillSupported && it.hasEnabledAutofillServices() } ?: false

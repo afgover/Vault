@@ -369,6 +369,10 @@
     <string name="unlock_password_label">Password</string>
     <string name="unlock_password_again_label">Password (again)</string>
     <string name="unlock_create_vault">Create the vault</string>
+    <string name="unlock_have_backup">I have a backup — restore it</string>
+    <string name="unlock_restore_selected">Restoring after setup ✓ (tap to cancel)</string>
+    <string name="unlock_restore_hint">First set a master password for this device. Right after, you will pick your backup file and enter its backup password; everything in the backup comes back.</string>
+    <string name="unlock_create_and_restore">Create and restore</string>
     <string name="unlock_open_button">Unlock</string>
     <string name="unlock_biometric_button">Unlock with biometrics</string>
     <string name="unlock_pin_title">Second gate</string>

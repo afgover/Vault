@@ -85,6 +85,14 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     /** İlk kurulum biter bitmez biyometrik teklifi gösterilsin mi? */
     var offerBiometric by mutableStateOf(false)
 
+    /**
+     * Karşılama ekranında "Yedeğim var" seçildi: kurulum biter bitmez
+     * Ayarlar'a geçilir ve yedek dosyası seçici kendiliğinden açılır.
+     * Ayarlar bayrağı tüketince sıfırlar; akış yarıda kalırsa bir sonraki
+     * kurulum denemesinde seçim korunur (kasa hâlâ yok, ekran aynı).
+     */
+    var restoreAfterSetup by mutableStateOf(false)
+
     /** PIN aşaması için bekleyen iç sargı; PIN doğrulanınca temizlenir. */
     private var pendingInner: ByteArray? = null
 
