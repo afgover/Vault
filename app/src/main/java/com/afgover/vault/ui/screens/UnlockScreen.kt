@@ -79,14 +79,14 @@ fun UnlockScreen(
             modifier = Modifier
                 .size(88.dp)
                 .clip(RoundedCornerShape(28.dp))
-                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f)),
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 Icons.Filled.Lock,
                 contentDescription = null,
                 modifier = Modifier.size(44.dp),
-                tint = MaterialTheme.colorScheme.tertiary
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         Spacer(Modifier.height(20.dp))
@@ -101,7 +101,7 @@ fun UnlockScreen(
             Text(
                 stringResource(R.string.unlock_slogan),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.tertiary
+                color = MaterialTheme.colorScheme.primary
             )
         }
         Spacer(Modifier.height(8.dp))
@@ -118,7 +118,7 @@ fun UnlockScreen(
             Text(
                 stringResource(R.string.unlock_master_reminder),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.tertiary,
+                color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center
             )
         }

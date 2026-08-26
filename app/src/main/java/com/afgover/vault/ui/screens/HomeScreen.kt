@@ -300,8 +300,8 @@ fun HomeScreen(
                 }
                 FloatingActionButton(
                     onClick = { addMenuOpen = true },
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ) {
                     Icon(
                         Icons.Filled.Add,

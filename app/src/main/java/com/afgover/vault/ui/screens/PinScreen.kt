@@ -58,14 +58,14 @@ fun PinScreen(viewModel: VaultViewModel) {
             modifier = Modifier
                 .size(88.dp)
                 .clip(RoundedCornerShape(28.dp))
-                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f)),
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 Icons.Filled.Pin,
                 contentDescription = null,
                 modifier = Modifier.size(44.dp),
-                tint = MaterialTheme.colorScheme.tertiary
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         Spacer(Modifier.height(20.dp))

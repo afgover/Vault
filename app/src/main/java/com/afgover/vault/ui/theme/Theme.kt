@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -14,81 +15,92 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * Vault teması: gece mavisi zemin üzerine aydınlık peri mavisi birincil ve
- * kasa-altını vurgu (tertiary). Katmanlar (background → surface →
- * surfaceVariant → container) birbirinden ayırt edilir ama bağırmaz;
- * hata/uyarı renkleri tam çift olarak tanımlı. Aydınlık tema aynı kimliğin
- * gün ışığı hâlidir, soluk bir kopyası değil.
+ * Sekuvo teması: pirinç birincil, sıcak nötrler üzerine.
+ *
+ * Renk markanın kendisiyle aynı: kategorideki her rakip mavi, pirinç ise
+ * kasa donanımının rengi — ürünün ne olduğunu renk de söylüyor. Ton bilinçli
+ * olarak kırık (parlak altın dolandırıcılık estetiğine kayıyor).
+ *
+ * Koyu tema **sıcak kömür**, siyah değil: zemin parlaklığı eski gece mavisinin
+ * üç katı. Bir kasa uygulamasının ciddi olması gerekiyor ama günde on kez
+ * açılan bir aracın karanlık bir kuyu gibi hissettirmesi gerekmiyor.
+ * Aydınlık tema sıcak kâğıt; aynı kimliğin gün ışığı hâli, soluk kopyası değil.
+ *
+ * Üçüncül renk adaçayı yeşili: tek renkli bir palet monotonlaşırdı ve olumlu
+ * durumların (doğrulandı, tamamlandı) pirinçten ayrışması gerekiyor.
+ *
+ * Tüm metin/zemin çiftleri WCAG AA ve üstü ölçüldü; en zayıf halka açık
+ * temadaki pirinç metin (5,80:1).
  */
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF9DAEFF),
-    onPrimary = Color(0xFF0E1240),
-    primaryContainer = Color(0xFF3A4AA8),
-    onPrimaryContainer = Color(0xFFDEE1FF),
-    secondary = Color(0xFFC3C8F2),
-    onSecondary = Color(0xFF2B2F55),
-    secondaryContainer = Color(0xFF41467A),
-    onSecondaryContainer = Color(0xFFE1E1FF),
-    tertiary = Color(0xFFE8C36A),
-    onTertiary = Color(0xFF3F2E00),
-    tertiaryContainer = Color(0xFF5A4400),
-    onTertiaryContainer = Color(0xFFFFE08F),
+    primary = Color(0xFFEEC26A),
+    onPrimary = Color(0xFF3F2E00),
+    primaryContainer = Color(0xFF5B4400),
+    onPrimaryContainer = Color(0xFFFFDFA0),
+    secondary = Color(0xFFD5C4A4),
+    onSecondary = Color(0xFF382F1A),
+    secondaryContainer = Color(0xFF4F452E),
+    onSecondaryContainer = Color(0xFFF2E0BF),
+    tertiary = Color(0xFFB2CFB6),
+    onTertiary = Color(0xFF1E3626),
+    tertiaryContainer = Color(0xFF344D3B),
+    onTertiaryContainer = Color(0xFFCEEBD3),
     error = Color(0xFFFFB4AB),
     onError = Color(0xFF690005),
     errorContainer = Color(0xFF93000A),
     onErrorContainer = Color(0xFFFFDAD6),
-    background = Color(0xFF0E0F1E),
-    onBackground = Color(0xFFE5E6F2),
-    surface = Color(0xFF14152A),
-    onSurface = Color(0xFFE5E6F2),
-    surfaceVariant = Color(0xFF262947),
-    onSurfaceVariant = Color(0xFFC5C7E0),
-    surfaceContainerLowest = Color(0xFF0B0C18),
-    surfaceContainerLow = Color(0xFF161730),
-    surfaceContainer = Color(0xFF1B1D36),
-    surfaceContainerHigh = Color(0xFF22243F),
-    surfaceContainerHighest = Color(0xFF2A2C4A),
-    outline = Color(0xFF8F92AC),
-    outlineVariant = Color(0xFF3C3F5E),
-    inverseSurface = Color(0xFFE5E6F2),
-    inverseOnSurface = Color(0xFF1B1D36),
-    inversePrimary = Color(0xFF4356C9)
+    background = Color(0xFF24201A),
+    onBackground = Color(0xFFEDE3D3),
+    surface = Color(0xFF2B2620),
+    onSurface = Color(0xFFEDE3D3),
+    surfaceVariant = Color(0xFF4E463A),
+    onSurfaceVariant = Color(0xFFD3C7B2),
+    surfaceContainerLowest = Color(0xFF1E1A15),
+    surfaceContainerLow = Color(0xFF2A251F),
+    surfaceContainer = Color(0xFF302A23),
+    surfaceContainerHigh = Color(0xFF3B342C),
+    surfaceContainerHighest = Color(0xFF463E35),
+    outline = Color(0xFF9B9282),
+    outlineVariant = Color(0xFF4E463A),
+    inverseSurface = Color(0xFFEDE3D3),
+    inverseOnSurface = Color(0xFF332E27),
+    inversePrimary = Color(0xFF7B5D14)
 )
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF4356C9),
+    primary = Color(0xFF7B5D14),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFDEE1FF),
-    onPrimaryContainer = Color(0xFF00105C),
-    secondary = Color(0xFF595E8C),
+    primaryContainer = Color(0xFFFFE0A3),
+    onPrimaryContainer = Color(0xFF271900),
+    secondary = Color(0xFF6A5C43),
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFE1E1FF),
-    onSecondaryContainer = Color(0xFF161B45),
-    tertiary = Color(0xFF775A00),
+    secondaryContainer = Color(0xFFF2E3C6),
+    onSecondaryContainer = Color(0xFF241A07),
+    tertiary = Color(0xFF3F5A47),
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFFFE08F),
-    onTertiaryContainer = Color(0xFF251A00),
+    tertiaryContainer = Color(0xFFCEEBD3),
+    onTertiaryContainer = Color(0xFF0A2013),
     error = Color(0xFFBA1A1A),
     onError = Color.White,
     errorContainer = Color(0xFFFFDAD6),
     onErrorContainer = Color(0xFF410002),
-    background = Color(0xFFF7F7FE),
-    onBackground = Color(0xFF191A28),
-    surface = Color(0xFFFDFCFF),
-    onSurface = Color(0xFF191A28),
-    surfaceVariant = Color(0xFFE2E1F0),
-    onSurfaceVariant = Color(0xFF45475C),
+    background = Color(0xFFFCF8F0),
+    onBackground = Color(0xFF1E1B13),
+    surface = Color(0xFFFFFDF9),
+    onSurface = Color(0xFF1E1B13),
+    surfaceVariant = Color(0xFFEFE5D2),
+    onSurfaceVariant = Color(0xFF4E4639),
     surfaceContainerLowest = Color.White,
-    surfaceContainerLow = Color(0xFFF1F0FA),
-    surfaceContainer = Color(0xFFEBEBF6),
-    surfaceContainerHigh = Color(0xFFE5E5F1),
-    surfaceContainerHighest = Color(0xFFDFDFEC),
-    outline = Color(0xFF75778D),
-    outlineVariant = Color(0xFFC5C7DD),
-    inverseSurface = Color(0xFF2E2F3E),
-    inverseOnSurface = Color(0xFFF0F0FA),
-    inversePrimary = Color(0xFF9DAEFF)
+    surfaceContainerLow = Color(0xFFF8F2E6),
+    surfaceContainer = Color(0xFFF3ECDD),
+    surfaceContainerHigh = Color(0xFFEDE5D4),
+    surfaceContainerHighest = Color(0xFFE7DECB),
+    outline = Color(0xFF7F7767),
+    outlineVariant = Color(0xFFD1C7B4),
+    inverseSurface = Color(0xFF33302A),
+    inverseOnSurface = Color(0xFFF6EFE3),
+    inversePrimary = Color(0xFFEEC26A)
 )
 
 /** Başlıklar bir tık daha karakterli, gövde ferah, etiketler okunur. */
@@ -116,7 +128,14 @@ fun VaultTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) DarkColors else LightColors,
         typography = VaultTypography,
-        shapes = VaultShapes,
-        content = content
-    )
+        shapes = VaultShapes
+    ) {
+        // Zemini BURADA boya. XML teması android:Theme.Material.NoActionBar'dan
+        // türüyor ve onun pencere zemini sabit gri (#303030); Scaffold kullanan
+        // ekranlar kendi zeminini çizdiği için bu görünmüyordu, ama kilit açma
+        // ve PIN ekranları düz Column olduğu için altlarından o gri sızıyordu —
+        // tema hangi renkte olursa olsun. Tek bir Surface bütün ekranları
+        // Compose paletine bağlar.
+        Surface(color = MaterialTheme.colorScheme.background, content = content)
+    }
 }
