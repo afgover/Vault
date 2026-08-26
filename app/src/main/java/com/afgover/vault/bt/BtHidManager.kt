@@ -173,7 +173,7 @@ object BtHidManager {
         val sdp = BluetoothHidDeviceAppSdpSettings(
             yerel.getString(R.string.bt_sdp_name),
             yerel.getString(R.string.bt_sdp_description),
-            "Vault",
+            "Sekuvo",
             BluetoothHidDevice.SUBCLASS1_KEYBOARD,
             KEYBOARD_DESCRIPTOR
         )

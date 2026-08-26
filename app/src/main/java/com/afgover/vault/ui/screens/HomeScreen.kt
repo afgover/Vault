@@ -194,7 +194,7 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Vault")
+                        Text(stringResource(R.string.app_name))
                         Box {
                             IconButton(onClick = { sortMenuOpen = true }) {
                                 Icon(
