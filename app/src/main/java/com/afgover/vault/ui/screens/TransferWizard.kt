@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.afgover.vault.R
+import com.afgover.vault.ui.theme.vaultButtonColors
 import com.afgover.vault.core.PasswordGenerator
 import com.afgover.vault.ui.VaultViewModel
 
@@ -54,10 +55,15 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
     var step by remember { mutableIntStateOf(1) }
     var parola by remember { mutableStateOf(aktarimParolasi()) }
     var showBt by remember { mutableStateOf(false) }
+    var qrTarama by remember { mutableStateOf(false) }
     var zarf by remember { mutableStateOf("") }
-    var replace by remember { mutableIntStateOf(0) }
+    // "Tümünü değiştir" burada yok: bu akış bilgisayardan sır GETİRİR,
+    // kasanın yerine geçmez. Bkz. PasteImportDialog'daki aynı gerekçe.
     val context = LocalContext.current
 
+    // Tarayıcı açıkken sihirbaz çizilmez: AlertDialog kamera görüntüsünün
+    // üstünde kalıyor ve kareyi göremez hâle getiriyordu.
+    if (!qrTarama) {
     AlertDialog(
         onDismissRequest = { if (!viewModel.busy) onDismiss() },
         title = { Text(stringResource(R.string.transfer_title, step)) },
@@ -90,6 +96,7 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                     )
                     Spacer(Modifier.height(12.dp))
                     Button(
+                        colors = vaultButtonColors(),
                         onClick = { showBt = true },
                         modifier = Modifier.fillMaxWidth()
                     ) { Text(stringResource(R.string.transfer_bt_write_both)) }
@@ -109,29 +116,17 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                             }
                         }
                     )
-                    TextButton(onClick = { zarf = viewModel.clipboardText() }) {
-                        Text(stringResource(R.string.transfer_from_clipboard))
-                    }
+                    // Zarf iki yoldan gelebilir: panodan yapıştırılarak ya da
+                    // bilgisayardaki QR'dan okutularak. İkisi de AYNI aktarım
+                    // parolasıyla çözülür (aşağıdaki içe aktarma `parola`yı
+                    // kullanır), yani kullanıcı hiçbir parola yazmaz.
                     Row {
-                        SecimCipi(
-                            secili = replace == 0,
-                            onClick = { replace = 0 },
-                            label = stringResource(R.string.transfer_merge),
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        SecimCipi(
-                            secili = replace == 1,
-                            onClick = { replace = 1 },
-                            label = stringResource(R.string.transfer_replace_all)
-                        )
-                    }
-                    if (replace == 1) {
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            stringResource(R.string.transfer_replace_warning),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                        TextButton(onClick = { zarf = viewModel.clipboardText() }) {
+                            Text(stringResource(R.string.transfer_from_clipboard))
+                        }
+                        TextButton(onClick = { qrTarama = true }) {
+                            Text(stringResource(R.string.transfer_scan_qr))
+                        }
                     }
                     viewModel.error?.let {
                         Spacer(Modifier.height(8.dp))
@@ -152,7 +147,7 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                             viewModel.error =
                                 context.getString(R.string.transfer_envelope_empty)
                         } else {
-                            viewModel.importBackupText(zarf, parola, replace == 1) { onDismiss() }
+                            viewModel.importBackupText(zarf, parola, replace = false) { onDismiss() }
                         }
                     },
                     enabled = !viewModel.busy
@@ -172,6 +167,18 @@ fun TransferWizardDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
             }
         }
     )
+
+    }
+
+    if (qrTarama) {
+        QrScanScreen(
+            onEnvelope = { okunan ->
+                qrTarama = false
+                zarf = okunan
+            },
+            onCancel = { qrTarama = false }
+        )
+    }
 
     if (showBt) {
         BtTypeDialog(

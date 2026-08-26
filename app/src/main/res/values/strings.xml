@@ -348,6 +348,7 @@
     <string name="transfer_step2_steps">On the computer: paste the content → \"Şifrele ve yayınla\" (encrypt and publish) → scan the QR with your phone → 📋 Kopyala (copy) on the page. Then come back here and pick up the envelope. The password is ready in the wizard — you won\'t enter it.</string>
     <string name="transfer_envelope_label">Encrypted envelope</string>
     <string name="transfer_char_count">%1$d characters</string>
+    <string name="transfer_scan_qr">Scan QR</string>
     <string name="transfer_from_clipboard">Get from clipboard</string>
     <string name="transfer_merge">Add to existing</string>
     <string name="transfer_replace_all">Replace all</string>
@@ -483,6 +484,54 @@
     <string name="settings_lang_tr">Türkçe</string>
     <string name="settings_lang_en">English</string>
     <string name="settings_layouts">Computer keyboard layouts</string>
+    <string name="settings_layouts_summary">%1$d of %2$d layouts on</string>
+    <string name="settings_expand">Show</string>
+    <string name="settings_collapse">Hide</string>
     <string name="settings_layouts_desc">Pick the layouts you actually use. Only the ones you tick appear when you type a secret to a computer — the rest stay out of your way.</string>
     <string name="settings_layouts_min">At least one layout stays on.</string>
+
+    <!-- Bilgi sayfaları: Hakkında / Gizlilik / Rehber -->
+    <string name="info_about_title">About</string>
+    <string name="info_privacy_title">Privacy policy</string>
+    <string name="info_guide_title">Guide</string>
+    <string name="info_about_version">Version</string>
+    <string name="info_about_package">Package</string>
+    <string name="info_about_license">License</string>
+    <string name="info_about_developer">Developer</string>
+    <string name="info_about_website">Open sekuvo.com</string>
+    <string name="info_about_source">Source code on GitHub</string>
+    <string name="info_about_contact">contact@sekuvo.com</string>
+    <string name="info_about_what_title">What this app is</string>
+    <string name="info_about_what_body">A fully offline vault for passwords, cards and notes. It does not request the Internet permission, so it cannot send your data anywhere — no account, no cloud, no sync, no analytics. Everything is encrypted with AES-256-GCM under a key derived from your master password.</string>
+
+    <string name="privacy_s1_title">Summary</string>
+    <string name="privacy_s1_body">Sekuvo does not collect, transmit or share any data. It is an offline password vault and does not request the Internet permission, so it is technically incapable of sending your data anywhere.</string>
+    <string name="privacy_s2_title">Where your data lives</string>
+    <string name="privacy_s2_body">Titles, usernames, passwords, notes and usage history stay on this device, encrypted with a key derived from your master password. Nothing is uploaded, synced or backed up to any server by the app.</string>
+    <string name="privacy_s3_title">Permissions and why they exist</string>
+    <string name="privacy_s3_body">Camera — only to scan QR codes you choose to scan, processed on the device.\nBiometrics — only to unlock the vault, through the Android biometric system. Sekuvo never sees or stores your fingerprint or face.\nBluetooth — only when you ask Sekuvo to type a secret into a nearby computer. Only the characters you choose are sent, to the device you paired.</string>
+    <string name="privacy_s4_title">Backups and transfers</string>
+    <string name="privacy_s4_body">These happen only when you start them. They produce an encrypted file or QR codes protected by a password you set, saved or shown only where you direct them. The app never sends them anywhere on its own.</string>
+    <string name="privacy_s5_title">Children</string>
+    <string name="privacy_s5_body">Sekuvo collects data from no one, including children.</string>
+    <string name="privacy_s6_title">Contact and full text</string>
+    <string name="privacy_s6_body">Questions: contact@sekuvo.com\nThe authoritative version of this policy is published at sekuvo.com/privacy/ and is the one that governs in case of any difference.</string>
+
+    <string name="guide_s1_title">First run</string>
+    <string name="guide_s1_body">You set a master password. Everything is encrypted with a key derived from it, so it is the one thing that cannot be recovered — write it somewhere safe.\nComing from another phone? Tap “I have a backup — restore it” on the welcome screen: you still set a master password for this device, then the file picker opens by itself.</string>
+    <string name="guide_s2_title">What you can store</string>
+    <string name="guide_s2_body">Account/Password, Everyday (name, phone, email, address), Card, and Secure note — with subtypes for scripts, keys, recovery codes and config files. Account and Everyday entries also take unlimited custom fields, encrypted just like the built-in ones.</string>
+    <string name="guide_s3_title">Autofill</string>
+    <string name="guide_s3_body">Settings → Enable autofill → pick Sekuvo from the system list. The list is called “Passwords, passkeys &amp; autofill → Preferred service” on Samsung and Android 14+, and “Autofill service” on stock Android.\nAfter that, tapping a sign-in or card field offers your entries. While the vault is locked the system is handed nothing at all.</string>
+    <string name="guide_s4_title">Sekuvo Keyboard</string>
+    <string name="guide_s4_body">Settings → Enable the keyboard, then pick “Sekuvo Keyboard” from the keyboard switcher when you need it. It types stored values straight into any field, with search and recents on top. While locked it shows only entries you marked for quick access.</string>
+    <string name="guide_s5_title">Typing into a computer over Bluetooth</string>
+    <string name="guide_s5_body">Open the entry, tap the 💻 icon next to the field and KEEP THAT SCREEN OPEN — the phone only announces itself as a keyboard while it is. On the computer, add the phone as a new Bluetooth device and confirm the code. Back on the phone pick your computer, choose THE COMPUTER’S keyboard layout, click into the target field and tap Type.\nConnected but nothing is typed? The computer paired your phone as a phone earlier, so it never enabled the keyboard service. Remove the pairing on BOTH sides, open the 💻 screen, and pair again starting from the computer. On Windows a “Bluetooth HID” device should then appear under Device Manager → Human Interface Devices. On macOS, dismiss the Keyboard Setup Assistant if it opens.\nUse the speed test as a diagnostic: nothing typed means pairing, garbled characters mean the layout, a cut-off run means the speed.</string>
+    <string name="guide_s6_title">Locking</string>
+    <string name="guide_s6_body">The vault locks the moment the screen it is on goes dark — folding a foldable counts. Leaving the app while the screen stays on does not lock it: the app, the keyboard and autofill share one session.</string>
+    <string name="guide_s7_title">Backups</string>
+    <string name="guide_s7_body">System backup is off by design, so your vault leaves the phone exactly one way: Settings → Create encrypted backup. Use a backup password different from your master password. The resulting .vaultbak file plus that password restores everything on any phone, even after a factory reset.</string>
+    <string name="guide_s8_title">Bringing secrets from a computer</string>
+    <string name="guide_s8_body">The ➕ button offers “Import via QR” and “Import from text”. The ⇄ wizard does both in one flow: it generates a single-use transfer password, types it into the computer over Bluetooth, and then takes the envelope back either by scanning the QR or from the clipboard — decrypting it with that same password.\nThe computer-side tool is a download, not a website: get aktar.html from the project’s Releases page, check its SHA-256, and open it from your own disk. This site never asks you for a secret.</string>
+    <string name="settings_info_section">Help and information</string>
 </resources>

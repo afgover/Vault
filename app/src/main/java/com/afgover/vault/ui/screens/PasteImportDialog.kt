@@ -39,7 +39,11 @@ fun PasteImportDialog(
     // QR'dan gelindiğinde zarf hazırdır; ekran yalnız parolayı istemeli.
     val qrdanGeldi = initialText.isNotEmpty()
     var pw by remember { mutableStateOf("") }
-    var replace by remember { mutableIntStateOf(0) }
+    // "Tümünü değiştir" bu akışta YOK ve bilinçli olarak yok. Buraya gelen
+    // şey bilgisayardan getirilen bir avuç sırdır — kasanın tamamının yerine
+    // geçmesi anlamlı olmadığı gibi, yanlışlıkla seçildiğinde kasayı silen
+    // yıkıcı bir düğme oluyordu. Kasanın tamamını değiştirmek yalnızca
+    // yedekten geri yüklemenin işi (Ayarlar → Yedekten geri yükle).
     // Hata metinleri onClick içinde, yani @Composable olmayan bir bağlamda
     // kullanılıyor; kaynaklar burada, gövdede çözülmek zorunda.
     val bosZarfHatasi = stringResource(R.string.paste_err_envelope_empty)
@@ -85,28 +89,6 @@ fun PasteImportDialog(
                     onValueChange = { pw = it },
                     label = stringResource(R.string.paste_label_backup_password)
                 )
-                Spacer(Modifier.height(8.dp))
-                Row {
-                    SecimCipi(
-                        secili = replace == 0,
-                        onClick = { replace = 0 },
-                        label = stringResource(R.string.paste_mode_merge),
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    SecimCipi(
-                        secili = replace == 1,
-                        onClick = { replace = 1 },
-                        label = stringResource(R.string.paste_mode_replace)
-                    )
-                }
-                if (replace == 1) {
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        stringResource(R.string.paste_replace_warning),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
                 viewModel.error?.let {
                     Spacer(Modifier.height(8.dp))
                     Text(it, color = MaterialTheme.colorScheme.error)
@@ -123,7 +105,7 @@ fun PasteImportDialog(
                         text.isBlank() -> viewModel.error = bosZarfHatasi
                         pw.isEmpty() && qrdanGeldi -> viewModel.error = qrParolaHatasi
                         pw.isEmpty() -> viewModel.error = eksikParolaHatasi
-                        else -> viewModel.importBackupText(text, pw, replace == 1) { onDismiss() }
+                        else -> viewModel.importBackupText(text, pw, replace = false) { onDismiss() }
                     }
                 },
                 enabled = !viewModel.busy
