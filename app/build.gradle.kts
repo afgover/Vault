@@ -67,6 +67,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true   // Hakkında sayfası sürüm adını buradan okur
     }
 }
 

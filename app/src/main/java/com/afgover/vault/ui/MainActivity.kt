@@ -166,6 +166,7 @@ sealed interface Nav {
     data class Detail(val id: Long) : Nav
     data class Edit(val id: Long, val type: EntryType) : Nav
     data object Settings : Nav
+    data class Info(val kind: com.afgover.vault.ui.screens.InfoKind) : Nav
 }
 
 @Composable
@@ -189,6 +190,7 @@ fun VaultRoot(
     ) {
         nav = when (val screen = nav) {
             is Nav.Edit -> if (screen.id == 0L) Nav.Home else Nav.Detail(screen.id)
+            is Nav.Info -> Nav.Settings
             else -> Nav.Home
         }
     }
@@ -282,7 +284,13 @@ fun VaultRoot(
                 viewModel = viewModel,
                 canUseBiometric = canUseBiometric(),
                 onBiometricEnable = onBiometricEnable,
-                onBack = { nav = Nav.Home }
+                onBack = { nav = Nav.Home },
+                onInfo = { kind -> nav = Nav.Info(kind) }
+            )
+
+            is Nav.Info -> com.afgover.vault.ui.screens.InfoScreen(
+                kind = screen.kind,
+                onBack = { nav = Nav.Settings }
             )
             }
         }
