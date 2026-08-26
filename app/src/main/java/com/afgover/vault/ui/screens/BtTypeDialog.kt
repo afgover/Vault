@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.afgover.vault.R
+import com.afgover.vault.ui.theme.vaultButtonColors
 
 /** Aynı geri sayım + yazma akışından geçen üç gönderim. */
 private enum class Gonderim { DUZEN_TESTI, HIZ_TESTI, DEGER }
@@ -479,6 +480,7 @@ fun BtTypeDialog(
         confirmButton = {
             if (state is BtHidManager.State.Connected) {
                 Button(
+                    colors = vaultButtonColors(),
                     enabled = !typing && countdown == 0,
                     onClick = { pending = Gonderim.DEGER }
                 ) {

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.afgover.vault.R
+import com.afgover.vault.ui.theme.vaultButtonColors
 import com.afgover.vault.core.QrTransfer
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.BinaryBitmap
@@ -206,7 +207,7 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                         // İzin kalıcı reddedildiyse sistem istemi bir daha
                         // açılmaz; o durumda düğme sessizce hiçbir şey yapmasın
                         // diye ayarları açan bir yol sunulur (denetim).
-                        Button(onClick = {
+                        Button(colors = vaultButtonColors(), onClick = {
                             if (istendi) {
                                 context.startActivity(
                                     android.content.Intent(
@@ -258,7 +259,7 @@ fun QrScanScreen(onEnvelope: (String) -> Unit, onCancel: () -> Unit) {
                     )
                 }
                 Spacer(Modifier.height(12.dp))
-                Button(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
+                Button(colors = vaultButtonColors(), onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
                     Text(stringResource(R.string.qr_cancel))
                 }
             }

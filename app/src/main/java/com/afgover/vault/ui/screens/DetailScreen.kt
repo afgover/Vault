@@ -19,7 +19,9 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -125,7 +127,7 @@ fun DetailScreen(
                 ) {
                     entryTags.forEach { tag ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            TagDot(tag.color)
+                            TagDot(tag.color, size = 13)
                             Spacer(Modifier.padding(2.dp))
                             Text(tag.name, style = MaterialTheme.typography.labelMedium)
                         }
@@ -151,7 +153,10 @@ fun DetailScreen(
             }
 
             Spacer(Modifier.padding(8.dp))
-            Card(modifier = Modifier.fillMaxWidth()) {
+            OutlinedCard(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -188,6 +193,8 @@ fun DetailScreen(
             val df = remember {
                 java.text.SimpleDateFormat("d MMM yyyy HH:mm", java.util.Locale.getDefault())
             }
+            // Tarihler ve kullanım günlüğü de kendi kartlarında: alanlar kartlı,
+            // altındaki bölümler serbest metin olunca ekran iç içe görünüyordu.
             val tarihSatiri = stringResource(
                 R.string.detail_dates,
                 df.format(java.util.Date(e.createdAt)),
@@ -201,15 +208,24 @@ fun DetailScreen(
             } else {
                 ""
             }
-            Text(
-                tarihSatiri + sifreSatiri,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
+            OutlinedCard(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    tarihSatiri + sifreSatiri,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                )
+            }
 
             Spacer(Modifier.padding(8.dp))
-            HorizontalDivider()
-            Spacer(Modifier.padding(4.dp))
+            OutlinedCard(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
             Text(
                 stringResource(R.string.detail_usage_title),
                 style = MaterialTheme.typography.titleSmall
@@ -249,6 +265,9 @@ fun DetailScreen(
                     }
                 }
             }
+            }
+            }
+            Spacer(Modifier.padding(8.dp))
         }
     }
 
@@ -288,10 +307,10 @@ private fun FieldCard(
         if (fpVisible) Fingerprint.sha256Hex(value) else ""
     }
 
-    Card(
-        colors = androidx.compose.material3.CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
+    // Çerçeveli kart. Zemin beyaz olduğu için dolgu rengiyle ayrışma
+    // kalmadı; sınırı çizgi taşıyor — her bilgi kendi çerçevesinde.
+    OutlinedCard(
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {

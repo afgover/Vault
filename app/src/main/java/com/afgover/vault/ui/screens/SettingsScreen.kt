@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -48,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.afgover.vault.R
+import com.afgover.vault.ui.theme.vaultButtonColors
 import com.afgover.vault.data.EntrySort
 import com.afgover.vault.ui.VaultViewModel
 import java.text.SimpleDateFormat
@@ -66,7 +69,8 @@ fun SettingsScreen(
     viewModel: VaultViewModel,
     canUseBiometric: Boolean,
     onBiometricEnable: (String?) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onInfo: (InfoKind) -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -158,6 +162,34 @@ fun SettingsScreen(
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
 
+            // --- Bilgi sayfaları ---
+            // Bu içerik sitede de var; uygulamada olması şart çünkü Sekuvo'nun
+            // İnternet izni yok. Gizlilik politikasını okumak için tarayıcı
+            // açtırmak, uygulamanın kendi iddiasıyla çelişirdi.
+            Text(
+                stringResource(R.string.settings_info_section),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { onInfo(InfoKind.GUIDE) },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text(stringResource(R.string.info_guide_title)) }
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { onInfo(InfoKind.PRIVACY) },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text(stringResource(R.string.info_privacy_title)) }
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { onInfo(InfoKind.ABOUT) },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text(stringResource(R.string.info_about_title)) }
+
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+
             // --- Uygulama dili ---
             Text(stringResource(R.string.settings_language), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
@@ -190,7 +222,40 @@ fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
 
             // --- Bilgisayara yazarken kullanılabilecek klavye düzenleri ---
-            Text(stringResource(R.string.settings_layouts), style = MaterialTheme.typography.titleMedium)
+            // Sekiz düzen açıkken bölüm ayarların yarısını kaplıyor ve altındaki
+            // her şeyi ekrandan aşağı itiyordu; oysa bir kez seçilip yıllarca
+            // dönülmeyen bir ayar. Kapalı başlar, kaç tanesinin açık olduğunu
+            // başlıkta söyler — açmadan da cevabı görürsün.
+            var duzenlerAcik by remember { mutableStateOf(false) }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { duzenlerAcik = !duzenlerAcik },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.settings_layouts),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        stringResource(
+                            R.string.settings_layouts_summary,
+                            acikDuzenler.size,
+                            HidLayouts.Layout.entries.size
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Icon(
+                    if (duzenlerAcik) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = stringResource(
+                        if (duzenlerAcik) R.string.settings_collapse else R.string.settings_expand
+                    )
+                )
+            }
+            if (duzenlerAcik) {
             Spacer(Modifier.height(4.dp))
             Text(
                 stringResource(R.string.settings_layouts_desc),
@@ -235,6 +300,7 @@ fun SettingsScreen(
                     color = MaterialTheme.colorScheme.error
                 )
             }
+            }
 
             Spacer(Modifier.height(24.dp))
             HorizontalDivider()
@@ -248,6 +314,7 @@ fun SettingsScreen(
             )
             Spacer(Modifier.height(8.dp))
             Button(
+                colors = vaultButtonColors(),
                 onClick = {
                     val stamp = SimpleDateFormat("yyyyMMdd-HHmm", Locale.US).format(Date())
                     exportLauncher.launch("vault-$stamp.vaultbak")

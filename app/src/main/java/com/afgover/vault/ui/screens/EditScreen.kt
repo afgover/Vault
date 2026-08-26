@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.afgover.vault.R
+import com.afgover.vault.ui.theme.vaultButtonColors
 import com.afgover.vault.data.CustomField
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
@@ -413,6 +414,7 @@ fun EditScreen(
 
             Spacer(Modifier.height(16.dp))
             Button(
+                colors = vaultButtonColors(),
                 onClick = {
                     if (title.isBlank()) return@Button
                     viewModel.saveEntry(

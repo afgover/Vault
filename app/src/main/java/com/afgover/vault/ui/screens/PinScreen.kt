@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import com.afgover.vault.R
+import com.afgover.vault.ui.theme.vaultButtonColors
 import com.afgover.vault.core.PinLock
 import com.afgover.vault.ui.VaultViewModel
 
@@ -105,6 +106,7 @@ fun PinScreen(viewModel: VaultViewModel) {
             CircularProgressIndicator()
         } else {
             Button(
+                colors = vaultButtonColors(),
                 onClick = { viewModel.unlockWithPin(pin) },
                 enabled = pin.length >= PinLock.MIN_LENGTH,
                 modifier = Modifier.fillMaxWidth()

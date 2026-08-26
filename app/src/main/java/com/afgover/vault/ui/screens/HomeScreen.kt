@@ -464,7 +464,8 @@ fun HomeScreen(
                                         item.tagIds.forEach { tid ->
                                             tags.find { it.id == tid }?.let {
                                                 Spacer(Modifier.width(6.dp))
-                                                TagDot(it.color)
+                                                // Başlık titleMedium (16sp) — nokta da o boyda.
+                                                TagDot(it.color, size = 16)
                                             }
                                         }
                                     }

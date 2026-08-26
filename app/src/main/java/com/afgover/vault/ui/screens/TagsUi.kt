@@ -81,9 +81,12 @@ fun SecimCipi(
     )
 }
 
-/** Etiket rengi için küçük yuvarlak nokta. */
+/**
+ * Etiket rengi noktası. Ölçü, yanında durduğu yazının punto'suyla eşleşir:
+ * 10dp'lik nokta başlık yanında kaybolup rengi okunmaz kılıyordu.
+ */
 @Composable
-fun TagDot(color: Int, size: Int = 10) {
+fun TagDot(color: Int, size: Int = 14) {
     Spacer(
         Modifier
             .size(size.dp)
@@ -193,7 +196,7 @@ fun TagManageDialog(viewModel: VaultViewModel, tags: List<TagEntity>, onDismiss:
                                 .padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            TagDot(tag.color, size = 14)
+                            TagDot(tag.color, size = 16)
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 tag.name,

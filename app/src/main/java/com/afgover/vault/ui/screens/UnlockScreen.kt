@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.afgover.vault.R
+import com.afgover.vault.ui.theme.vaultButtonColors
 import com.afgover.vault.ui.LockState
 import com.afgover.vault.ui.VaultViewModel
 
@@ -151,6 +152,7 @@ fun UnlockScreen(
             CircularProgressIndicator()
         } else {
             Button(
+                colors = vaultButtonColors(),
                 onClick = {
                     if (isSetup) viewModel.setup(password, confirm)
                     else viewModel.unlock(password)

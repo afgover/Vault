@@ -30,14 +30,14 @@ import androidx.compose.ui.unit.sp
  * durumların (doğrulandı, tamamlandı) pirinçten ayrışması gerekiyor.
  *
  * Tüm metin/zemin çiftleri WCAG AA ve üstü ölçüldü; en zayıf halka açık
- * temadaki pirinç metin (5,80:1).
+ * temadaki pirinç metnin krem sayfa üzerindeki hâli (4,54:1).
  */
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFFEEC26A),
+    primary = Color(0xFFF0C87A),
     onPrimary = Color(0xFF3F2E00),
-    primaryContainer = Color(0xFF5B4400),
-    onPrimaryContainer = Color(0xFFFFDFA0),
+    primaryContainer = Color(0xFF6B5210),
+    onPrimaryContainer = Color(0xFFFFE7B0),
     secondary = Color(0xFFD5C4A4),
     onSecondary = Color(0xFF382F1A),
     secondaryContainer = Color(0xFF4F452E),
@@ -50,29 +50,33 @@ private val DarkColors = darkColorScheme(
     onError = Color(0xFF690005),
     errorContainer = Color(0xFF93000A),
     onErrorContainer = Color(0xFFFFDAD6),
-    background = Color(0xFF24201A),
+    background = Color(0xFF211D18),
     onBackground = Color(0xFFEDE3D3),
-    surface = Color(0xFF2B2620),
+    surface = Color(0xFF302A23),
     onSurface = Color(0xFFEDE3D3),
     surfaceVariant = Color(0xFF4E463A),
     onSurfaceVariant = Color(0xFFD3C7B2),
-    surfaceContainerLowest = Color(0xFF1E1A15),
-    surfaceContainerLow = Color(0xFF2A251F),
-    surfaceContainer = Color(0xFF302A23),
+    surfaceContainerLowest = Color(0xFF1A1713),
+    surfaceContainerLow = Color(0xFF2C2721),
+    surfaceContainer = Color(0xFF332D26),
     surfaceContainerHigh = Color(0xFF3B342C),
     surfaceContainerHighest = Color(0xFF463E35),
     outline = Color(0xFF9B9282),
     outlineVariant = Color(0xFF4E463A),
     inverseSurface = Color(0xFFEDE3D3),
     inverseOnSurface = Color(0xFF332E27),
-    inversePrimary = Color(0xFF7B5D14)
+    inversePrimary = Color(0xFF856520)
 )
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF7B5D14),
+    primary = Color(0xFF856520),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFFFE0A3),
-    onPrimaryContainer = Color(0xFF271900),
+    // Dolu düğmelerin rengi. primary METİN olarak da kullanılıyor (59 metin/
+    // çerçeve düğmesi rengini ondan alır) ve beyaz üzerinde okunması gerektiği
+    // için koyu kalmak zorunda — o tonda büyük dolu yüzeyler zeytin gibi
+    // görünüyordu. Dolgu bu yüzden ayrıldı: altın yüzey + koyu yazı (7,2:1).
+    primaryContainer = Color(0xFFD9B45F),
+    onPrimaryContainer = Color(0xFF241A00),
     secondary = Color(0xFF6A5C43),
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFF2E3C6),
@@ -85,22 +89,25 @@ private val LightColors = lightColorScheme(
     onError = Color.White,
     errorContainer = Color(0xFFFFDAD6),
     onErrorContainer = Color(0xFF410002),
-    background = Color(0xFFFCF8F0),
-    onBackground = Color(0xFF1E1B13),
-    surface = Color(0xFFFFFDF9),
-    onSurface = Color(0xFF1E1B13),
-    surfaceVariant = Color(0xFFEFE5D2),
+    // Sayfa sıcak kâğıt, İÇERİK beyaz: kayıt kartları, alanlar ve diyaloglar
+    // (surfaceContainer*) beyaza oturur; krem zemin onları çerçeveler. Metin
+    // beyaz üstünde okunur, kâğıt üstünde ezik durmuyor.
+    background = Color.White,
+    onBackground = Color(0xFF221D13),
+    surface = Color.White,
+    onSurface = Color(0xFF221D13),
+    surfaceVariant = Color(0xFFEBE2D2),
     onSurfaceVariant = Color(0xFF4E4639),
     surfaceContainerLowest = Color.White,
-    surfaceContainerLow = Color(0xFFF8F2E6),
-    surfaceContainer = Color(0xFFF3ECDD),
-    surfaceContainerHigh = Color(0xFFEDE5D4),
-    surfaceContainerHighest = Color(0xFFE7DECB),
+    surfaceContainerLow = Color.White,
+    surfaceContainer = Color.White,
+    surfaceContainerHigh = Color.White,   // diyaloglar da beyaz
+    surfaceContainerHighest = Color(0xFFF5EFE4),
     outline = Color(0xFF7F7767),
     outlineVariant = Color(0xFFD1C7B4),
     inverseSurface = Color(0xFF33302A),
     inverseOnSurface = Color(0xFFF6EFE3),
-    inversePrimary = Color(0xFFEEC26A)
+    inversePrimary = Color(0xFFF0C87A)
 )
 
 /** Başlıklar bir tık daha karakterli, gövde ferah, etiketler okunur. */
@@ -139,3 +146,17 @@ fun VaultTheme(content: @Composable () -> Unit) {
         Surface(color = MaterialTheme.colorScheme.background, content = content)
     }
 }
+
+/**
+ * Dolu düğmelerin rengi: altın yüzey, koyu yazı.
+ *
+ * Material'ın varsayılanı `primary`yi kap rengi yapar; bu uygulamada primary
+ * aynı zamanda metin rengi olduğu için koyu olmak zorunda ve dolu bir düğme
+ * olarak ağır görünüyor. Kap `primaryContainer`a alınınca düğme altın oluyor,
+ * yazının kontrastı da artıyor.
+ */
+@Composable
+fun vaultButtonColors() = androidx.compose.material3.ButtonDefaults.buttonColors(
+    containerColor = MaterialTheme.colorScheme.primaryContainer,
+    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+)
