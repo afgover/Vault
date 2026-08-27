@@ -71,14 +71,58 @@ object FieldFormats {
         raw.filter { it.isDigit() }.take(network.cvvLength)
 
     /**
-     * IBAN: ilk iki karakter ülke kodu (harf, büyütülür), kalanı rakam.
-     * Üst sınır 34 — IBAN standardının izin verdiği en uzun biçim; Türkiye 26.
+     * IBAN girişi, ISO 13616 yapısına göre:
+     * 1-2 ülke kodu (harf), 3-4 kontrol hanesi (rakam), 5+ BBAN (harf VEYA
+     * rakam), en fazla 34 karakter.
+     *
+     * BBAN'ın alfanümerik olması önemli: birçok ülkede banka kodu HARFTİR
+     * (GB29 **NWBK** …, NL91 **ABNA** …). Önceki sürüm "ilk iki harf, gerisi
+     * rakam" kuralını uyguluyordu; Türk IBAN'ında (TR + 24 rakam) doğru
+     * çalışıyor ama İngiliz/Hollanda IBAN'ının harflerini sessizce siliyor ve
+     * geriye eksik bir numara bırakıyordu — kullanıcı fark etmeden kaydedebilir.
+     * Uzunluk da evrensel değil: Norveç 15, Almanya 22, Türkiye 26, Malta 31.
      */
     fun ibanInput(raw: String): String {
-        val temiz = raw.filter { it.isLetterOrDigit() }.uppercase()
-        val ulke = temiz.take(2).filter { it.isLetter() }
-        val kalan = temiz.drop(2).filter { it.isDigit() }
-        return (ulke + kalan).take(34)
+        // Konum konum süzülür: geçersiz bir tuş girişi KESMEZ, yok sayılır.
+        // (Erken sürüm ilk uygunsuz karakterde duruyordu; "TR1a2" yazan
+        // kullanıcı '2'yi kaybediyordu.)
+        val sonuc = StringBuilder()
+        for (c in raw.uppercase()) {
+            if (sonuc.length >= 34) break
+            val uygun = when (sonuc.length) {
+                0, 1 -> c.isLetter()          // ülke kodu
+                2, 3 -> c.isDigit()           // kontrol haneleri
+                else -> c.isLetterOrDigit()   // BBAN: harf de olabilir
+            }
+            if (uygun) sonuc.append(c)
+        }
+        return sonuc.toString()
+    }
+
+    /**
+     * IBAN kontrol hanesi doğru mu (ISO 7064, MOD-97-10)?
+     *
+     * Numaranın tamamından hesaplanır; rakam atlama ve komşu hane değiştirme
+     * gibi yazım hatalarının hemen hepsini yakalar. Tamamen çevrimdışı bir
+     * hesap — banka sorgusu değil, aritmetik.
+     *
+     * Boş ve YARIM giriş "geçerli" sayılır: kullanıcı yazarken her tuşta hata
+     * göstermek, henüz yapılmamış bir hatayı bildirmek olur. Denetim ancak
+     * ülkesine göre makul uzunluğa (en az 15) ulaşınca anlamlıdır.
+     */
+    fun ibanGecerliMi(deger: String): Boolean {
+        val v = deger.filter { it.isLetterOrDigit() }.uppercase()
+        if (v.length < 15) return true
+        if (v.length > 34) return false
+        if (!v.take(2).all { it.isLetter() } || !v.drop(2).take(2).all { it.isDigit() }) return false
+        // Ülke kodu ve kontrol haneleri sona alınır, harfler A=10…Z=35 olur.
+        val donmus = v.drop(4) + v.take(4)
+        var kalan = 0
+        for (c in donmus) {
+            val basamak = if (c.isDigit()) c - '0' else c - 'A' + 10
+            kalan = if (basamak > 9) (kalan * 100 + basamak) % 97 else (kalan * 10 + basamak) % 97
+        }
+        return kalan == 1
     }
 
     /** Dörderli grupla: "1234567890" → "1234 5678 90". */

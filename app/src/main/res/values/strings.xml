@@ -536,4 +536,5 @@
     <string name="settings_info_section">Help and information</string>
     <string name="edit_email_invalid">Check the address — it needs an @ and a domain like example.com</string>
     <string name="edit_expiry_invalid">Enter the month and year as MMYY (month 01–12)</string>
+    <string name="edit_iban_invalid">This IBAN\'s check digits do not match — a digit is probably mistyped</string>
 </resources>

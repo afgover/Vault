@@ -52,13 +52,42 @@ class FieldFormatsTest {
         assertEquals("12", FieldFormats.cvvInput("1a2"))
     }
 
+    // ── IBAN: ISO 13616 yapısı (2 harf + 2 rakam + alfanümerik BBAN) ───────
+
     @Test
-    fun `iban ilk iki karakteri harf, kalanini rakam kabul eder`() {
+    fun `iban BBAN icinde HARF kabul eder — cok ulkede banka kodu harftir`() {
+        // Bu vaka bir gerilemeyi önlüyor: "gerisi rakam" kuralı GB ve NL
+        // IBAN'larının banka kodunu siliyordu.
+        assertEquals("GB29NWBK60161331926819", FieldFormats.ibanInput("GB29 NWBK 6016 1331 9268 19"))
+        assertEquals("NL91ABNA0417164300", FieldFormats.ibanInput("NL91 ABNA 0417 1643 00"))
         assertEquals("TR330006100519786457841326", FieldFormats.ibanInput("TR33 0006 1005 1978 6457 8413 26"))
-        assertEquals("TR12", FieldFormats.ibanInput("tr1a2"))
-        // Ülke kodundan sonra harf gelirse düşer; rakamlar korunur.
-        assertEquals("DE89", FieldFormats.ibanInput("DE89X"))
-        assertEquals(34, FieldFormats.ibanInput("TR" + "1".repeat(40)).length)
+    }
+
+    @Test
+    fun `iban ulke kodu harf, kontrol haneleri rakam olmak zorunda`() {
+        assertEquals("TR", FieldFormats.ibanInput("tr"))
+        assertEquals("TR1", FieldFormats.ibanInput("TR1"))
+        assertEquals("TR12", FieldFormats.ibanInput("TR1a2"))   // kontrolde harf düşer
+        assertEquals("", FieldFormats.ibanInput("12"))          // ülke kodu harf değil
+        assertEquals(34, FieldFormats.ibanInput("TR12" + "1".repeat(40)).length)
+    }
+
+    @Test
+    fun `MOD-97 dogru IBAN'i gecirir, yanlisi yakalar`() {
+        assertTrue(FieldFormats.ibanGecerliMi("GB29 NWBK 6016 1331 9268 19"))
+        assertTrue(FieldFormats.ibanGecerliMi("NL91 ABNA 0417 1643 00"))
+        assertTrue(FieldFormats.ibanGecerliMi("TR33 0006 1005 1978 6457 8413 26"))
+        assertTrue(FieldFormats.ibanGecerliMi("DE89 3704 0044 0532 0130 00"))
+        // Tek hane değişikliği ve komşu hane yer değiştirmesi — en sık yazım hataları
+        assertFalse(FieldFormats.ibanGecerliMi("GB29 NWBK 6016 1331 9268 18"))
+        assertFalse(FieldFormats.ibanGecerliMi("TR33 0006 1005 1978 6457 8413 62"))
+    }
+
+    @Test
+    fun `MOD-97 bos ve yarim girisi rahat birakir`() {
+        assertTrue(FieldFormats.ibanGecerliMi(""))
+        assertTrue(FieldFormats.ibanGecerliMi("TR33 0006"))
+        assertFalse(FieldFormats.ibanGecerliMi("TR" + "1".repeat(40)))  // 34 üstü
     }
 
     @Test

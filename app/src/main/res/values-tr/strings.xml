@@ -528,4 +528,5 @@
     <string name="settings_info_section">Yardım ve bilgi</string>
     <string name="edit_email_invalid">Adresi kontrol et — @ ve example.com gibi bir alan adı gerekir</string>
     <string name="edit_expiry_invalid">Ay ve yılı AAYY olarak gir (ay 01–12)</string>
+    <string name="edit_iban_invalid">Bu IBAN\'ın kontrol haneleri tutmuyor — bir hane yanlış yazılmış olabilir</string>
 </resources>

@@ -284,11 +284,20 @@ fun EditScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
+                    // MOD-97 kontrolü: IBAN'ın kendi kontrol haneleri numaranın
+                    // tamamından hesaplanır, yani rakam atlama ve komşu hane
+                    // değiştirme gibi yazım hatalarını yakalar. Çevrimdışı bir
+                    // aritmetik — banka sorgusu değil. Yarım girişte susar.
+                    val ibanHatali = !FieldFormats.ibanGecerliMi(iban)
                     OutlinedTextField(
                         value = iban,
                         onValueChange = { iban = FieldFormats.ibanInput(it) },
                         label = { Text(stringResource(R.string.edit_field_iban)) },
                         singleLine = true,
+                        isError = ibanHatali,
+                        supportingText = {
+                            if (ibanHatali) Text(stringResource(R.string.edit_iban_invalid))
+                        },
                         visualTransformation = GrupluGorunum(4),
                         modifier = Modifier.fillMaxWidth()
                     )
