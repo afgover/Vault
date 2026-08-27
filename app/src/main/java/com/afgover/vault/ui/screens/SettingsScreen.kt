@@ -402,6 +402,15 @@ fun SettingsScreen(
                 }
 
                 Spacer(Modifier.height(12.dp))
+            }
+
+            // Hatırlatıcı yalnız biyometrik açılışı bastırmak için var, o yüzden
+            // parmak izi olmayan cihazda gösterilmiyor. Ama seçili bir gün
+            // sayısı VARSA gösterilmek zorunda: kullanıcı parmak izini
+            // telefondan silince ayar görünmez oluyor, yürürlükte kalan süre
+            // de kilit ekranında hatırlatma yazdırmaya devam ediyordu — ve
+            // kapatılacak yer kalmıyordu (tur bulgusu).
+            if (canUseBiometric || viewModel.reminderDays > 0) {
                 Text(stringResource(R.string.settings_reminder_heading), style = MaterialTheme.typography.titleSmall)
                 Text(
                     stringResource(R.string.settings_reminder_desc),
@@ -420,7 +429,6 @@ fun SettingsScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-
             }
 
             OutlinedButton(

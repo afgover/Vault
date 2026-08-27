@@ -102,6 +102,7 @@ fun EditScreen(
     var showDiscard by remember { mutableStateOf(false) }
     var initialSnap by remember { mutableStateOf<String?>(null) }
     var kaydedildi by remember { mutableStateOf(false) }
+    var ibanOnayi by remember { mutableStateOf(false) }
 
     // Kaydedilmemiş değişiklikte geri çıkış tüm girilenleri kaybettiriyordu
     // (denetim). Alanların anlık özetini yükleme anındaki özetle karşılaştırıp
@@ -118,6 +119,50 @@ fun EditScreen(
         else onBack()
     }
     BackHandler(enabled = true) { cikmayiDene() }
+
+    // IBAN denetimi kaydetme yolunda da duruyor. Eskiden uyarı yalnız alanın
+    // altındaydı ve Kaydet ona hiç bakmıyordu: kontrol haneleri tutmayan bir
+    // IBAN sessizce diske gidiyor, detay ekranı da hiçbir şey söylemiyordu.
+    // Engellemek yerine SORULUYOR — MOD-97'ye uymayan meşru bir değeri olan
+    // kullanıcı tıkanmasın, ama yanlış yazan da fark etmeden geçmesin.
+    val ibanGecersiz = type == EntryType.CARD && !FieldFormats.ibanGecerliMi(iban)
+
+    fun kaydet() {
+        viewModel.saveEntry(
+            id = id,
+            type = type,
+            title = title.trim(),
+            data = EntryData(
+                username = username.trim(),
+                password = password,
+                url = url.trim(),
+                cardholder = cardholder.trim(),
+                cardNumber = cardNumber.trim(),
+                expiry = expiry.trim(),
+                cvv = cvv.trim(),
+                iban = iban.trim(),
+                notes = notes,
+                fullName = fullName.trim(),
+                phone = phone.trim(),
+                email = email.trim(),
+                address = address.trim(),
+                custom = customFields
+                    .map { CustomField(it.label.trim(), it.value.trim()) }
+                    .filter { it.label.isNotEmpty() },
+                passwordChangedAt = when {
+                    password.isEmpty() -> 0L
+                    password != originalPassword -> System.currentTimeMillis()
+                    // Değişmedi: eski damga korunur; damgasız eski
+                    // kayıtta 0 kalır (bilinmeyen tarih uydurulmaz).
+                    else -> originalPasswordChangedAt
+                }
+            ),
+            quick = quick,
+            tagIds = selectedTagIds.toList(),
+            noteKind = noteKind,
+            onDone = { kaydedildi = true; onBack() }
+        )
+    }
 
     LaunchedEffect(id) {
         if (id != 0L) {
@@ -480,40 +525,7 @@ fun EditScreen(
                 colors = vaultButtonColors(),
                 onClick = {
                     if (title.isBlank()) return@Button
-                    viewModel.saveEntry(
-                        id = id,
-                        type = type,
-                        title = title.trim(),
-                        data = EntryData(
-                            username = username.trim(),
-                            password = password,
-                            url = url.trim(),
-                            cardholder = cardholder.trim(),
-                            cardNumber = cardNumber.trim(),
-                            expiry = expiry.trim(),
-                            cvv = cvv.trim(),
-                            iban = iban.trim(),
-                            notes = notes,
-                            fullName = fullName.trim(),
-                            phone = phone.trim(),
-                            email = email.trim(),
-                            address = address.trim(),
-                            custom = customFields
-                                .map { CustomField(it.label.trim(), it.value.trim()) }
-                                .filter { it.label.isNotEmpty() },
-                            passwordChangedAt = when {
-                                password.isEmpty() -> 0L
-                                password != originalPassword -> System.currentTimeMillis()
-                                // Değişmedi: eski damga korunur; damgasız eski
-                                // kayıtta 0 kalır (bilinmeyen tarih uydurulmaz).
-                                else -> originalPasswordChangedAt
-                            }
-                        ),
-                        quick = quick,
-                        tagIds = selectedTagIds.toList(),
-                        noteKind = noteKind,
-                        onDone = { kaydedildi = true; onBack() }
-                    )
+                    if (ibanGecersiz) ibanOnayi = true else kaydet()
                 },
                 enabled = title.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
@@ -537,6 +549,24 @@ fun EditScreen(
             dismissButton = {
                 androidx.compose.material3.TextButton(onClick = { showDiscard = false }) {
                     Text(stringResource(R.string.edit_discard_cancel))
+                }
+            }
+        )
+    }
+
+    if (ibanOnayi) {
+        AlertDialog(
+            onDismissRequest = { ibanOnayi = false },
+            title = { Text(stringResource(R.string.edit_iban_confirm_title)) },
+            text = { Text(stringResource(R.string.edit_iban_confirm_text)) },
+            confirmButton = {
+                TextButton(onClick = { ibanOnayi = false; kaydet() }) {
+                    Text(stringResource(R.string.edit_iban_confirm_save))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { ibanOnayi = false }) {
+                    Text(stringResource(R.string.edit_iban_confirm_fix))
                 }
             }
         )

@@ -6,9 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -136,7 +136,7 @@ fun TypeBadge(type: EntryType, kind: NoteKind = NoteKind.GENEL, size: Int = 42) 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreen(
     viewModel: VaultViewModel,
@@ -326,12 +326,14 @@ fun HomeScreen(
                 shape = RoundedCornerShape(28.dp),
                 modifier = Modifier.fillMaxWidth()
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
+            // Satır yatay kaydırılıyordu ve dördüncü tür çipi ("Secure note")
+            // ekran kenarında "Secu" diye kesiliyordu — kaydırılabildiğine dair
+            // hiçbir işaret yokken. Süzgeç çipleri Material'da zaten sarılır;
+            // sarınca hem tür çipleri hem etiketler tam okunur (tur bulgusu).
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 EntryType.entries.forEach { t ->
                     FilterChip(

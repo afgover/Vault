@@ -537,4 +537,8 @@
     <string name="edit_email_invalid">Check the address — it needs an @ and a domain like example.com</string>
     <string name="edit_expiry_invalid">Enter the month and year as MMYY (month 01–12)</string>
     <string name="edit_iban_invalid">This IBAN\'s check digits do not match — a digit is probably mistyped</string>
+    <string name="edit_iban_confirm_title">The IBAN looks mistyped</string>
+    <string name="edit_iban_confirm_text">This IBAN\'s check digits do not match, so a digit is probably wrong. You can still save it — but if it was a typo, you will not notice until the transfer fails.</string>
+    <string name="edit_iban_confirm_save">Save anyway</string>
+    <string name="edit_iban_confirm_fix">Go back and fix it</string>
 </resources>
