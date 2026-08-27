@@ -242,12 +242,20 @@ fun EditScreen(
                     // Kart alanlarında SAKLANAN değer ham (boşluksuz); boşluk
                     // yalnız ekranda, görüntü dönüşümü olarak var. Kopyalanan
                     // ya da bilgisayara yazılan numara bu sayede temiz gidiyor.
+                    //
+                    // Ağ numaradan TÜRETİLİR, kullanıcıya sorulmaz — ve iki işi
+                    // birden doğru yapar: CVV uzunluğu (Amex 4) ve gruplama
+                    // düzeni (Amex 4-6-5, Diners 4-6-4).
+                    val ag = FieldFormats.cardNetwork(cardNumber)
                     OutlinedTextField(
                         value = cardNumber,
                         onValueChange = { cardNumber = FieldFormats.cardNumberInput(it) },
                         label = { Text(stringResource(R.string.edit_field_card_number)) },
                         singleLine = true,
-                        visualTransformation = GrupluGorunum(4),
+                        supportingText = {
+                            if (ag.gorunenAd.isNotEmpty()) Text(ag.gorunenAd)
+                        },
+                        visualTransformation = KartGorunumu(ag),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -269,7 +277,7 @@ fun EditScreen(
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = cvv,
-                        onValueChange = { cvv = FieldFormats.cvvInput(it) },
+                        onValueChange = { cvv = FieldFormats.cvvInput(it, ag) },
                         label = { Text(stringResource(R.string.field_cvv)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -562,6 +570,34 @@ fun EditScreen(
                 TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.edit_cancel)) }
             }
         )
+    }
+}
+
+/**
+ * Kart numarasını ağın kendi düzeninde gösterir (Amex 4-6-5, Diners 4-6-4,
+ * diğerleri dörderli). Ham değer yine boşluksuz.
+ */
+private class KartGorunumu(
+    private val ag: FieldFormats.CardNetwork
+) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val ham = text.text
+        val gosterilen = FieldFormats.kartGrupla(ham, ag)
+        // Boşluk konumlarından eşleme kur: desen değişken olduğu için
+        // aritmetik yerine gerçek dizgiden sayıyoruz.
+        val esleme = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                var ham = 0
+                for ((i, c) in gosterilen.withIndex()) {
+                    if (ham == offset) return i
+                    if (c != ' ') ham++
+                }
+                return gosterilen.length
+            }
+            override fun transformedToOriginal(offset: Int) =
+                gosterilen.take(offset).count { it != ' ' }
+        }
+        return TransformedText(AnnotatedString(gosterilen), esleme)
     }
 }
 

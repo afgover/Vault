@@ -14,14 +14,61 @@ package com.afgover.vault.core
  */
 object FieldFormats {
 
+    /**
+     * Kart ağı. Numaranın ilk hanelerinden (IIN) türetilir — kullanıcıya
+     * sorulmaz: bilgi zaten numaranın içinde ve sorulduğunda yanlış seçilebilir.
+     * Tespit tamamen yerel bir hesap; ağ erişimi gerektirmez.
+     *
+     * [cvvLength] ve [gruplar] burada duruyor çünkü ikisi de ağa bağlı:
+     * Amex'in güvenlik kodu 4 hanedir ve numarası 4-6-5 olarak yazılır.
+     */
+    enum class CardNetwork(val gorunenAd: String, val cvvLength: Int, val gruplar: List<Int>) {
+        VISA("Visa", 3, listOf(4, 4, 4, 4)),
+        MASTERCARD("Mastercard", 3, listOf(4, 4, 4, 4)),
+        AMEX("American Express", 4, listOf(4, 6, 5)),
+        TROY("Troy", 3, listOf(4, 4, 4, 4)),
+        DISCOVER("Discover", 3, listOf(4, 4, 4, 4)),
+        DINERS("Diners Club", 3, listOf(4, 6, 4)),
+        JCB("JCB", 3, listOf(4, 4, 4, 4)),
+        UNKNOWN("", 3, listOf(4, 4, 4, 4)),
+    }
+
+    /**
+     * Numaradan ağı bul. Kısmi girişte de çalışır: kullanıcı yazarken ilk
+     * haneden itibaren daralır, bu yüzden CVV alanı numara tamamlanmadan
+     * doğru uzunluğa geçer.
+     */
+    fun cardNetwork(number: String): CardNetwork {
+        val n = number.filter { it.isDigit() }
+        if (n.isEmpty()) return CardNetwork.UNKNOWN
+        fun ilk(k: Int) = n.take(k).padEnd(k, '0').toInt()
+        return when {
+            n[0] == '4' -> CardNetwork.VISA
+            n.length >= 2 && ilk(2) in 51..55 -> CardNetwork.MASTERCARD
+            n.length >= 4 && ilk(4) in 2221..2720 -> CardNetwork.MASTERCARD
+            n.length >= 2 && ilk(2) in listOf(34, 37) -> CardNetwork.AMEX
+            n.length >= 4 && ilk(4) == 9792 -> CardNetwork.TROY
+            n.length >= 4 && ilk(4) == 6011 -> CardNetwork.DISCOVER
+            n.length >= 2 && ilk(2) == 65 -> CardNetwork.DISCOVER
+            n.length >= 3 && ilk(3) in 644..649 -> CardNetwork.DISCOVER
+            n.length >= 2 && ilk(2) in listOf(36, 38) -> CardNetwork.DINERS
+            n.length >= 4 && ilk(4) in 3528..3589 -> CardNetwork.JCB
+            else -> CardNetwork.UNKNOWN
+        }
+    }
+
     /** Kart numarası: yalnız rakam, en fazla 19 (Maestro dahil en uzun PAN). */
     fun cardNumberInput(raw: String): String = raw.filter { it.isDigit() }.take(19)
 
     /** Son kullanma: yalnız rakam, AAYY — dört hane. */
     fun expiryInput(raw: String): String = raw.filter { it.isDigit() }.take(4)
 
-    /** CVV: yalnız rakam, üç hane. */
-    fun cvvInput(raw: String): String = raw.filter { it.isDigit() }.take(3)
+    /**
+     * CVV: yalnız rakam. Uzunluk karta göre — Amex 4, diğerleri 3. Sabit 3
+     * seçmek Amex kullananın kartını eksik kaydetmesine yol açıyordu.
+     */
+    fun cvvInput(raw: String, network: CardNetwork = CardNetwork.UNKNOWN): String =
+        raw.filter { it.isDigit() }.take(network.cvvLength)
 
     /**
      * IBAN: ilk iki karakter ülke kodu (harf, büyütülür), kalanı rakam.
@@ -37,6 +84,22 @@ object FieldFormats {
     /** Dörderli grupla: "1234567890" → "1234 5678 90". */
     fun grupla(ham: String, boyut: Int = 4): String =
         ham.chunked(boyut).joinToString(" ")
+
+    /**
+     * Ağın kendi düzenine göre grupla: Amex 4-6-5, Diners 4-6-4, diğerleri
+     * dörderli. Desen bittikten sonra kalan haneler dörderli akar.
+     */
+    fun kartGrupla(ham: String, network: CardNetwork): String {
+        val parcalar = mutableListOf<String>()
+        var i = 0
+        for (uzunluk in network.gruplar) {
+            if (i >= ham.length) break
+            parcalar += ham.substring(i, minOf(i + uzunluk, ham.length))
+            i += uzunluk
+        }
+        if (i < ham.length) parcalar += ham.substring(i).chunked(4)
+        return parcalar.joinToString(" ")
+    }
 
     /** AAYY → "AA/YY"; yarım girişte de bozulmaz ("1" → "1", "123" → "12/3"). */
     fun expiryGoster(ham: String): String =

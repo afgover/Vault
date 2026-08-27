@@ -146,10 +146,18 @@ fun DetailScreen(
                     // gösterilir; ikisi ayrı parametre olduğu için panoya ve
                     // Bluetooth'a giden değere boşluk sızmıyor.
                     displayValue = when (alan.key) {
-                        FieldKey.CARD_NUMBER, FieldKey.IBAN -> FieldFormats.grupla(alan.value)
+                        FieldKey.CARD_NUMBER -> FieldFormats.kartGrupla(
+                            alan.value, FieldFormats.cardNetwork(alan.value)
+                        )
+                        FieldKey.IBAN -> FieldFormats.grupla(alan.value)
                         FieldKey.EXPIRY -> FieldFormats.expiryGoster(alan.value)
                         else -> alan.value
                     },
+                    // Kart ağı etiketin yanında: hangi kart olduğu, numarayı
+                    // okumadan görünsün.
+                    labelSuffix = if (alan.key == FieldKey.CARD_NUMBER) {
+                        FieldFormats.cardNetwork(alan.value).gorunenAd
+                    } else "",
                     hiddenByDefault = alan.hidden,
                     onCopy = {
                         // Panoya ve günlüğe KARARLI ad gider, ekrandaki çeviri değil.
@@ -301,6 +309,7 @@ private fun FieldCard(
     label: String,
     value: String,
     displayValue: String = value,
+    labelSuffix: String = "",
     hiddenByDefault: Boolean,
     onCopy: () -> Unit,
     onTypeToPc: () -> Unit,
@@ -329,7 +338,7 @@ private fun FieldCard(
             // düğmeler metnin ortasında yer kaplamıyor.
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    label,
+                    if (labelSuffix.isEmpty()) label else "$label · $labelSuffix",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)

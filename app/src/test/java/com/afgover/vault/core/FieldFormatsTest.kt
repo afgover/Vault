@@ -1,5 +1,6 @@
 package com.afgover.vault.core
 
+import com.afgover.vault.core.FieldFormats.CardNetwork as N
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -71,4 +72,59 @@ class FieldFormatsTest {
         assertFalse(FieldFormats.epostaGecerliMi("demo @example.com"))
         assertFalse(FieldFormats.epostaGecerliMi("a@b@c.com"))
     }
+
+    // ── Kart ağı: numaradan türetilir, kullanıcıya sorulmaz ────────────────
+
+    @Test
+    fun `ag numaranin ilk hanelerinden bulunur`() {
+        assertEquals(N.VISA, FieldFormats.cardNetwork("4111111111111111"))
+        assertEquals(N.MASTERCARD, FieldFormats.cardNetwork("5500000000000004"))
+        assertEquals(N.MASTERCARD, FieldFormats.cardNetwork("2221000000000009"))
+        assertEquals(N.AMEX, FieldFormats.cardNetwork("378282246310005"))
+        assertEquals(N.TROY, FieldFormats.cardNetwork("9792000000000001"))
+        assertEquals(N.DISCOVER, FieldFormats.cardNetwork("6011000000000004"))
+        assertEquals(N.DINERS, FieldFormats.cardNetwork("36000000000008"))
+        assertEquals(N.JCB, FieldFormats.cardNetwork("3530111333300000"))
+        assertEquals(N.UNKNOWN, FieldFormats.cardNetwork(""))
+        assertEquals(N.UNKNOWN, FieldFormats.cardNetwork("9999"))
+    }
+
+    @Test
+    fun `ag kismi girişte de daralir — CVV uzunlugu numara bitmeden dogru olur`() {
+        assertEquals(N.VISA, FieldFormats.cardNetwork("4"))
+        assertEquals(N.AMEX, FieldFormats.cardNetwork("37"))
+        assertEquals(N.MASTERCARD, FieldFormats.cardNetwork("55"))
+    }
+
+    @Test
+    fun `cvv uzunlugu aga bagli — Amex dort, digerleri uc`() {
+        val amex = FieldFormats.cardNetwork("3782")
+        val visa = FieldFormats.cardNetwork("4111")
+        assertEquals("1234", FieldFormats.cvvInput("12345", amex))
+        assertEquals("123", FieldFormats.cvvInput("12345", visa))
+    }
+
+    @Test
+    fun `gruplama agin kendi duzenini kullanir`() {
+        val amex = FieldFormats.cardNetwork("378282246310005")
+        val diners = FieldFormats.cardNetwork("36000000000008")
+        val visa = FieldFormats.cardNetwork("4111111111111111")
+        assertEquals("3782 822463 10005", FieldFormats.kartGrupla("378282246310005", amex))
+        assertEquals("3600 000000 0008", FieldFormats.kartGrupla("36000000000008", diners))
+        assertEquals("4111 1111 1111 1111", FieldFormats.kartGrupla("4111111111111111", visa))
+        // Desen bittikten sonra kalan haneler dörderli akar (19 haneli PAN).
+        assertEquals(
+            "4111 1111 1111 1111 111",
+            FieldFormats.kartGrupla("4111111111111111111", visa)
+        )
+    }
+
+    @Test
+    fun `gruplama yine yalnizca gorunum — ham deger bosluksuz`() {
+        val amex = FieldFormats.cardNetwork("378282246310005")
+        val ham = FieldFormats.cardNumberInput("3782 822463 10005")
+        assertEquals("378282246310005", ham)
+        assertTrue(FieldFormats.kartGrupla(ham, amex).contains(" "))
+    }
 }
+
