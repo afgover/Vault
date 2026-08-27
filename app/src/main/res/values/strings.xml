@@ -152,7 +152,7 @@
     <string name="edit_back">Back</string>
     <string name="edit_delete">Delete</string>
     <string name="edit_field_title">Title</string>
-    <string name="edit_field_username">Username / Email</string>
+    <string name="edit_field_username">Username</string>
     <string name="edit_generate_password">Generate password</string>
     <string name="edit_field_card_number">Card number</string>
     <string name="edit_field_expiry">Expiry (MM/YY)</string>
@@ -534,4 +534,6 @@
     <string name="guide_s8_title">Bringing secrets from a computer</string>
     <string name="guide_s8_body">The ➕ button offers “Import via QR” and “Import from text”. The ⇄ wizard does both in one flow: it generates a single-use transfer password, types it into the computer over Bluetooth, and then takes the envelope back either by scanning the QR or from the clipboard — decrypting it with that same password.\nThe computer-side tool is a download, not a website: get aktar.html from the project’s Releases page, check its SHA-256, and open it from your own disk. This site never asks you for a secret.</string>
     <string name="settings_info_section">Help and information</string>
+    <string name="edit_email_invalid">Check the address — it needs an @ and a domain like example.com</string>
+    <string name="edit_expiry_invalid">Enter the month and year as MMYY (month 01–12)</string>
 </resources>

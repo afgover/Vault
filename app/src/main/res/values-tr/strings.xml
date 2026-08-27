@@ -146,7 +146,7 @@
     <string name="edit_back">Geri</string>
     <string name="edit_delete">Sil</string>
     <string name="edit_field_title">Başlık</string>
-    <string name="edit_field_username">Kullanıcı adı / E-posta</string>
+    <string name="edit_field_username">Kullanıcı adı</string>
     <string name="edit_generate_password">Şifre üret</string>
     <string name="edit_field_card_number">Kart numarası</string>
     <string name="edit_field_expiry">Son kullanma (AA/YY)</string>
@@ -526,4 +526,6 @@
     <string name="guide_s8_title">Bilgisayardan sır getirmek</string>
     <string name="guide_s8_body">➕ düğmesi “QR ile içe aktar” ve “Metinden içe aktar” sunar. ⇄ sihirbazı ikisini tek akışta yapar: tek kullanımlık bir aktarım parolası üretir, Bluetooth ile bilgisayara yazar, sonra zarfı ya QR okutarak ya panodan alır ve aynı parolayla çözer.\nBilgisayar tarafındaki araç bir web sayfası değil, indirilen bir dosyadır: aktar.html\'i projenin Releases sayfasından indir, SHA-256 özetini doğrula ve kendi diskinden aç. Site senden asla bir sır istemez.</string>
     <string name="settings_info_section">Yardım ve bilgi</string>
+    <string name="edit_email_invalid">Adresi kontrol et — @ ve example.com gibi bir alan adı gerekir</string>
+    <string name="edit_expiry_invalid">Ay ve yılı AAYY olarak gir (ay 01–12)</string>
 </resources>

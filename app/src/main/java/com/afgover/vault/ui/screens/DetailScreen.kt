@@ -44,6 +44,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.afgover.vault.core.FieldFormats
+import com.afgover.vault.data.FieldKey
 import com.afgover.vault.R
 import com.afgover.vault.core.Fingerprint
 import com.afgover.vault.data.DecryptedEntry
@@ -140,6 +142,14 @@ fun DetailScreen(
                 FieldCard(
                     label = gosterilen,
                     value = alan.value,
+                    // Kart ve IBAN okunmak için gruplu, kopyalanmak için ham
+                    // gösterilir; ikisi ayrı parametre olduğu için panoya ve
+                    // Bluetooth'a giden değere boşluk sızmıyor.
+                    displayValue = when (alan.key) {
+                        FieldKey.CARD_NUMBER, FieldKey.IBAN -> FieldFormats.grupla(alan.value)
+                        FieldKey.EXPIRY -> FieldFormats.expiryGoster(alan.value)
+                        else -> alan.value
+                    },
                     hiddenByDefault = alan.hidden,
                     onCopy = {
                         // Panoya ve günlüğe KARARLI ad gider, ekrandaki çeviri değil.
@@ -290,6 +300,7 @@ fun DetailScreen(
 private fun FieldCard(
     label: String,
     value: String,
+    displayValue: String = value,
     hiddenByDefault: Boolean,
     onCopy: () -> Unit,
     onTypeToPc: () -> Unit,
@@ -349,7 +360,7 @@ private fun FieldCard(
                 }
             }
             Text(
-                text = if (visible) value else "••••••••",
+                text = if (visible) displayValue else "••••••••",
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier

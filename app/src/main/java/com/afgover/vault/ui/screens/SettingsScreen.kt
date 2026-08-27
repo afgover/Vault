@@ -148,19 +148,9 @@ fun SettingsScreen(
                 Spacer(Modifier.height(8.dp))
             }
 
-            Text(stringResource(R.string.settings_appearance), style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(4.dp))
-            Text(
-                stringResource(
-                    R.string.settings_sort_moved,
-                    stringResource(viewModel.sort.labelRes)
-                ),
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Spacer(Modifier.height(24.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
+            // "Görünüm" bölümü kaldırıldı: sıralama ana ekrandaki ⇅ simgesine
+            // taşındığından geriye yalnız oraya işaret eden bir açıklama
+            // kalmıştı — ayar olmayan bir ayar başlığı.
 
             // --- Bilgi sayfaları ---
             // Bu içerik sitede de var; uygulamada olması şart çünkü Sekuvo'nun

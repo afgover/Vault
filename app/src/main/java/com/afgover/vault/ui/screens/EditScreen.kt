@@ -47,6 +47,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
+import com.afgover.vault.core.FieldFormats
 import com.afgover.vault.R
 import com.afgover.vault.ui.theme.vaultButtonColors
 import com.afgover.vault.data.CustomField
@@ -190,6 +197,23 @@ fun EditScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
+                    // E-posta ayrı alan: birçok sitede kullanıcı adı ile
+                    // e-posta farklı ve tek alana sıkıştırıldığında hangisinin
+                    // istendiği kaybolyordu. Denetim kasıtlı olarak gevşek —
+                    // amaç RFC'yi uygulamak değil, "@ ya da nokta unuttum"
+                    // hatasını yakalamak (FieldFormats).
+                    val epostaHatali = !FieldFormats.epostaGecerliMi(email)
+                    OutlinedTextField(
+                        value = email, onValueChange = { email = it },
+                        label = { Text(stringResource(R.string.field_email)) }, singleLine = true,
+                        isError = epostaHatali,
+                        supportingText = {
+                            if (epostaHatali) Text(stringResource(R.string.edit_email_invalid))
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = password, onValueChange = { password = it },
                         label = { Text(stringResource(R.string.field_password)) }, singleLine = true,
@@ -215,27 +239,49 @@ fun EditScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
+                    // Kart alanlarında SAKLANAN değer ham (boşluksuz); boşluk
+                    // yalnız ekranda, görüntü dönüşümü olarak var. Kopyalanan
+                    // ya da bilgisayara yazılan numara bu sayede temiz gidiyor.
                     OutlinedTextField(
-                        value = cardNumber, onValueChange = { cardNumber = it },
-                        label = { Text(stringResource(R.string.edit_field_card_number)) }, singleLine = true,
+                        value = cardNumber,
+                        onValueChange = { cardNumber = FieldFormats.cardNumberInput(it) },
+                        label = { Text(stringResource(R.string.edit_field_card_number)) },
+                        singleLine = true,
+                        visualTransformation = GrupluGorunum(4),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    val tarihHatali = !FieldFormats.expiryGecerliMi(expiry)
+                    OutlinedTextField(
+                        value = expiry,
+                        onValueChange = { expiry = FieldFormats.expiryInput(it) },
+                        label = { Text(stringResource(R.string.edit_field_expiry)) },
+                        singleLine = true,
+                        isError = tarihHatali,
+                        supportingText = {
+                            if (tarihHatali) Text(stringResource(R.string.edit_expiry_invalid))
+                        },
+                        visualTransformation = TarihGorunumu,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = expiry, onValueChange = { expiry = it },
-                        label = { Text(stringResource(R.string.edit_field_expiry)) }, singleLine = true,
+                        value = cvv,
+                        onValueChange = { cvv = FieldFormats.cvvInput(it) },
+                        label = { Text(stringResource(R.string.field_cvv)) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = cvv, onValueChange = { cvv = it },
-                        label = { Text(stringResource(R.string.field_cvv)) }, singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = iban, onValueChange = { iban = it },
-                        label = { Text(stringResource(R.string.edit_field_iban)) }, singleLine = true,
+                        value = iban,
+                        onValueChange = { iban = FieldFormats.ibanInput(it) },
+                        label = { Text(stringResource(R.string.edit_field_iban)) },
+                        singleLine = true,
+                        visualTransformation = GrupluGorunum(4),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -518,3 +564,36 @@ fun EditScreen(
         )
     }
 }
+
+/**
+ * Ham değeri değiştirmeden ekranda [boyut]'luk gruplara ayırır.
+ *
+ * `VisualTransformation` bilinçli tercih: değeri boşluklu SAKLASAYDIK kopyalama,
+ * klavye, Bluetooth ve yedek yollarının hepsine boşluk sızardı. Burada boşluk
+ * yalnız çizime giriyor.
+ */
+private class GrupluGorunum(private val boyut: Int) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val gosterilen = FieldFormats.grupla(text.text, boyut)
+        val esleme = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int) =
+                offset + (if (offset == 0) 0 else (offset - 1) / boyut)
+            override fun transformedToOriginal(offset: Int) =
+                offset - offset / (boyut + 1)
+        }
+        return TransformedText(AnnotatedString(gosterilen), esleme)
+    }
+}
+
+/** AAYY değerini ekranda AA/YY olarak gösterir. */
+private object TarihGorunumu : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val gosterilen = FieldFormats.expiryGoster(text.text)
+        val esleme = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int) = if (offset <= 2) offset else offset + 1
+            override fun transformedToOriginal(offset: Int) = if (offset <= 2) offset else offset - 1
+        }
+        return TransformedText(AnnotatedString(gosterilen), esleme)
+    }
+}
+
