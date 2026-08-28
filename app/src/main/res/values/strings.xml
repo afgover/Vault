@@ -487,6 +487,7 @@
     <string name="bt_layout_hu">Hungarian (QWERTZ)</string>
     <string name="bt_layout_no">Norwegian</string>
     <string name="bt_layout_be">Belgian (AZERTY)</string>
+    <string name="bt_layout_dv">Dvorak (US)</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">Language</string>
     <string name="settings_language_desc">Choose the app language. It applies to Sekuvo only, not the rest of the phone.</string>

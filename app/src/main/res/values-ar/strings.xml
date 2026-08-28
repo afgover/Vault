@@ -483,6 +483,7 @@
     <string name="bt_layout_hu">مجري (QWERTZ)</string>
     <string name="bt_layout_no">نرويجي</string>
     <string name="bt_layout_be">بلجيكي (AZERTY)</string>
+    <string name="bt_layout_dv">دفوراك (أمريكي)</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">اللغة</string>
     <string name="settings_language_desc">اختر لغة التطبيق. تُطبَّق على Sekuvo فقط، لا على بقية الهاتف.</string>

@@ -36,7 +36,8 @@ object HidLayouts {
         CZ(R.string.bt_layout_cz),
         HU(R.string.bt_layout_hu),
         NO(R.string.bt_layout_no),
-        BE(R.string.bt_layout_be)
+        BE(R.string.bt_layout_be),
+        DV(R.string.bt_layout_dv)
     }
 
     /**
@@ -105,6 +106,7 @@ object HidLayouts {
             Layout.HU -> HU
             Layout.NO -> NO
             Layout.BE -> BE
+            Layout.DV -> DV
         }
 
     /**
@@ -1142,12 +1144,70 @@ object HidLayouts {
 
     private val BE: Map<Char, KeyStroke> = BE_TABLE.toMap()
 
+    /**
+     * Dvorak (Basitleştirilmiş, ABD) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbddv.html), ham Unicode
+     * ad etiketleriyle, birebir okuma. AltGr YOK — beşinci sıra "Alt" tuşunu
+     * iki kez gösteriyor, AltGr hiç yok (ABD tabanlı düzenlerin ortak
+     * özelliği); ölü tuş da yok.
+     *
+     * Gerçek klavyede `\` ve `|` iki yoldan erişiliyor (Enter'ın solundaki
+     * OEM tuşu VE ISO ekstra tuşu) — çakışma olmasın diye yalnız ISO ekstra
+     * tuşu (0x64) bırakıldı, öbürü (0x31) tamamen atlandı (tek işlevi bu
+     * ikiliydi, başka hiçbir karakter üretmiyor).
+     */
+    private val DV_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x04, 'a', shift = 'A'),
+            KeyCap(0x05, 'x', shift = 'X'),
+            KeyCap(0x06, 'j', shift = 'J'),
+            KeyCap(0x07, 'e', shift = 'E'),
+            KeyCap(0x08, '.', shift = '>'),
+            KeyCap(0x09, 'u', shift = 'U'),
+            KeyCap(0x0A, 'i', shift = 'I'),
+            KeyCap(0x0B, 'd', shift = 'D'),
+            KeyCap(0x0C, 'c', shift = 'C'),
+            KeyCap(0x0D, 'h', shift = 'H'),
+            KeyCap(0x0E, 't', shift = 'T'),
+            KeyCap(0x0F, 'n', shift = 'N'),
+            KeyCap(0x10, 'm', shift = 'M'),
+            KeyCap(0x11, 'b', shift = 'B'),
+            KeyCap(0x12, 'r', shift = 'R'),
+            KeyCap(0x13, 'l', shift = 'L'),
+            KeyCap(0x14, '\'', shift = '"'),
+            KeyCap(0x15, 'p', shift = 'P'),
+            KeyCap(0x16, 'o', shift = 'O'),
+            KeyCap(0x17, 'y', shift = 'Y'),
+            KeyCap(0x18, 'g', shift = 'G'),
+            KeyCap(0x19, 'k', shift = 'K'),
+            KeyCap(0x1A, ',', shift = '<'),
+            KeyCap(0x1B, 'q', shift = 'Q'),
+            KeyCap(0x1C, 'f', shift = 'F'),
+            KeyCap(0x1D, ';', shift = ':'),
+            KeyCap(0x35, '`', '~'),
+            KeyCap(0x1E, '1', '!'), KeyCap(0x1F, '2', '@'), KeyCap(0x20, '3', '#'),
+            KeyCap(0x21, '4', '$'), KeyCap(0x22, '5', '%'), KeyCap(0x23, '6', '^'),
+            KeyCap(0x24, '7', '&'), KeyCap(0x25, '8', '*'), KeyCap(0x26, '9', '('),
+            KeyCap(0x27, '0', ')'),
+            KeyCap(0x2D, '[', '{'), KeyCap(0x2E, ']', '}'),
+            KeyCap(0x2F, '/', '?'), KeyCap(0x30, '=', '+'),
+            // 0x31 (Enter'ın solu): \/| — 0x64'le birebir çakışıyor, atlanıyor
+            KeyCap(0x33, 's', 'S'), KeyCap(0x34, '-', '_'),
+            KeyCap(0x36, 'w', 'W'), KeyCap(0x37, 'v', 'V'), KeyCap(0x38, 'z', 'Z'),
+            KeyCap(0x64, '\\', '|')
+        )
+    )
+
+    private val DV: Map<Char, KeyStroke> = DV_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
         Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
         Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE, Layout.HU to HU_TABLE, Layout.NO to NO_TABLE,
-        Layout.BE to BE_TABLE
+        Layout.BE to BE_TABLE, Layout.DV to DV_TABLE
     )
 }
