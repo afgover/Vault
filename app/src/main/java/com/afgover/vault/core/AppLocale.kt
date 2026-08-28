@@ -27,7 +27,8 @@ object AppLocale {
     enum class Option(val tag: String, @StringRes val labelRes: Int) {
         SYSTEM("", R.string.settings_lang_system),
         TURKISH("tr", R.string.settings_lang_tr),
-        ENGLISH("en", R.string.settings_lang_en);
+        ENGLISH("en", R.string.settings_lang_en),
+        SPANISH("es", R.string.settings_lang_es);
 
         companion object {
             fun of(tag: String?): Option =

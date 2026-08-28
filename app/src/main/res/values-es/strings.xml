@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand name: not translated. -->
+    <string name="app_name" translatable="false">Sekuvo</string>
+    <string name="ime_label">Teclado Sekuvo</string>
+    <string name="autofill_label" translatable="false">Sekuvo</string>
+
+    <!-- Built-in field labels. These are DISPLAY text only: what gets stored
+         in the usage log and the clipboard label is the stable key, never
+         this string (otherwise the log would change language mid-history). -->
+    <string name="field_full_name">Nombre completo</string>
+    <string name="field_username">Usuario</string>
+    <string name="field_password">Contraseña</string>
+    <string name="field_url">Sitio / aplicación</string>
+    <string name="field_phone">Teléfono</string>
+    <string name="field_email">Correo</string>
+    <string name="field_address">Dirección</string>
+    <string name="field_cardholder">Titular</string>
+    <string name="field_card_number">Número de tarjeta</string>
+    <string name="field_expiry">Caducidad</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">Nota</string>
+
+    <!-- Entry types -->
+    <string name="type_login">Cuenta / Contraseña</string>
+    <string name="type_everyday">Cotidiano</string>
+    <string name="type_card">Tarjeta</string>
+    <string name="type_note">Nota segura</string>
+
+    <!-- Note subtypes -->
+    <string name="note_kind_general">Nota general</string>
+    <string name="note_kind_script">Script / comando (.sh)</string>
+    <string name="note_kind_key">Clave / certificado (.pem)</string>
+    <string name="note_kind_fingerprint">Huella / ancla de confianza</string>
+    <string name="note_kind_recovery">Códigos de recuperación</string>
+    <string name="note_kind_config">Configuración (.env, json)</string>
+
+    <!-- Sort options -->
+    <string name="sort_title_asc">Título (A→Z)</string>
+    <string name="sort_title_desc">Título (Z→A)</string>
+    <string name="sort_updated_desc">Actualizado recientemente</string>
+    <string name="sort_created_desc">Añadido recientemente</string>
+    <string name="sort_type">Por tipo</string>
+    <string name="sort_manual">Orden personalizado (arrastrar)</string>
+
+    <!-- Usage log event kinds -->
+    <string name="usage_created">Creado</string>
+    <string name="usage_updated">Modificado</string>
+    <string name="usage_copied">Copiado al portapapeles</string>
+    <string name="usage_bt_typed">Escrito en el ordenador</string>
+    <string name="usage_keyboard_typed">Escrito desde el teclado</string>
+    <string name="usage_quick_on">Acceso rápido activado</string>
+    <string name="usage_quick_off">Acceso rápido desactivado</string>
+
+    <!-- Bluetooth keyboard: layouts and speeds -->
+    <string name="bt_layout_us">EE. UU. (inglés)</string>
+    <string name="bt_layout_tr">Turco Q</string>
+    <string name="bt_speed_safe">Segura</string>
+    <string name="bt_speed_fast">Rápida</string>
+    <string name="bt_speed_turbo">Muy rápida</string>
+
+    <!-- Bluetooth keyboard: errors reported from a context-free manager -->
+    <string name="bt_err_off">El Bluetooth está apagado. Actívalo primero.</string>
+    <string name="bt_err_unsupported">Este teléfono no admite el perfil de teclado Bluetooth (HID).</string>
+    <string name="bt_err_register">Fallo al registrar el HID — puede que el teléfono no lo admita.</string>
+    <string name="bt_err_connect">No se pudo iniciar la conexión. ¿Tiene el otro dispositivo el Bluetooth activado?</string>
+    <string name="bt_err_no_link">Sin conexión — elige el dispositivo de nuevo.</string>
+    <string name="bt_err_queue">La cola de envío Bluetooth dejó de responder; la escritura se detuvo en el carácter %1$d. Elige una velocidad más lenta.</string>
+
+    <!-- Entry too large -->
+    <string name="entry_too_large">«%1$s» es demasiado grande: %2$d KB (límite %3$d KB). Divide el contenido largo, o consérvalo como archivo en tu ordenador.</string>
+    <string name="ime_write_field">Escribir %1$s</string>
+
+    <!-- backup -->
+    <string name="backup_autofill_form_unreadable">No se pudo leer el formulario</string>
+    <string name="backup_autofill_locked_save">La bóveda está bloqueada. Desbloquea Sekuvo primero para guardar.</string>
+    <string name="backup_autofill_nothing_to_save">No se encontró información que guardar</string>
+    <string name="backup_autofill_save_failed">No se pudo guardar: %1$s</string>
+    <string name="backup_autofill_unlock_to_fill">Desbloquear para rellenar</string>
+    <!-- bt -->
+    <string name="bt_duration_seconds">%1$d s</string>
+    <string name="bt_duration_minutes">%1$d min %2$d s</string>
+    <string name="bt_unsupported_title">No compatible</string>
+    <string name="bt_unsupported_body">La función de teclado Bluetooth requiere Android 9 o posterior.</string>
+    <string name="bt_ok">Aceptar</string>
+    <string name="bt_stopped_summary">Detenido: %1$d / %2$d caracteres escritos. El texto en el ordenador está INCOMPLETO — bórralo y empieza de nuevo.</string>
+    <string name="bt_aborted_summary">La escritura se cortó: %1$d / %2$d caracteres. El texto en el ordenador está INCOMPLETO — bórralo, elige una velocidad más lenta e inténtalo de nuevo.</string>
+    <string name="bt_speed_result">%1$d caracteres, %2$s (%3$d caracteres/s)</string>
+    <string name="bt_unknown_device">dispositivo desconocido</string>
+    <string name="bt_untyped_warning">Estos caracteres no se pudieron escribir en esta distribución: %1$s — puedes probar la otra distribución.</string>
+    <string name="bt_done_summary">✓ %1$d caracteres escritos — %2$s, %3$d caracteres/s. Verifica el recuento de caracteres en el ordenador.</string>
+    <string name="bt_title">Escribir en el ordenador: %1$s</string>
+    <string name="bt_permission_required">Se requiere el permiso de Bluetooth. Esta función no puede funcionar sin él.</string>
+    <string name="bt_preparing">Preparando el teclado Bluetooth…</string>
+    <string name="bt_pick_computer">Elige tu ordenador (debe estar ya emparejado con el teléfono por Bluetooth):</string>
+    <string name="bt_no_bonded_devices">No hay dispositivos emparejados. Empareja con tu ordenador desde los ajustes de Bluetooth del teléfono e inténtalo de nuevo.</string>
+    <string name="bt_connecting">Conectando con %1$s…</string>
+    <string name="bt_connected">✓ %1$s conectado</string>
+    <string name="bt_layout_heading">Distribución de teclado de TU ORDENADOR (no la del teléfono):</string>
+    <string name="bt_layout_warning">El ordenador interpreta los códigos de tecla — si eliges la distribución equivocada, caracteres como @ \" ? se convierten en silencio en otros.</string>
+    <string name="bt_selected_layout">Distribución elegida: %1$s</string>
+    <string name="bt_sensitive_chars">Este texto contiene caracteres sensibles a la distribución: %1$s — te recomiendo escribir la prueba antes de enviarlo.</string>
+    <string name="bt_test_done">✓ Prueba escrita — inténtalo de nuevo</string>
+    <string name="bt_test_first">🧪 Escribe la prueba primero (recomendado)</string>
+    <string name="bt_test_expected">El ordenador debe mostrar EXACTAMENTE esto:\n%1$s\nSi difiere, elige la otra distribución arriba y repite la prueba.</string>
+    <string name="bt_speed_heading">Velocidad de escritura:</string>
+    <string name="bt_speed_desc">Las pulsaciones se envían una a una. Si la velocidad es mayor de lo que la conexión soporta, la escritura se detiene (no se pierde ningún carácter) — usa la prueba de velocidad para medir cuál funciona.</string>
+    <string name="bt_estimate">%1$d caracteres ≈ %2$s</string>
+    <string name="bt_speed_test_button">⏱ Prueba de velocidad (%1$d caracteres)</string>
+    <string name="bt_speed_result_detail">%1$s\nEl ordenador debe mostrar 10 grupos separados por espacios, cada uno exactamente %2$s — si aunque sea uno difiere, elige la siguiente velocidad más lenta y repite la prueba.</string>
+    <string name="bt_typing_progress">Escribiendo… %1$d / %2$d caracteres</string>
+    <string name="bt_remaining">~%1$s restante — no muevas el cursor en el ordenador hasta que termine.</string>
+    <string name="bt_before_start">Pon el cursor en el campo de destino del ordenador y luego pulsa el botón. La escritura empieza 3 segundos después.</string>
+    <string name="bt_countdown_short">%1$d…</string>
+    <string name="bt_type">Escribir</string>
+    <string name="bt_stop">Detener</string>
+    <string name="bt_close">Cerrar</string>
+    <!-- detail -->
+    <string name="detail_back">Atrás</string>
+    <string name="detail_edit">Editar</string>
+    <string name="detail_quick_title">Usar en el teclado sin contraseña</string>
+    <string name="detail_quick_on">Aparece en el Teclado Sekuvo incluso con la bóveda bloqueada; su protección es solo tan fuerte como el bloqueo de pantalla de tu teléfono.</string>
+    <string name="detail_quick_off">Disponible solo con la bóveda desbloqueada.</string>
+    <string name="detail_dates">Añadido: %1$s · Actualizado: %2$s</string>
+    <string name="detail_password_changed">Última modificación de contraseña: %1$s</string>
+    <string name="detail_usage_title">Usos recientes</string>
+    <string name="detail_usage_desc">A dónde fue esta entrada desde dentro de la aplicación. Los valores leídos en pantalla, fotografiados o elegidos por autocompletado NO aparecen aquí — el registro solo conoce lo que hizo la propia aplicación.</string>
+    <string name="detail_usage_empty">Todavía sin usos.</string>
+    <string name="detail_show_less">Mostrar menos</string>
+    <string name="detail_show_all">Mostrar todo (%1$d)</string>
+    <string name="detail_hide">Ocultar</string>
+    <string name="detail_show">Mostrar</string>
+    <string name="detail_copy">Copiar</string>
+    <string name="detail_type_to_pc">Escribir en el ordenador</string>
+    <string name="detail_show_fingerprint">Mostrar huella SHA-256</string>
+    <string name="detail_fingerprint_len">Huella SHA-256 · %1$d caracteres</string>
+    <string name="detail_fingerprint_len_short">Huella SHA-256 · %1$d caracteres · valor corto</string>
+    <string name="detail_fingerprint_warning">El resumen de un valor corto puede revertirse por fuerza bruta — no compartas esta huella.</string>
+    <string name="detail_fingerprint_verify">En un ordenador: shasum -a 256 archivo\n(si lo pegaste a mano puede faltar el salto de línea final: printf \'%1$s\' \"$(cat archivo)\" | shasum -a 256)</string>
+    <string name="detail_copy_fingerprint">Copiar huella</string>
+    <!-- edit -->
+    <string name="edit_title_new">Nuevo: %1$s</string>
+    <string name="edit_title_edit">Editar</string>
+    <string name="edit_back">Atrás</string>
+    <string name="edit_delete">Eliminar</string>
+    <string name="edit_field_title">Título</string>
+    <string name="edit_field_username">Usuario</string>
+    <string name="edit_generate_password">Generar contraseña</string>
+    <string name="edit_field_card_number">Número de tarjeta</string>
+    <string name="edit_field_expiry">Caducidad (MM/AA)</string>
+    <string name="edit_field_iban">IBAN (opcional)</string>
+    <string name="edit_note_kind">Tipo de nota</string>
+    <string name="edit_custom_fields">Campos adicionales</string>
+    <string name="edit_field_name">Nombre del campo</string>
+    <string name="edit_remove_field">Quitar campo</string>
+    <string name="edit_field_value">Valor</string>
+    <string name="edit_add_field">+ Añadir campo</string>
+    <string name="edit_field_notes">Notas</string>
+    <string name="edit_quick_title">Usar en el teclado sin contraseña</string>
+    <string name="edit_quick_desc">Si está activado, esta entrada aparece en el Teclado Sekuvo incluso con la bóveda bloqueada. Entonces queda protegida solo por el bloqueo de pantalla de tu teléfono; déjalo apagado para datos sensibles como contraseñas.</string>
+    <string name="edit_tags">Etiquetas</string>
+    <string name="edit_new_tag">+ Nueva</string>
+    <string name="edit_save">Guardar</string>
+    <string name="edit_discard_title">Cambios sin guardar</string>
+    <string name="edit_discard_text">Estás a punto de salir sin guardar lo que introdujiste. ¿Seguro?</string>
+    <string name="edit_discard_confirm">Salir sin guardar</string>
+    <string name="edit_discard_cancel">Volver a editar</string>
+    <string name="edit_delete_title">Eliminar entrada</string>
+    <string name="edit_delete_text">«%1$s» se eliminará de forma permanente. ¿Seguro?</string>
+    <string name="edit_cancel">Cancelar</string>
+    <!-- home -->
+    <string name="home_sort_cd">Orden: %1$s</string>
+    <string name="home_selected">Seleccionado</string>
+    <string name="home_transfer_cd">Traer desde un ordenador</string>
+    <string name="home_generator_cd">Generador de contraseñas</string>
+    <string name="home_lock_cd">Bloquear</string>
+    <string name="home_settings_cd">Ajustes</string>
+    <string name="home_import_qr">Importar por QR</string>
+    <string name="home_import_text">Importar desde texto</string>
+    <string name="home_add_cd">Añadir</string>
+    <string name="home_search_hint">Buscar entradas</string>
+    <string name="home_manage_tags_cd">Gestionar etiquetas</string>
+    <string name="home_manual_hint">Orden personalizado: mantén pulsado el asa ⠿ de una fila y arrastra.</string>
+    <string name="home_empty_vault">Tu bóveda está lista — añade tu primera entrada con el + de abajo a la derecha.</string>
+    <string name="home_empty_filter">Ninguna entrada coincide con estos filtros.</string>
+    <string name="home_drag_cd">Arrastrar</string>
+    <string name="home_tag_new">Nueva etiqueta</string>
+    <string name="home_tag_edit">Editar etiqueta</string>
+    <string name="home_tag_name">Nombre</string>
+    <string name="home_selected_color">Color elegido</string>
+    <string name="home_save">Guardar</string>
+    <string name="home_cancel">Cancelar</string>
+    <string name="home_tags_title">Etiquetas</string>
+    <string name="home_tags_empty">Todavía no hay etiquetas. Puedes añadir una debajo.</string>
+    <string name="home_edit_cd">Editar</string>
+    <string name="home_delete">Eliminar</string>
+    <string name="home_tag_add_new">+ Nueva etiqueta</string>
+    <string name="home_close">Cerrar</string>
+    <string name="home_tag_delete_title">Eliminar etiqueta</string>
+    <string name="home_tag_delete_msg">«%1$s» se eliminará y se quitará de las entradas que la llevan. Las entradas en sí no se eliminan.</string>
+    <!-- ime -->
+    <string name="ime_switch_keyboard">ABC</string>
+    <string name="ime_locked_quick_only">La bóveda está bloqueada — solo entradas de acceso rápido.</string>
+    <string name="ime_unlock_all">🔓 Desbloquear (para todas las entradas)</string>
+    <string name="ime_no_quick_entries">Ninguna entrada marcada para acceso rápido.</string>
+    <string name="ime_no_entries">Sin entradas.</string>
+    <string name="ime_no_match">Ninguna entrada coincide con «%1$s».</string>
+    <string name="ime_back_to_list">← %1$s</string>
+    <string name="ime_search_hint">Buscar…</string>
+    <!-- log -->
+    <string name="log_title">Registro de uso</string>
+    <string name="log_scope_note">El registro solo ve lo que hace la propia aplicación: un valor leído en pantalla, fotografiado o escrito a mano no deja rastro. Tampoco puede registrarse qué entrada eliges durante el autocompletado, porque Android no se lo comunica a la aplicación. Este registro puede eliminarse con la bóveda desbloqueada — no es un registro a prueba de manipulación.</string>
+    <string name="log_filter_by_target">Filtrar por destino:</string>
+    <string name="log_filter_all">Todos</string>
+    <string name="log_empty">El registro está vacío.</string>
+    <string name="log_empty_for_target">Ninguna entrada fue a este destino.</string>
+    <string name="log_deleted_entry">(entrada eliminada)</string>
+    <string name="log_entries_to_target">Entradas enviadas a «%1$s»: %2$s</string>
+    <string name="log_clear_confirm">¿Eliminar todo el registro? No se puede deshacer; las entradas en sí no se ven afectadas.</string>
+    <string name="log_clear_yes">Sí, eliminar</string>
+    <string name="log_cancel">Cancelar</string>
+    <string name="log_close">Cerrar</string>
+    <string name="log_clear">Eliminar registro</string>
+    <!-- main -->
+    <string name="main_biometric_needs_pin">Se requiere tu PIN de Sekuvo para guardar el registro de huella</string>
+    <string name="main_biometric_enable_failed">No se pudo activar la huella: %1$s</string>
+    <string name="main_biometric_enroll_title">Activar desbloqueo biométrico</string>
+    <string name="main_cancel">Cancelar</string>
+    <string name="main_biometric_offer_title">Desbloquear con huella</string>
+    <string name="main_biometric_offer_body">En lugar de escribir tu contraseña maestra cada vez que abres la bóveda, puedes usar tu huella. La contraseña maestra no desaparece: siempre funciona cuando la necesitas, y es también la que abre tus copias de seguridad — no la olvides.</string>
+    <string name="main_enable">Activar</string>
+    <string name="main_password_for_now">Contraseña por ahora</string>
+    <string name="main_biometric_invalidated">El desbloqueo por huella ya no es válido (p. ej. se añadió una huella nueva). Desbloquea con tu contraseña.</string>
+    <string name="main_biometric_decrypt_failed">Huella verificada, pero la clave no se pudo descifrar. Desbloquea con tu contraseña.</string>
+    <string name="main_unlock_title">Desbloquear Sekuvo</string>
+    <string name="main_use_password">Usar contraseña</string>
+    <string name="main_hide">Ocultar</string>
+    <string name="main_show">Mostrar</string>
+    <!-- paste -->
+    <string name="paste_title_qr">Importar por QR</string>
+    <string name="paste_title_text">Importar desde texto</string>
+    <string name="paste_qr_ready">✓ QR escaneado · sobre cifrado de %1$d caracteres recibido.\nAhora introduce solo la **contraseña de copia**.</string>
+    <string name="paste_intro">Pega el texto de la página o toca «Obtener del portapapeles». El texto está cifrado; introducirás su contraseña en el siguiente campo.</string>
+    <string name="paste_label_envelope">Sobre cifrado</string>
+    <string name="paste_char_count">%1$d caracteres</string>
+    <string name="paste_btn_clipboard">Obtener del portapapeles</string>
+    <string name="paste_label_backup_password">Contraseña de copia</string>
+    <string name="paste_mode_merge">Añadir a lo existente</string>
+    <string name="paste_mode_replace">Reemplazar todo</string>
+    <string name="paste_replace_warning">Aviso: se elimina cada entrada existente y se escriben en su lugar las del sobre.</string>
+    <string name="paste_err_envelope_empty">El campo del sobre cifrado está vacío — pégalo con «Obtener del portapapeles».</string>
+    <string name="paste_err_password_required_qr">Se requiere la contraseña de copia: la que introdujiste al cifrar el sobre en tu ordenador.</string>
+    <string name="paste_err_password_missing">No se introdujo contraseña de copia.</string>
+    <string name="paste_btn_importing">Importando…</string>
+    <string name="paste_btn_import">Importar</string>
+    <string name="paste_btn_cancel">Cancelar</string>
+    <!-- qr -->
+    <string name="qr_status_aim">Encuadra el código QR en el visor</string>
+    <string name="qr_status_done">Hecho</string>
+    <string name="qr_status_received">%1$d/%2$d recibidos</string>
+    <string name="qr_status_frames_mismatch">Los fotogramas no coinciden, empieza de nuevo</string>
+    <string name="qr_permission_rationale">Se requiere el permiso de cámara. La imagen nunca sale del dispositivo: el decodificador está dentro de la aplicación y esta no tiene permiso de red.</string>
+    <string name="qr_grant_in_settings">Conceder en Ajustes</string>
+    <string name="qr_grant_permission">Conceder permiso</string>
+    <string name="qr_camera_analysis">Análisis de cámara: %1$s · acerca el código hasta llenar la mitad de la pantalla</string>
+    <string name="qr_missing_frames">Fotogramas que faltan: %1$s</string>
+    <string name="qr_cancel">Cancelar</string>
+    <!-- settings -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_back">Atrás</string>
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_sort_moved">El orden se movió a la pantalla principal: lo eliges desde el icono ⇅ junto al título, y se aplica tanto en la lista como en el Teclado Sekuvo.\nOrden actual: %1$s</string>
+    <string name="settings_backup">Copia de seguridad</string>
+    <string name="settings_backup_desc">El archivo de copia se cifra con AES-256 y solo se abre con la contraseña de copia. Puedes guardarlo donde quieras — Drive, tarjeta SD, etc.; aunque el teléfono se borre por completo, el archivo más la contraseña lo restauran todo.</string>
+    <string name="settings_backup_export">Crear copia cifrada</string>
+    <string name="settings_backup_restore">Restaurar desde copia</string>
+    <string name="settings_import_paste">Importar desde texto (pegar)</string>
+    <string name="settings_usage_log">Registro de uso</string>
+    <string name="settings_usage_log_desc">Qué campo de qué entrada fue a dónde, y cuándo — al portapapeles, a un ordenador, o a través del teclado.</string>
+    <string name="settings_usage_log_open">Abrir registro de uso</string>
+    <string name="settings_security">Seguridad</string>
+    <string name="settings_locking">Bloqueo</string>
+    <string name="settings_locking_desc">La bóveda se bloquea en cuanto se apaga la pantalla; la clave se borra de la memoria. Mientras la pantalla siga encendida, no se te pide de nuevo la contraseña ni la huella.\n\nLas entradas marcadas «Usar en el teclado sin contraseña» también pueden usarse con la bóveda bloqueada; puedes activar y desactivar esa marca desde la pantalla de cada entrada.</string>
+    <string name="settings_biometric_disable">Desactivar desbloqueo biométrico</string>
+    <string name="settings_biometric_enable">Activar desbloqueo biométrico</string>
+    <string name="settings_pin_heading">PIN (segunda puerta para la huella)</string>
+    <string name="settings_pin_legacy_warning">⚠ Este PIN se configuró en una versión anterior y es incompatible con esta: las entradas no se pueden abrir y el PIN no se puede desactivar. Repáralo con tu contraseña maestra + PIN.</string>
+    <string name="settings_pin_on_desc">Activado: tras leer tu huella, se pide el PIN. No se pide al desbloquear con la contraseña maestra — esa contraseña ya es un secreto fuerte.</string>
+    <string name="settings_pin_off_desc">Opcional. Si lo activas, el registro de huella se cifra con el PIN y este se pide después de la huella al desbloquear. Por defecto: desactivado.\nEl orden importa: define primero el PIN, luego activa la huella.</string>
+    <string name="settings_pin_repair">Reparar registro de PIN</string>
+    <string name="settings_pin_turn_off">Desactivar PIN</string>
+    <string name="settings_pin_set">Definir PIN</string>
+    <string name="settings_reminder_heading">Recordatorio de contraseña maestra</string>
+    <string name="settings_reminder_desc">Mientras usas la huella, la contraseña maestra deja de escribirse durante meses y se olvida — aun así es la que abre tus copias de seguridad. Una vez por el intervalo que elijas, se pide la contraseña en lugar de la huella. Por defecto: nunca.</string>
+    <string name="settings_reminder_never">Nunca</string>
+    <string name="settings_reminder_days">%1$d días</string>
+    <string name="settings_change_password">Cambiar contraseña maestra</string>
+    <string name="settings_autofill">Autocompletado</string>
+    <string name="settings_autofill_on_desc">Activado. Al tocar un formulario de inicio de sesión o de tarjeta en aplicaciones y navegadores, tus entradas de Sekuvo aparecen como opción de relleno. Si la bóveda está bloqueada, primero aparece la pantalla de desbloqueo; no se entrega ningún valor al sistema mientras está bloqueada.</string>
+    <string name="settings_autofill_off_desc">Si lo activas, al tocar un formulario de inicio de sesión o de tarjeta en aplicaciones y navegadores se ofrecen tus entradas de Sekuvo directamente como opción de relleno. También ofrece guardar en Sekuvo los datos que introduzcas de nuevo.\n\nEl botón de abajo abre los ajustes del sistema. El nombre de la lista que se abre varía según el dispositivo («Servicio preferido», «Servicio de autocompletado» o «Contraseñas, claves de acceso y autocompletado»); elige Sekuvo en esa lista.</string>
+    <string name="settings_autofill_open">Abrir ajustes de autocompletado</string>
+    <string name="settings_autofill_enable">Activar autocompletado</string>
+    <string name="settings_keyboard">Teclado Sekuvo</string>
+    <string name="settings_keyboard_desc">Si activas el complemento de teclado, puedes elegir Teclado Sekuvo en el selector de teclados de cualquier aplicación y escribir tus datos guardados directamente en el campo.</string>
+    <string name="settings_keyboard_open">Abrir ajustes del teclado</string>
+    <string name="settings_export_pw_title">Definir contraseña de copia</string>
+    <string name="settings_export_pw_desc">Sin esta contraseña el archivo de copia NO se puede abrir. Que sea DISTINTA de tu contraseña maestra: la de copia acaba escribiéndose en ordenadores, la maestra nunca toca un ordenador.</string>
+    <string name="settings_biometric_pin_title">Vincular la huella a un PIN</string>
+    <string name="settings_biometric_pin_desc">El registro de huella se cifrará con el PIN: al desbloquear se pide primero la huella y luego este PIN.</string>
+    <string name="settings_label_pin">PIN</string>
+    <string name="settings_continue">Continuar</string>
+    <string name="settings_cancel">Cancelar</string>
+    <string name="settings_label_password">Contraseña</string>
+    <string name="settings_label_password_again">Contraseña (de nuevo)</string>
+    <string name="settings_ok">Aceptar</string>
+    <string name="settings_label_backup_password">Contraseña de copia</string>
+    <string name="settings_import_merge">Añadir a lo existente</string>
+    <string name="settings_import_replace">Reemplazar todo</string>
+    <string name="settings_import_replace_warning">Aviso: se elimina cada entrada existente y se escriben en su lugar las de la copia.</string>
+    <string name="settings_import_pw_missing">No se introdujo contraseña de copia.</string>
+    <string name="settings_import_confirm">Restaurar</string>
+    <string name="settings_label_current_password">Contraseña actual</string>
+    <string name="settings_label_new_password">Contraseña nueva</string>
+    <string name="settings_label_new_password_again">Contraseña nueva (de nuevo)</string>
+    <string name="settings_change">Cambiar</string>
+    <string name="settings_pin_disable_desc">Una vez desactivado el PIN, las entradas se abren solo con la contraseña maestra o la huella. No necesitas recordar el PIN: la contraseña maestra basta. Vuelve a activar la huella después.</string>
+    <string name="settings_pin_set_desc">El PIN debe tener de 4 a 12 dígitos. Si lo olvidas, la contraseña maestra SOLA no basta — guarda el PIN en un lugar seguro, como tu contraseña de copia. Tendrás que volver a activar la huella después.</string>
+    <string name="settings_label_master_password">Contraseña maestra</string>
+    <string name="settings_label_current_pin">PIN actual</string>
+    <string name="settings_label_pin_again">PIN (de nuevo)</string>
+    <string name="settings_repair">Reparar</string>
+    <string name="settings_turn_off">Desactivar</string>
+    <string name="settings_set">Definir</string>
+    <!-- transfer -->
+    <string name="transfer_title">Traer desde un ordenador · paso %1$d/2</string>
+    <string name="transfer_step1_steps">1. En el ordenador, abre aktar.html, cámbialo a español si no lo está ya, y pon el cursor en el campo «Contraseña de transferencia».\n2. Usa el botón de abajo para escribir la contraseña en ambos campos a la vez (con un Tab entre medias).</string>
+    <string name="transfer_regenerate">Generar una contraseña nueva</string>
+    <string name="transfer_password_note">Una contraseña generada y de un solo uso — no necesitas memorizarla, el paso 2 la usa automáticamente. Letras y dígitos: no le afectan las diferencias de distribución de teclado.</string>
+    <string name="transfer_bt_write_both">💻 Escribir en ambos campos por Bluetooth</string>
+    <string name="transfer_step2_steps">En el ordenador: pega el contenido → «Cifrar y publicar» → escanea el QR con tu teléfono → «Copiar» en la página. Luego vuelve aquí y recoge el sobre. La contraseña ya está lista en el asistente — no tendrás que introducirla.</string>
+    <string name="transfer_envelope_label">Sobre cifrado</string>
+    <string name="transfer_char_count">%1$d caracteres</string>
+    <string name="transfer_scan_qr">Escanear QR</string>
+    <string name="transfer_from_clipboard">Obtener del portapapeles</string>
+    <string name="transfer_merge">Añadir a lo existente</string>
+    <string name="transfer_replace_all">Reemplazar todo</string>
+    <string name="transfer_replace_warning">Aviso: se elimina cada entrada existente y se escriben en su lugar las del sobre.</string>
+    <string name="transfer_password_typed_next">Contraseña escrita, continuar →</string>
+    <string name="transfer_envelope_empty">El campo del sobre cifrado está vacío — publica en el ordenador, escanea el QR y toca «Obtener del portapapeles».</string>
+    <string name="transfer_importing">Importando…</string>
+    <string name="transfer_import">Importar</string>
+    <string name="transfer_back">← Atrás</string>
+    <string name="transfer_cancel">Cancelar</string>
+    <string name="transfer_bt_label">Contraseña de transferencia (en ambos campos, con Tab)</string>
+    <!-- unlock -->
+    <string name="unlock_welcome_title">Bienvenido a Sekuvo</string>
+    <string name="unlock_slogan">Tu bóveda segura.</string>
+    <string name="unlock_locked_title">Sekuvo está bloqueado</string>
+    <string name="unlock_setup_desc">Define una contraseña maestra. Todos tus datos se cifran con una clave derivada de ella. Si la olvidas, tus datos quedan INACCESIBLES para siempre.</string>
+    <string name="unlock_enter_desc">Introduce tu contraseña maestra para continuar.</string>
+    <string name="unlock_master_reminder">Recordatorio: escribe tu contraseña maestra esta vez en lugar de tu huella. Una contraseña maestra olvidada bloquea la bóveda y también las copias de seguridad.</string>
+    <string name="unlock_master_password_label">Contraseña maestra</string>
+    <string name="unlock_password_label">Contraseña</string>
+    <string name="unlock_password_again_label">Contraseña (de nuevo)</string>
+    <string name="unlock_create_vault">Crear la bóveda</string>
+    <string name="unlock_have_backup">Tengo una copia — restaurarla</string>
+    <string name="unlock_restore_selected">Restaurando tras la configuración ✓ (toca para cancelar)</string>
+    <string name="unlock_restore_hint">Primero define una contraseña maestra para este dispositivo. Justo después, elegirás tu archivo de copia e introducirás su contraseña; todo lo de la copia vuelve.</string>
+    <string name="unlock_create_and_restore">Crear y restaurar</string>
+    <string name="unlock_open_button">Desbloquear</string>
+    <string name="unlock_biometric_button">Desbloquear con biometría</string>
+    <string name="unlock_pin_title">Segunda puerta</string>
+    <string name="unlock_pin_desc">Introduce tu PIN. Sin este código las entradas no se pueden descifrar — la contraseña maestra sola no basta.</string>
+    <string name="unlock_pin_label">PIN (%1$d-%2$d dígitos)</string>
+    <string name="unlock_pin_open">Abrir</string>
+    <string name="unlock_pin_cancel">Cancelar</string>
+    <string name="unlock_generator_title">Generador de contraseñas</string>
+    <string name="unlock_generator_refresh">Actualizar</string>
+    <string name="unlock_generator_summary">Longitud: %1$d • Fuerza: ~%2$d bits %3$s</string>
+    <string name="unlock_generator_very_strong">(muy fuerte)</string>
+    <string name="unlock_generator_strong">(fuerte)</string>
+    <string name="unlock_generator_weak">(débil)</string>
+    <string name="unlock_generator_avoid_ambiguous">Descartar caracteres parecidos (l, 1, O, 0)</string>
+    <string name="unlock_generator_use">Usar</string>
+    <string name="unlock_generator_copy">Copiar</string>
+    <string name="unlock_generator_close">Cerrar</string>
+    <!-- vm -->
+    <string name="vm_pin_repaired">Registro de PIN reparado · la bóveda ahora se abre con tu contraseña maestra</string>
+    <string name="vm_pin_repair_failed">No se pudo reparar: contraseña o PIN incorrectos</string>
+    <string name="vm_master_password_too_short">La contraseña maestra debe tener al menos 8 caracteres</string>
+    <string name="vm_passwords_mismatch">Las contraseñas no coinciden</string>
+    <string name="vm_wrong_password">Contraseña incorrecta</string>
+    <string name="vm_legacy_pin_vault">Esta bóveda usa el formato antiguo de PIN. Hay que repararla con la contraseña maestra + PIN.</string>
+    <string name="vm_key_undecryptable">No se pudo descifrar la clave de la bóveda (el registro puede estar dañado).</string>
+    <string name="vm_biometric_stale">El registro de huella era más antiguo que este PIN; se ha eliminado. Desbloquea con tu contraseña maestra y activa la huella de nuevo.</string>
+    <string name="vm_pin_biometric_off">Demasiados PIN incorrectos. El desbloqueo por huella se ha desactivado; desbloquea con tu contraseña maestra.</string>
+    <string name="vm_pin_wrong">PIN incorrecto</string>
+    <string name="vm_key_unexpected_size">La clave de la bóveda tiene un tamaño inesperado; prueba a desbloquear con tu contraseña maestra.</string>
+    <string name="vm_pin_enable_failed">No se pudo activar el PIN: contraseña incorrecta, o PIN no válido (4-12 dígitos)</string>
+    <string name="vm_pin_enabled">PIN activado · activa la huella de nuevo</string>
+    <string name="vm_pin_disable_failed">No se pudo desactivar el PIN: contraseña maestra incorrecta</string>
+    <string name="vm_pin_disabled">PIN desactivado · activa la huella de nuevo</string>
+    <string name="vm_new_password_too_short">La contraseña nueva debe tener al menos 8 caracteres</string>
+    <string name="vm_master_password_changed">Contraseña maestra cambiada</string>
+    <string name="vm_current_password_wrong">La contraseña actual es incorrecta</string>
+    <string name="vm_quick_on">Utilizable en el teclado sin contraseña</string>
+    <string name="vm_quick_off">Oculta en el teclado hasta que desbloquees</string>
+    <string name="vm_copied">%1$s copiado (se borrará en 45 segundos)</string>
+    <string name="vm_backup_password_too_short">La contraseña de copia debe tener al menos 8 caracteres</string>
+    <string name="vm_file_open_failed">No se pudo abrir el archivo</string>
+    <string name="vm_backup_saved">Copia guardada</string>
+    <string name="vm_backup_failed">La copia falló: %1$s — elimina el archivo creado e inténtalo de nuevo.</string>
+    <string name="vm_vault_locked_retry">La bóveda se ha bloqueado — desbloquéala con tu contraseña maestra e inténtalo de nuevo.</string>
+    <string name="vm_pasted_text_empty">El texto pegado está vacío</string>
+    <string name="vm_text_too_large">El texto es demasiado grande — esto no puede ser un sobre de Sekuvo</string>
+    <string name="vm_pasted_is_link">Esto es un enlace, no el sobre en sí. Abre el enlace en el navegador del teléfono y copia el TEXTO que muestra.</string>
+    <string name="vm_not_an_envelope">Esto no es un sobre cifrado de Sekuvo — el texto copiado puede estar incompleto, o puede ser otra cosa. Copia TODO el texto de la página.</string>
+    <string name="vm_envelope_empty">El sobre se abrió pero no contiene entradas — puede que los campos se dejaran vacíos al enviarlo. Tu bóveda no se ha visto afectada.</string>
+    <string name="vm_backup_password_wrong">Contraseña de copia incorrecta</string>
+    <string name="vm_invalid_envelope">Sobre no válido — puede que el texto se copiara de forma incompleta</string>
+    <string name="vm_import_failed">Fallo al importar: %1$s</string>
+    <string name="vm_backup_empty">La copia se abrió pero no contiene entradas. Tu bóveda no se ha visto afectada.</string>
+    <string name="vm_invalid_backup_file">Archivo de copia no válido</string>
+    <string name="vm_restore_failed">Fallo al restaurar: %1$s</string>
+    <string name="vm_biometric_enabled">Huella activada</string>
+    <string name="vm_biometric_enable_failed">No se pudo activar la huella</string>
+    <string name="vm_biometric_disabled">Desbloqueo biométrico desactivado</string>
+    <string name="vm_usage_log_cleared">Registro de uso eliminado</string>
+    <string name="bt_sdp_name">Teclado Sekuvo</string>
+    <string name="bt_sdp_description">Transferencia segura de pulsaciones de Sekuvo</string>
+
+    <plurals name="vm_import_added">
+        <item quantity="one">%1$d entrada añadida · portapapeles borrado</item>
+        <item quantity="other">%1$d entradas añadidas · portapapeles borrado</item>
+    </plurals>
+    <plurals name="vm_restored">
+        <item quantity="one">%1$d entrada restaurada</item>
+        <item quantity="other">%1$d entradas restauradas</item>
+    </plurals>
+    <plurals name="vm_backup_saved_incomplete">
+        <item quantity="one">Copia guardada, pero %1$d entrada no se pudo leer y se dejó fuera (puede estar dañada). Esta copia está incompleta.</item>
+        <item quantity="other">Copia guardada, pero %1$d entradas no se pudieron leer y se dejaron fuera (pueden estar dañadas). Esta copia está incompleta.</item>
+    </plurals>
+    <plurals name="log_pending_note">
+        <item quantity="one">%1$d evento ocurrió con la bóveda bloqueada y todavía no se ha movido al registro; aparecerá en la lista cuando se desbloquee.</item>
+        <item quantity="other">%1$d eventos ocurrieron con la bóveda bloqueada y todavía no se han movido al registro; aparecerán en la lista cuando se desbloquee.</item>
+    </plurals>
+    <plurals name="log_more_events">
+        <item quantity="one">… y %1$d evento más (se muestran los primeros 200 en la lista).</item>
+        <item quantity="other">… y %1$d eventos más (se muestran los primeros 200 en la lista).</item>
+    </plurals>
+    <plurals name="bt_countdown">
+        <item quantity="one">La escritura empieza en %1$d segundo — pon el cursor en el campo correcto del ordenador.</item>
+        <item quantity="other">La escritura empieza en %1$d segundos — pon el cursor en el campo correcto del ordenador.</item>
+    </plurals>
+    <plurals name="vm_pin_wrong_wait">
+        <item quantity="one">PIN incorrecto. Debes esperar %1$d segundo.</item>
+        <item quantity="other">PIN incorrecto. Debes esperar %1$d segundos.</item>
+    </plurals>
+    <plurals name="vm_pin_locked_wait">
+        <item quantity="one">Demasiados PIN incorrectos. Inténtalo de nuevo en %1$d segundo.</item>
+        <item quantity="other">Demasiados PIN incorrectos. Inténtalo de nuevo en %1$d segundos.</item>
+    </plurals>
+    <string name="bt_layout_uk">Británico (RU)</string>
+    <string name="bt_layout_de">Alemán (QWERTZ)</string>
+    <string name="bt_layout_fr">Francés (AZERTY)</string>
+    <string name="bt_layout_es">Español</string>
+    <string name="bt_layout_it">Italiano</string>
+    <string name="bt_layout_tr_f">Turco F</string>
+    <!-- Uygulama dili ve klavye düzeni seçimi -->
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_desc">Elige el idioma de la aplicación. Se aplica solo a Sekuvo, no al resto del teléfono.</string>
+    <string name="settings_lang_system">Idioma del sistema</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_lang_es">Español</string>
+    <string name="settings_layouts">Distribuciones de teclado de ordenador</string>
+    <string name="settings_layouts_summary">%1$d de %2$d distribuciones activas</string>
+    <string name="settings_expand">Mostrar</string>
+    <string name="settings_collapse">Ocultar</string>
+    <string name="settings_layouts_desc">Elige las distribuciones que realmente usas. Solo las marcadas aparecen al escribir un secreto en un ordenador — el resto no estorba.</string>
+    <string name="settings_layouts_min">Al menos una distribución queda activa.</string>
+
+    <!-- Bilgi sayfaları: Hakkında / Gizlilik / Rehber -->
+    <string name="info_about_title">Acerca de</string>
+    <string name="info_privacy_title">Política de privacidad</string>
+    <string name="info_guide_title">Guía</string>
+    <string name="info_about_version">Versión</string>
+    <string name="info_about_package">Paquete</string>
+    <string name="info_about_license">Licencia</string>
+    <string name="info_about_developer">Desarrollador</string>
+    <string name="info_about_website">Abrir sekuvo.com</string>
+    <string name="info_about_source">Código fuente en GitHub</string>
+    <string name="info_about_contact">contact@sekuvo.com</string>
+    <string name="info_about_what_title">Qué es esta aplicación</string>
+    <string name="info_about_what_body">Una bóveda totalmente sin conexión para contraseñas, tarjetas y notas. No solicita el permiso de Internet, así que no puede enviar tus datos a ninguna parte — sin cuenta, sin nube, sin sincronización, sin analítica. Todo se cifra con AES-256-GCM bajo una clave derivada de tu contraseña maestra.</string>
+
+    <string name="privacy_s1_title">Resumen</string>
+    <string name="privacy_s1_body">Sekuvo no recopila, transmite ni comparte ningún dato. Es una bóveda de contraseñas sin conexión y no solicita el permiso de Internet, así que es técnicamente incapaz de enviar tus datos a ninguna parte.</string>
+    <string name="privacy_s2_title">Dónde viven tus datos</string>
+    <string name="privacy_s2_body">Títulos, usuarios, contraseñas, notas e historial de uso permanecen en este dispositivo, cifrados con una clave derivada de tu contraseña maestra. La aplicación no sube, sincroniza ni respalda nada a ningún servidor.</string>
+    <string name="privacy_s3_title">Permisos y por qué existen</string>
+    <string name="privacy_s3_body">Cámara — solo para escanear los códigos QR que elijas escanear, procesados en el dispositivo.\nBiometría — solo para desbloquear la bóveda, a través del sistema biométrico de Android. Sekuvo nunca ve ni almacena tu huella o tu cara.\nBluetooth — solo cuando le pides a Sekuvo que escriba un secreto en un ordenador cercano. Solo se envían los caracteres que elijas, al dispositivo con el que emparejaste.</string>
+    <string name="privacy_s4_title">Copias de seguridad y transferencias</string>
+    <string name="privacy_s4_body">Ocurren solo cuando tú las inicias. Producen un archivo cifrado o códigos QR protegidos por una contraseña que tú defines, guardados o mostrados solo donde tú indiques. La aplicación nunca los envía a ninguna parte por su cuenta.</string>
+    <string name="privacy_s5_title">Menores</string>
+    <string name="privacy_s5_body">Sekuvo no recopila datos de nadie, incluidos los menores.</string>
+    <string name="privacy_s6_title">Contacto y texto completo</string>
+    <string name="privacy_s6_body">Preguntas: contact@sekuvo.com\nLa versión oficial de esta política se publica en sekuvo.com/privacy/ y es la que prevalece en caso de cualquier diferencia.</string>
+
+    <string name="guide_s1_title">Primer inicio</string>
+    <string name="guide_s1_body">Defines una contraseña maestra. Todo se cifra con una clave derivada de ella, así que es lo único que no se puede recuperar — anótala en un lugar seguro.\n¿Vienes de otro teléfono? Toca «Tengo una copia — restaurarla» en la pantalla de bienvenida: igualmente defines una contraseña maestra para este dispositivo, y luego el selector de archivos se abre solo.</string>
+    <string name="guide_s2_title">Qué puedes guardar</string>
+    <string name="guide_s2_body">Cuenta/Contraseña, Cotidiano (nombre, teléfono, correo, dirección), Tarjeta y Nota segura — con subtipos para scripts, claves, códigos de recuperación y archivos de configuración. Las entradas de Cuenta y Cotidiano admiten además campos personalizados ilimitados, cifrados igual que los integrados.</string>
+    <string name="guide_s3_title">Autocompletado</string>
+    <string name="guide_s3_body">Ajustes → Activar autocompletado → elige Sekuvo en la lista del sistema. La lista se llama «Contraseñas, claves de acceso y autocompletado → Servicio preferido» en Samsung y Android 14+, y «Servicio de autocompletado» en Android puro.\nDespués, al tocar un campo de inicio de sesión o de tarjeta se ofrecen tus entradas. Con la bóveda bloqueada, al sistema no se le entrega absolutamente nada.</string>
+    <string name="guide_s4_title">Teclado Sekuvo</string>
+    <string name="guide_s4_body">Ajustes → Activar el teclado, luego elige «Teclado Sekuvo» en el selector de teclados cuando lo necesites. Escribe los valores guardados directamente en cualquier campo, con búsqueda y recientes arriba. Bloqueado, muestra solo las entradas que marcaste para acceso rápido.</string>
+    <string name="guide_s5_title">Escribir en un ordenador por Bluetooth</string>
+    <string name="guide_s5_body">Abre la entrada, toca el icono 💻 junto al campo y MANTÉN ESA PANTALLA ABIERTA — el teléfono solo se anuncia como teclado mientras lo está. En el ordenador, añade el teléfono como dispositivo Bluetooth nuevo y confirma el código. De vuelta en el teléfono, elige tu ordenador, elige la distribución de teclado DEL ORDENADOR, haz clic en el campo de destino y toca Escribir.\n¿Conectado pero no escribe nada? El ordenador emparejó antes tu teléfono como teléfono, así que nunca activó el servicio de teclado. Quita el emparejamiento en AMBOS lados, abre la pantalla 💻 y vuelve a emparejar empezando desde el ordenador. En Windows debería aparecer entonces un dispositivo «HID Bluetooth» en el Administrador de dispositivos → Dispositivos de interfaz de usuario. En macOS, cierra el Asistente de Configuración del Teclado si se abre.\nUsa la prueba de velocidad como diagnóstico: si no escribe nada es el emparejamiento, si los caracteres salen mal es la distribución, si se corta es la velocidad.</string>
+    <string name="guide_s6_title">Bloqueo</string>
+    <string name="guide_s6_body">La bóveda se bloquea en cuanto se apaga la pantalla en la que está — incluido plegar un móvil plegable. Salir de la aplicación con la pantalla encendida no la bloquea: la aplicación, el teclado y el autocompletado comparten una sesión.</string>
+    <string name="guide_s7_title">Copias de seguridad</string>
+    <string name="guide_s7_body">La copia del sistema está desactivada por diseño, así que tu bóveda sale del teléfono exactamente por una vía: Ajustes → Crear copia cifrada. Usa una contraseña de copia distinta de tu contraseña maestra. El archivo .vaultbak resultante más esa contraseña lo restauran todo en cualquier teléfono, incluso tras un restablecimiento de fábrica.</string>
+    <string name="guide_s8_title">Traer secretos desde un ordenador</string>
+    <string name="guide_s8_body">El botón ➕ ofrece «Importar por QR» e «Importar desde texto». El asistente ⇄ hace ambas cosas en un flujo: genera una contraseña de transferencia de un solo uso, la escribe en el ordenador por Bluetooth, y luego recupera el sobre escaneando el QR o desde el portapapeles — descifrándolo con esa misma contraseña.\nLa herramienta del ordenador es una descarga, no un sitio web: consigue aktar.html en la página de Releases del proyecto, comprueba su SHA-256 y ábrelo desde tu propio disco. Este sitio nunca te pide un secreto.</string>
+    <string name="settings_info_section">Ayuda e información</string>
+    <string name="edit_email_invalid">Revisa la dirección — necesita una @ y un dominio como example.com</string>
+    <string name="edit_expiry_invalid">Introduce el mes y el año como MMAA (mes 01–12)</string>
+    <string name="edit_iban_invalid">Los dígitos de control de este IBAN no coinciden — probablemente hay un dígito mal escrito</string>
+    <string name="edit_iban_confirm_title">El IBAN parece mal escrito</string>
+    <string name="edit_iban_confirm_text">Los dígitos de control de este IBAN no coinciden, así que probablemente un dígito es incorrecto. Aun así puedes guardarlo — pero si fue un error tipográfico, no lo notarás hasta que la transferencia falle.</string>
+    <string name="edit_iban_confirm_save">Guardar de todos modos</string>
+    <string name="edit_iban_confirm_fix">Volver y corregirlo</string>
+</resources>
