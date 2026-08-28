@@ -28,7 +28,8 @@ object HidLayouts {
         IT(R.string.bt_layout_it),
         TR_F(R.string.bt_layout_tr_f),
         PL(R.string.bt_layout_pl),
-        PT(R.string.bt_layout_pt)
+        PT(R.string.bt_layout_pt),
+        SE(R.string.bt_layout_se)
     }
 
     /**
@@ -89,6 +90,7 @@ object HidLayouts {
             Layout.TR_F -> TR_F
             Layout.PL -> PL
             Layout.PT -> PT
+            Layout.SE -> SE
         }
 
     /**
@@ -640,12 +642,55 @@ object HidLayouts {
     )
 
     private val PL: Map<Char, KeyStroke> = PL_TABLE.toMap()
+
+    /**
+     * İsveççe (Nordic, ISO) — konum tablosu. Finlandiya'da da aynı fiziksel
+     * dizilim kullanılıyor (kbdfi = kbdsw ile aynı harita).
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdsw.html), ham Unicode
+     * ad etiketleriyle, birebir okuma.
+     *
+     * L'den sonra ö, ondan sonra ä. P'den sonra å. Üst-sol köşe (0x35) § / ½
+     * üretiyor (ABD'deki `~ karşılığı). Akut (´), çift nokta (¨), sirkumfleks
+     * (^) ve gravis (`) — dördü de ÖLÜ TUŞ, tabloda yok.
+     */
+    private val SE_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(0x10 to KeyCap(0x10, 'm', 'M', altgr = 'µ'))
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x1E, '1', '!'),
+            KeyCap(0x1F, '2', '"', altgr = '@'),
+            KeyCap(0x20, '3', '#', altgr = '£'),
+            KeyCap(0x21, '4', '¤', altgr = '$'),
+            KeyCap(0x22, '5', '%', altgr = '€'),
+            KeyCap(0x23, '6', '&'),
+            KeyCap(0x24, '7', '/', altgr = '{'),
+            KeyCap(0x25, '8', '(', altgr = '['),
+            KeyCap(0x26, '9', ')', altgr = ']'),
+            KeyCap(0x27, '0', '=', altgr = '}'),
+            KeyCap(0x2D, '+', '?', altgr = '\\'),
+            // 0x2E (0'dan sonraki ikinci tuş): akut/gravis ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x2F, 'å', 'Å'),
+            // 0x30 (P'den sonraki ikinci tuş): ¨/^ ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x33, 'ö', 'Ö'),
+            KeyCap(0x34, 'ä', 'Ä'),
+            KeyCap(0x32, '\'', '*'),
+            KeyCap(0x35, '§', '½'),
+            KeyCap(0x36, ',', ';'),
+            KeyCap(0x37, '.', ':'),
+            KeyCap(0x38, '-', '_'),
+            KeyCap(0x64, '<', '>', altgr = '|')
+        )
+    )
+
     private val PT: Map<Char, KeyStroke> = PT_TABLE.toMap()
+    private val SE: Map<Char, KeyStroke> = SE_TABLE.toMap()
 
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
-        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE
+        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE
     )
 }

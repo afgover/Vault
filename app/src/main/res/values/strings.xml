@@ -479,6 +479,7 @@
     <string name="bt_layout_tr_f">Turkish F</string>
     <string name="bt_layout_pl">Polish (Programmer)</string>
     <string name="bt_layout_pt">Portuguese (Portugal)</string>
+    <string name="bt_layout_se">Swedish / Finnish</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">Language</string>
     <string name="settings_language_desc">Choose the app language. It applies to Sekuvo only, not the rest of the phone.</string>

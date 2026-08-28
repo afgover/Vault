@@ -470,6 +470,7 @@
     <string name="bt_layout_tr_f">तुर्की F</string>
     <string name="bt_layout_pl">पोलिश (प्रोग्रामर)</string>
     <string name="bt_layout_pt">पुर्तगाली (पुर्तगाल)</string>
+    <string name="bt_layout_se">स्वीडिश / फ़िनिश</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">भाषा</string>
     <string name="settings_language_desc">ऐप की भाषा चुनें। यह केवल Sekuvo पर लागू होती है, फ़ोन के बाक़ी हिस्से पर नहीं।</string>

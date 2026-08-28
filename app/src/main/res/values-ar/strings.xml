@@ -475,6 +475,7 @@
     <string name="bt_layout_tr_f">تركي F</string>
     <string name="bt_layout_pl">بولندي (المبرمجين)</string>
     <string name="bt_layout_pt">برتغالي (البرتغال)</string>
+    <string name="bt_layout_se">سويدي / فنلندي</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">اللغة</string>
     <string name="settings_language_desc">اختر لغة التطبيق. تُطبَّق على Sekuvo فقط، لا على بقية الهاتف.</string>
