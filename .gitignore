@@ -9,3 +9,8 @@ captures/
 .externalNativeBuild/
 .cxx/
 __pycache__/
+
+# Wrangler yerel durumu: hesap kimliği, coğrafi istek bağlamı ve
+# miniflare KV/cache veritabanları. Depoya girmemeli (public depoda
+# kişisel veri olurdu; 2026-08-28 geçmişten temizlendi).
+relay/.wrangler/
