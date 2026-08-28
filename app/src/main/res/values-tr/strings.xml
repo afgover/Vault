@@ -472,6 +472,7 @@
     <string name="bt_layout_pl">Lehçe (Programcı)</string>
     <string name="bt_layout_pt">Portekizce (Portekiz)</string>
     <string name="bt_layout_se">İsveççe / Fince</string>
+    <string name="bt_layout_br">Brezilya (ABNT2)</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">Dil</string>
     <string name="settings_language_desc">Uygulamanın dilini seç. Yalnız Sekuvo için geçerlidir, telefonun geri kalanını değiştirmez.</string>

@@ -29,7 +29,8 @@ object HidLayouts {
         TR_F(R.string.bt_layout_tr_f),
         PL(R.string.bt_layout_pl),
         PT(R.string.bt_layout_pt),
-        SE(R.string.bt_layout_se)
+        SE(R.string.bt_layout_se),
+        BR(R.string.bt_layout_br)
     }
 
     /**
@@ -91,6 +92,7 @@ object HidLayouts {
             Layout.PL -> PL
             Layout.PT -> PT
             Layout.SE -> SE
+            Layout.BR -> BR
         }
 
     /**
@@ -685,12 +687,67 @@ object HidLayouts {
     )
 
     private val PT: Map<Char, KeyStroke> = PT_TABLE.toMap()
+
+    /**
+     * Brezilya (ABNT2, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un arşivlenmiş resmî düzen belgesi
+     * (learn.microsoft.com/msdn-files/resources/msdn/goglobal/keyboards/kbdbr.html),
+     * ham Unicode ad etiketleriyle, birebir okuma.
+     *
+     * ABNT2 standart ISO'dan FAZLA tuş taşıyor (kayıtlarda "shiftler arası
+     * 12 tuş" — ABD'de 10). İki ekstra konum var: L'den sonra ç, ondan
+     * sonra ~ ölü tuş, ondan sonra ] (0x31 — ISO'nun "Non-US #" konumu).
+     * M'den sonra ise gerçek bir "/" tuşu var (ABNT_C1, HID International1
+     * = 0x87) — çoğu düzende "/" bir OEM konumundayken burada ayrı, özel bir
+     * tuş. Akut (´), sirkumfleks (~) ve çift nokta (¨) ÖLÜ TUŞ, tabloda yok.
+     * AltGr+C → ₢ (eski cruzeiro işareti) Wikipedia'yla da doğrulandı.
+     *
+     * Not: HID usage 0x87 bu kod tabanında ilk kez kullanılıyor — diğer
+     * düzenlerin hepsi 0x04-0x38 ve 0x64 aralığında kalıyor.
+     * `BtHidManager.stroke.usage.toByte()` her kodu aynı şekilde tek bayt
+     * olarak rapora yazıyor, yani ACTARIM tarafında özel bir şey gerekmiyor
+     * (doğrulandı, kod okunarak). Kalan tek soru diğer tüm düzenlerle aynı:
+     * hedef işletim sisteminin bu konumu gerçekten ABNT_C1 "/" tuşu olarak
+     * yorumlaması — cihazda deneme bekliyor (R-003).
+     */
+    private val BR_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(0x06 to KeyCap(0x06, 'c', 'C', altgr = '₢'))
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x1E, '1', '!'),
+            KeyCap(0x1F, '2', '@'),
+            KeyCap(0x20, '3', '#'),
+            KeyCap(0x21, '4', '$'),
+            KeyCap(0x22, '5', '%'),
+            KeyCap(0x23, '6'), // shift: ¨ ÖLÜ TUŞ — yalnız base var
+            KeyCap(0x24, '7', '&'),
+            KeyCap(0x25, '8', '*'),
+            KeyCap(0x26, '9', '('),
+            KeyCap(0x27, '0', ')'),
+            KeyCap(0x2D, '-', '_'),
+            KeyCap(0x2E, '=', '+'),
+            // 0x2F (P'den sonra): ´ ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x30, '[', '{'),
+            KeyCap(0x31, ']', '}'),
+            KeyCap(0x33, 'ç', 'Ç'),
+            // 0x34 (Ç'den sonra): ~ ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x35, '\'', '"'),
+            KeyCap(0x36, ',', '<'),
+            KeyCap(0x37, '.', '>'),
+            KeyCap(0x38, ';', ':'),
+            KeyCap(0x64, '\\', '|'),
+            KeyCap(0x87, '/', '?')
+        )
+    )
+
     private val SE: Map<Char, KeyStroke> = SE_TABLE.toMap()
+    private val BR: Map<Char, KeyStroke> = BR_TABLE.toMap()
 
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
-        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE
+        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE
     )
 }
