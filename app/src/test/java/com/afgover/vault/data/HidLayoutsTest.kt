@@ -62,7 +62,14 @@ class HidLayoutsTest {
         // Geçişli: ES-PT ve ES-SE ikisi de aynı alt kümede eşleştiği için
         // PT-SE de kaçınılmaz olarak eşleşiyor — üçü test metni için tek bir
         // eşdeğerlik sınıfı oluşturuyor.
-        setOf(HidLayouts.Layout.PT, HidLayouts.Layout.SE)
+        setOf(HidLayouts.Layout.PT, HidLayouts.Layout.SE),
+        // Norveççe eklenince aynı sınıfa DÖRDÜNCÜ üye katıldı: ES ile
+        // çakıştığı doğrulandı, ES zaten PT ve SE ile aynı sınıfta olduğu
+        // için NO da geçişli olarak PT ve SE ile çakışıyor. Dördüncü tekrar
+        // — B-104'ün öngördüğü büyüme gerçekleşiyor.
+        setOf(HidLayouts.Layout.ES, HidLayouts.Layout.NO),
+        setOf(HidLayouts.Layout.PT, HidLayouts.Layout.NO),
+        setOf(HidLayouts.Layout.SE, HidLayouts.Layout.NO)
     )
 
     @Test

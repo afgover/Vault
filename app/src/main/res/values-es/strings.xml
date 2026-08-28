@@ -476,6 +476,7 @@
     <string name="bt_layout_nl">Neerlandés</string>
     <string name="bt_layout_cz">Checo (QWERTZ)</string>
     <string name="bt_layout_hu">Húngaro (QWERTZ)</string>
+    <string name="bt_layout_no">Noruego</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">Idioma</string>
     <string name="settings_language_desc">Elige el idioma de la aplicación. Se aplica solo a Sekuvo, no al resto del teléfono.</string>

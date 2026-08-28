@@ -34,7 +34,8 @@ object HidLayouts {
         CH(R.string.bt_layout_ch),
         NL(R.string.bt_layout_nl),
         CZ(R.string.bt_layout_cz),
-        HU(R.string.bt_layout_hu)
+        HU(R.string.bt_layout_hu),
+        NO(R.string.bt_layout_no)
     }
 
     /**
@@ -101,6 +102,7 @@ object HidLayouts {
             Layout.NL -> NL
             Layout.CZ -> CZ
             Layout.HU -> HU
+            Layout.NO -> NO
         }
 
     /**
@@ -1012,11 +1014,62 @@ object HidLayouts {
 
     private val HU: Map<Char, KeyStroke> = HU_TABLE.toMap()
 
+    /**
+     * Norveççe (Nordic, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdno.html), ham Unicode
+     * ad etiketleriyle, birebir okuma. Standart QWERTY harf sırası (Y/Z
+     * yer değiştirmiyor).
+     *
+     * Danca (kbdda.html) İLK BAKIŞTA aynı düzenmiş gibi görünüyor ama
+     * ayrı bir karşılaştırma taramasında GERÇEK farklar bulundu: üst-sol
+     * köşe tuşu Norveç'te `|` / Danimarka'da `½`; P'den sonraki tuş
+     * Norveç'te gerçek `\` iken Danimarka'da ÖLÜ akut ve AltGr'ı `|`;
+     * L'den sonraki iki tuşun sırası TERS (Norveç: ø,æ — Danimarka: æ,ø).
+     * Bu yüzden — Çekçe/Slovakça'daki gibi — yalnız Norveççe kaynaklandı,
+     * Danca AYRI bir düzen olarak kuyrukta kalmaya devam ediyor.
+     *
+     * Gerçek klavyede `€` iki yoldan erişiliyor (AltGr+5 VE AltGr+E) —
+     * çakışma olmasın diye yalnız AltGr+5 bırakıldı. `¨` konumu (0x30)
+     * HER ÜÇ değiştiricide de ÖLÜ TUŞ — tabloda hiç yok.
+     */
+    private val NO_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(0x10 to KeyCap(0x10, 'm', 'M', altgr = 'µ'))
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x35, '|', '§'),
+            KeyCap(0x1E, '1', '!'),
+            KeyCap(0x1F, '2', '"', altgr = '@'),
+            KeyCap(0x20, '3', '#', altgr = '£'),
+            KeyCap(0x21, '4', '¤', altgr = '$'),
+            KeyCap(0x22, '5', '%', altgr = '€'),
+            KeyCap(0x23, '6', '&'),
+            KeyCap(0x24, '7', '/', altgr = '{'),
+            KeyCap(0x25, '8', '(', altgr = '['),
+            KeyCap(0x26, '9', ')', altgr = ']'),
+            KeyCap(0x27, '0', '=', altgr = '}'),
+            KeyCap(0x2D, '+', '?'), // altgr: ´ ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x2E, '\\'), // shift: ` ÖLÜ TUŞ, altgr: ´ ÖLÜ TUŞ — yalnız base var
+            KeyCap(0x2F, 'å', 'Å'),
+            // 0x30 (å'dan sonra): base ¨ / shift ^ / altgr ~ ÜÇÜ DE ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x32, '\'', '*'),
+            KeyCap(0x33, 'ø', 'Ø'),
+            KeyCap(0x34, 'æ', 'Æ'),
+            KeyCap(0x36, ',', ';'),
+            KeyCap(0x37, '.', ':'),
+            KeyCap(0x38, '-', '_'),
+            KeyCap(0x64, '<', '>')
+        )
+    )
+
+    private val NO: Map<Char, KeyStroke> = NO_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
         Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
-        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE, Layout.HU to HU_TABLE
+        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE, Layout.HU to HU_TABLE, Layout.NO to NO_TABLE
     )
 }

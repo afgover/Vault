@@ -481,6 +481,7 @@
     <string name="bt_layout_nl">هولندي</string>
     <string name="bt_layout_cz">تشيكي (QWERTZ)</string>
     <string name="bt_layout_hu">مجري (QWERTZ)</string>
+    <string name="bt_layout_no">نرويجي</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">اللغة</string>
     <string name="settings_language_desc">اختر لغة التطبيق. تُطبَّق على Sekuvo فقط، لا على بقية الهاتف.</string>
