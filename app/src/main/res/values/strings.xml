@@ -341,7 +341,7 @@
     <string name="settings_set">Set</string>
     <!-- transfer -->
     <string name="transfer_title">Transfer from computer · step %1$d/2</string>
-    <string name="transfer_step1_steps">1. On the computer, open aktar.html and put the cursor in the \"Yedek parolası\" (backup password) field.\n2. Use the button below to type the password into both fields at once (a Tab goes in between).</string>
+    <string name="transfer_step1_steps">1. On the computer, open aktar.html, switch it to English if it is not already, and put the cursor in the \"Backup password\" field.\n2. Use the button below to type the password into both fields at once (a Tab goes in between).</string>
     <string name="transfer_regenerate">Generate a new password</string>
     <string name="transfer_password_note">A generated, single-transfer password — you don\'t need to memorize it, step 2 uses it automatically. Letters+digits: unaffected by keyboard layout differences.</string>
     <string name="transfer_bt_write_both">💻 Type into both fields over Bluetooth</string>

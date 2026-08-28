@@ -1,7 +1,7 @@
-# Kendi zarfını üret — terminalden Vault'a şifreli aktarım (B yöntemi)
+# Kendi zarfını üret — terminalden Sekuvo'ya şifreli aktarım (B yöntemi)
 
 Bu yönerge, bilgisayardaki bir sırrı **hiçbir hazır araca körü körüne
-güvenmeden** Vault'a taşımanın yolu. Şifreleme kendi makinende, senin
+güvenmeden** Sekuvo'ya taşımanın yolu. Şifreleme kendi makinende, senin
 gördüğün komutlarla yapılır; `vault.gover.us`'a yalnız **şifreli** metin
 gider. Sitenin ele geçirilmesi ihtimalinde bile içerik çözülemez — tek
 şartla: **parolan üretilmiş ve güçlü olmalı** (aşağıda).
@@ -35,8 +35,9 @@ tools/vault-clip.py "Deploy anahtarı" --tur not --dosya ~/.ssh/id_ed25519 --yay
 ```
 
 Parolayı sorar, zarfı yükler, URL'nin QR'ını terminale çizer. Telefonda:
-kamera → sayfa → 📋 Kopyala → Vault → + → **Metinden içe aktar** → Panodan
-al → parola → Mevcuta ekle.
+kamera → açılan **düz metni** tümüyle kopyala → Sekuvo → + → **Metinden içe
+aktar** → Panodan al → parola → Mevcuta ekle. (Bağlantı bir sayfa değil düz
+metin döner; markalı sayfa Güvenli Tarama uyarısı verdiği için kaldırıldı.)
 
 ## Yol 2 — Çıplak betik (denetlemek isteyene)
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vault Aktarım</title>
+<title>Sekuvo Aktarım</title>
 <!--
   Tek dosyalık yerel istemci (vault_takip B-046, SEC-022).
   Bu dosya DİSKTEN açılır (file://) — sunucudan kod inmez. Şifreleme bu
@@ -11,6 +11,12 @@
   zarfı görür. Biçim, uygulamanın .vaultbak biçimiyle birebir aynıdır
   (PBKDF2-HMAC-SHA256 310k + AES-256-GCM, iv||ct+tag).
   Güncel sürüm: afgover/Vault -> tools/aktar.html
+
+  Sayfa İKİ DİLLİDİR (tr/en). Sebebi işlevsel: uygulama İngilizce
+  açıldığında aktarım sihirbazı kullanıcıyı buraya yolluyor ve "Yedek
+  parolası" alanını tarif ediyordu — İngilizce konuşan kullanıcı ekranda
+  o adı bulamıyordu. Metinler S sözlüğünde; markup'ta yalnız anahtarlar
+  (data-t / data-tph) durur.
 -->
 <style>
   :root { color-scheme: dark; }
@@ -43,109 +49,117 @@
   .ekSatir { border:1px solid #2a2a2a; border-radius:10px; padding:.4rem .8rem .8rem;
              margin-top:.6rem; }
   .ekSatir .sil { background:#432; color:#fca; margin-top:.4rem; }
+  .baslikSatir { display:flex; align-items:baseline; gap:.8rem; }
+  .baslikSatir h1 { flex:1; margin:0; }
+  #dil { width:auto; margin:0; padding:.25rem .4rem; font-size:.8rem; }
 </style>
 </head>
 <body>
-<h1>🔐 Vault Aktarım</h1>
+<div class="baslikSatir">
+  <h1>🔐 <span data-t="h1"></span></h1>
+  <select id="dil" aria-label="dil / language">
+    <option value="tr">Türkçe</option>
+    <option value="en">English</option>
+  </select>
+</div>
 <p class="not" id="akis"></p>
 
 <div id="tokenAlani">
-  <label>Yükleme token'ı (yalnız bu tarayıcıya kaydedilir)
+  <label><span data-t="lblToken"></span>
     <input id="token" type="password" autocomplete="off">
   </label>
-  <button id="tokenKaydet" style="margin-top:.6rem;background:#246;color:#fff">Token'ı kaydet</button>
+  <button id="tokenKaydet" data-t="btnTokenSave" style="margin-top:.6rem;background:#246;color:#fff"></button>
 </div>
 
-<label>Başlık <input id="baslik" placeholder="Uygulamada listede görünecek ad"></label>
+<label><span data-t="lblBaslik"></span> <input id="baslik" data-tph="phBaslik"></label>
 
-<label>Tür
+<label><span data-t="lblTur"></span>
   <select id="tur">
-    <option value="hesap">Hesap / Şifre</option>
-    <option value="gundelik">Gündelik</option>
-    <option value="kart">Kart</option>
-    <option value="not" selected>Güvenli Not</option>
+    <option value="hesap" data-t="turHesap"></option>
+    <option value="gundelik" data-t="turGundelik"></option>
+    <option value="kart" data-t="turKart"></option>
+    <option value="not" selected data-t="turNot"></option>
   </select>
 </label>
 
 <!-- Uygulamadaki düzenleme ekranının birebir alanları -->
 <div class="grup" data-tur="hesap">
-  <label>Kullanıcı adı / E-posta <input id="username" autocomplete="off"></label>
-  <label>Şifre <input id="password" autocomplete="off"></label>
-  <label>Site / Uygulama <input id="url" autocomplete="off"></label>
+  <label><span data-t="lblUsername"></span> <input id="username" autocomplete="off"></label>
+  <label><span data-t="lblPassword"></span> <input id="password" autocomplete="off"></label>
+  <label><span data-t="lblUrl"></span> <input id="url" autocomplete="off"></label>
 </div>
 
 <div class="grup" data-tur="gundelik">
-  <label>Ad Soyad <input id="fullName" autocomplete="off"></label>
-  <label>Telefon <input id="phone" autocomplete="off"></label>
-  <label>E-posta <input id="email" autocomplete="off"></label>
-  <label>Adres <textarea id="address" style="height:4rem"></textarea></label>
+  <label><span data-t="lblFullName"></span> <input id="fullName" autocomplete="off"></label>
+  <label><span data-t="lblPhone"></span> <input id="phone" autocomplete="off"></label>
+  <label><span data-t="lblEmail"></span> <input id="email" autocomplete="off"></label>
+  <label><span data-t="lblAddress"></span> <textarea id="address" style="height:4rem"></textarea></label>
 </div>
 
 <div class="grup" data-tur="kart">
-  <label>Kart sahibi <input id="cardholder" autocomplete="off"></label>
-  <label>Kart numarası <input id="cardNumber" autocomplete="off"></label>
+  <label><span data-t="lblCardholder"></span> <input id="cardholder" autocomplete="off"></label>
+  <label><span data-t="lblCardNumber"></span> <input id="cardNumber" autocomplete="off"></label>
   <div class="satir">
-    <div><label>Son kullanma (AA/YY) <input id="expiry" autocomplete="off"></label></div>
-    <div><label>CVV <input id="cvv" autocomplete="off"></label></div>
+    <div><label><span data-t="lblExpiry"></span> <input id="expiry" autocomplete="off"></label></div>
+    <div><label><span data-t="lblCvv"></span> <input id="cvv" autocomplete="off"></label></div>
   </div>
-  <label>IBAN (opsiyonel) <input id="iban" autocomplete="off"></label>
+  <label><span data-t="lblIban"></span> <input id="iban" autocomplete="off"></label>
 </div>
 
 <div class="grup" data-tur="not">
-  <label>Not türü
+  <label><span data-t="lblNoteKind"></span>
     <select id="noteKind">
-      <option value="GENEL">Genel not</option>
-      <option value="BETIK">Betik / komut (.sh)</option>
-      <option value="ANAHTAR">Anahtar / sertifika (.pem)</option>
-      <option value="PARMAK_IZI">Parmak izi / çıpa</option>
-      <option value="KURTARMA">Kurtarma kodları</option>
-      <option value="YAPILANDIRMA">Yapılandırma (.env, json)</option>
+      <option value="GENEL" data-t="nkGenel"></option>
+      <option value="BETIK" data-t="nkBetik"></option>
+      <option value="ANAHTAR" data-t="nkAnahtar"></option>
+      <option value="PARMAK_IZI" data-t="nkParmakIzi"></option>
+      <option value="KURTARMA" data-t="nkKurtarma"></option>
+      <option value="YAPILANDIRMA" data-t="nkYapilandirma"></option>
     </select>
   </label>
 </div>
 
-<label id="notEtiket">Not
-  <textarea id="notes" placeholder="Aktarılacak metin, anahtar ya da dosya içeriği"></textarea>
+<label id="notEtiket"><span id="notEtiketMetin"></span>
+  <textarea id="notes" data-tph="phNotes"></textarea>
 </label>
 <div id="onizleme"></div>
-<label>…ya da dosyadan al (.sh, .pem, .env — en çok 256 KB)
+<label><span data-t="lblDosya"></span>
   <input type="file" id="dosya">
 </label>
 
 <div id="ekAlanlar"></div>
-<button id="alanEkle" type="button" style="background:#246;color:#fff;margin-top:.6rem">+ Alan ekle</button>
+<button id="alanEkle" type="button" data-t="btnAlanEkle" style="background:#246;color:#fff;margin-top:.6rem"></button>
 
 <label style="display:flex;align-items:center;gap:.5rem;margin-top:.9rem">
   <input type="checkbox" id="hizli" style="width:auto;margin:0">
-  <span style="font-size:.85rem;color:#aaa">Klavyede parolasız kullanılabilir olsun
-    (varsayılan kapalı — koruması telefonun ekran kilidi kadardır)</span>
+  <span style="font-size:.85rem;color:#aaa" data-t="lblHizli"></span>
 </label>
 
 <div class="satir">
-  <div><label>Yedek parolası (ASCII, en az 8)
+  <div><label><span data-t="lblParola"></span>
     <input id="parola" type="password" autocomplete="new-password">
   </label></div>
-  <div><label>Parola tekrar
+  <div><label><span data-t="lblParola2"></span>
     <input id="parola2" type="password" autocomplete="new-password">
   </label></div>
 </div>
 
-<label>Aktarım yolu
+<label><span data-t="lblYol"></span>
   <select id="yol">
-    <option value="qr" selected>QR (ağ yok — telefon kamerayla okur)</option>
-    <option value="relay">Bağlantı (vault.gover.us üzerinden)</option>
+    <option value="qr" selected data-t="yolQr"></option>
+    <option value="relay" data-t="yolRelay"></option>
   </select>
 </label>
 
-<label id="ttlEtiket">Bağlantı ömrü
+<label id="ttlEtiket"><span data-t="lblTtl"></span>
   <select id="ttl">
-    <option value="900">15 dakika</option>
-    <option value="3600" selected>1 saat</option>
-    <option value="86400">24 saat</option>
+    <option value="900" data-t="ttl15"></option>
+    <option value="3600" selected data-t="ttl60"></option>
+    <option value="86400" data-t="ttl24"></option>
   </select>
 </label>
 
-<button id="gonder">Şifrele ve QR göster</button>
+<button id="gonder"></button>
 <div id="hata"></div>
 
 <div id="sonuc">
@@ -153,11 +167,10 @@
   <div id="qr"></div>
   <p id="kareBilgi" style="color:#888;font-size:.85rem"></p>
   <p id="url"></p>
-  <button id="kopyala" style="background:#246;color:#fff;display:none">Bağlantıyı kopyala</button>
+  <button id="kopyala" data-t="btnKopyala" style="background:#246;color:#fff;display:none"></button>
 </div>
 
-<p class="not">Parola bu sayfadan hiçbir yere gönderilmez ve saklanmaz — telefonda
-içe aktarırken aynısını gireceksin. Token: <a href="#" id="tokenDegistir">değiştir</a></p>
+<p class="not"><span data-t="altNot"></span> <a href="#" id="tokenDegistir" data-t="altNotLink"></a></p>
 
 <script>
 /* qrcode-generator 1.4.4 — MIT, Kazuhiko Arase — dosyaya gömülü (tedarik zinciri donuk) */
@@ -173,6 +186,165 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 <script>
 "use strict";
 const $ = (id) => document.getElementById(id);
+
+/* ---------------------------------------------------------------- diller
+ * Metinler burada; markup yalnız anahtar taşır. İki dil olmasının sebebi
+ * işlevsel: uygulamanın aktarım sihirbazı kullanıcıyı bu sayfaya yollayıp
+ * bir alanı ADIYLA tarif ediyor. Sayfa tek dilliyken İngilizce açılmış bir
+ * uygulama, ekranda karşılığı olmayan bir alan adı söylüyordu.
+ */
+const S = {
+  tr: {
+    h1: "Sekuvo Aktarım",
+    lblToken: "Yükleme token'ı (yalnız bu tarayıcıya kaydedilir)",
+    btnTokenSave: "Token'ı kaydet",
+    lblBaslik: "Başlık", phBaslik: "Uygulamada listede görünecek ad",
+    lblTur: "Tür",
+    turHesap: "Hesap / Şifre", turGundelik: "Gündelik",
+    turKart: "Kart", turNot: "Güvenli Not",
+    lblUsername: "Kullanıcı adı / E-posta", lblPassword: "Şifre",
+    lblUrl: "Site / Uygulama",
+    lblFullName: "Ad Soyad", lblPhone: "Telefon", lblEmail: "E-posta",
+    lblAddress: "Adres",
+    lblCardholder: "Kart sahibi", lblCardNumber: "Kart numarası",
+    lblExpiry: "Son kullanma (AA/YY)", lblCvv: "CVV", lblIban: "IBAN (opsiyonel)",
+    lblNoteKind: "Not türü",
+    nkGenel: "Genel not", nkBetik: "Betik / komut (.sh)",
+    nkAnahtar: "Anahtar / sertifika (.pem)", nkParmakIzi: "Parmak izi / çıpa",
+    nkKurtarma: "Kurtarma kodları", nkYapilandirma: "Yapılandırma (.env, json)",
+    lblNot: "Not", lblNotOpsiyonel: "Not (opsiyonel)",
+    phNotes: "Aktarılacak metin, anahtar ya da dosya içeriği",
+    lblDosya: "…ya da dosyadan al (.sh, .pem, .env — en çok 256 KB)",
+    btnAlanEkle: "+ Alan ekle",
+    ekAd: "Alan adı", ekDeger: "Değer", ekSil: "Alanı kaldır",
+    lblHizli: "Klavyede parolasız kullanılabilir olsun (varsayılan kapalı — koruması telefonun ekran kilidi kadardır)",
+    lblParola: "Yedek parolası (ASCII, en az 8)", lblParola2: "Parola tekrar",
+    lblYol: "Aktarım yolu",
+    yolQr: "QR (ağ yok — telefon kamerayla okur)",
+    yolRelay: "Bağlantı (vault.gover.us üzerinden)",
+    lblTtl: "Bağlantı ömrü",
+    ttl15: "15 dakika", ttl60: "1 saat", ttl24: "24 saat",
+    btnQr: "Şifrele ve QR göster", btnYayinla: "Şifrele ve yayınla",
+    btnSifreleniyor: "Şifreleniyor…", btnYukleniyor: "Yükleniyor…",
+    btnKopyala: "Bağlantıyı kopyala", btnKopyalandi: "✓ Kopyalandı",
+    altNot: "Parola bu sayfadan hiçbir yere gönderilmez ve saklanmaz — telefonda içe aktarırken aynısını gireceksin. Token:",
+    altNotLink: "değiştir",
+    akisQr: "Alanlar <b>bu bilgisayarda</b> şifrelenir ve QR olarak ekrana çizilir — <b>internete hiçbir şey gitmez</b>.<br>Telefonda: <b>Sekuvo → + → \"QR ile aktar\"</b> → kamerayı QR'a tut → yedek parolasını gir.",
+    akisRelay: "Alanlar <b>bu bilgisayarda</b> şifrelenir; sunucuya yalnız şifreli zarf gider ve bağlantı bir kez açılır.<br>Telefonda: QR'ı okut → açılan düz metni kopyala → <b>Sekuvo → + → \"Metinden içe aktar\"</b>.",
+    kareTek: "Tek kare — telefonda Sekuvo → + → \"QR ile aktar\"",
+    kareCok: (i, n, sn) => `Kare ${i}/${n} · tur başına ~${sn} sn — telefonu tut, kareler dönüyor; okuyucu sırasız toplar.`,
+    uyariQr: "Bu QR <b>zarfın kendisini</b> taşır — internete hiçbir şey gitmedi. Telefonda: <b>Sekuvo → + → \"QR ile aktar\"</b>",
+    uyariRelay: "⚠️ Bağlantı bir kez görüntülenir ve süresi dolunca silinir.",
+    omurSaat: (n) => `Ömür: ${n} saat`, omurDakika: (n) => `Ömür: ${n} dakika`,
+    onizleme: (uz, ilk) => `${uz} karakter · başı: “${ilk}”`,
+    eBaslik: "Başlık gerekli.",
+    eBosAlan: "En az bir alan doldurulmalı.",
+    eParolaKisa: "Parola en az 8 karakter olmalı.",
+    eParolaAscii: "Parola yalnız ASCII olabilir (Türkçe/özel harf yok) — Android'in PBKDF2 dönüşümü aksi hâlde eşleşmeyebilir.",
+    eParolaEslesmiyor: "Parolalar eşleşmiyor.",
+    eTokenKisa: "Token kısa görünüyor — Keychain'deki değeri yapıştır.",
+    eTokenYok: "Önce yükleme token'ını kaydet.",
+    eTokenGecersiz: "Token geçersiz — Keychain'deki güncel değeri kaydet.",
+    eSunucu: (kod, metin) => `Sunucu kabul etmedi: ${kod} ${metin}`,
+    eDosyaBuyuk: (kb) => `Dosya ${kb} KB — kayıt sınırı 256 KB. Büyük dosyayı şifreli olarak diskte/Drive'da tut, buraya yalnız PAROLASINI koy.`,
+    eKayitBuyuk: (kb) => `Kayıt ${kb} KB — uygulama sınırı 256 KB. Büyük dosyayı bölerek ekle.`,
+    eZarfBuyuk: (kb) => `Şifreli zarf ${kb} KB — relay sınırı 64 KB. Bu boyut için vault-clip'in dosya yolunu kullan (--cikti / --push).`,
+    sorAdsizAlan: "Adı boş bir ek alan var; değeri DOLU ama aktarılmayacak.\nYine de devam edeyim mi?",
+    sorZayifParola: "Bu parola relay'e yüklenecek herkese açık zarf için ZAYIF görünüyor (kısa ya da tek karakter sınıfı). Üretilmiş güçlü bir parola önerilir.\nYine de yükleyeyim mi?",
+    sorKomut: "İçerik bir KOMUT gibi görünüyor (pano kazası? L-009).\nYine de bunu aktarayım mı?",
+    ikiliNot: (ad) => "İkili dosya base64 olarak saklandı. Geri döndürmek için değeri bir dosyaya koy ve çalıştır: base64 -d giris.txt > " + ad + "  (macOS: base64 -D -i giris.txt -o " + ad + ")",
+  },
+  en: {
+    h1: "Sekuvo Transfer",
+    lblToken: "Upload token (stored in this browser only)",
+    btnTokenSave: "Save the token",
+    lblBaslik: "Title", phBaslik: "The name the entry gets in the app",
+    lblTur: "Type",
+    turHesap: "Account / Password", turGundelik: "Everyday",
+    turKart: "Card", turNot: "Secure note",
+    lblUsername: "Username / Email", lblPassword: "Password",
+    lblUrl: "Site / App",
+    lblFullName: "Full name", lblPhone: "Phone", lblEmail: "Email",
+    lblAddress: "Address",
+    lblCardholder: "Cardholder", lblCardNumber: "Card number",
+    lblExpiry: "Expiry (MM/YY)", lblCvv: "CVV", lblIban: "IBAN (optional)",
+    lblNoteKind: "Note type",
+    nkGenel: "General note", nkBetik: "Script / command (.sh)",
+    nkAnahtar: "Key / certificate (.pem)", nkParmakIzi: "Fingerprint / anchor",
+    nkKurtarma: "Recovery codes", nkYapilandirma: "Configuration (.env, json)",
+    lblNot: "Note", lblNotOpsiyonel: "Note (optional)",
+    phNotes: "The text, key or file content to transfer",
+    lblDosya: "…or take it from a file (.sh, .pem, .env — 256 KB at most)",
+    btnAlanEkle: "+ Add a field",
+    ekAd: "Field name", ekDeger: "Value", ekSil: "Remove the field",
+    lblHizli: "Usable on the keyboard without a password (off by default — its only protection is your phone's screen lock)",
+    lblParola: "Backup password (ASCII, 8 or more)", lblParola2: "Password again",
+    lblYol: "Transfer route",
+    yolQr: "QR (no network — the phone reads it with the camera)",
+    yolRelay: "Link (via vault.gover.us)",
+    lblTtl: "Link lifetime",
+    ttl15: "15 minutes", ttl60: "1 hour", ttl24: "24 hours",
+    btnQr: "Encrypt and show the QR", btnYayinla: "Encrypt and publish",
+    btnSifreleniyor: "Encrypting…", btnYukleniyor: "Uploading…",
+    btnKopyala: "Copy the link", btnKopyalandi: "✓ Copied",
+    altNot: "The password is never sent anywhere from this page and is never stored — you will type the same one when importing on the phone. Token:",
+    altNotLink: "change",
+    akisQr: "The fields are encrypted <b>on this computer</b> and drawn on the screen as a QR — <b>nothing goes to the internet</b>.<br>On the phone: <b>Sekuvo → + → \"Import via QR\"</b> → hold the camera to the QR → enter the backup password.",
+    akisRelay: "The fields are encrypted <b>on this computer</b>; only the encrypted envelope reaches the server, and the link opens once.<br>On the phone: scan the QR → copy the plain text it opens → <b>Sekuvo → + → \"Import from text\"</b>.",
+    kareTek: "A single frame — on the phone: Sekuvo → + → \"Import via QR\"",
+    kareCok: (i, n, sn) => `Frame ${i}/${n} · ~${sn} s per round — hold the phone still, the frames cycle; the reader collects them in any order.`,
+    uyariQr: "This QR carries <b>the envelope itself</b> — nothing went to the internet. On the phone: <b>Sekuvo → + → \"Import via QR\"</b>",
+    uyariRelay: "⚠️ The link opens once and is deleted when it expires.",
+    omurSaat: (n) => `Lifetime: ${n} h`, omurDakika: (n) => `Lifetime: ${n} min`,
+    onizleme: (uz, ilk) => `${uz} characters · starts with: “${ilk}”`,
+    eBaslik: "A title is required.",
+    eBosAlan: "Fill in at least one field.",
+    eParolaKisa: "The password must be at least 8 characters.",
+    eParolaAscii: "The password can only be ASCII (no accented or special letters) — Android's PBKDF2 conversion may not match otherwise.",
+    eParolaEslesmiyor: "The passwords do not match.",
+    eTokenKisa: "That token looks short — paste the value from the Keychain.",
+    eTokenYok: "Save the upload token first.",
+    eTokenGecersiz: "The token is not valid — save the current value from the Keychain.",
+    eSunucu: (kod, metin) => `The server refused it: ${kod} ${metin}`,
+    eDosyaBuyuk: (kb) => `The file is ${kb} KB — the entry limit is 256 KB. Keep a large file encrypted on disk or Drive and put only ITS PASSWORD here.`,
+    eKayitBuyuk: (kb) => `The entry is ${kb} KB — the app's limit is 256 KB. Split the large file up.`,
+    eZarfBuyuk: (kb) => `The encrypted envelope is ${kb} KB — the relay's limit is 64 KB. Use vault-clip's file route for this size (--cikti / --push).`,
+    sorAdsizAlan: "One extra field has no name; its value is FILLED IN but will not be transferred.\nShall I continue anyway?",
+    sorZayifParola: "For a publicly reachable envelope on the relay this password looks WEAK (short, or a single character class). A generated, strong password is recommended.\nShall I upload it anyway?",
+    sorKomut: "The content looks like a COMMAND (a clipboard accident?).\nShall I transfer it anyway?",
+    ikiliNot: (ad) => "The binary file is stored as base64. To turn it back, put the value in a file and run: base64 -d input.txt > " + ad + "  (macOS: base64 -D -i input.txt -o " + ad + ")",
+  },
+};
+
+let dil = localStorage.getItem("sekuvo-aktar-dil");
+if (dil !== "tr" && dil !== "en") {
+  dil = (navigator.language || "").toLowerCase().startsWith("tr") ? "tr" : "en";
+}
+const t = (k) => S[dil][k];
+
+/** Bütün duran metinleri seçili dile göre yazar. */
+function dilUygula() {
+  document.documentElement.lang = dil;
+  $("dil").value = dil;
+  document.title = t("h1");
+  for (const el of document.querySelectorAll("[data-t]")) el.textContent = t(el.dataset.t);
+  for (const el of document.querySelectorAll("[data-tph]")) el.placeholder = t(el.dataset.tph);
+  for (const satir of document.querySelectorAll("#ekAlanlar .ekSatir")) {
+    satir.querySelector(".ekAdEtiket").textContent = t("ekAd");
+    satir.querySelector(".ekDegerEtiket").textContent = t("ekDeger");
+    satir.querySelector(".sil").textContent = t("ekSil");
+  }
+  turUygula();
+  // Kipe bağlı metinler (akış açıklaması, gönder düğmesi) tek yerden gelsin.
+  $("yol").dispatchEvent(new Event("change"));
+  $("notes").dispatchEvent(new Event("input"));
+}
+$("dil").addEventListener("change", () => {
+  dil = $("dil").value;
+  localStorage.setItem("sekuvo-aktar-dil", dil);
+  dilUygula();
+});
+
 const KDF_ITERATIONS = 310000;
 const RELAY = "https://vault.gover.us";
 const TYPES = { hesap:"LOGIN", gundelik:"EVERYDAY", kart:"CARD", not:"NOTE" };
@@ -253,9 +425,7 @@ function girdiyiKur() {
   // Şifre taşıyan aktarımda "şifre yaşı" bilgisi doğar (uygulamadaki alan).
   if (data.password) data.passwordChangedAt = Date.now();
   if (ikiliDosyaAdi) {
-    const komut = "İkili dosya base64 olarak saklandı. Geri döndürmek için " +
-      "değeri bir dosyaya koy ve çalıştır: base64 -d giris.txt > " + ikiliDosyaAdi +
-      "  (macOS: base64 -D -i giris.txt -o " + ikiliDosyaAdi + ")";
+    const komut = t("ikiliNot")(ikiliDosyaAdi);
     data.notes = data.notes ? data.notes + "\n\n" + komut : komut;
   }
 
@@ -280,10 +450,9 @@ function turUygula() {
   document.querySelectorAll(".grup").forEach((g) => {
     g.classList.toggle("aktif", g.dataset.tur === tur);
   });
-  $("notEtiket").firstChild.textContent = tur === "not" ? "Not " : "Not (opsiyonel) ";
+  $("notEtiketMetin").textContent = tur === "not" ? t("lblNot") : t("lblNotOpsiyonel");
 }
 $("tur").addEventListener("change", turUygula);
-turUygula();
 
 let ekSayac = 0;
 $("alanEkle").addEventListener("click", () => {
@@ -291,9 +460,12 @@ $("alanEkle").addEventListener("click", () => {
   const div = document.createElement("div");
   div.className = "ekSatir";
   div.innerHTML =
-    '<label>Alan adı <input class="ekAd" id="ekAd' + i + '" autocomplete="off"></label>' +
-    '<label>Değer <textarea class="ekDeger" id="ekDeger' + i + '" style="height:3.5rem"></textarea></label>' +
-    '<button type="button" class="sil">Alanı kaldır</button>';
+    '<label><span class="ekAdEtiket"></span> <input class="ekAd" id="ekAd' + i + '" autocomplete="off"></label>' +
+    '<label><span class="ekDegerEtiket"></span> <textarea class="ekDeger" id="ekDeger' + i + '" style="height:3.5rem"></textarea></label>' +
+    '<button type="button" class="sil"></button>';
+  div.querySelector(".ekAdEtiket").textContent = t("ekAd");
+  div.querySelector(".ekDegerEtiket").textContent = t("ekDeger");
+  div.querySelector(".sil").textContent = t("ekSil");
   div.querySelector(".sil").addEventListener("click", () => div.remove());
   $("ekAlanlar").appendChild(div);
 });
@@ -315,9 +487,7 @@ $("dosya").addEventListener("change", async () => {
   const f = $("dosya").files[0];
   if (!f) return;
   if (f.size > MAX_PLAIN) {
-    $("hata").textContent =
-      `Dosya ${(f.size/1024).toFixed(0)} KB — kayıt sınırı 256 KB. ` +
-      "Büyük dosyayı şifreli olarak diskte/Drive'da tut, buraya yalnız PAROLASINI koy.";
+    $("hata").textContent = t("eDosyaBuyuk")((f.size/1024).toFixed(0));
     $("dosya").value = ""; return;
   }
   const buf = new Uint8Array(await f.arrayBuffer());
@@ -338,8 +508,10 @@ $("notes").addEventListener("input", () => {
   const v = $("notes").value;
   if (!v) { $("onizleme").textContent = ""; return; }
   const ilk = v.trim().split("\n")[0];
-  $("onizleme").textContent =
-    `${v.length} karakter · başı: “${ilk.slice(0,32)}${ilk.length>32||v.trim().includes("\n")?"…":""}”`;
+  $("onizleme").textContent = t("onizleme")(
+    v.length,
+    ilk.slice(0,32) + (ilk.length>32 || v.trim().includes("\n") ? "…" : "")
+  );
 });
 
 // Kaba bir zayıflık sezgisi: kısa ya da tek karakter sınıfı (yalnız harf/rakam).
@@ -358,13 +530,12 @@ function komutKokuyor(v) {
 function tokenGetir() { return localStorage.getItem("vault-relay-token") || ""; }
 function tokenAlaniGoster() { $("tokenAlani").style.display = "block"; }
 $("tokenKaydet").addEventListener("click", () => {
-  const t = $("token").value.trim();
-  if (t.length < 32) { $("hata").textContent = "Token kısa görünüyor — Keychain'deki değeri yapıştır."; return; }
-  localStorage.setItem("vault-relay-token", t);
+  const deger = $("token").value.trim();
+  if (deger.length < 32) { $("hata").textContent = t("eTokenKisa"); return; }
+  localStorage.setItem("vault-relay-token", deger);
   $("token").value = ""; $("tokenAlani").style.display = "none"; $("hata").textContent = "";
 });
 $("tokenDegistir").addEventListener("click", (e) => { e.preventDefault(); tokenAlaniGoster(); });
-$("yol").dispatchEvent(new Event("change"));
 
 // GİZLİLİK: tarayıcı yazım denetimi alan içeriğini bulut denetleyicisine
 // gönderebilir; "internete hiçbir şey gitmez" sözünü bozar. Kapat.
@@ -414,15 +585,15 @@ function qrGoster(kareler) {
   };
   if (kareler.length === 1) {
     ciz(kareler[0]);
-    $("kareBilgi").textContent = "Tek kare — telefonda Vault → + → \"QR ile aktar\"";
+    $("kareBilgi").textContent = t("kareTek");
     return;
   }
   let i = 0;
   const adim = () => {
     ciz(kareler[i]);
-    $("kareBilgi").textContent =
-      `Kare ${i + 1}/${kareler.length} · tur başına ~${(kareler.length * 1.2).toFixed(0)} sn` +
-      " — telefonu tut, kareler dönüyor; okuyucu sırasız toplar.";
+    $("kareBilgi").textContent = t("kareCok")(
+      i + 1, kareler.length, (kareler.length * 1.2).toFixed(0)
+    );
     i = (i + 1) % kareler.length;
   };
   adim();
@@ -432,17 +603,11 @@ function qrGoster(kareler) {
 $("yol").addEventListener("change", () => {
   const qrKipi = $("yol").value === "qr";
   $("ttlEtiket").style.display = qrKipi ? "none" : "block";
-  $("gonder").textContent = qrKipi ? "Şifrele ve QR göster" : "Şifrele ve yayınla";
+  $("gonder").textContent = qrKipi ? t("btnQr") : t("btnYayinla");
   $("tokenAlani").style.display = (!qrKipi && !tokenGetir()) ? "block" : "none";
   // Açıklama kipe göre değişir: iki yolun güven modeli farklı, aynı cümleyle
   // anlatılamaz.
-  $("akis").innerHTML = qrKipi
-    ? "Alanlar <b>bu bilgisayarda</b> şifrelenir ve QR olarak ekrana çizilir — " +
-      "<b>internete hiçbir şey gitmez</b>.<br>Telefonda: <b>Vault → + → " +
-      "\"QR ile aktar\"</b> → kamerayı QR'a tut → yedek parolasını gir."
-    : "Alanlar <b>bu bilgisayarda</b> şifrelenir; sunucuya yalnız şifreli zarf " +
-      "gider ve bağlantı bir kez açılır.<br>Telefonda: QR'ı okut → açılan düz " +
-      "metni kopyala → <b>Vault → + → \"Metinden içe aktar\"</b>.";
+  $("akis").innerHTML = qrKipi ? t("akisQr") : t("akisRelay");
 });
 
 $("gonder").addEventListener("click", async () => {
@@ -453,37 +618,33 @@ $("gonder").addEventListener("click", async () => {
     (k) => k !== "passwordChangedAt" && String(icerik[k] ?? "").length > 0
   );
   const p1 = $("parola").value, p2 = $("parola2").value;
-  if (!baslik) { $("hata").textContent = "Başlık gerekli."; return; }
-  if (!doluMu) { $("hata").textContent = "En az bir alan doldurulmalı."; return; }
-  if (p1.length < 8) { $("hata").textContent = "Parola en az 8 karakter olmalı."; return; }
+  if (!baslik) { $("hata").textContent = t("eBaslik"); return; }
+  if (!doluMu) { $("hata").textContent = t("eBosAlan"); return; }
+  if (p1.length < 8) { $("hata").textContent = t("eParolaKisa"); return; }
   if (!/^[\x20-\x7E]+$/.test(p1)) {
-    $("hata").textContent = "Parola yalnız ASCII olabilir (Türkçe/özel harf yok) — Android'in PBKDF2 dönüşümü aksi hâlde eşleşmeyebilir.";
+    $("hata").textContent = t("eParolaAscii");
     return;
   }
-  if (p1 !== p2) { $("hata").textContent = "Parolalar eşleşmiyor."; return; }
-  if (adsizEkAlanVarMi() &&
-      !confirm("Adı boş bir ek alan var; değeri DOLU ama aktarılmayacak.\nYine de devam edeyim mi?")) return;
+  if (p1 !== p2) { $("hata").textContent = t("eParolaEslesmiyor"); return; }
+  if (adsizEkAlanVarMi() && !confirm(t("sorAdsizAlan"))) return;
   // Toplam kayıt boyutu uygulamadaki 256 KB sınırını aşarsa telefonda içe
   // alınamaz; şifrelemeden önce söyle (denetim).
   const hamBoyut = new TextEncoder().encode(girdiyiKur()).length;
   if (hamBoyut > 256 * 1024) {
-    $("hata").textContent = `Kayıt ${(hamBoyut/1024).toFixed(0)} KB — uygulama sınırı 256 KB. Büyük dosyayı bölerek ekle.`;
+    $("hata").textContent = t("eKayitBuyuk")((hamBoyut/1024).toFixed(0));
     return;
   }
   const qrKipi = $("yol").value === "qr";
   // Relay'e (herkese açık blob) zayıf/insan-uydurması parola konmasın: modelin
   // şartı üretilmiş güçlü paroladır (docs/kendi-zarfini-uret.md). QR'da kanal
   // ekran-kamera olduğu için bu şart yok.
-  if (!qrKipi && parolaZayif(p1) &&
-      !confirm("Bu parola relay'e yüklenecek herkese açık zarf için ZAYIF görünüyor " +
-               "(kısa ya da tek karakter sınıfı). Üretilmiş güçlü bir parola önerilir.\nYine de yükleyeyim mi?")) return;
+  if (!qrKipi && parolaZayif(p1) && !confirm(t("sorZayifParola"))) return;
   if (!qrKipi && !tokenGetir()) {
-    tokenAlaniGoster(); $("hata").textContent = "Önce yükleme token'ını kaydet."; return;
+    tokenAlaniGoster(); $("hata").textContent = t("eTokenYok"); return;
   }
-  if (komutKokuyor(JSON.stringify(icerik)) &&
-      !confirm("İçerik bir KOMUT gibi görünüyor (pano kazası? L-009).\nYine de bunu aktarayım mı?")) return;
+  if (komutKokuyor(JSON.stringify(icerik)) && !confirm(t("sorKomut"))) return;
 
-  $("gonder").disabled = true; $("gonder").textContent = "Şifreleniyor…";
+  $("gonder").disabled = true; $("gonder").textContent = t("btnSifreleniyor");
   try {
     const zarf = await zarfla(girdiyiKur(), p1);
     if (qrKipi) {
@@ -491,18 +652,14 @@ $("gonder").addEventListener("click", async () => {
       qrGoster(kareler);
       $("url").textContent = "";
       $("kopyala").style.display = "none";
-      $("uyari").innerHTML =
-        "Bu QR <b>zarfın kendisini</b> taşır — internete hiçbir şey gitmedi. " +
-        "Telefonda: <b>Vault → + → \"QR ile aktar\"</b>";
+      $("uyari").innerHTML = t("uyariQr");
       $("sonuc").style.display = "block";
       return;
     }
     if (zarf.length > MAX_ZARF) {
-      throw new Error(
-        `Şifreli zarf ${(zarf.length/1024).toFixed(0)} KB — relay sınırı 64 KB. ` +
-        "Bu boyut için vault-clip'in dosya yolunu kullan (--cikti / --push).");
+      throw new Error(t("eZarfBuyuk")((zarf.length/1024).toFixed(0)));
     }
-    $("gonder").textContent = "Yükleniyor…";
+    $("gonder").textContent = t("btnYukleniyor");
     const ttl = $("ttl").value;
     const r = await fetch(`${RELAY}/api/b?ttl=${ttl}`, {
       method:"POST",
@@ -511,29 +668,37 @@ $("gonder").addEventListener("click", async () => {
     });
     if (r.status === 401) {
       localStorage.removeItem("vault-relay-token"); tokenAlaniGoster();
-      throw new Error("Token geçersiz — Keychain'deki güncel değeri kaydet.");
+      throw new Error(t("eTokenGecersiz"));
     }
-    if (!r.ok) throw new Error(`Sunucu kabul etmedi: ${r.status} ${await r.text()}`);
+    if (!r.ok) throw new Error(t("eSunucu")(r.status, await r.text()));
     $("kopyala").style.display = "block";
-    $("uyari").textContent = "⚠️ Bağlantı bir kez görüntülenir ve süresi dolunca silinir.";
+    $("uyari").textContent = t("uyariRelay");
     const { url, ttl:kabulTtl } = await r.json();
     // Hata düzeltme "L": ekran-kamera temiz kanal; daha çok veri, daha az kare.
     const qr = qrcode(0, "L"); qr.addData(url); qr.make();
     $("qr").innerHTML = qr.createSvgTag({ cellSize:6, margin:3 });
     $("url").textContent = url;
-    $("kareBilgi").textContent =
-      "Ömür: " + (kabulTtl >= 3600 ? `${kabulTtl/3600} saat` : `${kabulTtl/60} dakika`);
+    $("kareBilgi").textContent = kabulTtl >= 3600
+      ? t("omurSaat")(kabulTtl/3600) : t("omurDakika")(kabulTtl/60);
     $("sonuc").style.display = "block";
     $("kopyala").onclick = async () => {
       await navigator.clipboard.writeText(url);
-      $("kopyala").textContent = "✓ Kopyalandı";
+      $("kopyala").textContent = t("btnKopyalandi");
     };
   } catch (e) {
     $("hata").textContent = e.message || String(e);
   } finally {
-    $("gonder").disabled = false; $("gonder").textContent = "Şifrele ve yayınla";
+    $("gonder").disabled = false;
+    $("gonder").textContent = $("yol").value === "qr" ? t("btnQr") : t("btnYayinla");
   }
 });
+
+/* İlk çizim EN SONDA. Eskiden sayfa, `$("yol")` üzerine bir `change` olayını
+   dinleyici HENÜZ BAĞLANMADAN yolluyordu: olay boşa gidiyor, açılışta akış
+   açıklaması hiç görünmüyor ve QR kipi seçiliyken "Bağlantı ömrü" alanı açık
+   duruyordu. Kip metinlerini de dil uygulaması tetiklediği için tek çağrı
+   yeter — ama dinleyicilerin hepsi tanımlandıktan SONRA. */
+dilUygula();
 </script>
 </body>
 </html>
