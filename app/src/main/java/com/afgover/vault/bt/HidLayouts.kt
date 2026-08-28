@@ -26,7 +26,9 @@ object HidLayouts {
         FR(R.string.bt_layout_fr),
         ES(R.string.bt_layout_es),
         IT(R.string.bt_layout_it),
-        TR_F(R.string.bt_layout_tr_f)
+        TR_F(R.string.bt_layout_tr_f),
+        PL(R.string.bt_layout_pl),
+        PT(R.string.bt_layout_pt)
     }
 
     /**
@@ -85,6 +87,8 @@ object HidLayouts {
             Layout.ES -> ES
             Layout.IT -> IT
             Layout.TR_F -> TR_F
+            Layout.PL -> PL
+            Layout.PT -> PT
         }
 
     /**
@@ -546,13 +550,102 @@ object HidLayouts {
         )
     )
 
+
+    /**
+     * Lehçe (Programcı, "Polish Programmers") — konum tablosu.
+     *
+     * Standart Polonya düzeni (214) daktilo mirası taşır ve köşeli parantez
+     * gibi programlama için gerekli karakterleri taşımıştır; bu yüzden
+     * Microsoft ayrı bir "Programcı" düzeni tanımladı: harfler, rakamlar ve
+     * noktalama US ile BİREBİR aynı konumda, tek fark dokuz harfte AltGr ile
+     * gelen Lehçe aksanlı karakterler (ą ć ę ł ń ó ś ź ż). Diğer harflerde
+     * AltGr yok.
+     *
+     * Kaynak: Microsoft Learn resmi klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdpl1) + kbdlayout.info,
+     * ikisi çakıştı.
+     */
+    private val PL_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(
+                0x04 to KeyCap(0x04, 'a', 'A', altgr = 'ą'),
+                0x06 to KeyCap(0x06, 'c', 'C', altgr = 'ć'),
+                0x08 to KeyCap(0x08, 'e', 'E', altgr = 'ę'),
+                0x0F to KeyCap(0x0F, 'l', 'L', altgr = 'ł'),
+                0x11 to KeyCap(0x11, 'n', 'N', altgr = 'ń'),
+                0x12 to KeyCap(0x12, 'o', 'O', altgr = 'ó'),
+                0x16 to KeyCap(0x16, 's', 'S', altgr = 'ś'),
+                0x1B to KeyCap(0x1B, 'x', 'X', altgr = 'ź'),
+                0x1D to KeyCap(0x1D, 'z', 'Z', altgr = 'ż')
+            )
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x1E, '1', '!'), KeyCap(0x1F, '2', '@'), KeyCap(0x20, '3', '#'),
+            KeyCap(0x21, '4', '$'), KeyCap(0x22, '5', '%'), KeyCap(0x23, '6', '^'),
+            KeyCap(0x24, '7', '&'), KeyCap(0x25, '8', '*'), KeyCap(0x26, '9', '('),
+            KeyCap(0x27, '0', ')'),
+            KeyCap(0x2D, '-', '_'), KeyCap(0x2E, '=', '+'),
+            KeyCap(0x2F, '[', '{'), KeyCap(0x30, ']', '}'), KeyCap(0x31, '\\', '|'),
+            KeyCap(0x33, ';', ':'), KeyCap(0x34, '\'', '"'), KeyCap(0x35, '`', '~'),
+            KeyCap(0x36, ',', '<'), KeyCap(0x37, '.', '>'), KeyCap(0x38, '/', '?')
+        )
+    )
+
     private val IT: Map<Char, KeyStroke> = IT_TABLE.toMap()
     private val TR_F: Map<Char, KeyStroke> = TR_F_TABLE.toMap()
+
+    /**
+     * Portekizce (Avrupa, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdpo.html), ham Unicode
+     * ad etiketleriyle (ör. "U+0021 EXCLAMATION MARK") — özetleme değil
+     * birebir okuma.
+     *
+     * L'den sonra Ç, ondan sonra º/ª (eril/dişil sıra sayı işareti — gerçek
+     * karakterdir, ölü tuş değil). P'den sonraki `+`/`*` tuşundan hemen
+     * sonraki konum (ISO 0x30) akut/gravis ÖLÜ TUŞTUR, tabloda yok. Üst-sol
+     * köşe (0x35, ABD'de `~) için kaynakta net bir okuma çıkmadı — tahmin
+     * etmek yerine boş bırakıldı; şifrelerde bu karakter aranmıyor.
+     * ISO ekstra tuşu (0x64, Z'den önce) `<`/`>` üretiyor.
+     */
+    private val PT_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(
+                0x33 to KeyCap(0x33, 'ç', 'Ç')
+            )
+        ) + listOf(
+            KeyCap(0x2C, ' '), KeyCap(0x28, '\n'), KeyCap(0x2B, '\t')
+        ) + listOf(
+            KeyCap(0x1E, '1', '!'),
+            KeyCap(0x1F, '2', '"', altgr = '@'),
+            KeyCap(0x20, '3', '#', altgr = '£'),
+            KeyCap(0x21, '4', '$', altgr = '§'),
+            KeyCap(0x22, '5', '%', altgr = '€'),
+            KeyCap(0x23, '6', '&'),
+            KeyCap(0x24, '7', '/', altgr = '{'),
+            KeyCap(0x25, '8', '(', altgr = '['),
+            KeyCap(0x26, '9', ')', altgr = ']'),
+            KeyCap(0x27, '0', '=', altgr = '}'),
+            KeyCap(0x2D, '\'', '?'),
+            KeyCap(0x2E, '«', '»'),
+            KeyCap(0x2F, '+', '*'),
+            // 0x30 (P'den sonraki ikinci tuş): akut/gravis ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x34, 'º', 'ª'),
+            // 0x35 (üst-sol köşe): kaynakta belirsiz — atlanıyor
+            KeyCap(0x36, ',', ';'),
+            KeyCap(0x37, '.', ':'),
+            KeyCap(0x38, '-', '_'),
+            KeyCap(0x64, '<', '>')
+        )
+    )
+
+    private val PL: Map<Char, KeyStroke> = PL_TABLE.toMap()
+    private val PT: Map<Char, KeyStroke> = PT_TABLE.toMap()
 
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
-        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE
+        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE
     )
 }
