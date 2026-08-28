@@ -35,7 +35,8 @@ object HidLayouts {
         NL(R.string.bt_layout_nl),
         CZ(R.string.bt_layout_cz),
         HU(R.string.bt_layout_hu),
-        NO(R.string.bt_layout_no)
+        NO(R.string.bt_layout_no),
+        BE(R.string.bt_layout_be)
     }
 
     /**
@@ -103,6 +104,7 @@ object HidLayouts {
             Layout.CZ -> CZ
             Layout.HU -> HU
             Layout.NO -> NO
+            Layout.BE -> BE
         }
 
     /**
@@ -1065,11 +1067,87 @@ object HidLayouts {
 
     private val NO: Map<Char, KeyStroke> = NO_TABLE.toMap()
 
+    /**
+     * Belçika Fransızcası (AZERTY, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdbe_2.html — "Belgian
+     * French", modern Windows'un varsayılanı; eski "Belgian Period"
+     * (kbdbe_1) ve Felemenkçe-Belçika "Belgian Comma" (kbdbene) varyantları
+     * AYRI düzenler, kaynaklanmadı), ham Unicode ad etiketleriyle, birebir
+     * okuma. Fransızca (FR_TABLE) ile aynı AZERTY aile yapısı — A/Q, Z/W
+     * yer değiştirir, M ";"nin yerine taşınır — ama noktalama BAMBAŞKA.
+     *
+     * Gerçek klavyede iki çakışma bulundu: `{` iki digit tuşunda (4 VE 9)
+     * göründü, `[` hem digit-5'in hem de ^-ölü-tuşunun AltGr'ında göründü
+     * — her ikisinde de yalnız İLK/digit-satırındaki tanım bırakıldı,
+     * ikincisi atlandı (Macarca'daki tekrarla aynı sınıf).
+     *
+     * `0x2F` (^ ölü tuş, P'den sonra) HER ÜÇ değiştiricide de ölü/çakışan —
+     * tabloda hiç yok. `0x31` konumu FR_TABLE'daki gibi gerçek (µ/£).
+     */
+    private val BE_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x14, 'a', shift = 'A'),
+            KeyCap(0x1A, 'z', shift = 'Z'),
+            KeyCap(0x08, 'e', shift = 'E', altgr = '€'),
+            KeyCap(0x15, 'r', shift = 'R'),
+            KeyCap(0x17, 't', shift = 'T'),
+            KeyCap(0x1C, 'y', shift = 'Y'),
+            KeyCap(0x18, 'u', shift = 'U'),
+            KeyCap(0x0C, 'i', shift = 'I'),
+            KeyCap(0x12, 'o', shift = 'O'),
+            KeyCap(0x13, 'p', shift = 'P'),
+            KeyCap(0x04, 'q', shift = 'Q'),
+            KeyCap(0x16, 's', shift = 'S'),
+            KeyCap(0x07, 'd', shift = 'D'),
+            KeyCap(0x09, 'f', shift = 'F'),
+            KeyCap(0x0A, 'g', shift = 'G'),
+            KeyCap(0x0B, 'h', shift = 'H'),
+            KeyCap(0x0D, 'j', shift = 'J'),
+            KeyCap(0x0E, 'k', shift = 'K'),
+            KeyCap(0x0F, 'l', shift = 'L'),
+            KeyCap(0x33, 'm', shift = 'M'),
+            KeyCap(0x1D, 'w', shift = 'W'),
+            KeyCap(0x1B, 'x', shift = 'X'),
+            KeyCap(0x06, 'c', shift = 'C'),
+            KeyCap(0x19, 'v', shift = 'V'),
+            KeyCap(0x05, 'b', shift = 'B'),
+            KeyCap(0x11, 'n', shift = 'N'),
+            KeyCap(0x35, '²', '³'),
+            KeyCap(0x1E, '&', '1', altgr = '|'),
+            KeyCap(0x1F, 'é', '2', altgr = '@'),
+            KeyCap(0x20, '"', '3', altgr = '#'),
+            KeyCap(0x21, '\'', '4', altgr = '{'),
+            KeyCap(0x22, '(', '5', altgr = '['),
+            KeyCap(0x23, '§', '6', altgr = '^'),
+            KeyCap(0x24, 'è', '7'),
+            KeyCap(0x25, '!', '8'),
+            KeyCap(0x26, 'ç', '9'), // altgr'de de { var — digit-4'le çakışmasın diye atlandı
+            KeyCap(0x27, 'à', '0', altgr = '}'),
+            KeyCap(0x2D, ')', '°'),
+            KeyCap(0x2E, '-', '_'),
+            // 0x2F (P'den sonra): ^/¨ İKİSİ DE ÖLÜ TUŞ, altgr'deki [ de
+            // digit-5'le çakışıyor — üçü de atlanıyor, konum tabloda yok
+            KeyCap(0x30, '$', '*', altgr = ']'),
+            KeyCap(0x31, 'µ', '£'), // altgr: ` ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x34, 'ù', '%'), // altgr: ´ ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x10, ',', '?'), // eski "m" konumu — M harfi 0x33'e taşındığı için boşta
+            KeyCap(0x36, ';', '.'),
+            KeyCap(0x37, ':', '/'),
+            KeyCap(0x38, '=', '+'),
+            KeyCap(0x64, '<', '>', altgr = '\\')
+        )
+    )
+
+    private val BE: Map<Char, KeyStroke> = BE_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
         Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
-        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE, Layout.HU to HU_TABLE, Layout.NO to NO_TABLE
+        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE, Layout.HU to HU_TABLE, Layout.NO to NO_TABLE,
+        Layout.BE to BE_TABLE
     )
 }
