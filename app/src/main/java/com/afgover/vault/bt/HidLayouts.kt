@@ -37,7 +37,8 @@ object HidLayouts {
         HU(R.string.bt_layout_hu),
         NO(R.string.bt_layout_no),
         BE(R.string.bt_layout_be),
-        DV(R.string.bt_layout_dv)
+        DV(R.string.bt_layout_dv),
+        CK(R.string.bt_layout_ck)
     }
 
     /**
@@ -107,6 +108,7 @@ object HidLayouts {
             Layout.NO -> NO
             Layout.BE -> BE
             Layout.DV -> DV
+            Layout.CK -> CK
         }
 
     /**
@@ -1202,12 +1204,76 @@ object HidLayouts {
 
     private val DV: Map<Char, KeyStroke> = DV_TABLE.toMap()
 
+    /**
+     * Colemak (ABD tabanlı) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdcmk.html), ham
+     * Unicode ad etiketleriyle, birebir okuma. Base/Shift tarafı Dvorak
+     * kadar temiz — hiç çelişki yok. AltGr tarafı BAMBAŞKA bir hikâye:
+     * Colemak'ın kendi "Extended" varyantı, düzinelerce dilin aksanlı
+     * harfini birleştirme yoluyla (ölü tuş) yazmak için dev bir uluslararası
+     * katman taşıyor (İskandinav, Baltık, Orta Avrupa, İspanyolca vb.) —
+     * bunların HİÇBİRİ şifre karakter kümesinde yok ve neredeyse tamamı ölü
+     * tuş, bu yüzden tabloya hiç alınmadı (gerçek bir eksiklik değil,
+     * kasıtlı kapsam dışı bırakma — bu düzenin AltGr'ı zaten "aksan
+     * kompozisyonu" için var, şifre yazmak için değil).
+     *
+     * Gerçek klavyede `-`/`_` iki yoldan erişiliyor (satır 1'deki normal
+     * tire tuşu VE ISO ekstra tuşu) — çakışma olmasın diye ISO ekstra tuşu
+     * (0x64) bu kez tamamen atlandı, satır 1'deki tanım (kod tabanındaki
+     * her düzenle tutarlı konum) bırakıldı.
+     */
+    private val CK_TABLE = KeyTable(
+        KeyTable.ORTAK + listOf(
+            KeyCap(0x04, 'a', shift = 'A'),
+            KeyCap(0x05, 'b', shift = 'B'),
+            KeyCap(0x06, 'c', shift = 'C'),
+            KeyCap(0x07, 's', shift = 'S'),
+            KeyCap(0x08, 'f', shift = 'F'),
+            KeyCap(0x09, 't', shift = 'T'),
+            KeyCap(0x0A, 'd', shift = 'D'),
+            KeyCap(0x0B, 'h', shift = 'H'),
+            KeyCap(0x0C, 'u', shift = 'U'),
+            KeyCap(0x0D, 'n', shift = 'N'),
+            KeyCap(0x0E, 'e', shift = 'E'),
+            KeyCap(0x0F, 'i', shift = 'I'),
+            KeyCap(0x10, 'm', shift = 'M'),
+            KeyCap(0x11, 'k', shift = 'K'),
+            KeyCap(0x12, 'y', shift = 'Y'),
+            KeyCap(0x13, ';', shift = ':'),
+            KeyCap(0x14, 'q', shift = 'Q'),
+            KeyCap(0x15, 'p', shift = 'P'),
+            KeyCap(0x16, 'r', shift = 'R'),
+            KeyCap(0x17, 'g', shift = 'G'),
+            KeyCap(0x18, 'l', shift = 'L'),
+            KeyCap(0x19, 'v', shift = 'V'),
+            KeyCap(0x1A, 'w', shift = 'W'),
+            KeyCap(0x1B, 'x', shift = 'X'),
+            KeyCap(0x1C, 'j', shift = 'J'),
+            KeyCap(0x1D, 'z', shift = 'Z'),
+            KeyCap(0x33, 'o', shift = 'O'),
+            KeyCap(0x34, '\'', shift = '"'),
+            KeyCap(0x35, '`', '~'),
+            KeyCap(0x1E, '1', '!'), KeyCap(0x1F, '2', '@'), KeyCap(0x20, '3', '#'),
+            KeyCap(0x21, '4', '$'), KeyCap(0x22, '5', '%'), KeyCap(0x23, '6', '^'),
+            KeyCap(0x24, '7', '&'), KeyCap(0x25, '8', '*'), KeyCap(0x26, '9', '('),
+            KeyCap(0x27, '0', ')'),
+            KeyCap(0x2D, '-', '_'), KeyCap(0x2E, '=', '+'),
+            KeyCap(0x2F, '[', '{'), KeyCap(0x30, ']', '}'), KeyCap(0x31, '\\', '|'),
+            // 0x64 (ISO ekstra tuşu): -/_ — 0x2D'yle birebir çakışıyor, atlanıyor
+            KeyCap(0x36, ',', '<'), KeyCap(0x37, '.', '>'), KeyCap(0x38, '/', '?')
+        )
+    )
+
+    private val CK: Map<Char, KeyStroke> = CK_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
         Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
         Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE, Layout.HU to HU_TABLE, Layout.NO to NO_TABLE,
-        Layout.BE to BE_TABLE, Layout.DV to DV_TABLE
+        Layout.BE to BE_TABLE, Layout.DV to DV_TABLE, Layout.CK to CK_TABLE
     )
 }

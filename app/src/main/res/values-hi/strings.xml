@@ -479,6 +479,7 @@
     <string name="bt_layout_no">नॉर्वेजियन</string>
     <string name="bt_layout_be">बेल्जियन (AZERTY)</string>
     <string name="bt_layout_dv">डवोरक (US)</string>
+    <string name="bt_layout_ck">कोलमक</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">भाषा</string>
     <string name="settings_language_desc">ऐप की भाषा चुनें। यह केवल Sekuvo पर लागू होती है, फ़ोन के बाक़ी हिस्से पर नहीं।</string>
