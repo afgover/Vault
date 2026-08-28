@@ -28,7 +28,9 @@ object AppLocale {
         SYSTEM("", R.string.settings_lang_system),
         TURKISH("tr", R.string.settings_lang_tr),
         ENGLISH("en", R.string.settings_lang_en),
-        SPANISH("es", R.string.settings_lang_es);
+        SPANISH("es", R.string.settings_lang_es),
+        HINDI("hi", R.string.settings_lang_hi),
+        ARABIC("ar", R.string.settings_lang_ar);
 
         companion object {
             fun of(tag: String?): Option =

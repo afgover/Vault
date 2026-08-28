@@ -475,6 +475,8 @@
     <string name="settings_lang_tr">Türkçe</string>
     <string name="settings_lang_en">English</string>
     <string name="settings_lang_es">Español</string>
+    <string name="settings_lang_hi">हिन्दी</string>
+    <string name="settings_lang_ar">العربية</string>
     <string name="settings_layouts">Distribuciones de teclado de ordenador</string>
     <string name="settings_layouts_summary">%1$d de %2$d distribuciones activas</string>
     <string name="settings_expand">Mostrar</string>

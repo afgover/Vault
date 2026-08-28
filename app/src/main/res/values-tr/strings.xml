@@ -476,6 +476,8 @@
     <string name="settings_lang_tr">Türkçe</string>
     <string name="settings_lang_en">English</string>
     <string name="settings_lang_es">Español</string>
+    <string name="settings_lang_hi">हिन्दी</string>
+    <string name="settings_lang_ar">العربية</string>
     <string name="settings_layouts">Bilgisayar klavye düzenleri</string>
     <string name="settings_layouts_summary">%2$d düzenden %1$d tanesi açık</string>
     <string name="settings_expand">Göster</string>

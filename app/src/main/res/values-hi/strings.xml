@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand name: not translated. -->
+    <string name="app_name" translatable="false">Sekuvo</string>
+    <string name="ime_label">Sekuvo कीबोर्ड</string>
+    <string name="autofill_label" translatable="false">Sekuvo</string>
+
+    <!-- Built-in field labels. These are DISPLAY text only: what gets stored
+         in the usage log and the clipboard label is the stable key, never
+         this string (otherwise the log would change language mid-history). -->
+    <string name="field_full_name">पूरा नाम</string>
+    <string name="field_username">उपयोगकर्ता नाम</string>
+    <string name="field_password">पासवर्ड</string>
+    <string name="field_url">साइट / ऐप</string>
+    <string name="field_phone">फ़ोन</string>
+    <string name="field_email">ईमेल</string>
+    <string name="field_address">पता</string>
+    <string name="field_cardholder">कार्डधारक</string>
+    <string name="field_card_number">कार्ड नंबर</string>
+    <string name="field_expiry">समाप्ति तिथि</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">नोट</string>
+
+    <!-- Entry types -->
+    <string name="type_login">खाता / पासवर्ड</string>
+    <string name="type_everyday">रोज़मर्रा</string>
+    <string name="type_card">कार्ड</string>
+    <string name="type_note">सुरक्षित नोट</string>
+
+    <!-- Note subtypes -->
+    <string name="note_kind_general">सामान्य नोट</string>
+    <string name="note_kind_script">स्क्रिप्ट / कमांड (.sh)</string>
+    <string name="note_kind_key">कुंजी / प्रमाणपत्र (.pem)</string>
+    <string name="note_kind_fingerprint">फ़िंगरप्रिंट / ट्रस्ट एंकर</string>
+    <string name="note_kind_recovery">रिकवरी कोड</string>
+    <string name="note_kind_config">कॉन्फ़िगरेशन (.env, json)</string>
+
+    <!-- Sort options -->
+    <string name="sort_title_asc">शीर्षक (A→Z)</string>
+    <string name="sort_title_desc">शीर्षक (Z→A)</string>
+    <string name="sort_updated_desc">हाल में अपडेट किया गया</string>
+    <string name="sort_created_desc">हाल में जोड़ा गया</string>
+    <string name="sort_type">प्रकार अनुसार</string>
+    <string name="sort_manual">कस्टम क्रम (खींचें)</string>
+
+    <!-- Usage log event kinds -->
+    <string name="usage_created">बनाया गया</string>
+    <string name="usage_updated">बदला गया</string>
+    <string name="usage_copied">क्लिपबोर्ड पर कॉपी किया गया</string>
+    <string name="usage_bt_typed">कंप्यूटर पर टाइप किया गया</string>
+    <string name="usage_keyboard_typed">कीबोर्ड से टाइप किया गया</string>
+    <string name="usage_quick_on">त्वरित पहुँच चालू</string>
+    <string name="usage_quick_off">त्वरित पहुँच बंद</string>
+
+    <!-- Bluetooth keyboard: layouts and speeds -->
+    <string name="bt_layout_us">US (अंग्रेज़ी)</string>
+    <string name="bt_layout_tr">तुर्की Q</string>
+    <string name="bt_speed_safe">सुरक्षित</string>
+    <string name="bt_speed_fast">तेज़</string>
+    <string name="bt_speed_turbo">बहुत तेज़</string>
+
+    <!-- Bluetooth keyboard: errors reported from a context-free manager -->
+    <string name="bt_err_off">ब्लूटूथ बंद है। पहले ब्लूटूथ चालू करें।</string>
+    <string name="bt_err_unsupported">यह फ़ोन ब्लूटूथ कीबोर्ड (HID) प्रोफ़ाइल सपोर्ट नहीं करता।</string>
+    <string name="bt_err_register">HID रजिस्ट्रेशन विफल — शायद फ़ोन इसे सपोर्ट नहीं करता।</string>
+    <string name="bt_err_connect">कनेक्शन शुरू नहीं हो सका। क्या दूसरे डिवाइस का ब्लूटूथ चालू है?</string>
+    <string name="bt_err_no_link">कोई कनेक्शन नहीं — डिवाइस फिर से चुनें।</string>
+    <string name="bt_err_queue">ब्लूटूथ भेजने की क़तार जवाब देना बंद कर गई; टाइपिंग अक्षर %1$d पर रुकी। धीमी गति चुनें।</string>
+
+    <!-- Entry too large -->
+    <string name="entry_too_large">«%1$s» बहुत बड़ी है: %2$d KB (सीमा %3$d KB)। लंबी सामग्री बाँटें, या इसे कंप्यूटर पर फ़ाइल के रूप में रखें।</string>
+    <string name="ime_write_field">%1$s टाइप करें</string>
+
+    <!-- backup -->
+    <string name="backup_autofill_form_unreadable">फ़ॉर्म नहीं पढ़ा जा सका</string>
+    <string name="backup_autofill_locked_save">तिजोरी लॉक है। सहेजने के लिए पहले Sekuvo अनलॉक करें।</string>
+    <string name="backup_autofill_nothing_to_save">सहेजने लायक जानकारी नहीं मिली</string>
+    <string name="backup_autofill_save_failed">सहेजा नहीं जा सका: %1$s</string>
+    <string name="backup_autofill_unlock_to_fill">भरने के लिए अनलॉक करें</string>
+    <!-- bt -->
+    <string name="bt_duration_seconds">%1$d सेकंड</string>
+    <string name="bt_duration_minutes">%1$d मिनट %2$d सेकंड</string>
+    <string name="bt_unsupported_title">सपोर्टेड नहीं</string>
+    <string name="bt_unsupported_body">ब्लूटूथ कीबोर्ड सुविधा के लिए Android 9 या नया चाहिए।</string>
+    <string name="bt_ok">ठीक है</string>
+    <string name="bt_stopped_summary">रुका: %1$d / %2$d अक्षर टाइप हुए। कंप्यूटर पर टेक्स्ट अधूरा है — उसे मिटाकर फिर से शुरू करें।</string>
+    <string name="bt_aborted_summary">टाइपिंग बीच में कट गई: %1$d / %2$d अक्षर। कंप्यूटर पर टेक्स्ट अधूरा है — उसे मिटाएँ, धीमी गति चुनें और फिर कोशिश करें।</string>
+    <string name="bt_speed_result">%1$d अक्षर, %2$s (%3$d अक्षर/सेकंड)</string>
+    <string name="bt_unknown_device">अज्ञात डिवाइस</string>
+    <string name="bt_untyped_warning">ये अक्षर इस लेआउट में टाइप नहीं हो सके: %1$s — दूसरा लेआउट आज़मा सकते हैं।</string>
+    <string name="bt_done_summary">✓ %1$d अक्षर टाइप हुए — %2$s, %3$d अक्षर/सेकंड। कंप्यूटर पर अक्षरों की गिनती जाँचें।</string>
+    <string name="bt_title">कंप्यूटर पर टाइप करें: %1$s</string>
+    <string name="bt_permission_required">ब्लूटूथ अनुमति ज़रूरी है। इसके बिना यह सुविधा काम नहीं कर सकती।</string>
+    <string name="bt_preparing">ब्लूटूथ कीबोर्ड तैयार हो रहा है…</string>
+    <string name="bt_pick_computer">अपना कंप्यूटर चुनें (वह फ़ोन के साथ पहले से ब्लूटूथ पेयर होना चाहिए):</string>
+    <string name="bt_no_bonded_devices">कोई पेयर किया डिवाइस नहीं। फ़ोन की ब्लूटूथ सेटिंग्स से कंप्यूटर के साथ पेयर करें और फिर कोशिश करें।</string>
+    <string name="bt_connecting">%1$s से जुड़ रहा है…</string>
+    <string name="bt_connected">✓ %1$s जुड़ा</string>
+    <string name="bt_layout_heading">आपके कंप्यूटर का कीबोर्ड लेआउट (फ़ोन का नहीं):</string>
+    <string name="bt_layout_warning">की-कोड कंप्यूटर पढ़ता है — ग़लत लेआउट चुनने पर @ \" ? जैसे अक्षर चुपचाप दूसरे में बदल जाते हैं।</string>
+    <string name="bt_selected_layout">चुना गया लेआउट: %1$s</string>
+    <string name="bt_sensitive_chars">इस टेक्स्ट में लेआउट-संवेदनशील अक्षर हैं: %1$s — भेजने से पहले परीक्षण टाइप करने की सलाह है।</string>
+    <string name="bt_test_done">✓ परीक्षण टाइप हुआ — फिर कोशिश करें</string>
+    <string name="bt_test_first">🧪 पहले परीक्षण टाइप करें (सुझाया गया)</string>
+    <string name="bt_test_expected">कंप्यूटर पर बिल्कुल यही दिखना चाहिए:\n%1$s\nअगर अलग हो, तो ऊपर दूसरा लेआउट चुनें और परीक्षण दोहराएँ।</string>
+    <string name="bt_speed_heading">टाइपिंग गति:</string>
+    <string name="bt_speed_desc">कुंजियाँ एक-एक कर भेजी जाती हैं। अगर गति कनेक्शन की क्षमता से ज़्यादा हो, तो टाइपिंग रुक जाती है (कोई अक्षर खोता नहीं) — कौन-सी गति काम करती है, यह गति परीक्षण से मापें।</string>
+    <string name="bt_estimate">%1$d अक्षर ≈ %2$s</string>
+    <string name="bt_speed_test_button">⏱ गति परीक्षण (%1$d अक्षर)</string>
+    <string name="bt_speed_result_detail">%1$s\nकंप्यूटर पर स्पेस से अलग 10 समूह दिखने चाहिए, हर एक ठीक %2$s का — एक भी अलग हो तो अगली धीमी गति चुनें और परीक्षण दोहराएँ।</string>
+    <string name="bt_typing_progress">टाइप हो रहा है… %1$d / %2$d अक्षर</string>
+    <string name="bt_remaining">~%1$s बाक़ी — जब तक ख़त्म न हो, कंप्यूटर पर कर्सर न हिलाएँ।</string>
+    <string name="bt_before_start">कर्सर को कंप्यूटर पर लक्ष्य फ़ील्ड में रखें, फिर बटन दबाएँ। टाइपिंग 3 सेकंड बाद शुरू होती है।</string>
+    <string name="bt_countdown_short">%1$d…</string>
+    <string name="bt_type">टाइप करें</string>
+    <string name="bt_stop">रोकें</string>
+    <string name="bt_close">बंद करें</string>
+    <!-- detail -->
+    <string name="detail_back">वापस</string>
+    <string name="detail_edit">संपादित करें</string>
+    <string name="detail_quick_title">बिना पासवर्ड कीबोर्ड पर इस्तेमाल करें</string>
+    <string name="detail_quick_on">तिजोरी लॉक रहते भी Sekuvo कीबोर्ड में दिखती है; इसकी सुरक्षा उतनी ही है जितना आपके फ़ोन का स्क्रीन लॉक।</string>
+    <string name="detail_quick_off">केवल तिजोरी अनलॉक रहते उपलब्ध।</string>
+    <string name="detail_dates">जोड़ा गया: %1$s · अपडेट किया गया: %2$s</string>
+    <string name="detail_password_changed">पासवर्ड आख़िरी बार बदला गया: %1$s</string>
+    <string name="detail_usage_title">हाल के इस्तेमाल</string>
+    <string name="detail_usage_desc">यह एंट्री ऐप के भीतर से कहाँ-कहाँ गई। स्क्रीन से पढ़े, फ़ोटो खींचे या ऑटोफ़िल से चुने गए मान यहाँ नहीं दिखते — लॉग केवल वही जानता है जो ऐप ने खुद किया।</string>
+    <string name="detail_usage_empty">अभी तक कोई इस्तेमाल नहीं।</string>
+    <string name="detail_show_less">कम दिखाएँ</string>
+    <string name="detail_show_all">सब दिखाएँ (%1$d)</string>
+    <string name="detail_hide">छुपाएँ</string>
+    <string name="detail_show">दिखाएँ</string>
+    <string name="detail_copy">कॉपी करें</string>
+    <string name="detail_type_to_pc">कंप्यूटर पर टाइप करें</string>
+    <string name="detail_show_fingerprint">SHA-256 फ़िंगरप्रिंट दिखाएँ</string>
+    <string name="detail_fingerprint_len">SHA-256 फ़िंगरप्रिंट · %1$d अक्षर</string>
+    <string name="detail_fingerprint_len_short">SHA-256 फ़िंगरप्रिंट · %1$d अक्षर · छोटा मान</string>
+    <string name="detail_fingerprint_warning">छोटे मान का डाइजेस्ट ब्रूट फ़ोर्स से उलटा जा सकता है — यह फ़िंगरप्रिंट किसी के साथ साझा न करें।</string>
+    <string name="detail_fingerprint_verify">किसी कंप्यूटर पर: shasum -a 256 file\n(हाथ से चिपकाया हो तो अंतिम नई लाइन छूट सकती है: printf \'%1$s\' \"$(cat file)\" | shasum -a 256)</string>
+    <string name="detail_copy_fingerprint">फ़िंगरप्रिंट कॉपी करें</string>
+    <!-- edit -->
+    <string name="edit_title_new">नया: %1$s</string>
+    <string name="edit_title_edit">संपादित करें</string>
+    <string name="edit_back">वापस</string>
+    <string name="edit_delete">मिटाएँ</string>
+    <string name="edit_field_title">शीर्षक</string>
+    <string name="edit_field_username">उपयोगकर्ता नाम</string>
+    <string name="edit_generate_password">पासवर्ड बनाएँ</string>
+    <string name="edit_field_card_number">कार्ड नंबर</string>
+    <string name="edit_field_expiry">समाप्ति (MM/YY)</string>
+    <string name="edit_field_iban">IBAN (वैकल्पिक)</string>
+    <string name="edit_note_kind">नोट का प्रकार</string>
+    <string name="edit_custom_fields">अतिरिक्त फ़ील्ड</string>
+    <string name="edit_field_name">फ़ील्ड का नाम</string>
+    <string name="edit_remove_field">फ़ील्ड हटाएँ</string>
+    <string name="edit_field_value">मान</string>
+    <string name="edit_add_field">+ फ़ील्ड जोड़ें</string>
+    <string name="edit_field_notes">नोट्स</string>
+    <string name="edit_quick_title">बिना पासवर्ड कीबोर्ड पर इस्तेमाल करें</string>
+    <string name="edit_quick_desc">चालू होने पर, यह एंट्री तिजोरी लॉक रहते भी Sekuvo कीबोर्ड में दिखती है। तब इसकी सुरक्षा केवल आपके फ़ोन के स्क्रीन लॉक जितनी रहती है; पासवर्ड जैसे संवेदनशील डेटा के लिए इसे बंद रखें।</string>
+    <string name="edit_tags">टैग</string>
+    <string name="edit_new_tag">+ नया</string>
+    <string name="edit_save">सहेजें</string>
+    <string name="edit_discard_title">बदलाव सहेजे नहीं गए</string>
+    <string name="edit_discard_text">आप जो लिखा उसे सहेजे बिना बाहर जाने वाले हैं। पक्का?</string>
+    <string name="edit_discard_confirm">बिना सहेजे बाहर जाएँ</string>
+    <string name="edit_discard_cancel">संपादन पर वापस जाएँ</string>
+    <string name="edit_delete_title">एंट्री मिटाएँ</string>
+    <string name="edit_delete_text">«%1$s» हमेशा के लिए मिटा दी जाएगी। पक्का?</string>
+    <string name="edit_cancel">रद्द करें</string>
+    <!-- home -->
+    <string name="home_sort_cd">क्रम: %1$s</string>
+    <string name="home_selected">चुना गया</string>
+    <string name="home_transfer_cd">कंप्यूटर से लाना</string>
+    <string name="home_generator_cd">पासवर्ड जनरेटर</string>
+    <string name="home_lock_cd">लॉक करें</string>
+    <string name="home_settings_cd">सेटिंग्स</string>
+    <string name="home_import_qr">QR से आयात</string>
+    <string name="home_import_text">पाठ से आयात</string>
+    <string name="home_add_cd">जोड़ें</string>
+    <string name="home_search_hint">एंट्री खोजें</string>
+    <string name="home_manage_tags_cd">टैग प्रबंधित करें</string>
+    <string name="home_manual_hint">कस्टम क्रम: किसी पंक्ति पर ⠿ हैंडल दबाकर रखें और खींचें।</string>
+    <string name="home_empty_vault">आपकी तिजोरी तैयार है — नीचे दाईं ओर + से अपनी पहली एंट्री जोड़ें।</string>
+    <string name="home_empty_filter">इन फ़िल्टरों से कोई एंट्री मेल नहीं खाती।</string>
+    <string name="home_drag_cd">खींचें</string>
+    <string name="home_tag_new">नया टैग</string>
+    <string name="home_tag_edit">टैग संपादित करें</string>
+    <string name="home_tag_name">नाम</string>
+    <string name="home_selected_color">चुना गया रंग</string>
+    <string name="home_save">सहेजें</string>
+    <string name="home_cancel">रद्द करें</string>
+    <string name="home_tags_title">टैग</string>
+    <string name="home_tags_empty">अभी तक कोई टैग नहीं। नीचे से एक जोड़ सकते हैं।</string>
+    <string name="home_edit_cd">संपादित करें</string>
+    <string name="home_delete">मिटाएँ</string>
+    <string name="home_tag_add_new">+ नया टैग</string>
+    <string name="home_close">बंद करें</string>
+    <string name="home_tag_delete_title">टैग मिटाएँ</string>
+    <string name="home_tag_delete_msg">«%1$s» मिट जाएगा और इसे रखने वाली एंट्री से हट जाएगा। एंट्री खुद नहीं मिटतीं।</string>
+    <!-- ime -->
+    <string name="ime_switch_keyboard">ABC</string>
+    <string name="ime_locked_quick_only">तिजोरी लॉक है — केवल त्वरित पहुँच वाली एंट्री।</string>
+    <string name="ime_unlock_all">🔓 अनलॉक करें (सभी एंट्री के लिए)</string>
+    <string name="ime_no_quick_entries">त्वरित पहुँच के लिए कोई एंट्री चिह्नित नहीं है।</string>
+    <string name="ime_no_entries">कोई एंट्री नहीं।</string>
+    <string name="ime_no_match">«%1$s» से कोई एंट्री मेल नहीं खाती।</string>
+    <string name="ime_back_to_list">← %1$s</string>
+    <string name="ime_search_hint">खोजें…</string>
+    <!-- log -->
+    <string name="log_title">उपयोग लॉग</string>
+    <string name="log_scope_note">लॉग केवल वही देखता है जो ऐप खुद करता है: स्क्रीन से पढ़ा, फ़ोटो खींचा या हाथ से टाइप किया गया मान कोई निशान नहीं छोड़ता। ऑटोफ़िल के दौरान आपने कौन-सी एंट्री चुनी, यह भी दर्ज नहीं हो सकता, क्योंकि Android इसे ऐप को नहीं बताता। तिजोरी अनलॉक रहते इस लॉग को मिटाया जा सकता है — यह छेड़छाड़-रोधी रिकॉर्ड नहीं है।</string>
+    <string name="log_filter_by_target">लक्ष्य से फ़िल्टर करें:</string>
+    <string name="log_filter_all">सभी</string>
+    <string name="log_empty">लॉग ख़ाली है।</string>
+    <string name="log_empty_for_target">इस लक्ष्य पर कोई एंट्री नहीं गई।</string>
+    <string name="log_deleted_entry">(मिटाई गई एंट्री)</string>
+    <string name="log_entries_to_target">«%1$s» पर भेजी गई एंट्री: %2$s</string>
+    <string name="log_clear_confirm">पूरा लॉग मिटाएँ? इसे वापस नहीं किया जा सकता; एंट्री खुद प्रभावित नहीं होतीं।</string>
+    <string name="log_clear_yes">हाँ, मिटाएँ</string>
+    <string name="log_cancel">रद्द करें</string>
+    <string name="log_close">बंद करें</string>
+    <string name="log_clear">लॉग मिटाएँ</string>
+    <!-- main -->
+    <string name="main_biometric_needs_pin">फ़िंगरप्रिंट रिकॉर्ड सहेजने के लिए आपका Sekuvo PIN चाहिए</string>
+    <string name="main_biometric_enable_failed">फ़िंगरप्रिंट चालू नहीं हो सका: %1$s</string>
+    <string name="main_biometric_enroll_title">बायोमेट्रिक अनलॉक चालू करें</string>
+    <string name="main_cancel">रद्द करें</string>
+    <string name="main_biometric_offer_title">फ़िंगरप्रिंट से अनलॉक करें</string>
+    <string name="main_biometric_offer_body">तिजोरी खोलने पर हर बार मास्टर पासवर्ड टाइप करने के बजाय आप फ़िंगरप्रिंट इस्तेमाल कर सकते हैं। मास्टर पासवर्ड ख़त्म नहीं होता: ज़रूरत पड़ने पर हमेशा काम करता है, और यही आपके बैकअप भी खोलता है — इसे भूलें नहीं।</string>
+    <string name="main_enable">चालू करें</string>
+    <string name="main_password_for_now">अभी के लिए पासवर्ड</string>
+    <string name="main_biometric_invalidated">फ़िंगरप्रिंट अनलॉक अब मान्य नहीं है (जैसे नया फ़िंगरप्रिंट जोड़ा गया)। पासवर्ड से अनलॉक करें।</string>
+    <string name="main_biometric_decrypt_failed">फ़िंगरप्रिंट सत्यापित हुआ, पर कुंजी डिक्रिप्ट नहीं हो सकी। पासवर्ड से अनलॉक करें।</string>
+    <string name="main_unlock_title">Sekuvo अनलॉक करें</string>
+    <string name="main_use_password">पासवर्ड इस्तेमाल करें</string>
+    <string name="main_hide">छुपाएँ</string>
+    <string name="main_show">दिखाएँ</string>
+    <!-- paste -->
+    <string name="paste_title_qr">QR से आयात</string>
+    <string name="paste_title_text">पाठ से आयात</string>
+    <string name="paste_qr_ready">✓ QR स्कैन हुआ · %1$d अक्षर का एन्क्रिप्टेड लिफ़ाफ़ा मिला।\nअब केवल **बैकअप पासवर्ड** डालें।</string>
+    <string name="paste_intro">पेज से टेक्स्ट चिपकाएँ या «क्लिपबोर्ड से लें» दबाएँ। यह टेक्स्ट एन्क्रिप्टेड है; इसका पासवर्ड अगले फ़ील्ड में डालेंगे।</string>
+    <string name="paste_label_envelope">एन्क्रिप्टेड लिफ़ाफ़ा</string>
+    <string name="paste_char_count">%1$d अक्षर</string>
+    <string name="paste_btn_clipboard">क्लिपबोर्ड से लें</string>
+    <string name="paste_label_backup_password">बैकअप पासवर्ड</string>
+    <string name="paste_mode_merge">मौजूदा में जोड़ें</string>
+    <string name="paste_mode_replace">सब बदलें</string>
+    <string name="paste_replace_warning">चेतावनी: हर मौजूदा एंट्री मिटा दी जाएगी और लिफ़ाफ़े वाली एंट्री उनकी जगह लिखी जाएँगी।</string>
+    <string name="paste_err_envelope_empty">एन्क्रिप्टेड लिफ़ाफ़ा फ़ील्ड ख़ाली है — «क्लिपबोर्ड से लें» से चिपकाएँ।</string>
+    <string name="paste_err_password_required_qr">बैकअप पासवर्ड ज़रूरी है: वही जो कंप्यूटर पर लिफ़ाफ़ा एन्क्रिप्ट करते समय डाला था।</string>
+    <string name="paste_err_password_missing">कोई बैकअप पासवर्ड नहीं डाला गया।</string>
+    <string name="paste_btn_importing">आयात हो रहा है…</string>
+    <string name="paste_btn_import">आयात करें</string>
+    <string name="paste_btn_cancel">रद्द करें</string>
+    <!-- qr -->
+    <string name="qr_status_aim">व्यूफ़ाइंडर में QR कोड को क़तार में लाएँ</string>
+    <string name="qr_status_done">हो गया</string>
+    <string name="qr_status_received">%1$d/%2$d मिले</string>
+    <string name="qr_status_frames_mismatch">फ़्रेम मेल नहीं खाए, फिर से शुरू करें</string>
+    <string name="qr_permission_rationale">कैमरा अनुमति ज़रूरी है। इमेज कभी डिवाइस से बाहर नहीं जाती: डिकोडर ऐप के भीतर है और ऐप के पास नेटवर्क अनुमति नहीं है।</string>
+    <string name="qr_grant_in_settings">सेटिंग्स में दें</string>
+    <string name="qr_grant_permission">अनुमति दें</string>
+    <string name="qr_camera_analysis">कैमरा विश्लेषण: %1$s · कोड को इतना पास रखें कि आधी स्क्रीन भर जाए</string>
+    <string name="qr_missing_frames">छूटे हुए फ़्रेम: %1$s</string>
+    <string name="qr_cancel">रद्द करें</string>
+    <!-- settings -->
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="settings_back">वापस</string>
+    <string name="settings_appearance">दिखावट</string>
+    <string name="settings_sort_moved">क्रम अब होम स्क्रीन पर है: शीर्षक के पास ⇅ आइकन से चुनें, यह सूची और Sekuvo कीबोर्ड दोनों में लागू होता है।\nमौजूदा क्रम: %1$s</string>
+    <string name="settings_backup">बैकअप</string>
+    <string name="settings_backup_desc">बैकअप फ़ाइल AES-256 से एन्क्रिप्टेड है और केवल बैकअप पासवर्ड से खुलती है। इसे जहाँ चाहें रख सकते हैं — Drive, SD कार्ड वगैरह; फ़ोन पूरी तरह मिट भी जाए, तो फ़ाइल और पासवर्ड मिलकर सब कुछ लौटा देते हैं।</string>
+    <string name="settings_backup_export">एन्क्रिप्टेड बैकअप बनाएँ</string>
+    <string name="settings_backup_restore">बैकअप से पुनर्स्थापित करें</string>
+    <string name="settings_import_paste">पाठ से आयात (चिपकाएँ)</string>
+    <string name="settings_usage_log">उपयोग लॉग</string>
+    <string name="settings_usage_log_desc">किस एंट्री का कौन-सा फ़ील्ड कब कहाँ गया — क्लिपबोर्ड पर, किसी कंप्यूटर पर, या कीबोर्ड के ज़रिए।</string>
+    <string name="settings_usage_log_open">उपयोग लॉग खोलें</string>
+    <string name="settings_security">सुरक्षा</string>
+    <string name="settings_locking">लॉकिंग</string>
+    <string name="settings_locking_desc">स्क्रीन बुझते ही तिजोरी लॉक हो जाती है; कुंजी मेमोरी से मिट जाती है। जब तक स्क्रीन चालू रहती है, दोबारा पासवर्ड या फ़िंगरप्रिंट नहीं माँगा जाता।\n\n«बिना पासवर्ड कीबोर्ड पर इस्तेमाल करें» चिह्नित एंट्री तिजोरी लॉक रहते भी इस्तेमाल हो सकती हैं; यह चिह्न हर एंट्री की अपनी स्क्रीन से चालू-बंद किया जा सकता है।</string>
+    <string name="settings_biometric_disable">बायोमेट्रिक अनलॉक बंद करें</string>
+    <string name="settings_biometric_enable">बायोमेट्रिक अनलॉक चालू करें</string>
+    <string name="settings_pin_heading">PIN (फ़िंगरप्रिंट का दूसरा फाटक)</string>
+    <string name="settings_pin_legacy_warning">⚠ यह PIN पुराने वर्शन में सेट हुआ था और इस वर्शन के साथ असंगत है: एंट्री नहीं खुल सकतीं और PIN बंद नहीं हो सकता। मास्टर पासवर्ड + PIN से इसे ठीक करें।</string>
+    <string name="settings_pin_on_desc">चालू: फ़िंगरप्रिंट पढ़ने के बाद PIN माँगा जाता है। मास्टर पासवर्ड से अनलॉक करने पर नहीं माँगा जाता — वह पासवर्ड पहले से ही एक मज़बूत राज़ है।</string>
+    <string name="settings_pin_off_desc">वैकल्पिक। चालू करने पर फ़िंगरप्रिंट रिकॉर्ड PIN से एन्क्रिप्ट होता है और अनलॉक पर फ़िंगरप्रिंट के बाद PIN माँगा जाता है। डिफ़ॉल्ट: बंद।\nक्रम मायने रखता है: पहले PIN सेट करें, फिर फ़िंगरप्रिंट चालू करें।</string>
+    <string name="settings_pin_repair">PIN रिकॉर्ड ठीक करें</string>
+    <string name="settings_pin_turn_off">PIN बंद करें</string>
+    <string name="settings_pin_set">PIN सेट करें</string>
+    <string name="settings_reminder_heading">मास्टर पासवर्ड याद-दिलाना</string>
+    <string name="settings_reminder_desc">फ़िंगरप्रिंट इस्तेमाल करते हुए मास्टर पासवर्ड महीनों तक टाइप नहीं होता और भूल जाता है — फिर भी यही आपके बैकअप खोलता है। आपके चुने अंतराल में एक बार, फ़िंगरप्रिंट की जगह पासवर्ड माँगा जाता है। डिफ़ॉल्ट: कभी नहीं।</string>
+    <string name="settings_reminder_never">कभी नहीं</string>
+    <string name="settings_reminder_days">%1$d दिन</string>
+    <string name="settings_change_password">मास्टर पासवर्ड बदलें</string>
+    <string name="settings_autofill">ऑटोफ़िल</string>
+    <string name="settings_autofill_on_desc">चालू। ऐप्स और ब्राउज़र में साइन-इन या कार्ड फ़ॉर्म टैप करने पर आपकी Sekuvo एंट्री भरने के विकल्प के रूप में दिखती हैं। तिजोरी लॉक हो तो पहले अनलॉक स्क्रीन आती है; लॉक रहते सिस्टम को कोई मान नहीं दिया जाता।</string>
+    <string name="settings_autofill_off_desc">चालू करने पर, ऐप्स और ब्राउज़र में साइन-इन या कार्ड फ़ॉर्म टैप करते ही आपकी Sekuvo एंट्री सीधे भरने के विकल्प के रूप में मिलती हैं। यह नई भरी गई जानकारी को Sekuvo में सहेजने का सुझाव भी देता है।\n\nनीचे का बटन सिस्टम सेटिंग्स खोलता है। जो सूची खुलती है उसका नाम डिवाइस के अनुसार बदलता है («पसंदीदा सेवा», «ऑटोफ़िल सेवा», या «पासवर्ड, पासकी और ऑटोफ़िल»); उस सूची से Sekuvo चुनें।</string>
+    <string name="settings_autofill_open">ऑटोफ़िल सेटिंग्स खोलें</string>
+    <string name="settings_autofill_enable">ऑटोफ़िल चालू करें</string>
+    <string name="settings_keyboard">Sekuvo कीबोर्ड</string>
+    <string name="settings_keyboard_desc">कीबोर्ड ऐड-ऑन चालू करने पर, किसी भी ऐप में कीबोर्ड स्विचर से «Sekuvo कीबोर्ड» चुनकर अपने सहेजे विवरण सीधे फ़ील्ड में टाइप कर सकते हैं।</string>
+    <string name="settings_keyboard_open">कीबोर्ड सेटिंग्स खोलें</string>
+    <string name="settings_export_pw_title">बैकअप पासवर्ड सेट करें</string>
+    <string name="settings_export_pw_desc">इस पासवर्ड के बिना बैकअप फ़ाइल नहीं खुल सकती। इसे अपने मास्टर पासवर्ड से अलग रखें: बैकअप पासवर्ड कंप्यूटरों पर टाइप होता है, मास्टर पासवर्ड कभी कंप्यूटर को छूता नहीं।</string>
+    <string name="settings_biometric_pin_title">फ़िंगरप्रिंट को PIN से जोड़ें</string>
+    <string name="settings_biometric_pin_desc">फ़िंगरप्रिंट रिकॉर्ड PIN से एन्क्रिप्ट होगा: अनलॉक पर पहले फ़िंगरप्रिंट, फिर यह PIN माँगा जाएगा।</string>
+    <string name="settings_label_pin">PIN</string>
+    <string name="settings_continue">जारी रखें</string>
+    <string name="settings_cancel">रद्द करें</string>
+    <string name="settings_label_password">पासवर्ड</string>
+    <string name="settings_label_password_again">पासवर्ड (फिर से)</string>
+    <string name="settings_ok">ठीक है</string>
+    <string name="settings_label_backup_password">बैकअप पासवर्ड</string>
+    <string name="settings_import_merge">मौजूदा में जोड़ें</string>
+    <string name="settings_import_replace">सब बदलें</string>
+    <string name="settings_import_replace_warning">चेतावनी: हर मौजूदा एंट्री मिटा दी जाएगी और बैकअप वाली एंट्री उनकी जगह लिखी जाएँगी।</string>
+    <string name="settings_import_pw_missing">कोई बैकअप पासवर्ड नहीं डाला गया।</string>
+    <string name="settings_import_confirm">पुनर्स्थापित करें</string>
+    <string name="settings_label_current_password">मौजूदा पासवर्ड</string>
+    <string name="settings_label_new_password">नया पासवर्ड</string>
+    <string name="settings_label_new_password_again">नया पासवर्ड (फिर से)</string>
+    <string name="settings_change">बदलें</string>
+    <string name="settings_pin_disable_desc">PIN बंद होने के बाद, एंट्री केवल मास्टर पासवर्ड / फ़िंगरप्रिंट से खुलती हैं। PIN याद रखने की ज़रूरत नहीं: मास्टर पासवर्ड काफ़ी है। इसके बाद फ़िंगरप्रिंट फिर से चालू करें।</string>
+    <string name="settings_pin_set_desc">PIN 4–12 अंकों का होना चाहिए। भूल जाने पर अकेला मास्टर पासवर्ड काफ़ी नहीं होता — PIN को अपने बैकअप पासवर्ड जैसी सुरक्षित जगह रखें। इसके बाद फ़िंगरप्रिंट फिर से चालू करनी होगी।</string>
+    <string name="settings_label_master_password">मास्टर पासवर्ड</string>
+    <string name="settings_label_current_pin">मौजूदा PIN</string>
+    <string name="settings_label_pin_again">PIN (फिर से)</string>
+    <string name="settings_repair">ठीक करें</string>
+    <string name="settings_turn_off">बंद करें</string>
+    <string name="settings_set">सेट करें</string>
+    <!-- transfer -->
+    <string name="transfer_title">कंप्यूटर से लाना · चरण %1$d/2</string>
+    <string name="transfer_step1_steps">1. कंप्यूटर पर aktar.html खोलें, ज़रूरत हो तो इसे अंग्रेज़ी में बदलें, और कर्सर को «Backup password» फ़ील्ड में रखें।\n2. नीचे दिए बटन से पासवर्ड दोनों फ़ील्ड में एक साथ टाइप कराएँ (बीच में एक Tab जाएगा)।</string>
+    <string name="transfer_regenerate">नया पासवर्ड बनाएँ</string>
+    <string name="transfer_password_note">एक जनरेट किया, एक बार इस्तेमाल होने वाला पासवर्ड — इसे याद रखने की ज़रूरत नहीं, चरण 2 इसे अपने आप इस्तेमाल करता है। अक्षर+अंक: कीबोर्ड लेआउट के अंतर से प्रभावित नहीं होते।</string>
+    <string name="transfer_bt_write_both">💻 ब्लूटूथ से दोनों फ़ील्ड में टाइप करें</string>
+    <string name="transfer_step2_steps">कंप्यूटर पर: सामग्री चिपकाएँ → «Şifrele ve yayınla» (एन्क्रिप्ट और प्रकाशित करें) → फ़ोन से QR स्कैन करें → पेज पर 📋 Kopyala (कॉपी करें)। फिर यहाँ लौटें और लिफ़ाफ़ा प्राप्त करें। पासवर्ड विज़ार्ड में पहले से तैयार है — आपको डालना नहीं होगा।</string>
+    <string name="transfer_envelope_label">एन्क्रिप्टेड लिफ़ाफ़ा</string>
+    <string name="transfer_char_count">%1$d अक्षर</string>
+    <string name="transfer_scan_qr">QR स्कैन करें</string>
+    <string name="transfer_from_clipboard">क्लिपबोर्ड से लें</string>
+    <string name="transfer_merge">मौजूदा में जोड़ें</string>
+    <string name="transfer_replace_all">सब बदलें</string>
+    <string name="transfer_replace_warning">चेतावनी: हर मौजूदा एंट्री मिटा दी जाएगी और लिफ़ाफ़े वाली एंट्री उनकी जगह लिखी जाएँगी।</string>
+    <string name="transfer_password_typed_next">पासवर्ड टाइप हुआ, जारी रखें →</string>
+    <string name="transfer_envelope_empty">एन्क्रिप्टेड लिफ़ाफ़ा फ़ील्ड ख़ाली है — कंप्यूटर पर प्रकाशित करें, QR स्कैन करें और «क्लिपबोर्ड से लें» दबाएँ।</string>
+    <string name="transfer_importing">आयात हो रहा है…</string>
+    <string name="transfer_import">आयात करें</string>
+    <string name="transfer_back">← वापस</string>
+    <string name="transfer_cancel">रद्द करें</string>
+    <string name="transfer_bt_label">ट्रांसफ़र पासवर्ड (Tab के साथ दोनों फ़ील्ड में)</string>
+    <!-- unlock -->
+    <string name="unlock_welcome_title">Sekuvo में आपका स्वागत है</string>
+    <string name="unlock_slogan">आपकी सुरक्षित तिजोरी।</string>
+    <string name="unlock_locked_title">Sekuvo लॉक है</string>
+    <string name="unlock_setup_desc">एक मास्टर पासवर्ड सेट करें। आपका सारा डेटा इससे बनी कुंजी से एन्क्रिप्ट होता है। इसे भूलने पर डेटा हमेशा के लिए दुर्गम हो जाता है।</string>
+    <string name="unlock_enter_desc">जारी रखने के लिए अपना मास्टर पासवर्ड डालें।</string>
+    <string name="unlock_master_reminder">याद-दिलाना: इस बार फ़िंगरप्रिंट की जगह अपना मास्टर पासवर्ड टाइप करें। भूला हुआ मास्टर पासवर्ड तिजोरी और बैकअप दोनों को लॉक कर देता है।</string>
+    <string name="unlock_master_password_label">मास्टर पासवर्ड</string>
+    <string name="unlock_password_label">पासवर्ड</string>
+    <string name="unlock_password_again_label">पासवर्ड (फिर से)</string>
+    <string name="unlock_create_vault">तिजोरी बनाएँ</string>
+    <string name="unlock_have_backup">मेरे पास बैकअप है — पुनर्स्थापित करें</string>
+    <string name="unlock_restore_selected">सेटअप के बाद पुनर्स्थापित होगा ✓ (रद्द करने के लिए टैप करें)</string>
+    <string name="unlock_restore_hint">पहले इस डिवाइस के लिए मास्टर पासवर्ड सेट करें। उसके तुरंत बाद अपनी बैकअप फ़ाइल चुनकर उसका बैकअप पासवर्ड डालेंगे; बैकअप की हर चीज़ वापस आ जाएगी।</string>
+    <string name="unlock_create_and_restore">बनाएँ और पुनर्स्थापित करें</string>
+    <string name="unlock_open_button">अनलॉक करें</string>
+    <string name="unlock_biometric_button">बायोमेट्रिक्स से अनलॉक करें</string>
+    <string name="unlock_pin_title">दूसरा फाटक</string>
+    <string name="unlock_pin_desc">अपना PIN डालें। इस कोड के बिना एंट्री डिक्रिप्ट नहीं हो सकतीं — अकेला मास्टर पासवर्ड काफ़ी नहीं है।</string>
+    <string name="unlock_pin_label">PIN (%1$d-%2$d अंक)</string>
+    <string name="unlock_pin_open">खोलें</string>
+    <string name="unlock_pin_cancel">रद्द करें</string>
+    <string name="unlock_generator_title">पासवर्ड जनरेटर</string>
+    <string name="unlock_generator_refresh">ताज़ा करें</string>
+    <string name="unlock_generator_summary">लंबाई: %1$d • मज़बूती: ~%2$d बिट %3$s</string>
+    <string name="unlock_generator_very_strong">(बहुत मज़बूत)</string>
+    <string name="unlock_generator_strong">(मज़बूत)</string>
+    <string name="unlock_generator_weak">(कमज़ोर)</string>
+    <string name="unlock_generator_avoid_ambiguous">मिलते-जुलते अक्षर हटाएँ (l, 1, O, 0)</string>
+    <string name="unlock_generator_use">इस्तेमाल करें</string>
+    <string name="unlock_generator_copy">कॉपी करें</string>
+    <string name="unlock_generator_close">बंद करें</string>
+    <!-- vm -->
+    <string name="vm_pin_repaired">PIN रिकॉर्ड ठीक हुआ · तिजोरी अब आपके मास्टर पासवर्ड से खुलती है</string>
+    <string name="vm_pin_repair_failed">ठीक नहीं हो सका: पासवर्ड या PIN ग़लत है</string>
+    <string name="vm_master_password_too_short">मास्टर पासवर्ड कम से कम 8 अक्षर का होना चाहिए</string>
+    <string name="vm_passwords_mismatch">पासवर्ड मेल नहीं खाते</string>
+    <string name="vm_wrong_password">पासवर्ड ग़लत है</string>
+    <string name="vm_legacy_pin_vault">यह तिजोरी पुराने PIN फ़ॉर्मैट में है। इसे मास्टर पासवर्ड + PIN से ठीक करना होगा।</string>
+    <string name="vm_key_undecryptable">तिजोरी की कुंजी डिक्रिप्ट नहीं हो सकी (रिकॉर्ड ख़राब हो सकता है)।</string>
+    <string name="vm_biometric_stale">फ़िंगरप्रिंट रिकॉर्ड इस PIN से पुराना था; इसे मिटा दिया गया है। मास्टर पासवर्ड से अनलॉक करें और फ़िंगरप्रिंट फिर से चालू करें।</string>
+    <string name="vm_pin_biometric_off">बहुत सारे ग़लत PIN। फ़िंगरप्रिंट अनलॉक बंद कर दिया गया है; मास्टर पासवर्ड से अनलॉक करें।</string>
+    <string name="vm_pin_wrong">PIN ग़लत है</string>
+    <string name="vm_key_unexpected_size">तिजोरी की कुंजी का आकार अप्रत्याशित है; मास्टर पासवर्ड से अनलॉक करने की कोशिश करें।</string>
+    <string name="vm_pin_enable_failed">PIN चालू नहीं हो सका: पासवर्ड ग़लत है, या PIN अमान्य है (4-12 अंक)</string>
+    <string name="vm_pin_enabled">PIN चालू हुआ · फ़िंगरप्रिंट फिर से चालू करें</string>
+    <string name="vm_pin_disable_failed">PIN बंद नहीं हो सका: मास्टर पासवर्ड ग़लत है</string>
+    <string name="vm_pin_disabled">PIN बंद हुआ · फ़िंगरप्रिंट फिर से चालू करें</string>
+    <string name="vm_new_password_too_short">नया पासवर्ड कम से कम 8 अक्षर का होना चाहिए</string>
+    <string name="vm_master_password_changed">मास्टर पासवर्ड बदला गया</string>
+    <string name="vm_current_password_wrong">मौजूदा पासवर्ड ग़लत है</string>
+    <string name="vm_quick_on">बिना पासवर्ड कीबोर्ड पर इस्तेमाल हो सकती है</string>
+    <string name="vm_quick_off">अनलॉक करने तक कीबोर्ड पर छिपी रहती है</string>
+    <string name="vm_copied">%1$s कॉपी हुआ (45 सेकंड में मिट जाएगा)</string>
+    <string name="vm_backup_password_too_short">बैकअप पासवर्ड कम से कम 8 अक्षर का होना चाहिए</string>
+    <string name="vm_file_open_failed">फ़ाइल नहीं खुल सकी</string>
+    <string name="vm_backup_saved">बैकअप सहेजा गया</string>
+    <string name="vm_backup_failed">बैकअप विफल: %1$s — इसने जो फ़ाइल बनाई उसे मिटाकर फिर से कोशिश करें।</string>
+    <string name="vm_vault_locked_retry">तिजोरी लॉक हो गई है — मास्टर पासवर्ड से अनलॉक कर फिर से कोशिश करें।</string>
+    <string name="vm_pasted_text_empty">चिपकाया गया टेक्स्ट ख़ाली है</string>
+    <string name="vm_text_too_large">टेक्स्ट बहुत बड़ा है — यह Sekuvo लिफ़ाफ़ा नहीं हो सकता</string>
+    <string name="vm_pasted_is_link">यह एक लिंक है, ख़ुद लिफ़ाफ़ा नहीं। फ़ोन के ब्राउज़र में लिंक खोलें और उसमें दिख रहा **टेक्स्ट** कॉपी करें।</string>
+    <string name="vm_not_an_envelope">यह Sekuvo का एन्क्रिप्टेड लिफ़ाफ़ा नहीं है — कॉपी किया टेक्स्ट अधूरा हो सकता है, या कुछ और हो सकता है। पेज का **पूरा** टेक्स्ट कॉपी करें।</string>
+    <string name="vm_envelope_empty">लिफ़ाफ़ा खुला पर उसमें कोई एंट्री नहीं है — हो सकता है भेजने वाले ने फ़ील्ड ख़ाली छोड़ी हों। आपकी तिजोरी अप्रभावित है।</string>
+    <string name="vm_backup_password_wrong">बैकअप पासवर्ड ग़लत है</string>
+    <string name="vm_invalid_envelope">अमान्य लिफ़ाफ़ा — हो सकता है टेक्स्ट अधूरा कॉपी हुआ हो</string>
+    <string name="vm_import_failed">आयात विफल: %1$s</string>
+    <string name="vm_backup_empty">बैकअप खुला पर उसमें कोई एंट्री नहीं है। आपकी तिजोरी अप्रभावित है।</string>
+    <string name="vm_invalid_backup_file">अमान्य बैकअप फ़ाइल</string>
+    <string name="vm_restore_failed">पुनर्स्थापना विफल: %1$s</string>
+    <string name="vm_biometric_enabled">फ़िंगरप्रिंट चालू हुआ</string>
+    <string name="vm_biometric_enable_failed">फ़िंगरप्रिंट चालू नहीं हो सका</string>
+    <string name="vm_biometric_disabled">बायोमेट्रिक अनलॉक बंद किया गया</string>
+    <string name="vm_usage_log_cleared">उपयोग लॉग मिटाया गया</string>
+    <string name="bt_sdp_name">Sekuvo कीबोर्ड</string>
+    <string name="bt_sdp_description">Sekuvo का सुरक्षित कीस्ट्रोक स्थानांतरण</string>
+
+    <plurals name="vm_import_added">
+        <item quantity="one">%1$d एंट्री जोड़ी गई · क्लिपबोर्ड साफ़ हुआ</item>
+        <item quantity="other">%1$d एंट्री जोड़ी गईं · क्लिपबोर्ड साफ़ हुआ</item>
+    </plurals>
+    <plurals name="vm_restored">
+        <item quantity="one">%1$d एंट्री पुनर्स्थापित हुई</item>
+        <item quantity="other">%1$d एंट्री पुनर्स्थापित हुईं</item>
+    </plurals>
+    <plurals name="vm_backup_saved_incomplete">
+        <item quantity="one">बैकअप सहेजा गया, पर %1$d एंट्री नहीं पढ़ी जा सकी और छोड़ दी गई (शायद ख़राब हो)। यह बैकअप अधूरा है।</item>
+        <item quantity="other">बैकअप सहेजा गया, पर %1$d एंट्री नहीं पढ़ी जा सकीं और छोड़ दी गईं (शायद ख़राब हों)। यह बैकअप अधूरा है।</item>
+    </plurals>
+    <plurals name="log_pending_note">
+        <item quantity="one">तिजोरी लॉक रहते %1$d घटना हुई और अभी तक लॉग में नहीं गई है; तिजोरी अनलॉक होने पर सूची में दिखेगी।</item>
+        <item quantity="other">तिजोरी लॉक रहते %1$d घटनाएँ हुईं और अभी तक लॉग में नहीं गई हैं; तिजोरी अनलॉक होने पर सूची में दिखेंगी।</item>
+    </plurals>
+    <plurals name="log_more_events">
+        <item quantity="one">… और %1$d घटना बाक़ी (सूची में पहली 200 दिखाई गई हैं)।</item>
+        <item quantity="other">… और %1$d घटनाएँ बाक़ी (सूची में पहली 200 दिखाई गई हैं)।</item>
+    </plurals>
+    <plurals name="bt_countdown">
+        <item quantity="one">टाइपिंग %1$d सेकंड में शुरू होगी — कर्सर को कंप्यूटर पर सही फ़ील्ड में रखें!</item>
+        <item quantity="other">टाइपिंग %1$d सेकंड में शुरू होगी — कर्सर को कंप्यूटर पर सही फ़ील्ड में रखें!</item>
+    </plurals>
+    <plurals name="vm_pin_wrong_wait">
+        <item quantity="one">PIN ग़लत है। %1$d सेकंड इंतज़ार करना होगा।</item>
+        <item quantity="other">PIN ग़लत है। %1$d सेकंड इंतज़ार करना होगा।</item>
+    </plurals>
+    <plurals name="vm_pin_locked_wait">
+        <item quantity="one">बहुत सारे ग़लत PIN। %1$d सेकंड में फिर कोशिश करें।</item>
+        <item quantity="other">बहुत सारे ग़लत PIN। %1$d सेकंड में फिर कोशिश करें।</item>
+    </plurals>
+    <string name="bt_layout_uk">ब्रिटिश (UK)</string>
+    <string name="bt_layout_de">जर्मन (QWERTZ)</string>
+    <string name="bt_layout_fr">फ़्रेंच (AZERTY)</string>
+    <string name="bt_layout_es">स्पैनिश</string>
+    <string name="bt_layout_it">इतालवी</string>
+    <string name="bt_layout_tr_f">तुर्की F</string>
+    <!-- Uygulama dili ve klavye düzeni seçimi -->
+    <string name="settings_language">भाषा</string>
+    <string name="settings_language_desc">ऐप की भाषा चुनें। यह केवल Sekuvo पर लागू होती है, फ़ोन के बाक़ी हिस्से पर नहीं।</string>
+    <string name="settings_lang_system">सिस्टम भाषा</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_lang_es">Español</string>
+    <string name="settings_lang_hi">हिन्दी</string>
+    <string name="settings_lang_ar">العربية</string>
+    <string name="settings_layouts">कंप्यूटर कीबोर्ड लेआउट</string>
+    <string name="settings_layouts_summary">%2$d में से %1$d लेआउट चालू</string>
+    <string name="settings_expand">दिखाएँ</string>
+    <string name="settings_collapse">छुपाएँ</string>
+    <string name="settings_layouts_desc">जो लेआउट आप सच में इस्तेमाल करते हैं वे चुनें। किसी कंप्यूटर पर राज़ टाइप करते समय केवल टिक किए लेआउट दिखते हैं — बाक़ी आपके रास्ते में नहीं आते।</string>
+    <string name="settings_layouts_min">कम से कम एक लेआउट चालू रहता है।</string>
+
+    <!-- Bilgi sayfaları: Hakkında / Gizlilik / Rehber -->
+    <string name="info_about_title">परिचय</string>
+    <string name="info_privacy_title">गोपनीयता नीति</string>
+    <string name="info_guide_title">मार्गदर्शिका</string>
+    <string name="info_about_version">वर्शन</string>
+    <string name="info_about_package">पैकेज</string>
+    <string name="info_about_license">लाइसेंस</string>
+    <string name="info_about_developer">डेवलपर</string>
+    <string name="info_about_website">sekuvo.com खोलें</string>
+    <string name="info_about_source">GitHub पर सोर्स कोड</string>
+    <string name="info_about_contact">contact@sekuvo.com</string>
+    <string name="info_about_what_title">यह ऐप क्या है</string>
+    <string name="info_about_what_body">पासवर्ड, कार्ड और नोट के लिए पूरी तरह ऑफ़लाइन तिजोरी। यह इंटरनेट अनुमति नहीं माँगता, इसलिए आपका डेटा कहीं नहीं भेज सकता — न खाता, न क्लाउड, न सिंक, न एनालिटिक्स। सब कुछ आपके मास्टर पासवर्ड से बनी कुंजी के तहत AES-256-GCM से एन्क्रिप्टेड है।</string>
+
+    <string name="privacy_s1_title">सार</string>
+    <string name="privacy_s1_body">Sekuvo कोई डेटा इकट्ठा, प्रसारित या साझा नहीं करता। यह एक ऑफ़लाइन पासवर्ड तिजोरी है और इंटरनेट अनुमति नहीं माँगता, इसलिए यह तकनीकी रूप से आपका डेटा कहीं भेज ही नहीं सकता।</string>
+    <string name="privacy_s2_title">आपका डेटा कहाँ रहता है</string>
+    <string name="privacy_s2_body">शीर्षक, उपयोगकर्ता नाम, पासवर्ड, नोट और उपयोग इतिहास इसी डिवाइस पर, आपके मास्टर पासवर्ड से बनी कुंजी से एन्क्रिप्टेड रहते हैं। ऐप इनमें से कुछ भी किसी सर्वर पर अपलोड, सिंक या बैकअप नहीं करता।</string>
+    <string name="privacy_s3_title">अनुमतियाँ और उनकी वजह</string>
+    <string name="privacy_s3_body">कैमरा — केवल आपके चुने QR कोड स्कैन करने के लिए, डिवाइस पर ही प्रोसेस होता है।\nबायोमेट्रिक्स — केवल Android बायोमेट्रिक सिस्टम के ज़रिए तिजोरी अनलॉक करने के लिए। Sekuvo कभी आपका फ़िंगरप्रिंट या चेहरा न देखता है, न सहेजता है।\nब्लूटूथ — केवल तब जब आप Sekuvo से किसी पास के कंप्यूटर में राज़ टाइप करने को कहते हैं। केवल आपके चुने अक्षर, आपके पेयर किए डिवाइस को भेजे जाते हैं।</string>
+    <string name="privacy_s4_title">बैकअप और स्थानांतरण</string>
+    <string name="privacy_s4_body">ये केवल तब होते हैं जब आप शुरू करते हैं। ये आपके तय पासवर्ड से सुरक्षित एक एन्क्रिप्टेड फ़ाइल या QR कोड बनाते हैं, और केवल वहीं सहेजे या दिखाए जाते हैं जहाँ आप कहें। ऐप इन्हें कभी अपने आप कहीं नहीं भेजता।</string>
+    <string name="privacy_s5_title">बच्चे</string>
+    <string name="privacy_s5_body">Sekuvo किसी से भी डेटा इकट्ठा नहीं करता, बच्चों से भी नहीं।</string>
+    <string name="privacy_s6_title">संपर्क और पूरा पाठ</string>
+    <string name="privacy_s6_body">सवाल: contact@sekuvo.com\nइस नीति का आधिकारिक वर्शन sekuvo.com/privacy/ पर प्रकाशित है और किसी भी अंतर की स्थिति में वही मान्य होगा।</string>
+
+    <string name="guide_s1_title">पहली बार खोलना</string>
+    <string name="guide_s1_body">आप एक मास्टर पासवर्ड सेट करते हैं। सब कुछ इससे बनी कुंजी से एन्क्रिप्ट होता है, इसलिए यही एक चीज़ है जो वापस नहीं मिल सकती — इसे कहीं सुरक्षित लिख लें।\nदूसरे फ़ोन से आ रहे हैं? स्वागत स्क्रीन पर «मेरे पास बैकअप है — पुनर्स्थापित करें» टैप करें: इस डिवाइस के लिए मास्टर पासवर्ड फिर भी पहले सेट होता है, फिर फ़ाइल चयनकर्ता अपने आप खुलता है।</string>
+    <string name="guide_s2_title">आप क्या रख सकते हैं</string>
+    <string name="guide_s2_body">खाता/पासवर्ड, रोज़मर्रा (नाम, फ़ोन, ईमेल, पता), कार्ड, और सुरक्षित नोट — स्क्रिप्ट, कुंजी, रिकवरी कोड और कॉन्फ़िग फ़ाइलों के उप-प्रकारों के साथ। खाता और रोज़मर्रा एंट्री में असीमित अपने बनाए फ़ील्ड भी जुड़ते हैं, अंतर्निहित फ़ील्ड जितने ही एन्क्रिप्टेड।</string>
+    <string name="guide_s3_title">ऑटोफ़िल</string>
+    <string name="guide_s3_body">सेटिंग्स → ऑटोफ़िल चालू करें → सिस्टम सूची में से Sekuvo चुनें। यह सूची Samsung और Android 14+ पर «पासवर्ड, पासकी और ऑटोफ़िल → पसंदीदा सेवा» कहलाती है, और शुद्ध Android पर «ऑटोफ़िल सेवा»।\nइसके बाद, साइन-इन या कार्ड फ़ील्ड टैप करने पर आपकी एंट्री मिलती हैं। तिजोरी लॉक रहते सिस्टम को बिल्कुल कुछ नहीं दिया जाता।</string>
+    <string name="guide_s4_title">Sekuvo कीबोर्ड</string>
+    <string name="guide_s4_body">सेटिंग्स → कीबोर्ड चालू करें, फिर ज़रूरत पड़ने पर कीबोर्ड स्विचर से «Sekuvo कीबोर्ड» चुनें। यह सहेजे मान किसी भी फ़ील्ड में सीधे टाइप करता है, ऊपर खोज और हाल की एंट्री के साथ। लॉक रहते यह केवल त्वरित पहुँच के लिए चिह्नित एंट्री दिखाता है।</string>
+    <string name="guide_s5_title">ब्लूटूथ से कंप्यूटर में टाइप करना</string>
+    <string name="guide_s5_body">एंट्री खोलें, फ़ील्ड के पास 💻 आइकन टैप करें और यह स्क्रीन खुली रखें — फ़ोन खुद को कीबोर्ड के रूप में तभी घोषित करता है जब यह खुली हो। कंप्यूटर पर फ़ोन को नए ब्लूटूथ डिवाइस के रूप में जोड़ें और कोड की पुष्टि करें। फ़ोन पर लौटकर अपना कंप्यूटर चुनें, कंप्यूटर का कीबोर्ड लेआउट चुनें, लक्ष्य फ़ील्ड में क्लिक करें और टाइप करें दबाएँ।\nकनेक्टेड दिखता है पर कुछ टाइप नहीं होता? कंप्यूटर ने पहले कभी आपके फ़ोन को फ़ोन की तरह पेयर किया था, इसलिए कीबोर्ड सेवा कभी चालू ही नहीं हुई। दोनों तरफ़ पेयरिंग हटाएँ, 💻 स्क्रीन खोलें और कंप्यूटर से शुरू करते हुए दोबारा पेयर करें। Windows में तब डिवाइस मैनेजर → ह्यूमन इंटरफ़ेस डिवाइस में एक «ब्लूटूथ HID» डिवाइस दिखना चाहिए। macOS में, Keyboard Setup Assistant खुले तो उसे बंद कर दें।\nनिदान के लिए गति परीक्षण इस्तेमाल करें: कुछ न लिखे तो पेयरिंग की समस्या, अक्षर बिगड़ें तो लेआउट की, बीच में रुके तो गति की।</string>
+    <string name="guide_s6_title">लॉकिंग</string>
+    <string name="guide_s6_body">जिस स्क्रीन पर तिजोरी है वह बुझते ही तिजोरी लॉक हो जाती है — फ़ोल्डेबल को मोड़ना भी इसमें आता है। स्क्रीन चालू रहते ऐप से बाहर जाना उसे लॉक नहीं करता: ऐप, कीबोर्ड और ऑटोफ़िल एक ही सत्र साझा करते हैं।</string>
+    <string name="guide_s7_title">बैकअप</string>
+    <string name="guide_s7_body">सिस्टम बैकअप जानबूझकर बंद है, इसलिए आपकी तिजोरी फ़ोन से बाहर जाने का ठीक एक रास्ता है: सेटिंग्स → एन्क्रिप्टेड बैकअप बनाएँ। मास्टर पासवर्ड से अलग बैकअप पासवर्ड इस्तेमाल करें। बनी .vaultbak फ़ाइल और वह पासवर्ड मिलकर किसी भी फ़ोन पर, फ़ैक्ट्री रीसेट के बाद भी, सब कुछ लौटा देते हैं।</string>
+    <string name="guide_s8_title">कंप्यूटर से राज़ लाना</string>
+    <string name="guide_s8_body">➕ बटन «QR से आयात» और «पाठ से आयात» देता है। ⇄ विज़ार्ड दोनों एक साथ करता है: यह एक बार इस्तेमाल होने वाला ट्रांसफ़र पासवर्ड बनाता है, इसे ब्लूटूथ से कंप्यूटर में टाइप करता है, और फिर QR स्कैन करके या क्लिपबोर्ड से लिफ़ाफ़ा वापस लेकर उसी पासवर्ड से डिक्रिप्ट करता है।\nकंप्यूटर वाला टूल एक डाउनलोड है, वेबसाइट नहीं: प्रोजेक्ट के Releases पेज से aktar.html लें, उसका SHA-256 जाँचें, और इसे अपनी डिस्क से खोलें। यह साइट आपसे कभी कोई राज़ नहीं माँगती।</string>
+    <string name="settings_info_section">सहायता और जानकारी</string>
+    <string name="edit_email_invalid">पता जाँचें — इसमें एक @ और example.com जैसा डोमेन होना चाहिए</string>
+    <string name="edit_expiry_invalid">महीना और साल MMYY के रूप में डालें (महीना 01–12)</string>
+    <string name="edit_iban_invalid">इस IBAN के चेक अंक मेल नहीं खाते — शायद कोई अंक ग़लत टाइप हुआ है</string>
+    <string name="edit_iban_confirm_title">IBAN ग़लत टाइप लगता है</string>
+    <string name="edit_iban_confirm_text">इस IBAN के चेक अंक मेल नहीं खाते, यानी शायद कोई अंक ग़लत है। फिर भी इसे सहेजा जा सकता है — पर अगर यह टाइपो थी, तो तभी पता चलेगा जब ट्रांसफ़र नाकाम होगा।</string>
+    <string name="edit_iban_confirm_save">फिर भी सहेजें</string>
+    <string name="edit_iban_confirm_fix">वापस जाकर ठीक करें</string>
+</resources>

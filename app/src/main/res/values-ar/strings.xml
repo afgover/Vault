@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand name: not translated. -->
+    <string name="app_name" translatable="false">Sekuvo</string>
+    <string name="ime_label">لوحة مفاتيح Sekuvo</string>
+    <string name="autofill_label" translatable="false">Sekuvo</string>
+
+    <!-- Built-in field labels. These are DISPLAY text only: what gets stored
+         in the usage log and the clipboard label is the stable key, never
+         this string (otherwise the log would change language mid-history). -->
+    <string name="field_full_name">الاسم الكامل</string>
+    <string name="field_username">اسم المستخدم</string>
+    <string name="field_password">كلمة المرور</string>
+    <string name="field_url">الموقع / التطبيق</string>
+    <string name="field_phone">الهاتف</string>
+    <string name="field_email">البريد الإلكتروني</string>
+    <string name="field_address">العنوان</string>
+    <string name="field_cardholder">حامل البطاقة</string>
+    <string name="field_card_number">رقم البطاقة</string>
+    <string name="field_expiry">تاريخ الانتهاء</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">ملاحظة</string>
+
+    <!-- Entry types -->
+    <string name="type_login">حساب / كلمة مرور</string>
+    <string name="type_everyday">يوميّ</string>
+    <string name="type_card">بطاقة</string>
+    <string name="type_note">ملاحظة آمنة</string>
+
+    <!-- Note subtypes -->
+    <string name="note_kind_general">ملاحظة عامة</string>
+    <string name="note_kind_script">نص برمجي / أمر (.sh)</string>
+    <string name="note_kind_key">مفتاح / شهادة (.pem)</string>
+    <string name="note_kind_fingerprint">بصمة / مرساة ثقة</string>
+    <string name="note_kind_recovery">رموز الاستعادة</string>
+    <string name="note_kind_config">إعداد (.env, json)</string>
+
+    <!-- Sort options -->
+    <string name="sort_title_asc">العنوان (A→Z)</string>
+    <string name="sort_title_desc">العنوان (Z→A)</string>
+    <string name="sort_updated_desc">أحدث تحديث</string>
+    <string name="sort_created_desc">أحدث إضافة</string>
+    <string name="sort_type">حسب النوع</string>
+    <string name="sort_manual">ترتيب مخصّص (بالسحب)</string>
+
+    <!-- Usage log event kinds -->
+    <string name="usage_created">أُنشئت</string>
+    <string name="usage_updated">عُدِّلت</string>
+    <string name="usage_copied">نُسخت إلى الحافظة</string>
+    <string name="usage_bt_typed">كُتبت في حاسوب</string>
+    <string name="usage_keyboard_typed">كُتبت من لوحة المفاتيح</string>
+    <string name="usage_quick_on">الوصول السريع مفعَّل</string>
+    <string name="usage_quick_off">الوصول السريع معطَّل</string>
+
+    <!-- Bluetooth keyboard: layouts and speeds -->
+    <string name="bt_layout_us">أمريكي (إنجليزي)</string>
+    <string name="bt_layout_tr">تركي Q</string>
+    <string name="bt_speed_safe">آمنة</string>
+    <string name="bt_speed_fast">سريعة</string>
+    <string name="bt_speed_turbo">سريعة جدًّا</string>
+
+    <!-- Bluetooth keyboard: errors reported from a context-free manager -->
+    <string name="bt_err_off">البلوتوث مطفأ. فعّل البلوتوث أولًا.</string>
+    <string name="bt_err_unsupported">هذا الهاتف لا يدعم خاصية لوحة مفاتيح البلوتوث (HID).</string>
+    <string name="bt_err_register">فشل تسجيل HID — قد لا يدعمه الهاتف.</string>
+    <string name="bt_err_connect">تعذّر بدء الاتصال. هل بلوتوث الجهاز الآخر مفعَّل؟</string>
+    <string name="bt_err_no_link">لا يوجد اتصال — اختر الجهاز من جديد.</string>
+    <string name="bt_err_queue">توقّف طابور إرسال البلوتوث عن الاستجابة؛ توقّفت الكتابة عند المحرف %1$d. اختر سرعة أبطأ.</string>
+
+    <!-- Entry too large -->
+    <string name="entry_too_large">«%1$s» كبيرة جدًّا: %2$d كيلوبايت (الحد %3$d كيلوبايت). قسِّم المحتوى الطويل، أو احتفظ به كملف على حاسوبك.</string>
+    <string name="ime_write_field">اكتب %1$s</string>
+
+    <!-- backup -->
+    <string name="backup_autofill_form_unreadable">تعذّرت قراءة النموذج</string>
+    <string name="backup_autofill_locked_save">الخزنة مقفلة. افتح Sekuvo أولًا لتتمكن من الحفظ.</string>
+    <string name="backup_autofill_nothing_to_save">لم يُعثر على معلومات لحفظها</string>
+    <string name="backup_autofill_save_failed">تعذّر الحفظ: %1$s</string>
+    <string name="backup_autofill_unlock_to_fill">افتح القفل للملء</string>
+    <!-- bt -->
+    <string name="bt_duration_seconds">%1$d ث</string>
+    <string name="bt_duration_minutes">%1$d د %2$d ث</string>
+    <string name="bt_unsupported_title">غير مدعوم</string>
+    <string name="bt_unsupported_body">تتطلّب خاصية لوحة مفاتيح البلوتوث أندرويد 9 أو أحدث.</string>
+    <string name="bt_ok">حسنًا</string>
+    <string name="bt_stopped_summary">توقّفت: %1$d / %2$d محرفًا كُتبت. النص في الحاسوب غير مكتمل — احذفه وابدأ من جديد.</string>
+    <string name="bt_aborted_summary">انقطعت الكتابة: %1$d / %2$d محرفًا. النص في الحاسوب غير مكتمل — احذفه، واختر سرعة أبطأ، وحاول مجددًا.</string>
+    <string name="bt_speed_result">%1$d محرفًا، %2$s (%3$d محرف/ث)</string>
+    <string name="bt_unknown_device">جهاز غير معروف</string>
+    <string name="bt_untyped_warning">تعذّرت كتابة هذه المحارف بهذا التخطيط: %1$s — يمكنك تجربة التخطيط الآخر.</string>
+    <string name="bt_done_summary">✓ %1$d محرفًا كُتبت — %2$s، %3$d محرف/ث. تحقّق من عدد المحارف في الحاسوب.</string>
+    <string name="bt_title">الكتابة في الحاسوب: %1$s</string>
+    <string name="bt_permission_required">إذن البلوتوث مطلوب. لا يمكن لهذه الخاصية العمل بدونه.</string>
+    <string name="bt_preparing">جارٍ تجهيز لوحة مفاتيح البلوتوث…</string>
+    <string name="bt_pick_computer">اختر حاسوبك (يجب أن يكون مقترنًا بالفعل بالهاتف عبر البلوتوث):</string>
+    <string name="bt_no_bonded_devices">لا توجد أجهزة مقترنة. اقترن بحاسوبك من إعدادات بلوتوث الهاتف ثم حاول مجددًا.</string>
+    <string name="bt_connecting">جارٍ الاتصال بـ %1$s…</string>
+    <string name="bt_connected">✓ %1$s متصل</string>
+    <string name="bt_layout_heading">تخطيط لوحة مفاتيح حاسوبك (لا الهاتف):</string>
+    <string name="bt_layout_warning">الحاسوب هو من يفسّر رموز المفاتيح — اختيار تخطيط خاطئ يحوّل بصمت محارف مثل @ \" ? إلى غيرها.</string>
+    <string name="bt_selected_layout">التخطيط المختار: %1$s</string>
+    <string name="bt_sensitive_chars">يحتوي هذا النص على محارف حسّاسة للتخطيط: %1$s — يُنصح بكتابة الاختبار قبل الإرسال.</string>
+    <string name="bt_test_done">✓ كُتب الاختبار — حاول مجددًا</string>
+    <string name="bt_test_first">🧪 اكتب الاختبار أولًا (مستحسَن)</string>
+    <string name="bt_test_expected">يجب أن يظهر في الحاسوب هذا بالضبط:\n%1$s\nإن اختلف، اختر التخطيط الآخر أعلاه وكرّر الاختبار.</string>
+    <string name="bt_speed_heading">سرعة الكتابة:</string>
+    <string name="bt_speed_desc">تُرسل ضغطات المفاتيح واحدة تلو الأخرى. إن كانت السرعة أعلى مما يحتمله الاتصال، تتوقّف الكتابة (لا يُفقد أي محرف) — استخدم اختبار السرعة لمعرفة أيّها يعمل.</string>
+    <string name="bt_estimate">%1$d محرفًا ≈ %2$s</string>
+    <string name="bt_speed_test_button">⏱ اختبار السرعة (%1$d محرفًا)</string>
+    <string name="bt_speed_result_detail">%1$s\nيجب أن يظهر في الحاسوب 10 مجموعات مفصولة بمسافات، كل واحدة %2$s بالضبط — إن اختلفت واحدة فقط، اختر السرعة الأبطأ التالية وكرّر الاختبار.</string>
+    <string name="bt_typing_progress">جارٍ الكتابة… %1$d / %2$d محرفًا</string>
+    <string name="bt_remaining">~%1$s متبقٍّ — لا تحرّك المؤشر في الحاسوب حتى ينتهي.</string>
+    <string name="bt_before_start">ضع المؤشر في الحقل الهدف على الحاسوب، ثم اضغط الزر. تبدأ الكتابة بعد 3 ثوانٍ.</string>
+    <string name="bt_countdown_short">%1$d…</string>
+    <string name="bt_type">اكتب</string>
+    <string name="bt_stop">إيقاف</string>
+    <string name="bt_close">إغلاق</string>
+    <!-- detail -->
+    <string name="detail_back">رجوع</string>
+    <string name="detail_edit">تعديل</string>
+    <string name="detail_quick_title">استخدام في لوحة المفاتيح دون كلمة مرور</string>
+    <string name="detail_quick_on">تظهر في لوحة مفاتيح Sekuvo حتى مع قفل الخزنة؛ حمايتها بقوة قفل شاشة هاتفك فقط.</string>
+    <string name="detail_quick_off">متاحة فقط مع فتح قفل الخزنة.</string>
+    <string name="detail_dates">أُضيفت: %1$s · عُدِّلت: %2$s</string>
+    <string name="detail_password_changed">آخر تغيير لكلمة المرور: %1$s</string>
+    <string name="detail_usage_title">الاستخدامات الأخيرة</string>
+    <string name="detail_usage_desc">إلى أين ذهبت هذه المدخلة من داخل التطبيق. القيم التي تُقرأ من الشاشة أو تُصوَّر أو تُختار عبر الملء التلقائي لا تظهر هنا — السجل لا يعرف إلا ما فعله التطبيق نفسه.</string>
+    <string name="detail_usage_empty">لا استخدامات بعد.</string>
+    <string name="detail_show_less">عرض أقل</string>
+    <string name="detail_show_all">عرض الكل (%1$d)</string>
+    <string name="detail_hide">إخفاء</string>
+    <string name="detail_show">عرض</string>
+    <string name="detail_copy">نسخ</string>
+    <string name="detail_type_to_pc">الكتابة في الحاسوب</string>
+    <string name="detail_show_fingerprint">عرض بصمة SHA-256</string>
+    <string name="detail_fingerprint_len">بصمة SHA-256 · %1$d محرفًا</string>
+    <string name="detail_fingerprint_len_short">بصمة SHA-256 · %1$d محرفًا · قيمة قصيرة</string>
+    <string name="detail_fingerprint_warning">يمكن عكس بصمة القيمة القصيرة بالقوة الغاشمة — لا تشارك هذه البصمة.</string>
+    <string name="detail_fingerprint_verify">على حاسوب: shasum -a 256 file\n(إن لصقتها يدويًا فقد يكون سطر النهاية الأخير مفقودًا: printf \'%1$s\' \"$(cat file)\" | shasum -a 256)</string>
+    <string name="detail_copy_fingerprint">نسخ البصمة</string>
+    <!-- edit -->
+    <string name="edit_title_new">جديد: %1$s</string>
+    <string name="edit_title_edit">تعديل</string>
+    <string name="edit_back">رجوع</string>
+    <string name="edit_delete">حذف</string>
+    <string name="edit_field_title">العنوان</string>
+    <string name="edit_field_username">اسم المستخدم</string>
+    <string name="edit_generate_password">توليد كلمة مرور</string>
+    <string name="edit_field_card_number">رقم البطاقة</string>
+    <string name="edit_field_expiry">تاريخ الانتهاء (MM/YY)</string>
+    <string name="edit_field_iban">IBAN (اختياري)</string>
+    <string name="edit_note_kind">نوع الملاحظة</string>
+    <string name="edit_custom_fields">حقول إضافية</string>
+    <string name="edit_field_name">اسم الحقل</string>
+    <string name="edit_remove_field">إزالة الحقل</string>
+    <string name="edit_field_value">القيمة</string>
+    <string name="edit_add_field">+ إضافة حقل</string>
+    <string name="edit_field_notes">ملاحظات</string>
+    <string name="edit_quick_title">استخدام في لوحة المفاتيح دون كلمة مرور</string>
+    <string name="edit_quick_desc">عند التفعيل، تظهر هذه المدخلة في لوحة مفاتيح Sekuvo حتى مع قفل الخزنة. عندئذٍ تكون حمايتها بقوة قفل شاشة هاتفك فقط؛ اتركها معطَّلة للبيانات الحسّاسة مثل كلمات المرور.</string>
+    <string name="edit_tags">الوسوم</string>
+    <string name="edit_new_tag">+ جديد</string>
+    <string name="edit_save">حفظ</string>
+    <string name="edit_discard_title">تغييرات غير محفوظة</string>
+    <string name="edit_discard_text">أنت على وشك الخروج دون حفظ ما أدخلته. هل أنت متأكد؟</string>
+    <string name="edit_discard_confirm">الخروج دون حفظ</string>
+    <string name="edit_discard_cancel">العودة إلى التحرير</string>
+    <string name="edit_delete_title">حذف المدخلة</string>
+    <string name="edit_delete_text">سيُحذف «%1$s» نهائيًا. هل أنت متأكد؟</string>
+    <string name="edit_cancel">إلغاء</string>
+    <!-- home -->
+    <string name="home_sort_cd">الترتيب: %1$s</string>
+    <string name="home_selected">مختار</string>
+    <string name="home_transfer_cd">جلب من حاسوب</string>
+    <string name="home_generator_cd">مولّد كلمات المرور</string>
+    <string name="home_lock_cd">قفل</string>
+    <string name="home_settings_cd">الإعدادات</string>
+    <string name="home_import_qr">استيراد عبر QR</string>
+    <string name="home_import_text">استيراد من نص</string>
+    <string name="home_add_cd">إضافة</string>
+    <string name="home_search_hint">البحث في المدخلات</string>
+    <string name="home_manage_tags_cd">إدارة الوسوم</string>
+    <string name="home_manual_hint">ترتيب مخصّص: اضغط مطوّلًا على المقبض ⠿ في صف واسحب.</string>
+    <string name="home_empty_vault">خزنتك جاهزة — أضف أول مدخلاتك بالضغط على + أسفل اليمين.</string>
+    <string name="home_empty_filter">لا مدخلات تطابق هذه المرشِّحات.</string>
+    <string name="home_drag_cd">سحب</string>
+    <string name="home_tag_new">وسم جديد</string>
+    <string name="home_tag_edit">تعديل الوسم</string>
+    <string name="home_tag_name">الاسم</string>
+    <string name="home_selected_color">اللون المختار</string>
+    <string name="home_save">حفظ</string>
+    <string name="home_cancel">إلغاء</string>
+    <string name="home_tags_title">الوسوم</string>
+    <string name="home_tags_empty">لا وسوم بعد. يمكنك إضافة واحد أدناه.</string>
+    <string name="home_edit_cd">تعديل</string>
+    <string name="home_delete">حذف</string>
+    <string name="home_tag_add_new">+ وسم جديد</string>
+    <string name="home_close">إغلاق</string>
+    <string name="home_tag_delete_title">حذف الوسم</string>
+    <string name="home_tag_delete_msg">سيُحذف «%1$s» ويُزال من المدخلات التي تحمله. المدخلات نفسها لا تُحذف.</string>
+    <!-- ime -->
+    <string name="ime_switch_keyboard">ABC</string>
+    <string name="ime_locked_quick_only">الخزنة مقفلة — مدخلات الوصول السريع فقط.</string>
+    <string name="ime_unlock_all">🔓 فتح القفل (لكل المدخلات)</string>
+    <string name="ime_no_quick_entries">لا مدخلات معلَّمة للوصول السريع.</string>
+    <string name="ime_no_entries">لا مدخلات.</string>
+    <string name="ime_no_match">لا مدخلات تطابق «%1$s».</string>
+    <string name="ime_back_to_list">← %1$s</string>
+    <string name="ime_search_hint">بحث…</string>
+    <!-- log -->
+    <string name="log_title">سجل الاستخدام</string>
+    <string name="log_scope_note">لا يرى السجل إلا ما يفعله التطبيق نفسه: القيمة التي تُقرأ من الشاشة أو تُصوَّر أو تُكتب يدويًا لا تترك أثرًا. كما لا يمكن تسجيل أي مدخلة تختارها أثناء الملء التلقائي، لأن أندرويد لا يبلّغ التطبيق بذلك. يمكن حذف هذا السجل مع فتح قفل الخزنة — فهو ليس سجلًّا مقاومًا للتلاعب.</string>
+    <string name="log_filter_by_target">التصفية حسب الوجهة:</string>
+    <string name="log_filter_all">الكل</string>
+    <string name="log_empty">السجل فارغ.</string>
+    <string name="log_empty_for_target">لم تذهب أي مدخلة إلى هذه الوجهة.</string>
+    <string name="log_deleted_entry">(مدخلة محذوفة)</string>
+    <string name="log_entries_to_target">المدخلات المرسَلة إلى «%1$s»: %2$s</string>
+    <string name="log_clear_confirm">حذف السجل بالكامل؟ لا يمكن التراجع عن هذا؛ المدخلات نفسها لا تتأثر.</string>
+    <string name="log_clear_yes">نعم، احذف</string>
+    <string name="log_cancel">إلغاء</string>
+    <string name="log_close">إغلاق</string>
+    <string name="log_clear">حذف السجل</string>
+    <!-- main -->
+    <string name="main_biometric_needs_pin">رمز PIN الخاص بـ Sekuvo مطلوب لحفظ سجل البصمة</string>
+    <string name="main_biometric_enable_failed">تعذّر تفعيل البصمة: %1$s</string>
+    <string name="main_biometric_enroll_title">تفعيل فتح القفل بالبصمة</string>
+    <string name="main_cancel">إلغاء</string>
+    <string name="main_biometric_offer_title">فتح القفل بالبصمة</string>
+    <string name="main_biometric_offer_body">بدلًا من كتابة كلمة المرور الرئيسية في كل مرة تفتح فيها الخزنة، يمكنك استخدام بصمتك. كلمة المرور الرئيسية لا تختفي: تعمل دائمًا عند الحاجة إليها، وهي أيضًا ما يفتح نسخك الاحتياطية — لا تنسها.</string>
+    <string name="main_enable">تفعيل</string>
+    <string name="main_password_for_now">كلمة المرور الآن</string>
+    <string name="main_biometric_invalidated">فتح القفل بالبصمة لم يعد صالحًا (مثلًا أُضيفت بصمة جديدة). افتح القفل بكلمة المرور.</string>
+    <string name="main_biometric_decrypt_failed">تحقّقت البصمة، لكن تعذّر فكّ تشفير المفتاح. افتح القفل بكلمة المرور.</string>
+    <string name="main_unlock_title">فتح قفل Sekuvo</string>
+    <string name="main_use_password">استخدام كلمة المرور</string>
+    <string name="main_hide">إخفاء</string>
+    <string name="main_show">عرض</string>
+    <!-- paste -->
+    <string name="paste_title_qr">استيراد عبر QR</string>
+    <string name="paste_title_text">استيراد من نص</string>
+    <string name="paste_qr_ready">✓ تم مسح QR · استُلم مظروف مشفَّر من %1$d محرفًا.\nأدخل الآن **كلمة مرور النسخة** فقط.</string>
+    <string name="paste_intro">الصق النص من الصفحة أو اضغط «الحصول من الحافظة». هذا النص مشفَّر؛ ستُدخل كلمة مروره في الحقل التالي.</string>
+    <string name="paste_label_envelope">مظروف مشفَّر</string>
+    <string name="paste_char_count">%1$d محرفًا</string>
+    <string name="paste_btn_clipboard">الحصول من الحافظة</string>
+    <string name="paste_label_backup_password">كلمة مرور النسخة</string>
+    <string name="paste_mode_merge">الإضافة إلى الموجود</string>
+    <string name="paste_mode_replace">استبدال الكل</string>
+    <string name="paste_replace_warning">تحذير: ستُحذف كل مدخلة موجودة وتُكتب مكانها مدخلات المظروف.</string>
+    <string name="paste_err_envelope_empty">حقل المظروف المشفَّر فارغ — الصقه عبر «الحصول من الحافظة».</string>
+    <string name="paste_err_password_required_qr">كلمة مرور النسخة مطلوبة: هي التي أدخلتها عند تشفير المظروف على حاسوبك.</string>
+    <string name="paste_err_password_missing">لم تُدخل كلمة مرور نسخة.</string>
+    <string name="paste_btn_importing">جارٍ الاستيراد…</string>
+    <string name="paste_btn_import">استيراد</string>
+    <string name="paste_btn_cancel">إلغاء</string>
+    <!-- qr -->
+    <string name="qr_status_aim">ضع رمز QR داخل إطار العرض</string>
+    <string name="qr_status_done">تم</string>
+    <string name="qr_status_received">استُلم %1$d/%2$d</string>
+    <string name="qr_status_frames_mismatch">لم تتطابق الإطارات، ابدأ من جديد</string>
+    <string name="qr_permission_rationale">إذن الكاميرا مطلوب. الصورة لا تغادر الجهاز أبدًا: المفكّك داخل التطبيق والتطبيق لا يملك إذن الشبكة.</string>
+    <string name="qr_grant_in_settings">منح الإذن من الإعدادات</string>
+    <string name="qr_grant_permission">منح الإذن</string>
+    <string name="qr_camera_analysis">تحليل الكاميرا: %1$s · قرِّب الرمز حتى يملأ نصف الشاشة</string>
+    <string name="qr_missing_frames">إطارات ناقصة: %1$s</string>
+    <string name="qr_cancel">إلغاء</string>
+    <!-- settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_back">رجوع</string>
+    <string name="settings_appearance">المظهر</string>
+    <string name="settings_sort_moved">انتقل الترتيب إلى الشاشة الرئيسية: تختاره من أيقونة ⇅ بجانب العنوان، ويُطبَّق في القائمة وفي لوحة مفاتيح Sekuvo معًا.\nالترتيب الحالي: %1$s</string>
+    <string name="settings_backup">النسخ الاحتياطي</string>
+    <string name="settings_backup_desc">ملف النسخة الاحتياطية مشفَّر بـ AES-256 ولا يُفتح إلا بكلمة مرور النسخة. يمكنك حفظه أينما شئت — Drive، بطاقة SD وغيرها؛ حتى لو مُحي الهاتف بالكامل، يعيد الملف مع كلمة المرور كل شيء.</string>
+    <string name="settings_backup_export">إنشاء نسخة مشفَّرة</string>
+    <string name="settings_backup_restore">الاستعادة من نسخة</string>
+    <string name="settings_import_paste">استيراد من نص (لصق)</string>
+    <string name="settings_usage_log">سجل الاستخدام</string>
+    <string name="settings_usage_log_desc">أيّ حقل من أيّ مدخلة ذهب إلى أين، ومتى — إلى الحافظة، إلى حاسوب، أو عبر لوحة المفاتيح.</string>
+    <string name="settings_usage_log_open">فتح سجل الاستخدام</string>
+    <string name="settings_security">الأمان</string>
+    <string name="settings_locking">القفل</string>
+    <string name="settings_locking_desc">تُقفل الخزنة لحظة انطفاء الشاشة؛ يُمحى المفتاح من الذاكرة. وطالما بقيت الشاشة مضاءة، لن يُطلب منك كلمة المرور أو البصمة مجددًا.\n\nالمدخلات المعلَّمة بـ«استخدام في لوحة المفاتيح دون كلمة مرور» يمكن استخدامها أيضًا مع قفل الخزنة؛ يمكنك تفعيل هذه العلامة وإلغاؤها من شاشة كل مدخلة.</string>
+    <string name="settings_biometric_disable">إيقاف فتح القفل بالبصمة</string>
+    <string name="settings_biometric_enable">تفعيل فتح القفل بالبصمة</string>
+    <string name="settings_pin_heading">PIN (البوابة الثانية للبصمة)</string>
+    <string name="settings_pin_legacy_warning">⚠ هذا الرمز PIN أُعدَّ في إصدار أقدم وغير متوافق مع هذا الإصدار: لا يمكن فتح المدخلات ولا إيقاف PIN. أصلحه بكلمة المرور الرئيسية + PIN.</string>
+    <string name="settings_pin_on_desc">مفعَّل: بعد قراءة بصمتك، يُطلب PIN. لا يُطلب عند فتح القفل بكلمة المرور الرئيسية — فتلك الكلمة سرّ قوي بالفعل.</string>
+    <string name="settings_pin_off_desc">اختياري. عند التفعيل، يُشفَّر سجل البصمة بـ PIN ويُطلب بعد البصمة عند فتح القفل. الافتراضي: معطَّل.\nالترتيب مهم: عيّن PIN أولًا، ثم فعّل البصمة.</string>
+    <string name="settings_pin_repair">إصلاح سجل PIN</string>
+    <string name="settings_pin_turn_off">إيقاف PIN</string>
+    <string name="settings_pin_set">تعيين PIN</string>
+    <string name="settings_reminder_heading">تذكير بكلمة المرور الرئيسية</string>
+    <string name="settings_reminder_desc">أثناء استخدامك للبصمة، تظلّ كلمة المرور الرئيسية دون كتابة لأشهر وتُنسى — مع أنها أيضًا ما يفتح نسخك الاحتياطية. مرة واحدة كل فترة تختارها، تُطلب كلمة المرور بدلًا من البصمة. الافتراضي: أبدًا.</string>
+    <string name="settings_reminder_never">أبدًا</string>
+    <string name="settings_reminder_days">%1$d يوم</string>
+    <string name="settings_change_password">تغيير كلمة المرور الرئيسية</string>
+    <string name="settings_autofill">الملء التلقائي</string>
+    <string name="settings_autofill_on_desc">مفعَّل. عند لمس نموذج تسجيل دخول أو بطاقة في التطبيقات والمتصفحات، تظهر مدخلات Sekuvo كخيار للملء. إن كانت الخزنة مقفلة تظهر شاشة فتح القفل أولًا؛ لا يُسلَّم أي شيء إلى النظام أثناء القفل.</string>
+    <string name="settings_autofill_off_desc">عند التفعيل، يؤدي لمس نموذج تسجيل دخول أو بطاقة في التطبيقات والمتصفحات إلى عرض مدخلات Sekuvo مباشرة كخيار للملء. كما يعرض حفظ التفاصيل المدخَلة حديثًا في Sekuvo.\n\nالزر أدناه يفتح إعدادات النظام. اسم القائمة التي تُفتح يختلف حسب الجهاز («الخدمة المفضّلة»، «خدمة الملء التلقائي»، أو «كلمات المرور ومفاتيح المرور والملء التلقائي»)؛ اختر Sekuvo من تلك القائمة.</string>
+    <string name="settings_autofill_open">فتح إعدادات الملء التلقائي</string>
+    <string name="settings_autofill_enable">تفعيل الملء التلقائي</string>
+    <string name="settings_keyboard">لوحة مفاتيح Sekuvo</string>
+    <string name="settings_keyboard_desc">عند تفعيل إضافة لوحة المفاتيح، يمكنك اختيار «لوحة مفاتيح Sekuvo» من مبدّل لوحات المفاتيح في أي تطبيق وكتابة بياناتك المحفوظة مباشرة في الحقل.</string>
+    <string name="settings_keyboard_open">فتح إعدادات لوحة المفاتيح</string>
+    <string name="settings_export_pw_title">تعيين كلمة مرور النسخة</string>
+    <string name="settings_export_pw_desc">بدون هذه الكلمة لا يمكن فتح ملف النسخة الاحتياطية إطلاقًا. اجعلها مختلفة عن كلمة مرورك الرئيسية: كلمة مرور النسخة هي التي تُكتب على الحواسيب، أما الرئيسية فلا تلامس حاسوبًا أبدًا.</string>
+    <string name="settings_biometric_pin_title">ربط البصمة بـ PIN</string>
+    <string name="settings_biometric_pin_desc">سيُشفَّر سجل البصمة بـ PIN: عند فتح القفل تُطلب البصمة أولًا، ثم هذا الرمز.</string>
+    <string name="settings_label_pin">PIN</string>
+    <string name="settings_continue">متابعة</string>
+    <string name="settings_cancel">إلغاء</string>
+    <string name="settings_label_password">كلمة المرور</string>
+    <string name="settings_label_password_again">كلمة المرور (مجددًا)</string>
+    <string name="settings_ok">حسنًا</string>
+    <string name="settings_label_backup_password">كلمة مرور النسخة</string>
+    <string name="settings_import_merge">الإضافة إلى الموجود</string>
+    <string name="settings_import_replace">استبدال الكل</string>
+    <string name="settings_import_replace_warning">تحذير: ستُحذف كل مدخلة موجودة وتُكتب مكانها مدخلات النسخة الاحتياطية.</string>
+    <string name="settings_import_pw_missing">لم تُدخل كلمة مرور نسخة.</string>
+    <string name="settings_import_confirm">استعادة</string>
+    <string name="settings_label_current_password">كلمة المرور الحالية</string>
+    <string name="settings_label_new_password">كلمة المرور الجديدة</string>
+    <string name="settings_label_new_password_again">كلمة المرور الجديدة (مجددًا)</string>
+    <string name="settings_change">تغيير</string>
+    <string name="settings_pin_disable_desc">بعد إيقاف PIN، تُفتح المدخلات بكلمة المرور الرئيسية أو البصمة وحدهما. لست بحاجة لتذكّر PIN: تكفي كلمة المرور الرئيسية. فعّل البصمة مجددًا بعد ذلك.</string>
+    <string name="settings_pin_set_desc">يجب أن يكون PIN من 4 إلى 12 رقمًا. إن نسيته، فكلمة المرور الرئيسية وحدها لا تكفي — احفظ PIN في مكان آمن، مثل كلمة مرور النسخة. سيتعيّن عليك تفعيل البصمة مجددًا بعد ذلك.</string>
+    <string name="settings_label_master_password">كلمة المرور الرئيسية</string>
+    <string name="settings_label_current_pin">PIN الحالي</string>
+    <string name="settings_label_pin_again">PIN (مجددًا)</string>
+    <string name="settings_repair">إصلاح</string>
+    <string name="settings_turn_off">إيقاف</string>
+    <string name="settings_set">تعيين</string>
+    <!-- transfer -->
+    <string name="transfer_title">جلب من حاسوب · الخطوة %1$d/2</string>
+    <string name="transfer_step1_steps">١. على الحاسوب، افتح aktar.html، بدّله إلى الإنجليزية إن لم يكن كذلك، وضع المؤشر في حقل «Backup password».\n٢. استخدم الزر أدناه لكتابة كلمة المرور في الحقلين معًا (يفصل بينهما ضغطة Tab).</string>
+    <string name="transfer_regenerate">توليد كلمة مرور جديدة</string>
+    <string name="transfer_password_note">كلمة مرور مولَّدة للاستخدام مرة واحدة — لا حاجة لحفظها، الخطوة الثانية تستخدمها تلقائيًا. حروف وأرقام: لا تتأثر باختلاف تخطيطات لوحة المفاتيح.</string>
+    <string name="transfer_bt_write_both">💻 الكتابة في الحقلين عبر البلوتوث</string>
+    <string name="transfer_step2_steps">على الحاسوب: الصق المحتوى ← «Şifrele ve yayınla» (تشفير ونشر) ← امسح QR بهاتفك ← 📋 Kopyala (نسخ) في الصفحة. ثم عد إلى هنا واستلم المظروف. كلمة المرور جاهزة في المعالج — لن تحتاج إلى إدخالها.</string>
+    <string name="transfer_envelope_label">مظروف مشفَّر</string>
+    <string name="transfer_char_count">%1$d محرفًا</string>
+    <string name="transfer_scan_qr">مسح QR</string>
+    <string name="transfer_from_clipboard">الحصول من الحافظة</string>
+    <string name="transfer_merge">الإضافة إلى الموجود</string>
+    <string name="transfer_replace_all">استبدال الكل</string>
+    <string name="transfer_replace_warning">تحذير: ستُحذف كل مدخلة موجودة وتُكتب مكانها مدخلات المظروف.</string>
+    <string name="transfer_password_typed_next">كُتبت كلمة المرور، متابعة ←</string>
+    <string name="transfer_envelope_empty">حقل المظروف المشفَّر فارغ — انشر على الحاسوب، امسح QR، واضغط «الحصول من الحافظة».</string>
+    <string name="transfer_importing">جارٍ الاستيراد…</string>
+    <string name="transfer_import">استيراد</string>
+    <string name="transfer_back">← رجوع</string>
+    <string name="transfer_cancel">إلغاء</string>
+    <string name="transfer_bt_label">كلمة مرور النقل (في الحقلين، مع Tab)</string>
+    <!-- unlock -->
+    <string name="unlock_welcome_title">مرحبًا بك في Sekuvo</string>
+    <string name="unlock_slogan">خزنتك الآمنة.</string>
+    <string name="unlock_locked_title">Sekuvo مقفل</string>
+    <string name="unlock_setup_desc">حدّد كلمة مرور رئيسية. تُشفَّر كل بياناتك بمفتاح مشتقّ منها. إن نسيتها، تصبح بياناتك غير قابلة للوصول نهائيًا.</string>
+    <string name="unlock_enter_desc">أدخل كلمة مرورك الرئيسية للمتابعة.</string>
+    <string name="unlock_master_reminder">تذكير: اكتب كلمة مرورك الرئيسية هذه المرة بدلًا من بصمتك. كلمة مرور رئيسية منسيّة تقفل الخزنة والنسخ الاحتياطية معًا.</string>
+    <string name="unlock_master_password_label">كلمة المرور الرئيسية</string>
+    <string name="unlock_password_label">كلمة المرور</string>
+    <string name="unlock_password_again_label">كلمة المرور (مجددًا)</string>
+    <string name="unlock_create_vault">إنشاء الخزنة</string>
+    <string name="unlock_have_backup">لديّ نسخة احتياطية — استعادتها</string>
+    <string name="unlock_restore_selected">الاستعادة بعد الإعداد ✓ (اضغط للإلغاء)</string>
+    <string name="unlock_restore_hint">حدّد أولًا كلمة مرور رئيسية لهذا الجهاز. بعدها مباشرة، ستختار ملف نسختك الاحتياطية وتُدخل كلمة مرورها؛ تعود كل محتويات النسخة.</string>
+    <string name="unlock_create_and_restore">إنشاء واستعادة</string>
+    <string name="unlock_open_button">فتح القفل</string>
+    <string name="unlock_biometric_button">فتح القفل بالبيومترية</string>
+    <string name="unlock_pin_title">البوابة الثانية</string>
+    <string name="unlock_pin_desc">أدخل PIN الخاص بك. بدون هذا الرمز لا يمكن فكّ تشفير المدخلات — كلمة المرور الرئيسية وحدها لا تكفي.</string>
+    <string name="unlock_pin_label">PIN (%1$d-%2$d أرقام)</string>
+    <string name="unlock_pin_open">فتح</string>
+    <string name="unlock_pin_cancel">إلغاء</string>
+    <string name="unlock_generator_title">مولّد كلمات المرور</string>
+    <string name="unlock_generator_refresh">تحديث</string>
+    <string name="unlock_generator_summary">الطول: %1$d • القوة: ~%2$d بت %3$s</string>
+    <string name="unlock_generator_very_strong">(قوية جدًّا)</string>
+    <string name="unlock_generator_strong">(قوية)</string>
+    <string name="unlock_generator_weak">(ضعيفة)</string>
+    <string name="unlock_generator_avoid_ambiguous">استبعاد المحارف المتشابهة (l، 1، O، 0)</string>
+    <string name="unlock_generator_use">استخدام</string>
+    <string name="unlock_generator_copy">نسخ</string>
+    <string name="unlock_generator_close">إغلاق</string>
+    <!-- vm -->
+    <string name="vm_pin_repaired">أُصلح سجل PIN · تُفتح الخزنة الآن بكلمة مرورك الرئيسية</string>
+    <string name="vm_pin_repair_failed">تعذّر الإصلاح: كلمة المرور أو PIN خاطئ</string>
+    <string name="vm_master_password_too_short">يجب أن تتكوّن كلمة المرور الرئيسية من 8 محارف على الأقل</string>
+    <string name="vm_passwords_mismatch">كلمتا المرور غير متطابقتين</string>
+    <string name="vm_wrong_password">كلمة المرور خاطئة</string>
+    <string name="vm_legacy_pin_vault">تستخدم هذه الخزنة صيغة PIN القديمة. يجب إصلاحها بكلمة المرور الرئيسية + PIN.</string>
+    <string name="vm_key_undecryptable">تعذّر فكّ تشفير مفتاح الخزنة (قد يكون السجل تالفًا).</string>
+    <string name="vm_biometric_stale">كان سجل البصمة أقدم من هذا الرمز PIN؛ تم حذفه. افتح القفل بكلمة مرورك الرئيسية وفعّل البصمة مجددًا.</string>
+    <string name="vm_pin_biometric_off">عدد كبير جدًّا من رموز PIN الخاطئة. أُوقف فتح القفل بالبصمة؛ افتح القفل بكلمة مرورك الرئيسية.</string>
+    <string name="vm_pin_wrong">PIN خاطئ</string>
+    <string name="vm_key_unexpected_size">مفتاح الخزنة بحجم غير متوقَّع؛ جرّب فتح القفل بكلمة مرورك الرئيسية.</string>
+    <string name="vm_pin_enable_failed">تعذّر تفعيل PIN: كلمة المرور خاطئة، أو PIN غير صالح (4-12 رقمًا)</string>
+    <string name="vm_pin_enabled">فُعِّل PIN · فعّل البصمة مجددًا</string>
+    <string name="vm_pin_disable_failed">تعذّر إيقاف PIN: كلمة المرور الرئيسية خاطئة</string>
+    <string name="vm_pin_disabled">أُوقف PIN · فعّل البصمة مجددًا</string>
+    <string name="vm_new_password_too_short">يجب أن تتكوّن كلمة المرور الجديدة من 8 محارف على الأقل</string>
+    <string name="vm_master_password_changed">تغيّرت كلمة المرور الرئيسية</string>
+    <string name="vm_current_password_wrong">كلمة المرور الحالية خاطئة</string>
+    <string name="vm_quick_on">قابلة للاستخدام في لوحة المفاتيح دون كلمة مرور</string>
+    <string name="vm_quick_off">مخفية في لوحة المفاتيح حتى تفتح القفل</string>
+    <string name="vm_copied">نُسخ %1$s (سيُمسح خلال 45 ثانية)</string>
+    <string name="vm_backup_password_too_short">يجب أن تتكوّن كلمة مرور النسخة من 8 محارف على الأقل</string>
+    <string name="vm_file_open_failed">تعذّر فتح الملف</string>
+    <string name="vm_backup_saved">حُفظت النسخة الاحتياطية</string>
+    <string name="vm_backup_failed">فشلت النسخة الاحتياطية: %1$s — احذف الملف الذي أنشأته وحاول مجددًا.</string>
+    <string name="vm_vault_locked_retry">قُفلت الخزنة — افتح قفلها بكلمة مرورك الرئيسية وحاول مجددًا.</string>
+    <string name="vm_pasted_text_empty">النص الملصَق فارغ</string>
+    <string name="vm_text_too_large">النص كبير جدًّا — لا يمكن أن يكون مظروف Sekuvo</string>
+    <string name="vm_pasted_is_link">هذا رابط، لا المظروف نفسه. افتح الرابط في متصفح الهاتف وانسخ **النص** الذي يعرضه.</string>
+    <string name="vm_not_an_envelope">هذا ليس مظروف Sekuvo المشفَّر — قد يكون النص المنسوخ غير مكتمل، أو شيئًا آخر. انسخ **كل** نص الصفحة.</string>
+    <string name="vm_envelope_empty">فُتح المظروف لكنه لا يحتوي على مدخلات — ربما تُركت الحقول فارغة عند الإرسال. خزنتك سليمة.</string>
+    <string name="vm_backup_password_wrong">كلمة مرور النسخة خاطئة</string>
+    <string name="vm_invalid_envelope">مظروف غير صالح — ربما نُسخ النص بشكل غير مكتمل</string>
+    <string name="vm_import_failed">فشل الاستيراد: %1$s</string>
+    <string name="vm_backup_empty">فُتحت النسخة الاحتياطية لكنها لا تحتوي على مدخلات. خزنتك سليمة.</string>
+    <string name="vm_invalid_backup_file">ملف نسخة احتياطية غير صالح</string>
+    <string name="vm_restore_failed">فشلت الاستعادة: %1$s</string>
+    <string name="vm_biometric_enabled">فُعِّلت البصمة</string>
+    <string name="vm_biometric_enable_failed">تعذّر تفعيل البصمة</string>
+    <string name="vm_biometric_disabled">أُوقف فتح القفل البيومتري</string>
+    <string name="vm_usage_log_cleared">حُذف سجل الاستخدام</string>
+    <string name="bt_sdp_name">لوحة مفاتيح Sekuvo</string>
+    <string name="bt_sdp_description">نقل آمن لضغطات المفاتيح من Sekuvo</string>
+
+    <!-- ملاحظة: العربية في CLDR تميّز ست فئات جمع (zero, one, two, few,
+         many, other). المصدر الإنجليزي يوفّر فئتين فقط (one, other)، لذا
+         نفس الشيء يُتَّبع هنا؛ أندرويد يستخدم "other" تلقائيًا للفئات
+         الأربع غير الموجودة. النتيجة صحيحة نحويًّا دائمًا، لكنها ليست
+         الأكثر دقة في كل عدد — توسيع الفئات الست عمل منفصل لاحق. -->
+    <plurals name="vm_import_added">
+        <item quantity="one">أُضيفت مدخلة واحدة · نُظِّفت الحافظة</item>
+        <item quantity="other">أُضيفت %1$d مدخلة · نُظِّفت الحافظة</item>
+    </plurals>
+    <plurals name="vm_restored">
+        <item quantity="one">استُعيدت مدخلة واحدة</item>
+        <item quantity="other">استُعيدت %1$d مدخلة</item>
+    </plurals>
+    <plurals name="vm_backup_saved_incomplete">
+        <item quantity="one">حُفظت النسخة الاحتياطية، لكن تعذّرت قراءة مدخلة واحدة فتُركت (قد تكون تالفة). هذه النسخة غير مكتملة.</item>
+        <item quantity="other">حُفظت النسخة الاحتياطية، لكن تعذّرت قراءة %1$d مدخلة فتُركت (قد تكون تالفة). هذه النسخة غير مكتملة.</item>
+    </plurals>
+    <plurals name="log_pending_note">
+        <item quantity="one">وقع حدث واحد أثناء القفل ولم يُنقل إلى السجل بعد؛ سيظهر في القائمة عند فتح قفل الخزنة.</item>
+        <item quantity="other">وقعت %1$d أحداث أثناء القفل ولم تُنقل إلى السجل بعد؛ ستظهر في القائمة عند فتح قفل الخزنة.</item>
+    </plurals>
+    <plurals name="log_more_events">
+        <item quantity="one">… وحدث واحد آخر (تُعرض أول 200 في القائمة).</item>
+        <item quantity="other">… و%1$d أحداث أخرى (تُعرض أول 200 في القائمة).</item>
+    </plurals>
+    <plurals name="bt_countdown">
+        <item quantity="one">تبدأ الكتابة خلال ثانية واحدة — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
+        <item quantity="other">تبدأ الكتابة خلال %1$d ثوانٍ — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
+    </plurals>
+    <plurals name="vm_pin_wrong_wait">
+        <item quantity="one">PIN خاطئ. عليك الانتظار ثانية واحدة.</item>
+        <item quantity="other">PIN خاطئ. عليك الانتظار %1$d ثوانٍ.</item>
+    </plurals>
+    <plurals name="vm_pin_locked_wait">
+        <item quantity="one">عدد كبير جدًّا من رموز PIN الخاطئة. حاول مجددًا خلال ثانية واحدة.</item>
+        <item quantity="other">عدد كبير جدًّا من رموز PIN الخاطئة. حاول مجددًا خلال %1$d ثوانٍ.</item>
+    </plurals>
+    <string name="bt_layout_uk">بريطاني (UK)</string>
+    <string name="bt_layout_de">ألماني (QWERTZ)</string>
+    <string name="bt_layout_fr">فرنسي (AZERTY)</string>
+    <string name="bt_layout_es">إسباني</string>
+    <string name="bt_layout_it">إيطالي</string>
+    <string name="bt_layout_tr_f">تركي F</string>
+    <!-- Uygulama dili ve klavye düzeni seçimi -->
+    <string name="settings_language">اللغة</string>
+    <string name="settings_language_desc">اختر لغة التطبيق. تُطبَّق على Sekuvo فقط، لا على بقية الهاتف.</string>
+    <string name="settings_lang_system">لغة النظام</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_lang_es">Español</string>
+    <string name="settings_lang_hi">हिन्दी</string>
+    <string name="settings_lang_ar">العربية</string>
+    <string name="settings_layouts">تخطيطات لوحة مفاتيح الحاسوب</string>
+    <string name="settings_layouts_summary">%1$d من %2$d تخطيطًا مفعَّلة</string>
+    <string name="settings_expand">عرض</string>
+    <string name="settings_collapse">إخفاء</string>
+    <string name="settings_layouts_desc">اختر التخطيطات التي تستخدمها فعلًا. لا يظهر عند كتابة سرّ في حاسوب إلا ما حدّدته منها — والباقي لا يعترض طريقك.</string>
+    <string name="settings_layouts_min">يبقى تخطيط واحد مفعَّلًا على الأقل.</string>
+
+    <!-- Bilgi sayfaları: Hakkında / Gizlilik / Rehber -->
+    <string name="info_about_title">حول التطبيق</string>
+    <string name="info_privacy_title">سياسة الخصوصية</string>
+    <string name="info_guide_title">الدليل</string>
+    <string name="info_about_version">الإصدار</string>
+    <string name="info_about_package">الحزمة</string>
+    <string name="info_about_license">الترخيص</string>
+    <string name="info_about_developer">المطوِّر</string>
+    <string name="info_about_website">فتح sekuvo.com</string>
+    <string name="info_about_source">الشيفرة المصدرية على GitHub</string>
+    <string name="info_about_contact">contact@sekuvo.com</string>
+    <string name="info_about_what_title">ما هذا التطبيق</string>
+    <string name="info_about_what_body">خزنة تعمل بلا اتصال بالكامل لكلمات المرور والبطاقات والملاحظات. لا يطلب إذن الإنترنت، فلا يستطيع إرسال بياناتك إلى أي مكان — لا حساب، لا سحابة، لا مزامنة، لا تحليلات. كل شيء مشفَّر بـ AES-256-GCM تحت مفتاح مشتقّ من كلمة مرورك الرئيسية.</string>
+
+    <string name="privacy_s1_title">ملخّص</string>
+    <string name="privacy_s1_body">لا يجمع Sekuvo أي بيانات ولا ينقلها ولا يشاركها. إنه خزنة كلمات مرور تعمل بلا اتصال ولا يطلب إذن الإنترنت، فهو عاجز تقنيًّا عن إرسال بياناتك إلى أي مكان.</string>
+    <string name="privacy_s2_title">أين تعيش بياناتك</string>
+    <string name="privacy_s2_body">تبقى العناوين وأسماء المستخدمين وكلمات المرور والملاحظات وسجل الاستخدام على هذا الجهاز، مشفَّرة بمفتاح مشتقّ من كلمة مرورك الرئيسية. لا يرفع التطبيق شيئًا من هذا إلى أي خادم، ولا يزامنه، ولا ينسخه احتياطيًّا.</string>
+    <string name="privacy_s3_title">الأذونات ولماذا توجد</string>
+    <string name="privacy_s3_body">الكاميرا — فقط لمسح رموز QR التي تختار مسحها، وتُعالَج على الجهاز.\nالبيومترية — فقط لفتح قفل الخزنة، عبر نظام أندرويد البيومتري. لا يرى Sekuvo بصمتك أو وجهك أبدًا ولا يخزّنهما.\nالبلوتوث — فقط عندما تطلب من Sekuvo كتابة سرّ في حاسوب قريب. لا يُرسَل إلا المحارف التي تختارها، إلى الجهاز الذي اقترنت به.</string>
+    <string name="privacy_s4_title">النسخ الاحتياطية والنقل</string>
+    <string name="privacy_s4_body">تحدث فقط حين تبدؤها أنت. تُنتج ملفًّا مشفَّرًا أو رموز QR محمية بكلمة مرور تحدّدها أنت، وتُحفظ أو تُعرض فقط حيث توجّهها. لا يرسلها التطبيق أبدًا إلى أي مكان من تلقاء نفسه.</string>
+    <string name="privacy_s5_title">الأطفال</string>
+    <string name="privacy_s5_body">لا يجمع Sekuvo بيانات من أحد، بمن فيهم الأطفال.</string>
+    <string name="privacy_s6_title">التواصل والنص الكامل</string>
+    <string name="privacy_s6_body">أسئلة: contact@sekuvo.com\nالنسخة الرسمية من هذه السياسة منشورة على sekuvo.com/privacy/ وهي المرجع عند أي اختلاف.</string>
+
+    <string name="guide_s1_title">التشغيل الأول</string>
+    <string name="guide_s1_body">تحدّد كلمة مرور رئيسية. يُشفَّر كل شيء بمفتاح مشتقّ منها، فهي الشيء الوحيد الذي لا يمكن استعادته — اكتبها في مكان آمن.\nقادم من هاتف آخر؟ اضغط «لديّ نسخة احتياطية — استعادتها» في شاشة الترحيب: ستحدّد كلمة مرور رئيسية لهذا الجهاز أولًا أيضًا، ثم يفتح منتقي الملفات تلقائيًّا.</string>
+    <string name="guide_s2_title">ماذا يمكنك أن تحفظ</string>
+    <string name="guide_s2_body">حساب/كلمة مرور، يوميّ (اسم، هاتف، بريد، عنوان)، بطاقة، وملاحظة آمنة — مع أنواع فرعية للنصوص البرمجية والمفاتيح ورموز الاستعادة وملفات الإعداد. كما تقبل مدخلات حساب ويوميّ حقولًا مخصّصة غير محدودة، مشفَّرة تمامًا كالحقول المدمجة.</string>
+    <string name="guide_s3_title">الملء التلقائي</string>
+    <string name="guide_s3_body">الإعدادات ← تفعيل الملء التلقائي ← اختر Sekuvo من قائمة النظام. تُسمّى هذه القائمة «كلمات المرور ومفاتيح المرور والملء التلقائي ← الخدمة المفضّلة» في Samsung وأندرويد 14+، و«خدمة الملء التلقائي» في أندرويد النقي.\nبعدها، عند لمس حقل تسجيل دخول أو بطاقة تُعرض مدخلاتك. وأثناء قفل الخزنة لا يُسلَّم النظام أي شيء إطلاقًا.</string>
+    <string name="guide_s4_title">لوحة مفاتيح Sekuvo</string>
+    <string name="guide_s4_body">الإعدادات ← تفعيل لوحة المفاتيح، ثم اختر «لوحة مفاتيح Sekuvo» من مبدّل لوحات المفاتيح متى احتجت. تكتب القيم المحفوظة مباشرة في أي حقل، مع البحث والمدخلات الأخيرة في الأعلى. وأثناء القفل لا تعرض إلا المدخلات المعلَّمة للوصول السريع.</string>
+    <string name="guide_s5_title">الكتابة في حاسوب عبر البلوتوث</string>
+    <string name="guide_s5_body">افتح المدخلة، اضغط أيقونة 💻 بجوار الحقل وأبقِ هذه الشاشة مفتوحة — فالهاتف لا يعلن عن نفسه كلوحة مفاتيح إلا وهي مفتوحة. على الحاسوب، أضف الهاتف جهاز بلوتوث جديدًا وأكّد الرمز. عُد إلى الهاتف، اختر حاسوبك، اختر تخطيط لوحة مفاتيح الحاسوب، انقر في الحقل الهدف واضغط اكتب.\nيقول «متصل» ولا يكتب شيئًا؟ اقترن الحاسوب بهاتفك بوصفه هاتفًا في وقت سابق، فلم يفعّل خدمة لوحة المفاتيح قط. أزل الاقتران من الطرفين، افتح شاشة 💻، وأعد الاقتران بدءًا من الحاسوب. في Windows يجب أن يظهر عندها جهاز «HID بلوتوث» في إدارة الأجهزة ← أجهزة واجهة المستخدم. في macOS، أغلق مساعد إعداد لوحة المفاتيح إن فُتح.\nاستخدم اختبار السرعة كتشخيص: إن لم يُكتب شيء فالمشكلة في الاقتران، وإن تشوّهت المحارف فهي في التخطيط، وإن انقطعت فهي في السرعة.</string>
+    <string name="guide_s6_title">القفل</string>
+    <string name="guide_s6_body">تُقفل الخزنة لحظة انطفاء الشاشة التي هي عليها — ويشمل ذلك طيّ الهاتف القابل للطي. أما مغادرة التطبيق والشاشة مضاءة فلا تُقفلها: التطبيق ولوحة المفاتيح والملء التلقائي يتشاركون جلسة واحدة.</string>
+    <string name="guide_s7_title">النسخ الاحتياطية</string>
+    <string name="guide_s7_body">نسخ النظام معطَّل عمدًا، فيبقى لخروج خزنتك من الهاتف طريق واحد فقط: الإعدادات ← إنشاء نسخة مشفَّرة. استخدم كلمة مرور نسخة مختلفة عن الرئيسية. الملف الناتج .vaultbak مع تلك الكلمة يستعيدان كل شيء على أي هاتف، حتى بعد إعادة ضبط المصنع.</string>
+    <string name="guide_s8_title">جلب الأسرار من حاسوب</string>
+    <string name="guide_s8_body">يقدّم زر ➕ خياري «استيراد عبر QR» و«استيراد من نص». ويؤدي معالج ⇄ الأمرين في تدفّق واحد: يولّد كلمة مرور نقل للاستخدام مرة واحدة، يكتبها في الحاسوب عبر البلوتوث، ثم يستعيد المظروف بمسح QR أو من الحافظة — ويفكّ تشفيره بالكلمة نفسها.\nأداة الحاسوب ملف يُنزَّل، لا موقع ويب: احصل على aktar.html من صفحة Releases الخاصة بالمشروع، تحقّق من بصمة SHA-256 الخاصة به، وافتحه من قرصك الخاص. هذا الموقع لا يطلب منك سرًّا أبدًا.</string>
+    <string name="settings_info_section">المساعدة والمعلومات</string>
+    <string name="edit_email_invalid">تحقّق من العنوان — يحتاج إلى @ ونطاق مثل example.com</string>
+    <string name="edit_expiry_invalid">أدخل الشهر والسنة بصيغة MMYY (الشهر 01–12)</string>
+    <string name="edit_iban_invalid">أرقام التحقّق في هذا الـIBAN غير متطابقة — على الأرجح رقم مكتوب خطأ</string>
+    <string name="edit_iban_confirm_title">يبدو الـIBAN مكتوبًا خطأ</string>
+    <string name="edit_iban_confirm_text">أرقام التحقّق في هذا الـIBAN غير متطابقة، ما يعني على الأرجح أن رقمًا خاطئ. يمكنك حفظه رغم ذلك — لكن إن كان خطأً مطبعيًّا، فلن تلاحظه إلا عندما يفشل التحويل.</string>
+    <string name="edit_iban_confirm_save">الحفظ رغم ذلك</string>
+    <string name="edit_iban_confirm_fix">العودة وتصحيحه</string>
+</resources>
