@@ -485,6 +485,7 @@
     <string name="bt_layout_be">بلجيكي (AZERTY)</string>
     <string name="bt_layout_dv">دفوراك (أمريكي)</string>
     <string name="bt_layout_ck">كولماك</string>
+    <string name="bt_layout_bepo">فرنسي (BÉPO)</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">اللغة</string>
     <string name="settings_language_desc">اختر لغة التطبيق. تُطبَّق على Sekuvo فقط، لا على بقية الهاتف.</string>

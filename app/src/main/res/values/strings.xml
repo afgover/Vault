@@ -489,6 +489,7 @@
     <string name="bt_layout_be">Belgian (AZERTY)</string>
     <string name="bt_layout_dv">Dvorak (US)</string>
     <string name="bt_layout_ck">Colemak</string>
+    <string name="bt_layout_bepo">French (BÉPO)</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">Language</string>
     <string name="settings_language_desc">Choose the app language. It applies to Sekuvo only, not the rest of the phone.</string>

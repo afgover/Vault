@@ -38,7 +38,8 @@ object HidLayouts {
         NO(R.string.bt_layout_no),
         BE(R.string.bt_layout_be),
         DV(R.string.bt_layout_dv),
-        CK(R.string.bt_layout_ck)
+        CK(R.string.bt_layout_ck),
+        BEPO(R.string.bt_layout_bepo)
     }
 
     /**
@@ -109,6 +110,7 @@ object HidLayouts {
             Layout.BE -> BE
             Layout.DV -> DV
             Layout.CK -> CK
+            Layout.BEPO -> BEPO
         }
 
     /**
@@ -1268,12 +1270,95 @@ object HidLayouts {
 
     private val CK: Map<Char, KeyStroke> = CK_TABLE.toMap()
 
+    /**
+     * BÉPO (Fransızca, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdfrnb.html), ham
+     * Unicode ad etiketleriyle, iki geçişte okuma — ilk geçişte rakam
+     * satırının BASE ve SHIFT hâlleri arasında sayfa üç farklı veri seti
+     * gösteriyordu (CapsLock-açık bloğu rakam satırını da değiştiriyormuş
+     * gibi görünüyordu); hedefli ikinci taramada satır4/satır5 ikonlarına
+     * (CapsLock/Shift "enabled" etiketleri) bakılarak doğru BASE/SHIFT
+     * çifti netleştirildi — CapsLock bizim modelimizde zaten önemsiz
+     * (her tuş vuruşu açık Shift biti taşıyor, cihazın CapsLock durumuna
+     * hiç bakmıyoruz), bu yüzden o üçüncü veri setini atladık.
+     *
+     * En çarpıcı tasarım: rakam satırının BASE hâli rakam değil noktalama
+     * üretir ($ " « » ( ) @ + - / * = %), rakamlar yalnız SHIFT'te (1-9,0).
+     * Çekçedeki gibi — yanlış düzende her rakam bambaşka bir sembole döner.
+     * Virgül ve noktalı virgül ev sırasında (G tuşunun yerinde), nokta ve
+     * iki nokta V tuşunun yerinde — Fransızcada bu ikisi çok sık geçtiği
+     * için bilinçli bir ergonomi kararı.
+     *
+     * `&` `[` `]` `{` `}` `_` şifre karakter kümesinde ZORUNLU ama hiçbiri
+     * base/shift'te yok — hepsi AltGr'de (P tuşu, digit-4/5, X/C tuşları,
+     * hatta BOŞLUK tuşu: AltGr+Boşluk = `_`, bu yüzden `KeyTable.ORTAK`
+     * kullanılmadı, boşluk satırı elle yazıldı). Kalan AltGr sembolleri
+     * (ölü tuşlar, matematik işaretleri, uluslararası aksan kompozisyonu)
+     * Colemak'taki gibi kapsam dışı bırakıldı — hiçbiri gerekli değil.
+     */
+    private val BEPO_TABLE = KeyTable(
+        listOf(KeyCap(0x2C, ' ', altgr = '_'), KeyCap(0x28, '\n'), KeyCap(0x2B, '\t')) + listOf(
+            KeyCap(0x14, 'b', shift = 'B'),
+            KeyCap(0x1A, 'é', shift = 'É'),
+            KeyCap(0x08, 'p', shift = 'P', altgr = '&'),
+            KeyCap(0x15, 'o', shift = 'O'),
+            KeyCap(0x17, 'è', shift = 'È'),
+            KeyCap(0x1C, shift = '!'), // base: ^ ÖLÜ TUŞ
+            KeyCap(0x18, 'v', shift = 'V'),
+            KeyCap(0x0C, 'd', shift = 'D'),
+            KeyCap(0x12, 'l', shift = 'L'),
+            KeyCap(0x13, 'j', shift = 'J'),
+            KeyCap(0x2F, 'z', shift = 'Z'),
+            KeyCap(0x30, 'w', shift = 'W'),
+            KeyCap(0x04, 'a', shift = 'A'),
+            KeyCap(0x16, 'u', shift = 'U'),
+            KeyCap(0x07, 'i', shift = 'I'),
+            KeyCap(0x09, 'e', shift = 'E'),
+            KeyCap(0x0A, ',', shift = ';'),
+            KeyCap(0x0B, 'c', shift = 'C'),
+            KeyCap(0x0D, 't', shift = 'T'),
+            KeyCap(0x0E, 's', shift = 'S'),
+            KeyCap(0x0F, 'r', shift = 'R'),
+            KeyCap(0x33, 'n', shift = 'N'),
+            KeyCap(0x34, 'm', shift = 'M'),
+            KeyCap(0x32, 'ç', shift = 'Ç'),
+            KeyCap(0x64, 'ê', shift = 'Ê'),
+            KeyCap(0x1D, 'à', shift = 'À'),
+            KeyCap(0x1B, 'y', shift = 'Y', altgr = '{'),
+            KeyCap(0x06, 'x', shift = 'X', altgr = '}'),
+            KeyCap(0x19, '.', shift = ':'),
+            KeyCap(0x05, 'k', shift = 'K'),
+            KeyCap(0x11, '’', shift = '?'),
+            KeyCap(0x10, 'q', shift = 'Q'),
+            KeyCap(0x36, 'g', shift = 'G'),
+            KeyCap(0x37, 'h', shift = 'H'),
+            KeyCap(0x38, 'f', shift = 'F'),
+            KeyCap(0x35, '$', '#'),
+            KeyCap(0x1E, '"', '1'),
+            KeyCap(0x1F, '«', '2'),
+            KeyCap(0x20, '»', '3'),
+            KeyCap(0x21, '(', '4', altgr = '['),
+            KeyCap(0x22, ')', '5', altgr = ']'),
+            KeyCap(0x23, '@', '6', altgr = '^'),
+            KeyCap(0x24, '+', '7'),
+            KeyCap(0x25, '-', '8'),
+            KeyCap(0x26, '/', '9'),
+            KeyCap(0x27, '*', '0'),
+            KeyCap(0x2D, '=', '°'),
+            KeyCap(0x2E, '%', '`')
+        )
+    )
+
+    private val BEPO: Map<Char, KeyStroke> = BEPO_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
         Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
         Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE, Layout.HU to HU_TABLE, Layout.NO to NO_TABLE,
-        Layout.BE to BE_TABLE, Layout.DV to DV_TABLE, Layout.CK to CK_TABLE
+        Layout.BE to BE_TABLE, Layout.DV to DV_TABLE, Layout.CK to CK_TABLE, Layout.BEPO to BEPO_TABLE
     )
 }
