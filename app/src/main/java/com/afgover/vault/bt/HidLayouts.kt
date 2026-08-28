@@ -31,7 +31,8 @@ object HidLayouts {
         PT(R.string.bt_layout_pt),
         SE(R.string.bt_layout_se),
         BR(R.string.bt_layout_br),
-        CH(R.string.bt_layout_ch)
+        CH(R.string.bt_layout_ch),
+        NL(R.string.bt_layout_nl)
     }
 
     /**
@@ -95,6 +96,7 @@ object HidLayouts {
             Layout.SE -> SE
             Layout.BR -> BR
             Layout.CH -> CH
+            Layout.NL -> NL
         }
 
     /**
@@ -804,11 +806,67 @@ object HidLayouts {
 
     private val CH: Map<Char, KeyStroke> = CH_TABLE.toMap()
 
+    /**
+     * Hollandaca (Felemenkçe, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdne.html), ham Unicode
+     * ad etiketleriyle, birebir okuma.
+     *
+     * Harf sırası tam QWERTY (İsviçre/Almanca'nın aksine Y/Z YER
+     * DEĞİŞTİRMEZ). Şifre karakterleri açısından en kritik fark yine
+     * rakam satırının SHIFT hâli: ! " # $ % & _ ( ) ' — 7 üstünde `&`
+     * değil `_` var, bu düzene özgü bir tuzak.
+     *
+     * ¨ (0x2F: base ¨, shift ^) ve ´ (0x34: base ´, shift `) konumlarının
+     * HER İKİ değiştiricisi de ÖLÜ TUŞTUR — bu iki konum tabloda hiç yok.
+     * Buna karşın ° konumu (0x2E) yalnız BASE'de gerçek karakter, shift'i
+     * (~) ve AltGr'ı (¸) ikisi de ölü tuş — yalnız base yazıldı.
+     */
+    private val NL_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(
+                0x06 to KeyCap(0x06, 'c', 'C', altgr = '¢'),
+                0x08 to KeyCap(0x08, 'e', 'E', altgr = '€'),
+                0x10 to KeyCap(0x10, 'm', 'M', altgr = 'µ'),
+                0x15 to KeyCap(0x15, 'r', 'R', altgr = '¶'),
+                0x16 to KeyCap(0x16, 's', 'S', altgr = 'ß'),
+                0x1B to KeyCap(0x1B, 'x', 'X', altgr = '»'),
+                0x1D to KeyCap(0x1D, 'z', 'Z', altgr = '«')
+            )
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x35, '@', '§'),
+            KeyCap(0x1E, '1', '!', altgr = '¹'),
+            KeyCap(0x1F, '2', '"', altgr = '²'),
+            KeyCap(0x20, '3', '#', altgr = '³'),
+            KeyCap(0x21, '4', '$', altgr = '¼'),
+            KeyCap(0x22, '5', '%', altgr = '½'),
+            KeyCap(0x23, '6', '&', altgr = '¾'),
+            KeyCap(0x24, '7', '_', altgr = '£'),
+            KeyCap(0x25, '8', '(', altgr = '{'),
+            KeyCap(0x26, '9', ')', altgr = '}'),
+            KeyCap(0x27, '0', '\''),
+            KeyCap(0x2D, '/', '?', altgr = '\\'),
+            KeyCap(0x2E, '°'), // shift: ~ ölü, altgr: ¸ ölü — yalnız base var
+            // 0x2F (P'den sonra): base ¨ / shift ^ İKİSİ DE ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x30, '*', '|'),
+            KeyCap(0x32, '<', '>'),
+            KeyCap(0x33, '+', '±'),
+            // 0x34 (+'dan sonra): base ´ / shift ` İKİSİ DE ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x36, ',', ';'),
+            KeyCap(0x37, '.', ':', altgr = '·'),
+            KeyCap(0x38, '-', '='),
+            KeyCap(0x64, ']', '[', altgr = '¦')
+        )
+    )
+
+    private val NL: Map<Char, KeyStroke> = NL_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
         Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
-        Layout.CH to CH_TABLE
+        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE
     )
 }
