@@ -33,7 +33,8 @@ object HidLayouts {
         BR(R.string.bt_layout_br),
         CH(R.string.bt_layout_ch),
         NL(R.string.bt_layout_nl),
-        CZ(R.string.bt_layout_cz)
+        CZ(R.string.bt_layout_cz),
+        HU(R.string.bt_layout_hu)
     }
 
     /**
@@ -99,6 +100,7 @@ object HidLayouts {
             Layout.CH -> CH
             Layout.NL -> NL
             Layout.CZ -> CZ
+            Layout.HU -> HU
         }
 
     /**
@@ -935,11 +937,86 @@ object HidLayouts {
 
     private val CZ: Map<Char, KeyStroke> = CZ_TABLE.toMap()
 
+    /**
+     * Macarca (QWERTZ, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdhu.html), ham Unicode
+     * ad etiketleriyle, iki ayrı geçişte birebir okuma (ikincisi `?`
+     * karakterinin konumunu netleştirmek ve AltGr+M/AltGr+. konumundaki
+     * şüpheli tekrarı doğrulamak için — ikisi de aynı çıktı, gerçek).
+     *
+     * En göze çarpan tuzak: rakam-0 klavye konumu (9'dan sonraki tuş, 0x27)
+     * `ö` üretir — `0` üst-sol köşe tuşuna (0x35) TAŞINMIŞTIR. Yanlış
+     * düzende `0` yazmaya çalışan biri farkında olmadan `ö` yazar.
+     *
+     * Gerçek klavyede `<`/`>` iki yoldan erişiliyor (ISO ekstra tuşu VE
+     * Y tuşunun AltGr'ı, AYRICA M tuşu ve nokta tuşunun AltGr'ı da aynı
+     * karakterleri veriyor — kaynakta dört kez tekrarlanıyor). Çakışma
+     * testine takılmasın diye yalnız ISO ekstra tuşu (`<`) ve Y tuşu (`>`)
+     * bırakıldı, M ve nokta tuşundaki AltGr tekrarları atlandı.
+     *
+     * AltGr satırındaki ölü tuşlar (caron, sirkumfleks, breve, ogonek,
+     * nokta-üstü, çift akut, çift nokta, sedil) Lehçe/Baltık/Slovak
+     * birleştirmesi için var — Macarcanın kendisi kullanmıyor, tabloda yok.
+     * Digit-7'nin AltGr'ı (`) — Çekçenin aksine — burada ÖLÜ TUŞ DEĞİL,
+     * gerçek karakter.
+     */
+    private val HU_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(
+                0x04 to KeyCap(0x04, 'a', 'A', altgr = 'ä'),
+                0x05 to KeyCap(0x05, 'b', 'B', altgr = '{'),
+                0x06 to KeyCap(0x06, 'c', 'C', altgr = '&'),
+                0x07 to KeyCap(0x07, 'd', 'D', altgr = 'Đ'),
+                0x08 to KeyCap(0x08, 'e', 'E', altgr = 'Ä'),
+                0x09 to KeyCap(0x09, 'f', 'F', altgr = '['),
+                0x0A to KeyCap(0x0A, 'g', 'G', altgr = ']'),
+                0x0E to KeyCap(0x0E, 'k', 'K', altgr = 'ł'),
+                0x0F to KeyCap(0x0F, 'l', 'L', altgr = 'Ł'),
+                0x11 to KeyCap(0x11, 'n', 'N', altgr = '}'),
+                0x14 to KeyCap(0x14, 'q', 'Q', altgr = '\\'),
+                0x16 to KeyCap(0x16, 's', 'S', altgr = 'đ'),
+                0x18 to KeyCap(0x18, 'u', 'U', altgr = '€'),
+                0x19 to KeyCap(0x19, 'v', 'V', altgr = '@'),
+                0x1A to KeyCap(0x1A, 'w', 'W', altgr = '|'),
+                0x1B to KeyCap(0x1B, 'x', 'X', altgr = '#'),
+                0x1C to KeyCap(0x1C, 'z', 'Z'),
+                0x1D to KeyCap(0x1D, 'y', 'Y', altgr = '>')
+            )
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x35, '0', '§'),
+            KeyCap(0x1E, '1', '\'', altgr = '~'),
+            KeyCap(0x1F, '2', '"'),
+            KeyCap(0x20, '3', '+'),
+            KeyCap(0x21, '4', '!'),
+            KeyCap(0x22, '5', '%'),
+            KeyCap(0x23, '6', '/'),
+            KeyCap(0x24, '7', '=', altgr = '`'),
+            KeyCap(0x25, '8', '('),
+            KeyCap(0x26, '9', ')'),
+            KeyCap(0x27, 'ö', 'Ö'),
+            KeyCap(0x2D, 'ü', 'Ü'),
+            KeyCap(0x2E, 'ó', 'Ó'),
+            KeyCap(0x2F, 'ő', 'Ő', altgr = '÷'),
+            KeyCap(0x30, 'ú', 'Ú', altgr = '×'),
+            KeyCap(0x32, 'ű', 'Ű', altgr = '¤'),
+            KeyCap(0x33, 'é', 'É', altgr = '$'),
+            KeyCap(0x34, 'á', 'Á', altgr = 'ß'),
+            KeyCap(0x36, ',', '?', altgr = ';'),
+            KeyCap(0x37, '.', ':'), // altgr'de de > var — Y tuşuyla çakışmasın diye atlandı
+            KeyCap(0x38, '-', '_', altgr = '*'),
+            KeyCap(0x64, 'í', 'Í', altgr = '<')
+        )
+    )
+
+    private val HU: Map<Char, KeyStroke> = HU_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
         Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
-        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE
+        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE, Layout.HU to HU_TABLE
     )
 }
