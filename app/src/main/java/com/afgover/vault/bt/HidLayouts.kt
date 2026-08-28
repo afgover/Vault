@@ -32,7 +32,8 @@ object HidLayouts {
         SE(R.string.bt_layout_se),
         BR(R.string.bt_layout_br),
         CH(R.string.bt_layout_ch),
-        NL(R.string.bt_layout_nl)
+        NL(R.string.bt_layout_nl),
+        CZ(R.string.bt_layout_cz)
     }
 
     /**
@@ -97,6 +98,7 @@ object HidLayouts {
             Layout.BR -> BR
             Layout.CH -> CH
             Layout.NL -> NL
+            Layout.CZ -> CZ
         }
 
     /**
@@ -862,11 +864,82 @@ object HidLayouts {
 
     private val NL: Map<Char, KeyStroke> = NL_TABLE.toMap()
 
+    /**
+     * Çekçe (QWERTZ, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdcz.html), ham Unicode
+     * ad etiketleriyle, birebir okuma — iki ayrı geçişte doğrulandı (ikinci
+     * geçiş `/` karakterinin tam konumunu netleştirmek için yapıldı, ilk
+     * okumada 0x2F'in shift değeri yanlış — Ú — okunmuştu, ikinci taramada
+     * gerçek değerin `/` olduğu görüldü ve düzeltildi; aynı hata 0x33'te de
+     * vardı: Ů değil, `"` çıkıyor).
+     *
+     * En kritik ve şifreler için TEHLİKELİ fark: rakam satırının BASE hâli
+     * rakam değil, aksanlı Çekçe harf üretir (+ ě š č ř ž ý á í é); rakamlar
+     * yalnız SHIFT'te çıkar. Yanlış düzen seçilirse bir şifredeki HER rakam
+     * bambaşka bir harfe dönüşür — bu düzenin en isabetsiz olduğu senaryo.
+     *
+     * AltGr satırı çoğunlukla Lehçe/Baltık harfleri BİRLEŞTİRMEK için ölü
+     * tuşlardan oluşuyor (breve, ogonek, çift akut, vb.) — Çekçenin kendisi
+     * bunları kullanmıyor, tabloda hiçbiri yok. Gerçek klavyede `\` iki
+     * yoldan (ISO ekstra tuşu VE AltGr+Q), `|` de iki yoldan (aynı tuş VE
+     * AltGr+W) erişiliyor — çakışma testine takılmasın diye yalnız ISO
+     * ekstra tuşundaki (0x64) tanım bırakıldı, AltGr+Q/AltGr+W'daki
+     * tekrarlar atlandı (gerçek fiziksel fazlalık, Swiss/İsviçre'deki §/°
+     * örneğiyle aynı sınıf).
+     */
+    private val CZ_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(
+                0x05 to KeyCap(0x05, 'b', 'B', altgr = '{'),
+                0x06 to KeyCap(0x06, 'c', 'C', altgr = '&'),
+                0x07 to KeyCap(0x07, 'd', 'D', altgr = 'Đ'),
+                0x08 to KeyCap(0x08, 'e', 'E', altgr = '€'),
+                0x09 to KeyCap(0x09, 'f', 'F', altgr = '['),
+                0x0A to KeyCap(0x0A, 'g', 'G', altgr = ']'),
+                0x0E to KeyCap(0x0E, 'k', 'K', altgr = 'ł'),
+                0x0F to KeyCap(0x0F, 'l', 'L', altgr = 'Ł'),
+                0x11 to KeyCap(0x11, 'n', 'N', altgr = '}'),
+                0x16 to KeyCap(0x16, 's', 'S', altgr = 'đ'),
+                0x19 to KeyCap(0x19, 'v', 'V', altgr = '@'),
+                0x1B to KeyCap(0x1B, 'x', 'X', altgr = '#'),
+                0x1C to KeyCap(0x1C, 'z', 'Z'),
+                0x1D to KeyCap(0x1D, 'y', 'Y')
+            )
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x35, ';'),
+            KeyCap(0x1E, '+', '1', altgr = '~'),
+            KeyCap(0x1F, 'ě', '2'),
+            KeyCap(0x20, 'š', '3'),
+            KeyCap(0x21, 'č', '4'),
+            KeyCap(0x22, 'ř', '5'),
+            KeyCap(0x23, 'ž', '6'),
+            KeyCap(0x24, 'ý', '7'),
+            KeyCap(0x25, 'á', '8'),
+            KeyCap(0x26, 'í', '9'),
+            KeyCap(0x27, 'é', '0'),
+            KeyCap(0x2D, '=', '%'), // altgr: ¨ ÖLÜ TUŞ — atlanıyor
+            // 0x2E (=/%'den sonra): base ´ / shift ˇ İKİSİ DE ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x2F, 'ú', '/', altgr = '÷'),
+            KeyCap(0x30, ')', '(', altgr = '×'),
+            // 0x31 (ANSI-tipi üçüncü tuş, ISO fiziksel klavyede karşılığı yok): atlanıyor
+            KeyCap(0x33, 'ů', '"', altgr = '$'),
+            KeyCap(0x34, '§', '!', altgr = 'ß'),
+            KeyCap(0x36, ',', '?'),
+            KeyCap(0x37, '.', ':'),
+            KeyCap(0x38, '-', '_', altgr = '*'),
+            KeyCap(0x64, '\\', '|') // altgr+Q/altgr+W'de de var, çakışma olmasın diye burada bırakıldı
+        )
+    )
+
+    private val CZ: Map<Char, KeyStroke> = CZ_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
         Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
-        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE
+        Layout.CH to CH_TABLE, Layout.NL to NL_TABLE, Layout.CZ to CZ_TABLE
     )
 }

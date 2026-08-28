@@ -474,6 +474,7 @@
     <string name="bt_layout_br">ब्राज़ीली (ABNT2)</string>
     <string name="bt_layout_ch">स्विस जर्मन (QWERTZ)</string>
     <string name="bt_layout_nl">डच</string>
+    <string name="bt_layout_cz">चेक (QWERTZ)</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">भाषा</string>
     <string name="settings_language_desc">ऐप की भाषा चुनें। यह केवल Sekuvo पर लागू होती है, फ़ोन के बाक़ी हिस्से पर नहीं।</string>
