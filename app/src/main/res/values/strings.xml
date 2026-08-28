@@ -481,6 +481,7 @@
     <string name="bt_layout_pt">Portuguese (Portugal)</string>
     <string name="bt_layout_se">Swedish / Finnish</string>
     <string name="bt_layout_br">Brazilian (ABNT2)</string>
+    <string name="bt_layout_ch">Swiss German (QWERTZ)</string>
     <!-- Uygulama dili ve klavye düzeni seçimi -->
     <string name="settings_language">Language</string>
     <string name="settings_language_desc">Choose the app language. It applies to Sekuvo only, not the rest of the phone.</string>

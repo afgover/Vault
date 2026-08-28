@@ -30,7 +30,8 @@ object HidLayouts {
         PL(R.string.bt_layout_pl),
         PT(R.string.bt_layout_pt),
         SE(R.string.bt_layout_se),
-        BR(R.string.bt_layout_br)
+        BR(R.string.bt_layout_br),
+        CH(R.string.bt_layout_ch)
     }
 
     /**
@@ -93,6 +94,7 @@ object HidLayouts {
             Layout.PT -> PT
             Layout.SE -> SE
             Layout.BR -> BR
+            Layout.CH -> CH
         }
 
     /**
@@ -744,10 +746,69 @@ object HidLayouts {
     private val SE: Map<Char, KeyStroke> = SE_TABLE.toMap()
     private val BR: Map<Char, KeyStroke> = BR_TABLE.toMap()
 
+    /**
+     * İsviçre Almancası (QWERTZ, ISO) — konum tablosu.
+     *
+     * Kaynak: Microsoft'un resmî klavye düzeni belgesi
+     * (learn.microsoft.com/globalization/keyboards/kbdsg.html), ham Unicode
+     * ad etiketleriyle, birebir okuma.
+     *
+     * Almanca gibi Y/Z yer değiştirir. Şifre karakterleri açısından en
+     * kritik fark: rakam satırının SHIFT hâli tamamen farklı simgeler
+     * üretir (+ " * ç % & / ( ) = ? — Almanca'nın ! " § $ % & / ( ) = 'inden
+     * apayrı), yani "hangi düzen seçili" burada özellikle önemli.
+     *
+     * Üst-sol köşe tuşu (0x35) base=§, shift=°; bu ikisi digit-4 ve digit-5
+     * konumlarının AltGr hâlinde DE TEKRAR üretiliyor (gerçek klavyede iki
+     * yoldan erişilebilir simgeler) — tabloda çakışma olmasın diye yalnız
+     * 0x35'teki tanım bırakıldı, digit-4/5'in AltGr'ı atlandı (B-104'teki
+     * gibi bir test kırılması değil, gerçek fiziksel fazlalık).
+     *
+     * Sirkumfleks (^), gravis (`) ve tilde (~) konumu (0x2E) HER ÜÇ
+     * değiştiricide de ÖLÜ TUŞ — tabloda hiç yok. Buna karşın ¨ konumu
+     * (0x30) yalnız BASE hâlinde ölü tuştur; shift'i ! ve AltGr'ı ] gerçek
+     * karakterdir — bu satır bilinçli olarak base'siz yazıldı.
+     */
+    private val CH_TABLE = KeyTable(
+        KeyTable.latinHarfler(
+            istisnalar = mapOf(
+                0x08 to KeyCap(0x08, 'e', 'E', altgr = '€'),
+                0x1C to KeyCap(0x1C, 'z', 'Z'),
+                0x1D to KeyCap(0x1D, 'y', 'Y')
+            )
+        ) + KeyTable.ORTAK + listOf(
+            KeyCap(0x35, '§', '°'),
+            KeyCap(0x1E, '1', '+', altgr = '¦'),
+            KeyCap(0x1F, '2', '"', altgr = '@'),
+            KeyCap(0x20, '3', '*', altgr = '#'),
+            KeyCap(0x21, '4', 'ç'), // altgr: ° — 0x35'te zaten var, çakışma olmasın diye atlandı
+            KeyCap(0x22, '5', '%'), // altgr: § — 0x35'te zaten var, çakışma olmasın diye atlandı
+            KeyCap(0x23, '6', '&', altgr = '¬'),
+            KeyCap(0x24, '7', '/', altgr = '|'),
+            KeyCap(0x25, '8', '(', altgr = '¢'),
+            KeyCap(0x26, '9', ')'),
+            KeyCap(0x27, '0', '='),
+            KeyCap(0x2D, '\'', '?'), // altgr: ´ ÖLÜ TUŞ — atlanıyor
+            // 0x2E (üst sıranın son tuşu): ^ / ` / ~ ÜÇÜ DE ÖLÜ TUŞ — atlanıyor
+            KeyCap(0x2F, 'ü', 'è', altgr = '['),
+            KeyCap(0x30, shift = '!', altgr = ']'), // base: ¨ ÖLÜ TUŞ
+            KeyCap(0x32, '$', '£'),
+            KeyCap(0x33, 'ö', 'é', altgr = '{'),
+            KeyCap(0x34, 'ä', 'à', altgr = '}'),
+            KeyCap(0x36, ',', ';'),
+            KeyCap(0x37, '.', ':'),
+            KeyCap(0x38, '-', '_'),
+            KeyCap(0x64, '<', '>', altgr = '\\')
+        )
+    )
+
+    private val CH: Map<Char, KeyStroke> = CH_TABLE.toMap()
+
     /** Tablolar: tutarlılık testleri buradan geçer. */
     internal val TABLES: Map<Layout, KeyTable> = mapOf(
         Layout.US to US_TABLE, Layout.UK to UK_TABLE, Layout.TR_Q to TR_Q_TABLE,
         Layout.DE to DE_TABLE, Layout.FR to FR_TABLE, Layout.ES to ES_TABLE,
-        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE
+        Layout.IT to IT_TABLE, Layout.TR_F to TR_F_TABLE, Layout.PL to PL_TABLE, Layout.PT to PT_TABLE, Layout.SE to SE_TABLE, Layout.BR to BR_TABLE,
+        Layout.CH to CH_TABLE
     )
 }
