@@ -1,0 +1,36 @@
+# Play Store listesi — Português (pt)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [36]
+Cofre de senhas offline para Android
+
+## Tam açıklama (≤4000)  [1917]
+O Sekuvo é o seu cofre seguro: senhas, cartões e notas, criptografados no seu telefone com uma chave que só a sua senha principal consegue derivar. Sem servidor, sem conta, sem sincronização — e nenhuma forma de avisar alguém.
+
+Criptografia para auditar, não para acreditar.
+Todo campo sensível é selado com AES-256-GCM. A chave nunca toca um servidor porque não existe servidor; ela é derivada no seu telefone, a partir da sua senha principal, toda vez que você desbloqueia.
+
+• Bloqueia quando a tela apaga
+  A chave é apagada da memória no instante em que a tela escurece — fechar um dobrável também conta. Um único desbloqueio serve o aplicativo, o teclado e o preenchimento automático juntos.
+
+• Backups que sobrevivem ao telefone
+  Um único arquivo criptografado .vaultbak, guardado onde você escolher. Arquivo mais senha de backup restauram tudo em qualquer dispositivo — o caminho de recuperação é testado de ponta a ponta.
+
+• Sem porta dos fundos de recuperação
+  Esqueça a senha principal e os dados se vão. É assim por design: uma porta que só você pode abrir não tem uma chave reserva debaixo do tapete.
+
+Três saídas, todas na ponta do seu dedo.
+A área de transferência é onde segredos são roubados. O Sekuvo digita os valores direto no destino.
+
+• Serviço de preenchimento automático do Android — Formulários de login e de cartão oferecem seus itens diretamente. Enquanto bloqueado, o sistema não recebe nada — desbloqueie primeiro, depois escolha.
+
+• Teclado Sekuvo — Mude para ele em qualquer aplicativo e digite um segredo salvo direto no campo — pesquisável, recentes no topo, sem etapa de cópia.
+
+• Digita no seu computador — Seu telefone vira um teclado Bluetooth e digita o segredo no cursor do computador. Nada é instalado no computador.
+
+Gratuito, código aberto, GPLv3.
+A ficha da Google Play está em preparação. O Sekuvo é gratuito e GPLv3 — o código é a prova.
+
+GPLv3 · github.com/afgover/Vault

@@ -1,0 +1,36 @@
+# Play Store listesi — Bahasa Indonesia (id)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [40]
+Brankas kata sandi offline untuk Android
+
+## Tam açıklama (≤4000)  [1912]
+Sekuvo adalah brankas amanmu: kata sandi, kartu, dan catatan, dienkripsi di ponselmu dengan kunci yang hanya bisa diturunkan oleh kata sandi utamamu. Tanpa server, tanpa akun, tanpa sinkronisasi — dan tidak ada cara untuk memberi tahu siapa pun.
+
+Enkripsi yang bisa kamu periksa, bukan percayai begitu saja.
+Setiap kolom sensitif disegel dengan AES-256-GCM. Kunci tidak pernah menyentuh server karena tidak ada server; kunci diturunkan di ponselmu, dari kata sandi utamamu, setiap kali kamu membuka kunci.
+
+• Terkunci saat layar mati
+  Kunci dihapus dari memori saat layar mati — menutup ponsel lipat juga termasuk. Satu kali buka kunci melayani aplikasi, keyboard, dan isi otomatis sekaligus.
+
+• Cadangan yang bertahan lebih lama dari ponsel
+  Satu file .vaultbak terenkripsi, disimpan di mana pun kamu pilih. File plus kata sandi cadangan memulihkan semuanya di perangkat mana pun — jalur pemulihan sudah diuji dari awal sampai akhir.
+
+• Tidak ada pintu belakang pemulihan
+  Lupakan kata sandi utama, dan datanya hilang. Ini memang disengaja: pintu yang hanya bisa kamu buka tidak menyembunyikan kunci cadangan di bawah keset.
+
+Tiga jalur, semuanya ada di ujung jarimu.
+Papan klip adalah tempat rahasia dicuri. Karena itu Sekuvo mengetik nilai langsung ke tujuannya.
+
+• Layanan isi otomatis Android — Formulir masuk dan kartu menawarkan entrimu langsung. Saat terkunci, sistem tidak mendapat apa pun — buka kunci dulu, baru pilih.
+
+• Keyboard Sekuvo — Beralih ke sana di aplikasi mana pun dan ketik rahasia tersimpan langsung ke kolom — dengan pencarian, terbaru di atas, tanpa langkah menyalin.
+
+• Mengetik di komputermu — Ponselmu menjadi keyboard Bluetooth dan mengetik rahasia di posisi kursor komputer. Tidak ada yang diinstal di komputer.
+
+Gratis, sumber terbuka, GPLv3.
+Halaman Google Play sedang disiapkan. Sekuvo gratis dan berlisensi GPLv3 — kodenya adalah buktinya.
+
+GPLv3 · github.com/afgover/Vault

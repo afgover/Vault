@@ -1,0 +1,36 @@
+# Play Store listesi — Deutsch (de)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [34]
+Offline-Passworttresor für Android
+
+## Tam açıklama (≤4000)  [2146]
+Sekuvo ist dein sicherer Tresor: Passwörter, Karten und Notizen, auf deinem Telefon verschlüsselt mit einem Schlüssel, den nur dein Hauptpasswort ableiten kann. Kein Server, kein Konto, keine Synchronisierung — und keine Möglichkeit, jemanden zu informieren.
+
+Verschlüsselung, die du prüfen kannst, statt sie glauben zu müssen.
+Jedes sensible Feld ist mit AES-256-GCM versiegelt. Der Schlüssel berührt nie einen Server, weil es keinen Server gibt; er wird auf deinem Telefon aus deinem Hauptpasswort abgeleitet, jedes Mal, wenn du entsperrst.
+
+• Sperrt sich, wenn der Bildschirm ausgeht
+  Der Schlüssel wird in dem Moment aus dem Speicher gelöscht, in dem der Bildschirm dunkel wird — das Zusammenklappen eines faltbaren Telefons zählt auch. Ein einziges Entsperren bedient App, Tastatur und automatisches Ausfüllen gemeinsam.
+
+• Backups, die das Telefon überdauern
+  Eine einzige verschlüsselte .vaultbak-Datei, aufbewahrt, wo du willst. Datei plus Backup-Passwort stellen alles auf jedem Gerät wieder her — der Wiederherstellungsweg ist von Anfang bis Ende getestet.
+
+• Keine Hintertür zur Wiederherstellung
+  Vergisst du das Hauptpasswort, sind die Daten weg. Das ist Absicht: Eine Tür, die nur du öffnen kannst, versteckt keinen Ersatzschlüssel unter der Fußmatte.
+
+Drei Wege, alle einen Fingertipp entfernt.
+Die Zwischenablage ist der Ort, an dem Geheimnisse gestohlen werden. Deshalb tippt Sekuvo Werte direkt in ihr Ziel.
+
+• Der Autofill-Dienst von Android — Login- und Kartenformulare bieten deine Einträge direkt an. Ist der Tresor gesperrt, erhält das System nichts — erst entsperren, dann auswählen.
+
+• Die Sekuvo-Tastatur — Wechsle in jeder App dorthin und tippe ein gespeichertes Geheimnis direkt in das Feld — mit Suche, zuletzt verwendeten oben, ohne Kopierschritt.
+
+• Tippt auf deinem Computer — Dein Telefon wird zu einer Bluetooth-Tastatur und tippt das Geheimnis an der Cursorposition des Computers ein. Auf dem Computer wird nichts installiert.
+
+Kostenlos, quelloffen, GPLv3.
+Der Google-Play-Eintrag wird vorbereitet. Sekuvo ist kostenlos und unter GPLv3 lizenziert — der Code ist der Beweis.
+
+GPLv3 · github.com/afgover/Vault

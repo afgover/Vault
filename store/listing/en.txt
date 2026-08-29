@@ -1,0 +1,36 @@
+# Play Store listesi — English (en)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [34]
+Offline password vault for Android
+
+## Tam açıklama (≤4000)  [1685]
+Sekuvo is your secure vault: passwords, cards and notes, encrypted on your phone with a key only your master password can derive. It has no server, no account, no sync — and no way to phone home.
+
+Encryption you can audit, not believe.
+Every sensitive field is sealed with AES-256-GCM. The key never touches a server because there is no server; it is derived on your phone, from your master password, every time you unlock.
+
+• Locks when the screen sleeps
+  The key is wiped from memory the moment the screen goes dark — folding a foldable counts. One unlock serves the app, the keyboard and autofill together.
+
+• Backups that outlive the phone
+  One encrypted .vaultbak file, stored wherever you choose. File + backup password restores everything on any device — the recovery path is tested end to end.
+
+• No recovery backdoor
+  Forget the master password and the data is gone. That is the design: a door only you can open has no spare key under the mat.
+
+Three ways out, all under your finger.
+The clipboard is where secrets go to be stolen. Sekuvo types values straight to their destination instead.
+
+• Android autofill service — Sign-in and card forms offer your entries directly. While locked, the system gets nothing — unlock first, then choose.
+
+• Sekuvo Keyboard — Switch to it in any app and type a stored secret into the field — searchable, recents on top, no copy step.
+
+• Types into your computer — Your phone becomes a Bluetooth keyboard and types the secret at the computer's cursor. Nothing is installed on the computer.
+
+Free, open source, GPLv3.
+Google Play listing is in preparation. Sekuvo is free and GPLv3 — the code is the proof.
+
+GPLv3 · github.com/afgover/Vault

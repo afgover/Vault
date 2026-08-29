@@ -430,42 +430,74 @@
     <string name="bt_sdp_name">لوحة مفاتيح Sekuvo</string>
     <string name="bt_sdp_description">نقل آمن لضغطات المفاتيح من Sekuvo</string>
 
-    <!-- ملاحظة: العربية في CLDR تميّز ست فئات جمع (zero, one, two, few,
-         many, other). المصدر الإنجليزي يوفّر فئتين فقط (one, other)، لذا
-         نفس الشيء يُتَّبع هنا؛ أندرويد يستخدم "other" تلقائيًا للفئات
-         الأربع غير الموجودة. النتيجة صحيحة نحويًّا دائمًا، لكنها ليست
-         الأكثر دقة في كل عدد — توسيع الفئات الست عمل منفصل لاحق. -->
+    <!-- الفئات الست التي يحدّدها CLDR للعربية: zero (٠)، one (١)، two (٢)،
+         few (٣–١٠)، many (١١–٩٩)، other (١٠٠ فما فوق). الصياغة تتبع تمييز
+         العدد: جمع القلّة مع few، والمفرد المنصوب مع many، والمفرد المجرور
+         مع other. (كانت فئتان فقط سابقًا فتسقط البقية على "other" — صحيح
+         نحويًّا لكنه غير دقيق؛ lint كان يرصده كخطأ.) -->
     <plurals name="vm_import_added">
+        <item quantity="zero">لم تُضف أي مدخلة · نُظِّفت الحافظة</item>
         <item quantity="one">أُضيفت مدخلة واحدة · نُظِّفت الحافظة</item>
+        <item quantity="two">أُضيفت مدخلتان · نُظِّفت الحافظة</item>
+        <item quantity="few">أُضيفت %1$d مدخلات · نُظِّفت الحافظة</item>
+        <item quantity="many">أُضيفت %1$d مدخلةً · نُظِّفت الحافظة</item>
         <item quantity="other">أُضيفت %1$d مدخلة · نُظِّفت الحافظة</item>
     </plurals>
     <plurals name="vm_restored">
+        <item quantity="zero">لم تُستعد أي مدخلة</item>
         <item quantity="one">استُعيدت مدخلة واحدة</item>
+        <item quantity="two">استُعيدت مدخلتان</item>
+        <item quantity="few">استُعيدت %1$d مدخلات</item>
+        <item quantity="many">استُعيدت %1$d مدخلةً</item>
         <item quantity="other">استُعيدت %1$d مدخلة</item>
     </plurals>
     <plurals name="vm_backup_saved_incomplete">
+        <item quantity="zero">حُفظت النسخة الاحتياطية، لكن تعذّرت قراءة بعض المدخلات فتُركت (قد تكون تالفة). هذه النسخة غير مكتملة.</item>
         <item quantity="one">حُفظت النسخة الاحتياطية، لكن تعذّرت قراءة مدخلة واحدة فتُركت (قد تكون تالفة). هذه النسخة غير مكتملة.</item>
+        <item quantity="two">حُفظت النسخة الاحتياطية، لكن تعذّرت قراءة مدخلتين فتُركتا (قد تكونان تالفتين). هذه النسخة غير مكتملة.</item>
+        <item quantity="few">حُفظت النسخة الاحتياطية، لكن تعذّرت قراءة %1$d مدخلات فتُركت (قد تكون تالفة). هذه النسخة غير مكتملة.</item>
+        <item quantity="many">حُفظت النسخة الاحتياطية، لكن تعذّرت قراءة %1$d مدخلةً فتُركت (قد تكون تالفة). هذه النسخة غير مكتملة.</item>
         <item quantity="other">حُفظت النسخة الاحتياطية، لكن تعذّرت قراءة %1$d مدخلة فتُركت (قد تكون تالفة). هذه النسخة غير مكتملة.</item>
     </plurals>
     <plurals name="log_pending_note">
+        <item quantity="zero">لم يقع أي حدث أثناء القفل.</item>
         <item quantity="one">وقع حدث واحد أثناء القفل ولم يُنقل إلى السجل بعد؛ سيظهر في القائمة عند فتح قفل الخزنة.</item>
-        <item quantity="other">وقعت %1$d أحداث أثناء القفل ولم تُنقل إلى السجل بعد؛ ستظهر في القائمة عند فتح قفل الخزنة.</item>
+        <item quantity="two">وقع حدثان أثناء القفل ولم يُنقلا إلى السجل بعد؛ سيظهران في القائمة عند فتح قفل الخزنة.</item>
+        <item quantity="few">وقعت %1$d أحداث أثناء القفل ولم تُنقل إلى السجل بعد؛ ستظهر في القائمة عند فتح قفل الخزنة.</item>
+        <item quantity="many">وقع %1$d حدثًا أثناء القفل ولم تُنقل إلى السجل بعد؛ ستظهر في القائمة عند فتح قفل الخزنة.</item>
+        <item quantity="other">وقع %1$d حدث أثناء القفل ولم تُنقل إلى السجل بعد؛ ستظهر في القائمة عند فتح قفل الخزنة.</item>
     </plurals>
     <plurals name="log_more_events">
+        <item quantity="zero">… ولا أحداث أخرى (تُعرض أول 200 في القائمة).</item>
         <item quantity="one">… وحدث واحد آخر (تُعرض أول 200 في القائمة).</item>
-        <item quantity="other">… و%1$d أحداث أخرى (تُعرض أول 200 في القائمة).</item>
+        <item quantity="two">… وحدثان آخران (تُعرض أول 200 في القائمة).</item>
+        <item quantity="few">… و%1$d أحداث أخرى (تُعرض أول 200 في القائمة).</item>
+        <item quantity="many">… و%1$d حدثًا آخر (تُعرض أول 200 في القائمة).</item>
+        <item quantity="other">… و%1$d حدث آخر (تُعرض أول 200 في القائمة).</item>
     </plurals>
     <plurals name="bt_countdown">
+        <item quantity="zero">تبدأ الكتابة الآن — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
         <item quantity="one">تبدأ الكتابة خلال ثانية واحدة — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
-        <item quantity="other">تبدأ الكتابة خلال %1$d ثوانٍ — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
+        <item quantity="two">تبدأ الكتابة خلال ثانيتين — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
+        <item quantity="few">تبدأ الكتابة خلال %1$d ثوانٍ — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
+        <item quantity="many">تبدأ الكتابة خلال %1$d ثانيةً — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
+        <item quantity="other">تبدأ الكتابة خلال %1$d ثانية — ضع المؤشر في الحقل الصحيح على الحاسوب!</item>
     </plurals>
     <plurals name="vm_pin_wrong_wait">
+        <item quantity="zero">PIN خاطئ.</item>
         <item quantity="one">PIN خاطئ. عليك الانتظار ثانية واحدة.</item>
-        <item quantity="other">PIN خاطئ. عليك الانتظار %1$d ثوانٍ.</item>
+        <item quantity="two">PIN خاطئ. عليك الانتظار ثانيتين.</item>
+        <item quantity="few">PIN خاطئ. عليك الانتظار %1$d ثوانٍ.</item>
+        <item quantity="many">PIN خاطئ. عليك الانتظار %1$d ثانيةً.</item>
+        <item quantity="other">PIN خاطئ. عليك الانتظار %1$d ثانية.</item>
     </plurals>
     <plurals name="vm_pin_locked_wait">
+        <item quantity="zero">عدد كبير جدًّا من رموز PIN الخاطئة.</item>
         <item quantity="one">عدد كبير جدًّا من رموز PIN الخاطئة. حاول مجددًا خلال ثانية واحدة.</item>
-        <item quantity="other">عدد كبير جدًّا من رموز PIN الخاطئة. حاول مجددًا خلال %1$d ثوانٍ.</item>
+        <item quantity="two">عدد كبير جدًّا من رموز PIN الخاطئة. حاول مجددًا خلال ثانيتين.</item>
+        <item quantity="few">عدد كبير جدًّا من رموز PIN الخاطئة. حاول مجددًا خلال %1$d ثوانٍ.</item>
+        <item quantity="many">عدد كبير جدًّا من رموز PIN الخاطئة. حاول مجددًا خلال %1$d ثانيةً.</item>
+        <item quantity="other">عدد كبير جدًّا من رموز PIN الخاطئة. حاول مجددًا خلال %1$d ثانية.</item>
     </plurals>
     <string name="bt_layout_uk">بريطاني (UK)</string>
     <string name="bt_layout_de">ألماني (QWERTZ)</string>

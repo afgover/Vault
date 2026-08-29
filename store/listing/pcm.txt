@@ -1,0 +1,36 @@
+# Play Store listesi — Naija (pcm)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [34]
+Offline password vault for Android
+
+## Tam açıklama (≤4000)  [1827]
+Sekuvo na your safe vault: passwords, cards, and notes, wey dey encrypt for your phone with key wey only your master password fit derive. No server, no account, no sync — and no way to tell anybody.
+
+Encryption wey you fit check, no be one wey you go just believe.
+Every sensitive field dem seal with AES-256-GCM. The key no dey ever touch server because no server dey; e dey derive for your phone, from your master password, every time you unlock am.
+
+• E dey lock once screen off
+  The key dey wipe from memory the moment the screen off — closing foldable phone dey count too. One unlock dey serve the app, the keyboard, and autofill together.
+
+• Backups wey go dey last pass the phone
+  One encrypted .vaultbak file, wey you go save anywhere you like. The file plus the backup password go restore everything for any device — the restore path don test from start to finish.
+
+• No backdoor for recovery
+  If you forget the master password, the data don go. Na so we design am on purpose: door wey only you fit open no dey hide spare key under mat.
+
+Three ways, all dem dey your finger tip.
+Clipboard na where dem dey steal secrets. Na why Sekuvo dey type values straight go their destination.
+
+• Android autofill service — Login and card forms go offer your entries direct. While e dey lock, the system no dey get anything — unlock first, then choose.
+
+• Sekuvo Keyboard — Switch to am for any app and type saved secret straight inside the field — with search, recent ones on top, no copy step.
+
+• E dey type for your computer — Your phone go become Bluetooth keyboard and e go type the secret for where your computer cursor dey. Nothing no dey install for the computer.
+
+Free, open source, GPLv3.
+Google Play listing dey on the way. Sekuvo free and e dey under GPLv3 — the code na the proof.
+
+GPLv3 · github.com/afgover/Vault

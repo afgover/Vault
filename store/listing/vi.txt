@@ -1,0 +1,36 @@
+# Play Store listesi — Tiếng Việt (vi)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [44]
+Kho lưu trữ mật khẩu ngoại tuyến cho Android
+
+## Tam açıklama (≤4000)  [2055]
+Sekuvo là kho lưu trữ an toàn của bạn: mật khẩu, thẻ, và ghi chú, được mã hóa trên điện thoại của bạn bằng một khóa mà chỉ mật khẩu chính của bạn mới có thể dẫn xuất. Không máy chủ, không tài khoản, không đồng bộ hóa — và không có cách nào để báo cho ai biết.
+
+Mã hóa mà bạn có thể kiểm chứng, chứ không phải tin tưởng suông.
+Mỗi trường nhạy cảm đều được niêm phong bằng AES-256-GCM. Khóa không bao giờ chạm vào máy chủ vì không hề có máy chủ; nó được dẫn xuất trên điện thoại của bạn, từ mật khẩu chính của bạn, mỗi khi bạn mở khóa.
+
+• Khóa lại khi màn hình tắt
+  Khóa bị xóa khỏi bộ nhớ ngay khoảnh khắc màn hình tối đi — gập điện thoại có thể gập lại cũng được tính. Một lần mở khóa phục vụ cả ứng dụng, bàn phím, và tự động điền cùng lúc.
+
+• Các bản sao lưu tồn tại lâu hơn cả điện thoại
+  Một tệp .vaultbak đã mã hóa duy nhất, được lưu ở bất cứ đâu bạn chọn. Tệp cùng với mật khẩu sao lưu khôi phục mọi thứ trên bất kỳ thiết bị nào — con đường khôi phục đã được kiểm chứng từ đầu đến cuối.
+
+• Không có cửa hậu để khôi phục
+  Quên mật khẩu chính, dữ liệu sẽ mất. Đây là điều có chủ đích: một cánh cửa mà chỉ bạn mới mở được sẽ không giấu chìa khóa dự phòng dưới tấm thảm cửa.
+
+Ba con đường, tất cả đều trong tầm tay bạn.
+Bộ nhớ tạm là nơi bí mật bị đánh cắp. Đó là lý do Sekuvo gõ giá trị trực tiếp vào đích đến của chúng.
+
+• Dịch vụ tự động điền của Android — Các biểu mẫu đăng nhập và thẻ gợi ý trực tiếp các mục của bạn. Khi đang khóa, hệ thống không nhận được gì cả — hãy mở khóa trước, rồi mới chọn.
+
+• Bàn phím Sekuvo — Chuyển sang đó trong bất kỳ ứng dụng nào và gõ một bí mật đã lưu trực tiếp vào trường — với chức năng tìm kiếm, các mục gần đây ở trên cùng, không cần bước sao chép.
+
+• Nhập trên máy tính của bạn — Điện thoại của bạn trở thành một bàn phím Bluetooth và gõ bí mật vào vị trí con trỏ trên máy tính. Không có gì được cài đặt trên máy tính.
+
+Miễn phí, mã nguồn mở, GPLv3.
+Trang niêm yết trên Google Play đang được chuẩn bị. Sekuvo miễn phí và theo giấy phép GPLv3 — mã nguồn chính là bằng chứng.
+
+GPLv3 · github.com/afgover/Vault

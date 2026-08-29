@@ -1,0 +1,36 @@
+# Play Store listesi — Français (fr)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [47]
+Coffre de mots de passe hors ligne pour Android
+
+## Tam açıklama (≤4000)  [2069]
+Sekuvo est ton coffre sécurisé : mots de passe, cartes et notes, chiffrés sur ton téléphone avec une clé que seul ton mot de passe principal peut dériver. Pas de serveur, pas de compte, pas de synchronisation — et aucun moyen d'appeler la maison.
+
+Un chiffrement à auditer, pas à croire sur parole.
+Chaque champ sensible est scellé avec AES-256-GCM. La clé ne touche jamais un serveur, car il n'y en a pas ; elle est dérivée sur ton téléphone, à partir de ton mot de passe principal, à chaque déverrouillage.
+
+• Se verrouille quand l'écran s'éteint
+  La clé est effacée de la mémoire dès que l'écran s'assombrit — replier un pliable compte aussi. Un seul déverrouillage sert à la fois l'application, le clavier et la saisie automatique.
+
+• Des sauvegardes qui survivent au téléphone
+  Un unique fichier chiffré .vaultbak, stocké où tu veux. Le fichier plus le mot de passe de sauvegarde restaurent tout sur n'importe quel appareil — le chemin de récupération est testé de bout en bout.
+
+• Aucune porte dérobée de récupération
+  Oublie le mot de passe principal et les données disparaissent. C'est le principe même : une porte que toi seul peux ouvrir n'a pas de double planqué sous le paillasson.
+
+Trois sorties, toutes sous ton doigt.
+Le presse-papiers est l'endroit où les secrets se font voler. Sekuvo écrit les valeurs directement à leur destination.
+
+• Service de saisie automatique Android — Les formulaires de connexion et de carte proposent directement tes entrées. Verrouillé, le système ne reçoit rien — déverrouille d'abord, puis choisis.
+
+• Clavier Sekuvo — Bascule dessus dans n'importe quelle application et saisis un secret enregistré dans le champ — avec recherche, éléments récents en haut, sans étape de copie.
+
+• Écrit sur ton ordinateur — Ton téléphone devient un clavier Bluetooth et saisit le secret à l'emplacement du curseur de l'ordinateur. Rien n'est installé sur l'ordinateur.
+
+Gratuit, open source, GPLv3.
+La fiche Google Play est en préparation. Sekuvo est gratuit et sous GPLv3 — le code en est la preuve.
+
+GPLv3 · github.com/afgover/Vault

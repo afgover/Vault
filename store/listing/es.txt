@@ -1,0 +1,36 @@
+# Play Store listesi — Español (es)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [47]
+Bóveda de contraseñas sin conexión para Android
+
+## Tam açıklama (≤4000)  [1870]
+Sekuvo es tu bóveda segura: contraseñas, tarjetas y notas, cifradas en tu teléfono con una clave que solo tu contraseña maestra puede derivar. Sin servidor, sin cuenta, sin sincronización — y sin forma de llamar a casa.
+
+Cifrado que puedes auditar, no creer.
+Cada campo sensible se sella con AES-256-GCM. La clave nunca toca un servidor porque no hay servidor; se deriva en tu teléfono, desde tu contraseña maestra, cada vez que desbloqueas.
+
+• Se bloquea cuando la pantalla se apaga
+  La clave se borra de la memoria en cuanto la pantalla se apaga — plegar un plegable también cuenta. Un solo desbloqueo sirve para la app, el teclado y el autocompletado.
+
+• Copias que sobreviven al teléfono
+  Un único archivo cifrado .vaultbak guardado donde tú elijas. El archivo más su contraseña restauran todo en cualquier dispositivo — la vía de recuperación está probada de extremo a extremo.
+
+• Sin puerta trasera de recuperación
+  Si olvidas la contraseña maestra, los datos se pierden. Es el diseño: una puerta que solo tú abres no guarda una llave bajo el felpudo.
+
+Tres salidas, todas bajo tu dedo.
+El portapapeles es donde los secretos acaban robados. Sekuvo escribe los valores directamente en su destino.
+
+• Servicio de autocompletado de Android — Los formularios de inicio de sesión y de tarjeta ofrecen tus entradas directamente. Bloqueado, el sistema no recibe nada — desbloquea primero, luego elige.
+
+• Teclado Sekuvo — Cámbialo en cualquier app y escribe un secreto guardado en el campo — con búsqueda, los recientes arriba y sin paso de copiado.
+
+• Escribe en tu ordenador — Tu teléfono se convierte en un teclado Bluetooth y escribe el secreto donde está el cursor. En el ordenador no se instala nada.
+
+Gratis, código abierto, GPLv3.
+La ficha de Google Play está en preparación. Sekuvo es gratis y GPLv3 — el código es la prueba.
+
+GPLv3 · github.com/afgover/Vault

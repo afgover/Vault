@@ -69,6 +69,25 @@ android {
         compose = true
         buildConfig = true   // Hakkında sayfası sürüm adını buradan okur
     }
+
+    /**
+     * Play, AAB'yi VARSAYILAN OLARAK dile göre böler ve cihaza yalnız sistem
+     * dilinin kaynaklarını indirir. Bu uygulamanın KENDİ dil seçicisi var
+     * (AppLocale, 16 dil): bölme açıkken telefonu Türkçe olan kullanıcı
+     * Ayarlar'dan Japonca seçtiğinde o dizeler cihazda bulunmaz ve arayüz
+     * tabana — İngilizceye — düşer. Yani 16 dilin tamamı Play'den kuranlarda
+     * çalışmaz; APK ile kurulumda görünmediği için sahada fark edilmesi zor
+     * bir kusur (denetim, market öncesi).
+     *
+     * Android'in kendi "uygulama başına dil" API'si bunu Play Core olmadan
+     * çözerdi ama API 33+ istiyor; burada minSdk 26. Bu yüzden diller taban
+     * pakete gömülüyor: birkaç yüz KB karşılığında özellik gerçekten çalışır.
+     */
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
 }
 
 dependencies {

@@ -1,0 +1,36 @@
+# Play Store listesi — Türkçe (tr)
+
+## Uygulama adı (≤30)
+Sekuvo
+
+## Kısa açıklama (≤80)  [37]
+Android için çevrimdışı parola kasası
+
+## Tam açıklama (≤4000)  [1674]
+Sekuvo senin güvenli kasan: parolalar, kartlar ve notlar, yalnız ana parolandan türeyen bir anahtarla telefonunda şifrelenir. Sunucusu yok, hesabı yok, eşitlemesi yok — ve eve haber verme yolu yok.
+
+İnanılacak değil, denetlenecek şifreleme.
+Her hassas alan AES-256-GCM ile mühürlenir. Anahtar hiçbir sunucuya uğramaz, çünkü sunucu yoktur; her kilit açışında telefonunda, ana parolandan türetilir.
+
+• Ekran uyuyunca kilitlenir
+  Ekran karardığı anda anahtar bellekten silinir — katlanabilir cihazı katlamak da sayılır. Tek kilit açma; uygulama, klavye ve otomatik doldurma için birlikte geçerlidir.
+
+• Telefondan uzun ömürlü yedek
+  İstediğin yere koyduğun tek bir şifreli .vaultbak dosyası. Dosya artı yedek parolası her cihazda her şeyi geri getirir — kurtarma yolu uçtan uca sınandı.
+
+• Kurtarma arka kapısı yok
+  Ana parolanı unutursan veri gider. Tasarım bu: yalnız senin açabildiğin bir kapının paspas altında yedek anahtarı olmaz.
+
+Üç çıkış yolu, üçü de parmağının altında.
+Pano, sırların çalınmaya gittiği yerdir. Sekuvo değerleri onun yerine doğrudan hedefine yazar.
+
+• Android otomatik doldurma servisi — Giriş ve kart formları kayıtlarını doğrudan sunar. Kilitliyken sisteme hiçbir şey gitmez — önce kilidi aç, sonra seç.
+
+• Sekuvo Klavyesi — Herhangi bir uygulamada klavyeye geç, kayıtlı sırrı doğrudan alana yaz — aranabilir, son kullanılanlar üstte, kopyalama adımı yok.
+
+• Bilgisayarına yazar — Telefonun Bluetooth klavyeye dönüşür ve sırrı bilgisayardaki imlecin olduğu yere yazar. Bilgisayara hiçbir şey kurulmaz.
+
+Ücretsiz, açık kaynak, GPLv3.
+Google Play kaydı hazırlanıyor. Sekuvo ücretsiz ve GPLv3 — kanıt kodun kendisi.
+
+GPLv3 · github.com/afgover/Vault
