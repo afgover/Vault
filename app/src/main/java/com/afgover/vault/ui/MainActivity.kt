@@ -166,6 +166,8 @@ sealed interface Nav {
     data class Detail(val id: Long) : Nav
     data class Edit(val id: Long, val type: EntryType) : Nav
     data object Settings : Nav
+    /** Araç çıpası; ana ekrandaki parmak izi düğmesinden açılır. */
+    data object Anchor : Nav
     data class Info(val kind: com.afgover.vault.ui.screens.InfoKind) : Nav
 }
 
@@ -262,7 +264,8 @@ fun VaultRoot(
                 viewModel = viewModel,
                 onOpen = { nav = Nav.Detail(it) },
                 onAdd = { type -> nav = Nav.Edit(0L, type) },
-                onSettings = { nav = Nav.Settings }
+                onSettings = { nav = Nav.Settings },
+                onAnchor = { nav = Nav.Anchor }
             )
 
             is Nav.Detail -> DetailScreen(
@@ -286,6 +289,11 @@ fun VaultRoot(
                 onBiometricEnable = onBiometricEnable,
                 onBack = { nav = Nav.Home },
                 onInfo = { kind -> nav = Nav.Info(kind) }
+            )
+
+            is Nav.Anchor -> com.afgover.vault.ui.screens.AnchorScreen(
+                viewModel = viewModel,
+                onBack = { nav = Nav.Home }
             )
 
             is Nav.Info -> com.afgover.vault.ui.screens.InfoScreen(

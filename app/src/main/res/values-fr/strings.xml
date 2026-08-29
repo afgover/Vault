@@ -559,4 +559,22 @@
     <string name="edit_iban_confirm_text">Les chiffres de contrôle de cet IBAN ne correspondent pas, un chiffre est donc probablement incorrect. Tu peux quand même l\'enregistrer — mais si c\'était une erreur de frappe, tu ne le remarqueras qu\'à l\'échec du virement.</string>
     <string name="edit_iban_confirm_save">Enregistrer quand même</string>
     <string name="edit_iban_confirm_fix">Revenir et corriger</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Ancre de l\'outil</string>
+    <string name="anchor_open_cd">Ancre de l\'outil</string>
+    <string name="anchor_desc">Le SHA-256 de aktar.html, l\'outil côté ordinateur. Ce n\'est pas un secret : c\'est la référence à laquelle tu compares un fichier téléchargé. Garde-la ici, compare avant d\'ouvrir le fichier, et rafraîchis-la à chaque nouvelle version.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">Aucune ancre définie pour l\'instant.</string>
+    <string name="anchor_update_qr">Mettre à jour via QR</string>
+    <string name="anchor_edit">Modifier à la main</string>
+    <string name="anchor_saved">Ancre mise à jour</string>
+    <string name="anchor_qr_hint">Scanne l\'enveloppe chiffrée contenant la nouvelle ancre, puis saisis le mot de passe de transfert défini sur l\'ordinateur.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Anciens mots de passe</string>
+    <string name="old_passwords_desc">Conservés lors d\'un changement de mot de passe, avec la date de remplacement. Touche l\'œil pour en révéler un.</string>
+    <string name="old_passwords_unknown_date">date inconnue</string>
+    <string name="edit_password_from_qr">Mettre à jour le mot de passe via QR</string>
+    <string name="edit_password_qr_hint">Scanne l\'enveloppe chiffrée contenant le nouveau mot de passe, puis saisis le mot de passe de transfert défini sur l\'ordinateur. Seul le mot de passe est repris ; rien n\'est ajouté au coffre.</string>
+    <string name="vm_envelope_no_value">L\'enveloppe s\'est ouverte mais ne contient aucune valeur exploitable.</string>
 </resources>

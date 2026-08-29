@@ -559,4 +559,22 @@
     <string name="edit_iban_confirm_text">Os dígitos verificadores deste IBAN não conferem, então provavelmente algum dígito está errado. Você ainda pode salvá-lo — mas se foi um erro de digitação, só perceberá quando a transferência falhar.</string>
     <string name="edit_iban_confirm_save">Salvar mesmo assim</string>
     <string name="edit_iban_confirm_fix">Voltar e corrigir</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Âncora da ferramenta</string>
+    <string name="anchor_open_cd">Âncora da ferramenta</string>
+    <string name="anchor_desc">O SHA-256 do aktar.html, a ferramenta do lado do computador. Não é um segredo: é a referência com a qual você confere um arquivo baixado. Guarde-a aqui, confira antes de abrir o arquivo e atualize quando sair uma versão nova.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">Nenhuma âncora definida ainda.</string>
+    <string name="anchor_update_qr">Atualizar por QR</string>
+    <string name="anchor_edit">Editar à mão</string>
+    <string name="anchor_saved">Âncora atualizada</string>
+    <string name="anchor_qr_hint">Escaneie o envelope criptografado com a nova âncora e depois digite a senha de transferência que você definiu no computador.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Senhas antigas</string>
+    <string name="old_passwords_desc">Guardadas quando a senha muda, com a data da substituição. Toque no olho para revelar uma.</string>
+    <string name="old_passwords_unknown_date">data desconhecida</string>
+    <string name="edit_password_from_qr">Atualizar a senha por QR</string>
+    <string name="edit_password_qr_hint">Escaneie o envelope criptografado com a nova senha e depois digite a senha de transferência definida no computador. Só a senha é aproveitada; nada é adicionado ao cofre.</string>
+    <string name="vm_envelope_no_value">O envelope abriu, mas não traz nenhum valor aproveitável.</string>
 </resources>

@@ -552,4 +552,22 @@
     <string name="edit_iban_confirm_text">此 IBAN 的校验位不匹配，因此可能有一位数字是错的。你仍可以保存它 — 但如果确实是笔误，要等到转账失败才会发现。</string>
     <string name="edit_iban_confirm_save">仍然保存</string>
     <string name="edit_iban_confirm_fix">返回修正</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">工具锚点</string>
+    <string name="anchor_open_cd">工具锚点</string>
+    <string name="anchor_desc">电脑端工具 aktar.html 的 SHA-256。它不是秘密 —— 而是你用来核对已下载文件的参照。把它放在这里,打开文件前先核对,新版本发布时再刷新。</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">尚未设置锚点。</string>
+    <string name="anchor_update_qr">通过二维码更新</string>
+    <string name="anchor_edit">手动编辑</string>
+    <string name="anchor_saved">锚点已更新</string>
+    <string name="anchor_qr_hint">扫描携带新锚点的加密信封,然后输入你在电脑上设置的传输密码。</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">旧密码</string>
+    <string name="old_passwords_desc">密码更改时保留旧密码及其被替换的日期。点击眼睛图标可显示。</string>
+    <string name="old_passwords_unknown_date">日期未知</string>
+    <string name="edit_password_from_qr">通过二维码更新密码</string>
+    <string name="edit_password_qr_hint">扫描携带新密码的加密信封,然后输入你在电脑上设置的传输密码。只取用密码;不会向密码库添加任何条目。</string>
+    <string name="vm_envelope_no_value">信封已打开,但其中没有可用的值。</string>
 </resources>

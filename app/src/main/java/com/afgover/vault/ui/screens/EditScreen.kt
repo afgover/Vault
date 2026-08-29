@@ -20,6 +20,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -57,6 +59,7 @@ import com.afgover.vault.core.FieldFormats
 import com.afgover.vault.R
 import com.afgover.vault.ui.theme.vaultButtonColors
 import com.afgover.vault.data.CustomField
+import com.afgover.vault.data.OldPassword
 import com.afgover.vault.data.EntryData
 import com.afgover.vault.data.EntryType
 import com.afgover.vault.data.NoteKind
@@ -96,9 +99,17 @@ fun EditScreen(
     // Şifre alanının yüklendiği andaki değeri: değişirse passwordChangedAt tazelenir.
     var originalPassword by remember { mutableStateOf("") }
     var originalPasswordChangedAt by remember { mutableStateOf(0L) }
+    // Eski parolalar formda düzenlenmez: diskteki hâlinden gelir, kaydederken
+    // olduğu gibi geri yazılır. Yalnız parola gerçekten değişince büyür.
+    val originalHistory = remember { mutableStateListOf<OldPassword>() }
     var loaded by remember { mutableStateOf(id == 0L) }
     var confirmDelete by remember { mutableStateOf(false) }
     var showGenerator by remember { mutableStateOf(false) }
+    // Parolayı QR ile tazeleme: bilgisayarda üretilen yeni parola şifreli bir
+    // zarfla gelir, düz metin olarak hiçbir yerde dolaşmaz.
+    var sifreQrTarama by remember { mutableStateOf(false) }
+    var sifreZarfi by remember { mutableStateOf<String?>(null) }
+    var sifreZarfParolasi by remember { mutableStateOf("") }
     var showDiscard by remember { mutableStateOf(false) }
     var initialSnap by remember { mutableStateOf<String?>(null) }
     var kaydedildi by remember { mutableStateOf(false) }
@@ -155,6 +166,20 @@ fun EditScreen(
                     // Değişmedi: eski damga korunur; damgasız eski
                     // kayıtta 0 kalır (bilinmeyen tarih uydurulmaz).
                     else -> originalPasswordChangedAt
+                },
+                // Parola değiştiyse eskisi tarihiyle geçmişe iter. Damgasız
+                // eski kayıtta "şimdi" yazılır: tarih uydurmak yerine, geçmişe
+                // düştüğü anı bilmek en azından doğrudur.
+                passwordHistory = when {
+                    password == originalPassword || originalPassword.isEmpty() ->
+                        originalHistory.toList()
+                    else -> listOf(
+                        OldPassword(
+                            originalPassword,
+                            originalPasswordChangedAt.takeIf { it > 0 }
+                                ?: System.currentTimeMillis()
+                        )
+                    ) + originalHistory
                 }
             ),
             quick = quick,
@@ -189,10 +214,22 @@ fun EditScreen(
                 noteKind = e.noteKind
                 originalPassword = e.data.password
                 originalPasswordChangedAt = e.data.passwordChangedAt
+                originalHistory.clear()
+                originalHistory.addAll(e.data.passwordHistory)
             }
             loaded = true
         }
         initialSnap = snapshot()
+    }
+
+    if (sifreQrTarama) {
+        QrScanScreen(
+            onEnvelope = { metin ->
+                sifreQrTarama = false; sifreZarfi = metin; sifreZarfParolasi = ""
+            },
+            onCancel = { sifreQrTarama = false }
+        )
+        return
     }
 
     Scaffold(
@@ -263,8 +300,16 @@ fun EditScreen(
                         value = password, onValueChange = { password = it },
                         label = { Text(stringResource(R.string.field_password)) }, singleLine = true,
                         trailingIcon = {
-                            IconButton(onClick = { showGenerator = true }) {
-                                Icon(Icons.Filled.Casino, contentDescription = stringResource(R.string.edit_generate_password))
+                            Row {
+                                IconButton(onClick = { sifreQrTarama = true }) {
+                                    Icon(
+                                        Icons.Filled.QrCodeScanner,
+                                        contentDescription = stringResource(R.string.edit_password_from_qr)
+                                    )
+                                }
+                                IconButton(onClick = { showGenerator = true }) {
+                                    Icon(Icons.Filled.Casino, contentDescription = stringResource(R.string.edit_generate_password))
+                                }
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -532,6 +577,40 @@ fun EditScreen(
             ) {
                 Text(stringResource(R.string.edit_save))
             }
+
+            // Eski parolalar en altta ve SALT OKUNUR: form alanı değil, kaydın
+            // geçmişi. Buradan düzenlenmez — parola değiştikçe kendiliğinden
+            // büyür, kaydederken olduğu gibi geri yazılır.
+            if (originalHistory.isNotEmpty()) {
+                Spacer(Modifier.height(24.dp))
+                Text(
+                    stringResource(R.string.old_passwords_title),
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Text(
+                    stringResource(R.string.old_passwords_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+                Spacer(Modifier.height(4.dp))
+                val df = remember {
+                    java.text.SimpleDateFormat("d MMM yyyy HH:mm", java.util.Locale.getDefault())
+                }
+                val bilinmiyor = stringResource(R.string.old_passwords_unknown_date)
+                val sifreEtiketi2 = stringResource(R.string.field_password)
+                originalHistory.forEachIndexed { i, eski ->
+                    OldPasswordRow(
+                        old = eski,
+                        dateText = if (eski.changedAt > 0) {
+                            df.format(java.util.Date(eski.changedAt))
+                        } else {
+                            bilinmiyor
+                        },
+                        onCopy = { viewModel.copyToClipboard(sifreEtiketi2, eski.value) },
+                        showDivider = i < originalHistory.lastIndex
+                    )
+                }
+            }
             Spacer(Modifier.height(48.dp))
         }
     }
@@ -591,6 +670,62 @@ fun EditScreen(
             onDismiss = { showGenerator = false },
             onCopy = { viewModel.copyToClipboard(sifreEtiketi, it) },
             onUse = { password = it }
+        )
+    }
+
+    // Parolayı QR'dan tazeleme: zarf çözülür, İÇİNDEKİ PAROLA alınır ve
+    // yalnız form alanına yazılır. Kasaya bir şey eklenmez — zarfın taşıdığı
+    // kayıt içe aktarılmaz; amaç var olan kaydı güncellemek.
+    sifreZarfi?.let { metin ->
+        AlertDialog(
+            onDismissRequest = { sifreZarfi = null },
+            title = { Text(stringResource(R.string.edit_password_from_qr)) },
+            text = {
+                Column {
+                    Text(
+                        stringResource(R.string.edit_password_qr_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = sifreZarfParolasi,
+                        onValueChange = { sifreZarfParolasi = it },
+                        label = { Text(stringResource(R.string.paste_label_backup_password)) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    viewModel.error?.let {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            it,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = sifreZarfParolasi.isNotEmpty() && !viewModel.busy,
+                    onClick = {
+                        viewModel.readFromEnvelope(
+                            text = metin,
+                            password = sifreZarfParolasi,
+                            sec = { it.data.password }
+                        ) { yeni ->
+                            password = yeni
+                            sifreZarfi = null
+                        }
+                    }
+                ) { Text(stringResource(R.string.paste_btn_import)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { sifreZarfi = null }) {
+                    Text(stringResource(R.string.settings_cancel))
+                }
+            }
         )
     }
 

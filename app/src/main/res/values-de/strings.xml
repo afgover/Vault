@@ -559,4 +559,22 @@
     <string name="edit_iban_confirm_text">Die Prüfziffern dieser IBAN stimmen nicht überein, vermutlich ist also eine Ziffer falsch. Du kannst sie trotzdem speichern — hast du dich vertippt, bemerkst du es aber erst, wenn die Überweisung fehlschlägt.</string>
     <string name="edit_iban_confirm_save">Trotzdem speichern</string>
     <string name="edit_iban_confirm_fix">Zurück und korrigieren</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Werkzeug-Anker</string>
+    <string name="anchor_open_cd">Werkzeug-Anker</string>
+    <string name="anchor_desc">Der SHA-256 von aktar.html, dem Werkzeug auf der Computerseite. Das ist kein Geheimnis, sondern die Referenz, mit der du eine heruntergeladene Datei vergleichst. Bewahre ihn hier auf, vergleiche vor dem Öffnen der Datei und aktualisiere ihn bei jeder neuen Version.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">Noch kein Anker hinterlegt.</string>
+    <string name="anchor_update_qr">Per QR aktualisieren</string>
+    <string name="anchor_edit">Von Hand bearbeiten</string>
+    <string name="anchor_saved">Anker aktualisiert</string>
+    <string name="anchor_qr_hint">Scanne den verschlüsselten Umschlag mit dem neuen Anker und gib dann das am Computer festgelegte Übertragungspasswort ein.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Alte Passwörter</string>
+    <string name="old_passwords_desc">Werden bei einem Passwortwechsel behalten, mit dem Datum der Ablösung. Tippe auf das Auge, um eines anzuzeigen.</string>
+    <string name="old_passwords_unknown_date">Datum unbekannt</string>
+    <string name="edit_password_from_qr">Passwort per QR aktualisieren</string>
+    <string name="edit_password_qr_hint">Scanne den verschlüsselten Umschlag mit dem neuen Passwort und gib dann das am Computer festgelegte Übertragungspasswort ein. Es wird nur das Passwort übernommen; dem Tresor wird nichts hinzugefügt.</string>
+    <string name="vm_envelope_no_value">Der Umschlag ließ sich öffnen, enthält aber keinen brauchbaren Wert.</string>
 </resources>

@@ -41,7 +41,17 @@ data class EntryEntity(
      */
     val noteKind: String = NoteKind.GENEL.name,
     /** Kullanıcı sırası ([EntrySort.MANUAL]); küçükten büyüğe. */
-    val sortIndex: Int = 0
+    val sortIndex: Int = 0,
+    /**
+     * Araç çıpası mı? Kasada **en çok bir** tane bulunur: bilgisayar tarafı
+     * aracının (aktar.html) SHA-256'sı. Kayıt listesinde ve klavyede
+     * görünmez, üst çubuktaki kendi düğmesinden açılır — o bir sır değil,
+     * indirdiğin dosyanın doğru dosya olduğunu ölçtüğün referanstır.
+     *
+     * Tür gibi şifresiz: hangi satırın çıpa olduğu kilit açmadan bilinmeli
+     * ki liste sorgusu onu dışarıda bırakabilsin (SEC-013/SEC-021 ailesi).
+     */
+    val anchor: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean =
         other is EntryEntity && other.id == id && other.updatedAt == updatedAt

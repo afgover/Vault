@@ -559,4 +559,22 @@
     <string name="edit_iban_confirm_text">The check digits for dis IBAN no match, so e likely say one digit wrong. You fit still save am — but if na typing mistake, you go only notice am once the transfer fail.</string>
     <string name="edit_iban_confirm_save">Save am anyway</string>
     <string name="edit_iban_confirm_fix">Go back and fix am</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Tool anchor</string>
+    <string name="anchor_open_cd">Tool anchor</string>
+    <string name="anchor_desc">Na the SHA-256 of aktar.html, the computer-side tool. E no be secret — na the reference wey you dey use check the file wey you download. Keep am here, check am before you open the file, and refresh am when new version comot.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">No anchor dey set yet.</string>
+    <string name="anchor_update_qr">Update with QR</string>
+    <string name="anchor_edit">Edit by hand</string>
+    <string name="anchor_saved">Anchor don update</string>
+    <string name="anchor_qr_hint">Scan the encrypted envelope wey carry the new anchor, then enter the transfer password wey you set for the computer.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Old passwords</string>
+    <string name="old_passwords_desc">Dem dey keep am when password change, with the date wey dem replace am. Tap the eye make you see one.</string>
+    <string name="old_passwords_unknown_date">date no dey known</string>
+    <string name="edit_password_from_qr">Update the password with QR</string>
+    <string name="edit_password_qr_hint">Scan the encrypted envelope wey carry the new password, then enter the transfer password wey you set for the computer. Na only the password dem go take; nothing no dey add to the vault.</string>
+    <string name="vm_envelope_no_value">The envelope open but e no carry any value wey we fit use.</string>
 </resources>

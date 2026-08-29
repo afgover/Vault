@@ -33,6 +33,12 @@ class VaultRepository(
          * tutuluyor. (vault_takip B-040, A-2026-08-21-004)
          */
         const val MAX_PLAIN_BYTES = 256 * 1024
+
+        /**
+         * Araç çıpasının başlığı. Bilinçli olarak ÇEVRİLMEZ: bu bir etiket
+         * değil, doğruladığın dosyanın adı — her dilde aynı dosyadır.
+         */
+        const val ANCHOR_TITLE = "aktar.html"
     }
 
     /**
@@ -55,7 +61,8 @@ class VaultRepository(
     private val tagDao = db.tagDao()
     private val usageLogDao = db.usageLogDao()
 
-    fun observeAll(): Flow<List<EntryEntity>> = dao.observeAll()
+    /** Liste: çıpa hariç. */
+    fun observeAll(): Flow<List<EntryEntity>> = dao.observeVisible()
 
     suspend fun getAll(): List<EntryEntity> = dao.getAll()
 
@@ -65,8 +72,13 @@ class VaultRepository(
     suspend fun getDecrypted(id: Long, key: SecretKey): DecryptedEntry? =
         dao.getById(id)?.let { decrypt(it, key) }
 
+    /** Yedek için: çıpa DAHİL hepsi. */
     suspend fun getAllDecrypted(key: SecretKey): List<DecryptedEntry> =
         dao.getAll().mapNotNull { decrypt(it, key) }
+
+    /** Klavye için: çıpa hariç — çıpa bir sır değil, orada işi yok. */
+    suspend fun getVisibleDecrypted(key: SecretKey): List<DecryptedEntry> =
+        dao.getVisible().mapNotNull { decrypt(it, key) }
 
     /**
      * Kasa kilitliyken görülebilen tek küme: hızlı erişim işaretli kayıtlar.
@@ -131,6 +143,45 @@ class VaultRepository(
                 )
             )
             usage.record(UsageEvent(id, UsageKind.DEGISTIRILDI, now))
+        }
+    }
+
+
+    // ── Araç çıpası ────────────────────────────────────────────────────────
+    //
+    // Kasada en çok bir tane bulunur ve normal kayıt akışının dışındadır:
+    // listede/klavyede görünmez, hızlı erişimi ve etiketi yoktur. Değeri
+    // (SHA-256) gövdedeki `notes` alanında durur; başlık aracın dosya adıdır
+    // ve bilinçli olarak çevrilmez — "aktar.html" her dilde aynı dosyadır.
+
+    /** Kurulu çıpa; henüz yoksa null. */
+    suspend fun getAnchorDecrypted(key: SecretKey): DecryptedEntry? =
+        dao.getAnchor()?.let { decrypt(it, key) }
+
+    /**
+     * Çıpayı kurar ya da günceller. Kayıt zaten varsa ÜZERİNE yazılır —
+     * "güncel çıpa" tek bir değerdir, kopya biriktirmez. Oluşturma tarihi
+     * ilk kurulumdan kalır, güncelleme tarihi her yazımda tazelenir.
+     */
+    suspend fun saveAnchor(value: String, key: SecretKey) {
+        val plain = EntryData(notes = value).bytes()
+        val blob = Crypto.encrypt(key, plain)
+        val now = System.currentTimeMillis()
+        val existing = dao.getAnchor()
+        if (existing == null) {
+            dao.insert(
+                EntryEntity(
+                    type = EntryType.NOTE.name,
+                    title = ANCHOR_TITLE,
+                    blob = blob,
+                    createdAt = now,
+                    updatedAt = now,
+                    noteKind = NoteKind.PARMAK_IZI.name,
+                    anchor = true
+                )
+            )
+        } else {
+            dao.update(existing.copy(blob = blob, updatedAt = now))
         }
     }
 
@@ -278,7 +329,8 @@ class VaultRepository(
             quick = quick,
             tagIds = TagIds.parse(tags),
             noteKind = NoteKind.of(noteKind),
-            sortIndex = sortIndex
+            sortIndex = sortIndex,
+            anchor = anchor
         )
     }
 
@@ -295,7 +347,10 @@ class VaultRepository(
             quickBlob = quickCopy(plain, quick),
             tags = TagIds.serialize(resolvedTagIds),
             noteKind = noteKind.name,
-            sortIndex = sortIndex
+            sortIndex = sortIndex,
+            // Çıpa bayrağı geri yüklemede de taşınmalı; yoksa yedekten dönen
+            // çıpa normal bir kayda dönüşüp listede belirirdi.
+            anchor = anchor
         )
     }
 }

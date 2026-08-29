@@ -559,4 +559,22 @@
     <string name="edit_iban_confirm_text">اس IBAN کے چیک ہندسے مماثل نہیں ہیں، جس کا مطلب ہے کہ غالباً ایک ہندسہ غلط ہے۔ آپ اسے پھر بھی محفوظ کر سکتے ہیں — لیکن اگر یہ ٹائپنگ کی غلطی تھی، تو آپ کو اس کا پتہ صرف اس وقت چلے گا جب منتقلی ناکام ہو جائے گی۔</string>
     <string name="edit_iban_confirm_save">پھر بھی محفوظ کریں</string>
     <string name="edit_iban_confirm_fix">واپس جا کر ٹھیک کریں</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">ٹول اینکر</string>
+    <string name="anchor_open_cd">ٹول اینکر</string>
+    <string name="anchor_desc">کمپیوٹر کی طرف کے ٹول aktar.html کا SHA-256۔ یہ کوئی راز نہیں — یہ وہ حوالہ ہے جس سے آپ ڈاؤن لوڈ کی گئی فائل ملاتے ہیں۔ اسے یہاں رکھیں، فائل کھولنے سے پہلے ملائیں، اور نیا ورژن آنے پر تازہ کریں۔</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">ابھی کوئی اینکر مقرر نہیں کیا گیا۔</string>
+    <string name="anchor_update_qr">QR سے تازہ کریں</string>
+    <string name="anchor_edit">ہاتھ سے ترمیم کریں</string>
+    <string name="anchor_saved">اینکر تازہ ہو گیا</string>
+    <string name="anchor_qr_hint">نیا اینکر رکھنے والا مرمز لفافہ اسکین کریں، پھر کمپیوٹر پر مقرر کیا گیا منتقلی پاس ورڈ درج کریں۔</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">پرانے پاس ورڈ</string>
+    <string name="old_passwords_desc">پاس ورڈ بدلنے پر پرانا، تبدیلی کی تاریخ کے ساتھ یہاں رہتا ہے۔ دیکھنے کے لیے آنکھ کے نشان کو چھوئیں۔</string>
+    <string name="old_passwords_unknown_date">تاریخ معلوم نہیں</string>
+    <string name="edit_password_from_qr">پاس ورڈ QR سے تازہ کریں</string>
+    <string name="edit_password_qr_hint">نیا پاس ورڈ رکھنے والا مرمز لفافہ اسکین کریں، پھر کمپیوٹر پر مقرر کیا گیا منتقلی پاس ورڈ درج کریں۔ صرف پاس ورڈ لیا جاتا ہے؛ والٹ میں کچھ شامل نہیں ہوتا۔</string>
+    <string name="vm_envelope_no_value">لفافہ کھل گیا لیکن اس میں کوئی قابلِ استعمال قدر نہیں۔</string>
 </resources>

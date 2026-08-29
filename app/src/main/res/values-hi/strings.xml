@@ -559,4 +559,22 @@
     <string name="edit_iban_confirm_text">इस IBAN के चेक अंक मेल नहीं खाते, यानी शायद कोई अंक ग़लत है। फिर भी इसे सहेजा जा सकता है — पर अगर यह टाइपो थी, तो तभी पता चलेगा जब ट्रांसफ़र नाकाम होगा।</string>
     <string name="edit_iban_confirm_save">फिर भी सहेजें</string>
     <string name="edit_iban_confirm_fix">वापस जाकर ठीक करें</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">टूल एंकर</string>
+    <string name="anchor_open_cd">टूल एंकर</string>
+    <string name="anchor_desc">कंप्यूटर वाले टूल aktar.html का SHA-256। यह कोई रहस्य नहीं है — यह वह संदर्भ है जिससे आप डाउनलोड की गई फ़ाइल मिलाते हैं। इसे यहाँ रखें, फ़ाइल खोलने से पहले मिलाएँ, और नया संस्करण आने पर ताज़ा करें।</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">अभी कोई एंकर सेट नहीं है।</string>
+    <string name="anchor_update_qr">QR से अपडेट करें</string>
+    <string name="anchor_edit">हाथ से संपादित करें</string>
+    <string name="anchor_saved">एंकर अपडेट हुआ</string>
+    <string name="anchor_qr_hint">नया एंकर रखने वाले एन्क्रिप्टेड लिफ़ाफ़े को स्कैन करें, फिर कंप्यूटर पर तय किया गया ट्रांसफ़र पासवर्ड डालें।</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">पुराने पासवर्ड</string>
+    <string name="old_passwords_desc">पासवर्ड बदलने पर पुराना, बदले जाने की तारीख के साथ यहाँ रहता है। देखने के लिए आँख के निशान पर टैप करें।</string>
+    <string name="old_passwords_unknown_date">तारीख अज्ञात</string>
+    <string name="edit_password_from_qr">पासवर्ड QR से अपडेट करें</string>
+    <string name="edit_password_qr_hint">नया पासवर्ड रखने वाले एन्क्रिप्टेड लिफ़ाफ़े को स्कैन करें, फिर कंप्यूटर पर तय किया गया ट्रांसफ़र पासवर्ड डालें। केवल पासवर्ड लिया जाता है; कोश में कुछ नहीं जुड़ता।</string>
+    <string name="vm_envelope_no_value">लिफ़ाफ़ा खुल गया लेकिन उसमें कोई उपयोगी मान नहीं है।</string>
 </resources>

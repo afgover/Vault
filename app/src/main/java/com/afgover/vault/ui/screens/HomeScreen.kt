@@ -142,7 +142,8 @@ fun HomeScreen(
     viewModel: VaultViewModel,
     onOpen: (Long) -> Unit,
     onAdd: (EntryType) -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
+    onAnchor: () -> Unit
 ) {
     val entries by viewModel.entries.collectAsState()
     val tags by viewModel.tags.collectAsState()
@@ -232,6 +233,15 @@ fun HomeScreen(
                     }
                 },
                 actions = {
+                    // Araç çıpası: kasa içeriği değil, indirdiğin aracın kimlik
+                    // ölçüsü. Kendi düğmesi var çünkü listede aranacak bir şey
+                    // değil — lazım olduğunda doğrudan gidilir.
+                    IconButton(onClick = onAnchor) {
+                        Icon(
+                            Icons.Filled.Fingerprint,
+                            contentDescription = stringResource(R.string.anchor_open_cd)
+                        )
+                    }
                     IconButton(onClick = { showTransferWizard = true }) {
                         Icon(
                             Icons.Filled.SwapHoriz,

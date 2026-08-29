@@ -559,4 +559,22 @@
     <string name="edit_iban_confirm_text">এই IBAN-এর চেক ডিজিট মেলেনি, তাই সম্ভবত একটি সংখ্যা ভুল। তবু আপনি এটি সংরক্ষণ করতে পারেন — কিন্তু যদি এটি টাইপো হয়ে থাকে, ট্রান্সফার ব্যর্থ না হওয়া পর্যন্ত আপনি বুঝতে পারবেন না।</string>
     <string name="edit_iban_confirm_save">তবুও সংরক্ষণ করুন</string>
     <string name="edit_iban_confirm_fix">ফিরে গিয়ে ঠিক করুন</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">টুল অ্যাঙ্কর</string>
+    <string name="anchor_open_cd">টুল অ্যাঙ্কর</string>
+    <string name="anchor_desc">কম্পিউটার-পাশের টুল aktar.html-এর SHA-256। এটি গোপন কিছু নয় — এটি সেই রেফারেন্স যার সঙ্গে আপনি ডাউনলোড করা ফাইল মিলিয়ে দেখেন। এটি এখানে রাখুন, ফাইল খোলার আগে মিলিয়ে নিন, এবং নতুন সংস্করণ এলে হালনাগাদ করুন।</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">এখনো কোনো অ্যাঙ্কর সেট করা হয়নি।</string>
+    <string name="anchor_update_qr">QR দিয়ে হালনাগাদ</string>
+    <string name="anchor_edit">হাতে সম্পাদনা</string>
+    <string name="anchor_saved">অ্যাঙ্কর হালনাগাদ হয়েছে</string>
+    <string name="anchor_qr_hint">নতুন অ্যাঙ্কর বহনকারী এনক্রিপ্টেড এনভেলপ স্ক্যান করুন, তারপর কম্পিউটারে ঠিক করা ট্রান্সফার পাসওয়ার্ড দিন।</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">পুরোনো পাসওয়ার্ড</string>
+    <string name="old_passwords_desc">পাসওয়ার্ড বদলালে পুরোনোটি, বদলের তারিখসহ এখানে থাকে। দেখতে চোখের আইকনে চাপ দিন।</string>
+    <string name="old_passwords_unknown_date">তারিখ অজানা</string>
+    <string name="edit_password_from_qr">পাসওয়ার্ড QR দিয়ে হালনাগাদ করুন</string>
+    <string name="edit_password_qr_hint">নতুন পাসওয়ার্ড বহনকারী এনক্রিপ্টেড এনভেলপ স্ক্যান করুন, তারপর কম্পিউটারে ঠিক করা ট্রান্সফার পাসওয়ার্ড দিন। কেবল পাসওয়ার্ডটিই নেওয়া হয়; ভল্টে কিছু যোগ হয় না।</string>
+    <string name="vm_envelope_no_value">এনভেলপ খুলেছে কিন্তু ব্যবহারযোগ্য কোনো মান নেই।</string>
 </resources>

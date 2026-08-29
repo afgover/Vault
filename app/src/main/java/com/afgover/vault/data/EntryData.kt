@@ -9,6 +9,16 @@ import org.json.JSONObject
 data class CustomField(val label: String, val value: String)
 
 /**
+ * Geride bırakılmış bir parola ve **ne zaman** bırakıldığı (epoch ms).
+ *
+ * Bir sızıntı duyulduğunda sorulan soru "o tarihte hangi parola
+ * kullanılıyordu" oluyor; parolayı üzerine yazmak bu cevabı yok ediyordu.
+ * Geçmiş şifreli gövdenin içinde durur — yani yedeğe de kendiliğinden girer,
+ * ayrı bir saklama yeri yoktur.
+ */
+data class OldPassword(val value: String, val changedAt: Long)
+
+/**
  * Yerleşik alanların KİMLİĞİ. Etiket artık metin değil anahtar:
  *
  * - [labelRes] yalnız EKRANDA gösterilen metindir, dile göre değişir.
@@ -84,7 +94,15 @@ data class EntryData(
      * Eskiyen parola uyarısının temeli. Şifreli veride durur: yalnız kilit
      * açıkken okunacak bir bilgidir.
      */
-    val passwordChangedAt: Long = 0
+    val passwordChangedAt: Long = 0,
+    /**
+     * Eski parolalar, **en yenisi başta**. Yalnız parola gerçekten değişince
+     * büyür ([withNewPassword]); kayıt her kaydedildiğinde değil.
+     *
+     * Bilerek [fields] dışında: klavye ve otomatik doldurma yalnız güncel
+     * parolayı yazmalı, eski bir parola oraya asla düşmemeli.
+     */
+    val passwordHistory: List<OldPassword> = emptyList()
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
         if (username.isNotEmpty()) put("username", username)
@@ -108,6 +126,13 @@ data class EntryData(
             })
         }
         if (passwordChangedAt > 0) put("passwordChangedAt", passwordChangedAt)
+        if (passwordHistory.isNotEmpty()) {
+            put("passwordHistory", JSONArray().apply {
+                passwordHistory.forEach { eski ->
+                    put(JSONObject().put("value", eski.value).put("changedAt", eski.changedAt))
+                }
+            })
+        }
     }
 
     /** IME ve detay ekranında gösterilecek (etiket, değer) çiftleri. */
@@ -149,8 +174,20 @@ data class EntryData(
             email = json.optString("email"),
             address = json.optString("address"),
             custom = json.optJSONArray("custom").toCustomFields(),
-            passwordChangedAt = json.optLong("passwordChangedAt")
+            passwordChangedAt = json.optLong("passwordChangedAt"),
+            passwordHistory = json.optJSONArray("passwordHistory").toOldPasswords()
         )
+
+        private fun JSONArray?.toOldPasswords(): List<OldPassword> {
+            if (this == null) return emptyList()
+            return buildList {
+                for (i in 0 until length()) {
+                    val o = optJSONObject(i) ?: continue
+                    val v = o.optString("value")
+                    if (v.isNotEmpty()) add(OldPassword(v, o.optLong("changedAt")))
+                }
+            }
+        }
 
         private fun JSONArray?.toCustomFields(): List<CustomField> {
             if (this == null) return emptyList()
@@ -179,5 +216,7 @@ data class DecryptedEntry(
     /** Yalnız yedek içe aktarmada dolu: id'ler cihaza özgüdür, yedek ad taşır. */
     val tagNames: List<String> = emptyList(),
     val noteKind: NoteKind = NoteKind.GENEL,
-    val sortIndex: Int = 0
+    val sortIndex: Int = 0,
+    /** Araç çıpası kaydı mı (bkz. [EntryEntity.anchor]). */
+    val anchor: Boolean = false
 )

@@ -575,4 +575,22 @@
     <string name="edit_iban_confirm_text">Контрольные цифры этого IBAN не совпадают, значит, скорее всего, одна цифра неверна. Вы всё равно можете сохранить его — но если это была опечатка, вы заметите это только когда перевод не пройдёт.</string>
     <string name="edit_iban_confirm_save">Всё равно сохранить</string>
     <string name="edit_iban_confirm_fix">Вернуться и исправить</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Якорь инструмента</string>
+    <string name="anchor_open_cd">Якорь инструмента</string>
+    <string name="anchor_desc">SHA-256 инструмента aktar.html, работающего на компьютере. Это не секрет — это эталон, с которым вы сверяете скачанный файл. Держите его здесь, сверяйте перед открытием файла и обновляйте, когда выходит новая версия.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">Якорь ещё не задан.</string>
+    <string name="anchor_update_qr">Обновить через QR</string>
+    <string name="anchor_edit">Изменить вручную</string>
+    <string name="anchor_saved">Якорь обновлён</string>
+    <string name="anchor_qr_hint">Отсканируйте зашифрованный конверт с новым якорем, затем введите пароль переноса, заданный на компьютере.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Старые пароли</string>
+    <string name="old_passwords_desc">Сохраняются при смене пароля вместе с датой замены. Нажмите на глаз, чтобы показать.</string>
+    <string name="old_passwords_unknown_date">дата неизвестна</string>
+    <string name="edit_password_from_qr">Обновить пароль через QR</string>
+    <string name="edit_password_qr_hint">Отсканируйте зашифрованный конверт с новым паролем, затем введите пароль переноса, заданный на компьютере. Берётся только пароль; в хранилище ничего не добавляется.</string>
+    <string name="vm_envelope_no_value">Конверт открылся, но не содержит пригодного значения.</string>
 </resources>

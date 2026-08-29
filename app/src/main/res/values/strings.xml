@@ -568,4 +568,22 @@
     <string name="edit_iban_confirm_text">This IBAN\'s check digits do not match, so a digit is probably wrong. You can still save it — but if it was a typo, you will not notice until the transfer fails.</string>
     <string name="edit_iban_confirm_save">Save anyway</string>
     <string name="edit_iban_confirm_fix">Go back and fix it</string>
+
+    <!-- Araç çıpası (aktar.html SHA-256) ve parola geçmişi -->
+    <string name="anchor_title">Tool anchor</string>
+    <string name="anchor_open_cd">Tool anchor</string>
+    <string name="anchor_desc">The SHA-256 of the computer-side tool, aktar.html. This is not a secret — it is the reference you measure a downloaded file against. Keep it here, check it before you open the file, and refresh it when a new version comes out.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">No anchor set yet.</string>
+    <string name="anchor_update_qr">Update via QR</string>
+    <string name="anchor_edit">Edit by hand</string>
+    <string name="anchor_saved">Anchor updated</string>
+    <string name="anchor_qr_hint">Scan the encrypted envelope holding the new anchor, then enter the transfer password you set on the computer.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Old passwords</string>
+    <string name="old_passwords_desc">Kept when the password changes, with the date it was replaced. Tap the eye to reveal one.</string>
+    <string name="old_passwords_unknown_date">date unknown</string>
+    <string name="edit_password_from_qr">Update the password via QR</string>
+    <string name="edit_password_qr_hint">Scan the encrypted envelope holding the new password, then enter the transfer password you set on the computer. Only the password is taken; nothing is added to the vault.</string>
+    <string name="vm_envelope_no_value">The envelope opened but carries no usable value.</string>
 </resources>

@@ -238,6 +238,46 @@ fun DetailScreen(
                 )
             }
 
+            // Eski parolalar: parola değiştiğinde eskisi silinmiyor, tarihiyle
+            // burada kalıyor. "Sızıntı duyuldu, o tarihte hangi parolayı
+            // kullanıyordum" sorusunun tek cevabı bu liste.
+            if (e.data.passwordHistory.isNotEmpty()) {
+                Spacer(Modifier.padding(8.dp))
+                OutlinedCard(
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
+                        Text(
+                            stringResource(R.string.old_passwords_title),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            stringResource(R.string.old_passwords_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                        Spacer(Modifier.padding(2.dp))
+                        val bilinmiyor = stringResource(R.string.old_passwords_unknown_date)
+                        val parolaEtiketi = stringResource(R.string.field_password)
+                        e.data.passwordHistory.forEachIndexed { i, eski ->
+                            OldPasswordRow(
+                                old = eski,
+                                dateText = if (eski.changedAt > 0) {
+                                    df.format(java.util.Date(eski.changedAt))
+                                } else {
+                                    bilinmiyor
+                                },
+                                // Günlüğe kayıt id'siz yazılır: bu güncel değer
+                                // değil, geçmişten bir kopya.
+                                onCopy = { viewModel.copyToClipboard(parolaEtiketi, eski.value) },
+                                showDivider = i < e.data.passwordHistory.lastIndex
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(Modifier.padding(8.dp))
             OutlinedCard(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),

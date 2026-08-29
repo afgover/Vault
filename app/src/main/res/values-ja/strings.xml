@@ -552,4 +552,22 @@
     <string name="edit_iban_confirm_text">このIBANのチェックデジットが一致しないため、1桁間違っている可能性が高いです。それでも保存できますが、入力ミスだった場合、振込が失敗するまで気づかないことになります。</string>
     <string name="edit_iban_confirm_save">それでも保存</string>
     <string name="edit_iban_confirm_fix">戻って修正</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">ツールのアンカー</string>
+    <string name="anchor_open_cd">ツールのアンカー</string>
+    <string name="anchor_desc">コンピューター側のツール aktar.html の SHA-256 です。これは秘密情報ではなく、ダウンロードしたファイルを照合するための基準値です。ここに保管し、ファイルを開く前に照合し、新しい版が出たら更新してください。</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">アンカーはまだ設定されていません。</string>
+    <string name="anchor_update_qr">QRで更新</string>
+    <string name="anchor_edit">手動で編集</string>
+    <string name="anchor_saved">アンカーを更新しました</string>
+    <string name="anchor_qr_hint">新しいアンカーを含む暗号化された封筒をスキャンし、コンピューターで設定した転送パスワードを入力してください。</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">以前のパスワード</string>
+    <string name="old_passwords_desc">パスワードを変更すると、置き換えられた日付とともにここに残ります。目のアイコンをタップすると表示されます。</string>
+    <string name="old_passwords_unknown_date">日付不明</string>
+    <string name="edit_password_from_qr">パスワードをQRで更新</string>
+    <string name="edit_password_qr_hint">新しいパスワードを含む暗号化された封筒をスキャンし、コンピューターで設定した転送パスワードを入力してください。取り込まれるのはパスワードだけで、保管庫には何も追加されません。</string>
+    <string name="vm_envelope_no_value">封筒は開きましたが、使用できる値が含まれていません。</string>
 </resources>

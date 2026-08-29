@@ -559,4 +559,22 @@
     <string name="edit_iban_confirm_text">Los dígitos de control de este IBAN no coinciden, así que probablemente un dígito es incorrecto. Aun así puedes guardarlo — pero si fue un error tipográfico, no lo notarás hasta que la transferencia falle.</string>
     <string name="edit_iban_confirm_save">Guardar de todos modos</string>
     <string name="edit_iban_confirm_fix">Volver y corregirlo</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Ancla de la herramienta</string>
+    <string name="anchor_open_cd">Ancla de la herramienta</string>
+    <string name="anchor_desc">El SHA-256 de aktar.html, la herramienta del lado del ordenador. No es un secreto: es la referencia con la que compruebas un archivo descargado. Guárdalo aquí, compáralo antes de abrir el archivo y actualízalo cuando salga una versión nueva.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">Aún no hay ancla configurada.</string>
+    <string name="anchor_update_qr">Actualizar por QR</string>
+    <string name="anchor_edit">Editar a mano</string>
+    <string name="anchor_saved">Ancla actualizada</string>
+    <string name="anchor_qr_hint">Escanea el sobre cifrado que contiene la nueva ancla y luego introduce la contraseña de transferencia que definiste en el ordenador.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Contraseñas anteriores</string>
+    <string name="old_passwords_desc">Se guardan al cambiar la contraseña, junto con la fecha en que se reemplazó. Toca el ojo para revelar una.</string>
+    <string name="old_passwords_unknown_date">fecha desconocida</string>
+    <string name="edit_password_from_qr">Actualizar la contraseña por QR</string>
+    <string name="edit_password_qr_hint">Escanea el sobre cifrado con la nueva contraseña y luego introduce la contraseña de transferencia que definiste en el ordenador. Solo se toma la contraseña; no se añade nada al cofre.</string>
+    <string name="vm_envelope_no_value">El sobre se abrió pero no contiene ningún valor utilizable.</string>
 </resources>

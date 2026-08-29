@@ -14,7 +14,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         UsageLogEntity::class,
         UsageBufferEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class VaultDatabase : RoomDatabase() {
@@ -90,6 +90,16 @@ abstract class VaultDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Araç çıpası bayrağı. Mevcut kayıtlar `anchor = 0` ile gelir, yani
+         * hiçbiri çıpa sayılmaz ve liste eskisi gibi çalışır (R-004).
+         */
+        internal val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE entries ADD COLUMN anchor INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         fun get(context: Context): VaultDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -98,7 +108,10 @@ abstract class VaultDatabase : RoomDatabase() {
                     "vault.db"
                 )
                     // Yıkıcı geçiş YOK: şema değişince veriler silinmemeli.
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(
+                        MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,
+                        MIGRATION_4_5, MIGRATION_5_6
+                    )
                     .build()
                     .also { instance = it }
             }

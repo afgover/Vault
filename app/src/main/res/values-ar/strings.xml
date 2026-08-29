@@ -596,4 +596,22 @@
     <string name="edit_iban_confirm_text">أرقام التحقّق في هذا الـIBAN غير متطابقة، ما يعني على الأرجح أن رقمًا خاطئ. يمكنك حفظه رغم ذلك — لكن إن كان خطأً مطبعيًّا، فلن تلاحظه إلا عندما يفشل التحويل.</string>
     <string name="edit_iban_confirm_save">الحفظ رغم ذلك</string>
     <string name="edit_iban_confirm_fix">العودة وتصحيحه</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">مرساة الأداة</string>
+    <string name="anchor_open_cd">مرساة الأداة</string>
+    <string name="anchor_desc">بصمة SHA-256 لأداة الحاسوب aktar.html. ليست سرًّا — بل المرجع الذي تقارن به الملف الذي نزّلته. احتفظ بها هنا، وقارنها قبل فتح الملف، وحدّثها عند صدور إصدار جديد.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">لم تُضبط مرساة بعد.</string>
+    <string name="anchor_update_qr">التحديث عبر QR</string>
+    <string name="anchor_edit">التحرير يدويًّا</string>
+    <string name="anchor_saved">حُدّثت المرساة</string>
+    <string name="anchor_qr_hint">امسح المظروف المشفَّر الذي يحمل المرساة الجديدة، ثم أدخل كلمة مرور النقل التي حدّدتها على الحاسوب.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">كلمات المرور السابقة</string>
+    <string name="old_passwords_desc">تُحفظ عند تغيير كلمة المرور مع تاريخ استبدالها. المس رمز العين لإظهار واحدة.</string>
+    <string name="old_passwords_unknown_date">التاريخ غير معروف</string>
+    <string name="edit_password_from_qr">تحديث كلمة المرور عبر QR</string>
+    <string name="edit_password_qr_hint">امسح المظروف المشفَّر الذي يحمل كلمة المرور الجديدة، ثم أدخل كلمة مرور النقل التي حدّدتها على الحاسوب. تُؤخذ كلمة المرور فقط؛ ولا يُضاف شيء إلى الخزنة.</string>
+    <string name="vm_envelope_no_value">فُتح المظروف لكنه لا يحمل أي قيمة صالحة.</string>
 </resources>

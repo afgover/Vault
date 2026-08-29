@@ -82,6 +82,11 @@ object BackupManager {
                         .put("sortIndex", e.sortIndex)
                         .put("data", e.data.toJson())
                         .apply {
+                            // Araç çıpası yedeğe kendini tanıtmalı; yoksa geri
+                            // yüklemede normal bir nota dönüşür ve listede belirir.
+                            if (e.anchor) put("anchor", true)
+                        }
+                        .apply {
                             if (e.noteKind != com.afgover.vault.data.NoteKind.GENEL) {
                                 put("noteKind", e.noteKind.name)
                             }
@@ -213,6 +218,8 @@ object BackupManager {
                         // geri yüklemede hepsi 0'a düşüyordu (denetim).
                         sortIndex = o.optInt("sortIndex", 0),
                         noteKind = com.afgover.vault.data.NoteKind.of(o.optString("noteKind")),
+                        // Eski yedeklerde alan yok: çıpa değil kabul edilir.
+                        anchor = o.optBoolean("anchor", false),
                         tagNames = o.optJSONArray("tags")?.let { arr ->
                             buildList { for (j in 0 until arr.length()) add(arr.getString(j)) }
                         } ?: emptyList()

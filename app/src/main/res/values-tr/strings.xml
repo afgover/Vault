@@ -560,4 +560,22 @@
     <string name="edit_iban_confirm_text">Bu IBAN\'ın kontrol haneleri tutmuyor, yani bir hane büyük olasılıkla hatalı. Yine de kaydedebilirsin — ama yazım hatasıysa bunu ancak havale tutmadığında fark edersin.</string>
     <string name="edit_iban_confirm_save">Yine de kaydet</string>
     <string name="edit_iban_confirm_fix">Geri dön, düzelteyim</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Araç çıpası</string>
+    <string name="anchor_open_cd">Araç çıpası</string>
+    <string name="anchor_desc">Bilgisayar tarafındaki aktar.html dosyasının SHA-256\'sı. Bu bir sır değil — indirdiğin dosyayı karşılaştırdığın referanstır. Burada dursun, dosyayı açmadan önce karşılaştır, yeni sürüm çıkınca tazele.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">Henüz çıpa kurulmadı.</string>
+    <string name="anchor_update_qr">QR ile güncelle</string>
+    <string name="anchor_edit">Elle düzenle</string>
+    <string name="anchor_saved">Çıpa güncellendi</string>
+    <string name="anchor_qr_hint">Yeni çıpayı taşıyan şifreli zarfı okut, sonra bilgisayarda belirlediğin aktarım parolasını gir.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Eski parolalar</string>
+    <string name="old_passwords_desc">Parola değiştikçe eskisi, değiştirildiği tarihle burada kalır. Görmek için göz simgesine dokun.</string>
+    <string name="old_passwords_unknown_date">tarih bilinmiyor</string>
+    <string name="edit_password_from_qr">Parolayı QR ile güncelle</string>
+    <string name="edit_password_qr_hint">Yeni parolayı taşıyan şifreli zarfı okut, sonra bilgisayarda belirlediğin aktarım parolasını gir. Yalnız parola alınır; kasaya kayıt eklenmez.</string>
+    <string name="vm_envelope_no_value">Zarf açıldı ama kullanılabilir bir değer taşımıyor.</string>
 </resources>

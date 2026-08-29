@@ -552,4 +552,22 @@
     <string name="edit_iban_confirm_text">Các chữ số kiểm tra của IBAN này không khớp, nghĩa là có thể có một chữ số sai. Bạn vẫn có thể lưu nó — nhưng nếu đó là lỗi đánh máy, bạn sẽ chỉ nhận ra khi việc chuyển tiền thất bại.</string>
     <string name="edit_iban_confirm_save">Vẫn lưu</string>
     <string name="edit_iban_confirm_fix">Quay lại và sửa</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Neo của công cụ</string>
+    <string name="anchor_open_cd">Neo của công cụ</string>
+    <string name="anchor_desc">Mã SHA-256 của aktar.html, công cụ phía máy tính. Đây không phải bí mật — đó là mốc đối chiếu để bạn kiểm tra tệp đã tải về. Hãy giữ nó ở đây, đối chiếu trước khi mở tệp, và làm mới khi có phiên bản mới.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">Chưa thiết lập neo nào.</string>
+    <string name="anchor_update_qr">Cập nhật qua QR</string>
+    <string name="anchor_edit">Sửa thủ công</string>
+    <string name="anchor_saved">Đã cập nhật neo</string>
+    <string name="anchor_qr_hint">Quét phong bì mã hóa chứa neo mới, rồi nhập mật khẩu chuyển giao mà bạn đã đặt trên máy tính.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Mật khẩu cũ</string>
+    <string name="old_passwords_desc">Được giữ lại khi mật khẩu thay đổi, kèm ngày bị thay thế. Chạm vào biểu tượng mắt để hiện ra.</string>
+    <string name="old_passwords_unknown_date">không rõ ngày</string>
+    <string name="edit_password_from_qr">Cập nhật mật khẩu qua QR</string>
+    <string name="edit_password_qr_hint">Quét phong bì mã hóa chứa mật khẩu mới, rồi nhập mật khẩu chuyển giao đã đặt trên máy tính. Chỉ mật khẩu được lấy; không có gì được thêm vào kho lưu trữ.</string>
+    <string name="vm_envelope_no_value">Phong bì đã mở nhưng không mang giá trị nào dùng được.</string>
 </resources>

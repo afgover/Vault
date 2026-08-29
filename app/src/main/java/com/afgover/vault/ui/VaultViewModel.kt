@@ -445,6 +445,88 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
+    // ── Zarftan tek değer okuma ────────────────────────────────────────────
+
+    /**
+     * Şifreli zarfı çözer ve içinden **tek bir değer** alır; kasaya hiçbir şey
+     * yazmaz. Var olan bir kaydın parolasını QR ile tazelemek ve araç çıpasını
+     * güncellemek bunu kullanır: zarfın taşıdığı kayıt içe aktarılmaz, yalnız
+     * istenen alanı okunup gerisi atılır.
+     *
+     * [sec] zarftaki ilk kayıttan hangi alanın alınacağını söyler.
+     */
+    fun readFromEnvelope(
+        text: String,
+        password: String,
+        sec: (DecryptedEntry) -> String,
+        onValue: (String) -> Unit
+    ) {
+        error = null
+        val kirpik = BackupManager.normalize(text)
+        if (kirpik.isEmpty()) { error = str(R.string.vm_pasted_text_empty); return }
+        if (kirpik.length > 1_000_000) { error = str(R.string.vm_text_too_large); return }
+        if (kirpik.startsWith("http://") || kirpik.startsWith("https://")) {
+            error = str(R.string.vm_pasted_is_link); return
+        }
+        if (!(kirpik.startsWith("{") && kirpik.contains("\"app\"") && kirpik.contains("\"vault\""))) {
+            error = str(R.string.vm_not_an_envelope); return
+        }
+        viewModelScope.launch {
+            busy = true
+            try {
+                val deger = withContext(Dispatchers.IO) {
+                    val imported = BackupManager.import(kirpik.byteInputStream(), password.toCharArray())
+                    imported.entries.firstOrNull()?.let(sec).orEmpty()
+                }
+                if (deger.isEmpty()) {
+                    error = str(R.string.vm_envelope_no_value)
+                    return@launch
+                }
+                clearClipboard()
+                onValue(deger)
+            } catch (e: BackupManager.WrongPasswordException) {
+                error = str(R.string.vm_backup_password_wrong)
+            } catch (e: BackupManager.InvalidFormatException) {
+                error = str(R.string.vm_invalid_envelope)
+            } catch (e: Exception) {
+                error = str(R.string.vm_import_failed, e.message.orEmpty())
+            } finally {
+                busy = false
+            }
+        }
+    }
+
+    // ── Araç çıpası ────────────────────────────────────────────────────────
+
+    /** Kurulu araç çıpası; yoksa null. Çıpa ekranı açılırken doldurulur. */
+    var anchor by mutableStateOf<DecryptedEntry?>(null)
+        private set
+
+    fun loadAnchor() {
+        val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
+        viewModelScope.launch {
+            anchor = withContext(Dispatchers.IO) { repo.getAnchorDecrypted(key) }
+        }
+    }
+
+    /** Çıpayı kurar ya da üzerine yazar; ardından ekranı tazeler. */
+    fun saveAnchor(value: String, onDone: () -> Unit = {}) {
+        val temiz = value.trim()
+        if (temiz.isEmpty()) return
+        val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) { repo.saveAnchor(temiz, key) }
+                anchor = withContext(Dispatchers.IO) { repo.getAnchorDecrypted(key) }
+                toast(str(R.string.anchor_saved))
+                onDone()
+            } catch (e: VaultRepository.EntryTooLargeException) {
+                toast(str(R.string.entry_too_large, e.title, e.kb, e.limitKb))
+            }
+        }
+    }
+
     /** Detay ekranındaki hızlı erişim anahtarı; içeriğe dokunmaz. */
     fun setQuick(id: Long, quick: Boolean, onDone: () -> Unit = {}) {
         val key = VaultSession.key() ?: run { lockState = LockState.LOCKED; return }

@@ -553,4 +553,22 @@
     <string name="edit_iban_confirm_text">Digit pemeriksa IBAN ini tidak cocok, yang berarti kemungkinan ada satu digit yang salah. Kamu tetap bisa menyimpannya — tapi jika ini kesalahan ketik, kamu baru menyadarinya saat transfer gagal.</string>
     <string name="edit_iban_confirm_save">Tetap simpan</string>
     <string name="edit_iban_confirm_fix">Kembali dan perbaiki</string>
+
+    <!-- Araç çıpası ve parola geçmişi -->
+    <string name="anchor_title">Jangkar alat</string>
+    <string name="anchor_open_cd">Jangkar alat</string>
+    <string name="anchor_desc">SHA-256 dari aktar.html, alat di sisi komputer. Ini bukan rahasia — ini rujukan untuk mencocokkan berkas yang kamu unduh. Simpan di sini, cocokkan sebelum membuka berkasnya, dan perbarui saat versi baru keluar.</string>
+    <string name="anchor_value_label">aktar.html · SHA-256</string>
+    <string name="anchor_empty">Belum ada jangkar yang disetel.</string>
+    <string name="anchor_update_qr">Perbarui lewat QR</string>
+    <string name="anchor_edit">Ubah manual</string>
+    <string name="anchor_saved">Jangkar diperbarui</string>
+    <string name="anchor_qr_hint">Pindai amplop terenkripsi berisi jangkar baru, lalu masukkan kata sandi transfer yang kamu tetapkan di komputer.</string>
+    <string name="anchor_verify_hint">shasum -a 256 aktar.html\ncertutil -hashfile aktar.html SHA256</string>
+    <string name="old_passwords_title">Kata sandi lama</string>
+    <string name="old_passwords_desc">Disimpan saat kata sandi berubah, beserta tanggal penggantiannya. Ketuk ikon mata untuk menampilkan.</string>
+    <string name="old_passwords_unknown_date">tanggal tidak diketahui</string>
+    <string name="edit_password_from_qr">Perbarui kata sandi lewat QR</string>
+    <string name="edit_password_qr_hint">Pindai amplop terenkripsi berisi kata sandi baru, lalu masukkan kata sandi transfer yang kamu tetapkan di komputer. Hanya kata sandinya yang diambil; tidak ada yang ditambahkan ke brankas.</string>
+    <string name="vm_envelope_no_value">Amplop terbuka tetapi tidak berisi nilai yang bisa dipakai.</string>
 </resources>

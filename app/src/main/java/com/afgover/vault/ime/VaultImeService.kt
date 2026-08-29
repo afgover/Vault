@@ -226,7 +226,7 @@ class VaultImeService : InputMethodService() {
             val repo = (application as VaultApp).repository
             val sort = EntrySort.read(this@VaultImeService)
             entries = withContext(Dispatchers.IO) {
-                (if (key == null) repo.getQuickDecrypted() else repo.getAllDecrypted(key))
+                (if (key == null) repo.getQuickDecrypted() else repo.getVisibleDecrypted(key))
                     .sortedBy(sort)
             }
             render()

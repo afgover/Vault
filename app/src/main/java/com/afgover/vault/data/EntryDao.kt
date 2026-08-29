@@ -9,9 +9,22 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EntryDao {
 
-    @Query("SELECT * FROM entries ORDER BY title COLLATE NOCASE")
-    fun observeAll(): Flow<List<EntryEntity>>
+    /**
+     * Listenin ve klavyenin gördüğü küme: araç çıpası HARİÇ. Çıpa kasa
+     * içeriği değil, indirdiğin aracın kimlik ölçüsüdür; kendi ekranından
+     * açılır. Yedek ise [getAll] kullanır — çıpa da yedeğe girmeli.
+     */
+    @Query("SELECT * FROM entries WHERE anchor = 0 ORDER BY title COLLATE NOCASE")
+    fun observeVisible(): Flow<List<EntryEntity>>
 
+    @Query("SELECT * FROM entries WHERE anchor = 0 ORDER BY title COLLATE NOCASE")
+    suspend fun getVisible(): List<EntryEntity>
+
+    /** Kasadaki tek araç çıpası; henüz kurulmadıysa null. */
+    @Query("SELECT * FROM entries WHERE anchor = 1 LIMIT 1")
+    suspend fun getAnchor(): EntryEntity?
+
+    /** Yedek ve toplam sayım için: çıpa dahil HER ŞEY. */
     @Query("SELECT * FROM entries ORDER BY title COLLATE NOCASE")
     suspend fun getAll(): List<EntryEntity>
 
@@ -19,7 +32,7 @@ interface EntryDao {
     suspend fun getById(id: Long): EntryEntity?
 
     /** Kasa kilitliyken klavyenin görebildiği tek küme. */
-    @Query("SELECT * FROM entries WHERE quick = 1 ORDER BY title COLLATE NOCASE")
+    @Query("SELECT * FROM entries WHERE quick = 1 AND anchor = 0 ORDER BY title COLLATE NOCASE")
     suspend fun getQuick(): List<EntryEntity>
 
     @Insert
