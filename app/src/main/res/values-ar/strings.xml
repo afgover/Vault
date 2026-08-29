@@ -503,6 +503,7 @@
     <string name="settings_lang_ur">اردو</string>
     <string name="settings_lang_id">Bahasa Indonesia</string>
     <string name="settings_lang_de">Deutsch</string>
+    <string name="settings_lang_ja">日本語</string>
     <string name="settings_layouts">تخطيطات لوحة مفاتيح الحاسوب</string>
     <string name="settings_layouts_summary">%1$d من %2$d تخطيطًا مفعَّلة</string>
     <string name="settings_expand">عرض</string>

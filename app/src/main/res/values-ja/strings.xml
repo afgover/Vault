@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand name: not translated. -->
+    <string name="app_name" translatable="false">Sekuvo</string>
+    <string name="ime_label">Sekuvoキーボード</string>
+    <string name="autofill_label" translatable="false">Sekuvo</string>
+
+    <!-- Built-in field labels. These are DISPLAY text only: what gets stored
+         in the usage log and the clipboard label is the stable key, never
+         this string (otherwise the log would change language mid-history). -->
+    <string name="field_full_name">氏名</string>
+    <string name="field_username">ユーザー名</string>
+    <string name="field_password">パスワード</string>
+    <string name="field_url">サイト / アプリ</string>
+    <string name="field_phone">電話番号</string>
+    <string name="field_email">メール</string>
+    <string name="field_address">住所</string>
+    <string name="field_cardholder">名義人</string>
+    <string name="field_card_number">カード番号</string>
+    <string name="field_expiry">有効期限</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">メモ</string>
+
+    <!-- Entry types -->
+    <string name="type_login">アカウント / パスワード</string>
+    <string name="type_everyday">日常</string>
+    <string name="type_card">カード</string>
+    <string name="type_note">セキュアメモ</string>
+
+    <!-- Note subtypes -->
+    <string name="note_kind_general">一般メモ</string>
+    <string name="note_kind_script">スクリプト / コマンド (.sh)</string>
+    <string name="note_kind_key">鍵 / 証明書 (.pem)</string>
+    <string name="note_kind_fingerprint">フィンガープリント / 信頼アンカー</string>
+    <string name="note_kind_recovery">復旧コード</string>
+    <string name="note_kind_config">設定 (.env, json)</string>
+
+    <!-- Sort options -->
+    <string name="sort_title_asc">タイトル (A→Z)</string>
+    <string name="sort_title_desc">タイトル (Z→A)</string>
+    <string name="sort_updated_desc">最近更新した順</string>
+    <string name="sort_created_desc">最近追加した順</string>
+    <string name="sort_type">種類別</string>
+    <string name="sort_manual">手動の順序（ドラッグ）</string>
+
+    <!-- Usage log event kinds -->
+    <string name="usage_created">作成</string>
+    <string name="usage_updated">変更</string>
+    <string name="usage_copied">クリップボードにコピー</string>
+    <string name="usage_bt_typed">コンピューターに入力</string>
+    <string name="usage_keyboard_typed">キーボードから入力</string>
+    <string name="usage_quick_on">クイックアクセス有効</string>
+    <string name="usage_quick_off">クイックアクセス無効</string>
+
+    <!-- Bluetooth keyboard: layouts and speeds -->
+    <string name="bt_layout_us">米国（英語）</string>
+    <string name="bt_layout_tr">トルコ語 Q</string>
+    <string name="bt_speed_safe">安全</string>
+    <string name="bt_speed_fast">高速</string>
+    <string name="bt_speed_turbo">超高速</string>
+
+    <!-- Bluetooth keyboard: errors reported from a context-free manager -->
+    <string name="bt_err_off">Bluetoothがオフです。まずBluetoothをオンにしてください。</string>
+    <string name="bt_err_unsupported">この端末はBluetoothキーボードプロファイル（HID）に対応していません。</string>
+    <string name="bt_err_register">HIDの登録に失敗しました — この端末では対応していない可能性があります。</string>
+    <string name="bt_err_connect">接続を開始できませんでした。相手の端末のBluetoothはオンですか？</string>
+    <string name="bt_err_no_link">接続がありません — もう一度端末を選択してください。</string>
+    <string name="bt_err_queue">Bluetooth送信キューが応答しなくなりました。%1$d文字目で入力が停止しました。速度を下げてください。</string>
+
+    <!-- Entry too large -->
+    <string name="entry_too_large">「%1$s」は大きすぎます: %2$d KB（上限%3$d KB）。長い内容を分割するか、コンピューター上のファイルとして保存してください。</string>
+    <string name="ime_write_field">%1$sを入力</string>
+
+    <!-- backup -->
+    <string name="backup_autofill_form_unreadable">フォームを読み取れませんでした</string>
+    <string name="backup_autofill_locked_save">保管庫がロックされています。保存するには先にSekuvoのロックを解除してください。</string>
+    <string name="backup_autofill_nothing_to_save">保存できる情報が見つかりませんでした</string>
+    <string name="backup_autofill_save_failed">保存に失敗しました: %1$s</string>
+    <string name="backup_autofill_unlock_to_fill">入力するにはロックを解除してください</string>
+    <!-- bt -->
+    <string name="bt_duration_seconds">%1$d秒</string>
+    <string name="bt_duration_minutes">%1$d分%2$d秒</string>
+    <string name="bt_unsupported_title">非対応</string>
+    <string name="bt_unsupported_body">Bluetoothキーボード機能にはAndroid 9以降が必要です。</string>
+    <string name="bt_ok">OK</string>
+    <string name="bt_stopped_summary">停止しました: %1$d / %2$d文字を入力しました。コンピューター上のテキストは不完全です — 削除して最初からやり直してください。</string>
+    <string name="bt_aborted_summary">入力が中断されました: %1$d / %2$d文字。コンピューター上のテキストは不完全です — 削除し、速度を下げてもう一度お試しください。</string>
+    <string name="bt_speed_result">%1$d文字、%2$s（%3$d文字/秒）</string>
+    <string name="bt_unknown_device">不明な端末</string>
+    <string name="bt_untyped_warning">このレイアウトでは次の文字を入力できませんでした: %1$s — 別のレイアウトをお試しください。</string>
+    <string name="bt_done_summary">✓ %1$d文字を入力しました — %2$s、%3$d文字/秒。コンピューター上の文字数を確認してください。</string>
+    <string name="bt_title">コンピューターに入力: %1$s</string>
+    <string name="bt_permission_required">Bluetoothの権限が必要です。この機能はそれなしでは動作しません。</string>
+    <string name="bt_preparing">Bluetoothキーボードを準備しています…</string>
+    <string name="bt_pick_computer">お使いのコンピューターを選択してください（あらかじめBluetoothで端末とペアリングしておく必要があります）:</string>
+    <string name="bt_no_bonded_devices">ペアリング済みの端末がありません。端末のBluetooth設定からコンピューターとペアリングして、もう一度お試しください。</string>
+    <string name="bt_connecting">%1$sに接続しています…</string>
+    <string name="bt_connected">✓ %1$sに接続しました</string>
+    <string name="bt_layout_heading">あなたのコンピューター（端末ではありません）のキーボードレイアウト:</string>
+    <string name="bt_layout_warning">キーコードを解釈するのはコンピューター側です — レイアウトを間違えると、@ \" ? のような文字が気づかないうちに別の文字に変わってしまいます。</string>
+    <string name="bt_selected_layout">選択したレイアウト: %1$s</string>
+    <string name="bt_sensitive_chars">このテキストにはレイアウトに影響される文字が含まれています: %1$s — 送信前にテスト入力することをおすすめします。</string>
+    <string name="bt_test_done">✓ テストを入力しました — もう一度お試しください</string>
+    <string name="bt_test_first">🧪 まずテストを入力（推奨）</string>
+    <string name="bt_test_expected">コンピューターに次と全く同じ内容が表示されるはずです:\n%1$s\n異なる場合は、上で別のレイアウトを選び、テストを繰り返してください。</string>
+    <string name="bt_speed_heading">入力速度:</string>
+    <string name="bt_speed_desc">キー入力は1つずつ送信されます。接続が処理できる速度を超えると入力が停止します（文字が失われることはありません）— 速度テストでどれが使えるか確認してください。</string>
+    <string name="bt_estimate">%1$d文字 ≈ %2$s</string>
+    <string name="bt_speed_test_button">⏱ 速度テスト（%1$d文字）</string>
+    <string name="bt_speed_result_detail">%1$s\nコンピューターにはスペースで区切られた10個のグループが表示され、それぞれちょうど%2$sになるはずです — 1つでも異なる場合は、次に低い速度を選んでテストを繰り返してください。</string>
+    <string name="bt_typing_progress">入力中… %1$d / %2$d文字</string>
+    <string name="bt_remaining">残り約%1$s — 完了するまでコンピューターのカーソルを動かさないでください。</string>
+    <string name="bt_before_start">コンピューターの目的のフィールドにカーソルを置いてから、ボタンを押してください。3秒後に入力が始まります。</string>
+    <string name="bt_countdown_short">%1$d…</string>
+    <string name="bt_type">入力</string>
+    <string name="bt_stop">停止</string>
+    <string name="bt_close">閉じる</string>
+    <!-- detail -->
+    <string name="detail_back">戻る</string>
+    <string name="detail_edit">編集</string>
+    <string name="detail_quick_title">パスワードなしでキーボードから使う</string>
+    <string name="detail_quick_on">保管庫がロックされていてもSekuvoキーボードに表示されます。この場合、保護レベルは端末の画面ロックと同等になります。</string>
+    <string name="detail_quick_off">保管庫のロックが解除されているときのみ利用できます。</string>
+    <string name="detail_dates">追加日: %1$s · 変更日: %2$s</string>
+    <string name="detail_password_changed">パスワードの最終変更: %1$s</string>
+    <string name="detail_usage_title">最近の使用状況</string>
+    <string name="detail_usage_desc">このアイテムがアプリ内からどこへ送られたか。画面から読み取られたり、写真に撮られたり、自動入力で選択されたりした値はここには表示されません — このログはアプリ自身が行ったことしか把握していません。</string>
+    <string name="detail_usage_empty">まだ使用履歴がありません。</string>
+    <string name="detail_show_less">表示を減らす</string>
+    <string name="detail_show_all">すべて表示（%1$d件）</string>
+    <string name="detail_hide">非表示</string>
+    <string name="detail_show">表示</string>
+    <string name="detail_copy">コピー</string>
+    <string name="detail_type_to_pc">コンピューターに入力</string>
+    <string name="detail_show_fingerprint">SHA-256フィンガープリントを表示</string>
+    <string name="detail_fingerprint_len">SHA-256フィンガープリント · %1$d文字</string>
+    <string name="detail_fingerprint_len_short">SHA-256フィンガープリント · %1$d文字 · 短い値</string>
+    <string name="detail_fingerprint_warning">短い値のハッシュは総当たりで復元される可能性があります — このフィンガープリントは共有しないでください。</string>
+    <string name="detail_fingerprint_verify">コンピューターで: shasum -a 256 ファイル名\n（手動で貼り付けた場合、末尾の改行が欠けていることがあります: printf \'%1$s\' \"$(cat ファイル名)\" | shasum -a 256）</string>
+    <string name="detail_copy_fingerprint">フィンガープリントをコピー</string>
+    <!-- edit -->
+    <string name="edit_title_new">新規: %1$s</string>
+    <string name="edit_title_edit">編集</string>
+    <string name="edit_back">戻る</string>
+    <string name="edit_delete">削除</string>
+    <string name="edit_field_title">タイトル</string>
+    <string name="edit_field_username">ユーザー名</string>
+    <string name="edit_generate_password">パスワードを生成</string>
+    <string name="edit_field_card_number">カード番号</string>
+    <string name="edit_field_expiry">有効期限（MM/YY）</string>
+    <string name="edit_field_iban">IBAN（任意）</string>
+    <string name="edit_note_kind">メモの種類</string>
+    <string name="edit_custom_fields">追加フィールド</string>
+    <string name="edit_field_name">フィールド名</string>
+    <string name="edit_remove_field">フィールドを削除</string>
+    <string name="edit_field_value">値</string>
+    <string name="edit_add_field">+ フィールドを追加</string>
+    <string name="edit_field_notes">メモ</string>
+    <string name="edit_quick_title">パスワードなしでキーボードから使う</string>
+    <string name="edit_quick_desc">有効にすると、保管庫がロックされていてもこのアイテムはSekuvoキーボードに表示されます。この場合、保護レベルは端末の画面ロックのみになります。パスワードなど機密性の高いデータでは無効のままにしてください。</string>
+    <string name="edit_tags">タグ</string>
+    <string name="edit_new_tag">+ 新規</string>
+    <string name="edit_save">保存</string>
+    <string name="edit_discard_title">未保存の変更</string>
+    <string name="edit_discard_text">入力内容を保存せずに終了しようとしています。よろしいですか？</string>
+    <string name="edit_discard_confirm">保存せずに終了</string>
+    <string name="edit_discard_cancel">編集に戻る</string>
+    <string name="edit_delete_title">アイテムを削除</string>
+    <string name="edit_delete_text">「%1$s」は完全に削除されます。よろしいですか？</string>
+    <string name="edit_cancel">キャンセル</string>
+    <!-- home -->
+    <string name="home_sort_cd">並び順: %1$s</string>
+    <string name="home_selected">選択中</string>
+    <string name="home_transfer_cd">コンピューターから転送</string>
+    <string name="home_generator_cd">パスワード生成ツール</string>
+    <string name="home_lock_cd">ロック</string>
+    <string name="home_settings_cd">設定</string>
+    <string name="home_import_qr">QRでインポート</string>
+    <string name="home_import_text">テキストからインポート</string>
+    <string name="home_add_cd">追加</string>
+    <string name="home_search_hint">アイテムを検索</string>
+    <string name="home_manage_tags_cd">タグを管理</string>
+    <string name="home_manual_hint">手動の順序: 行の⠿ハンドルを長押ししてドラッグします。</string>
+    <string name="home_empty_vault">保管庫の準備ができました — 右下の+で最初のアイテムを追加してください。</string>
+    <string name="home_empty_filter">このフィルターに一致するアイテムはありません。</string>
+    <string name="home_drag_cd">ドラッグ</string>
+    <string name="home_tag_new">新しいタグ</string>
+    <string name="home_tag_edit">タグを編集</string>
+    <string name="home_tag_name">名前</string>
+    <string name="home_selected_color">選択した色</string>
+    <string name="home_save">保存</string>
+    <string name="home_cancel">キャンセル</string>
+    <string name="home_tags_title">タグ</string>
+    <string name="home_tags_empty">まだタグがありません。下から追加できます。</string>
+    <string name="home_edit_cd">編集</string>
+    <string name="home_delete">削除</string>
+    <string name="home_tag_add_new">+ 新しいタグ</string>
+    <string name="home_close">閉じる</string>
+    <string name="home_tag_delete_title">タグを削除</string>
+    <string name="home_tag_delete_msg">「%1$s」は削除され、付いているすべてのアイテムから外されます。アイテム自体は削除されません。</string>
+    <!-- ime -->
+    <string name="ime_switch_keyboard">ABC</string>
+    <string name="ime_locked_quick_only">保管庫がロックされています — クイックアクセスのアイテムのみ表示。</string>
+    <string name="ime_unlock_all">🔓 ロックを解除（すべてのアイテム）</string>
+    <string name="ime_no_quick_entries">クイックアクセスに設定されたアイテムはありません。</string>
+    <string name="ime_no_entries">アイテムがありません。</string>
+    <string name="ime_no_match">「%1$s」に一致するアイテムはありません。</string>
+    <string name="ime_back_to_list">← %1$s</string>
+    <string name="ime_search_hint">検索…</string>
+    <!-- log -->
+    <string name="log_title">使用履歴</string>
+    <string name="log_scope_note">このログはアプリ自身が行ったことしか把握していません。画面から読み取られたり、写真に撮られたり、手入力されたりした値は記録に残りません。自動入力の際にどのアイテムを選んだかも、Androidがアプリに通知しないため記録できません。この履歴は保管庫のロックが解除されているときに削除できます — 改ざん防止された記録ではありません。</string>
+    <string name="log_filter_by_target">送信先で絞り込み:</string>
+    <string name="log_filter_all">すべて</string>
+    <string name="log_empty">履歴は空です。</string>
+    <string name="log_empty_for_target">この送信先に送られたアイテムはありません。</string>
+    <string name="log_deleted_entry">（削除されたアイテム）</string>
+    <string name="log_entries_to_target">「%1$s」に送信されたアイテム: %2$s</string>
+    <string name="log_clear_confirm">履歴をすべて削除しますか？ この操作は元に戻せません。アイテム自体には影響しません。</string>
+    <string name="log_clear_yes">はい、削除します</string>
+    <string name="log_cancel">キャンセル</string>
+    <string name="log_close">閉じる</string>
+    <string name="log_clear">履歴を削除</string>
+    <!-- main -->
+    <string name="main_biometric_needs_pin">指紋データを保存するにはSekuvoのPINが必要です</string>
+    <string name="main_biometric_enable_failed">指紋認証を有効にできませんでした: %1$s</string>
+    <string name="main_biometric_enroll_title">生体認証ロック解除を有効にする</string>
+    <string name="main_cancel">キャンセル</string>
+    <string name="main_biometric_offer_title">指紋でロックを解除</string>
+    <string name="main_biometric_offer_body">保管庫を開くたびにマスターパスワードを入力する代わりに、指紋を使うことができます。マスターパスワードがなくなるわけではありません。必要なときは常に機能し、バックアップを開く際にも使うものです — 忘れないでください。</string>
+    <string name="main_enable">有効にする</string>
+    <string name="main_password_for_now">今回はパスワードを使う</string>
+    <string name="main_biometric_invalidated">指紋によるロック解除は無効になりました（例: 新しい指紋が追加された）。パスワードでロックを解除してください。</string>
+    <string name="main_biometric_decrypt_failed">指紋は確認されましたが、鍵を復号できませんでした。パスワードでロックを解除してください。</string>
+    <string name="main_unlock_title">Sekuvoのロックを解除</string>
+    <string name="main_use_password">パスワードを使う</string>
+    <string name="main_hide">非表示</string>
+    <string name="main_show">表示</string>
+    <!-- paste -->
+    <string name="paste_title_qr">QRでインポート</string>
+    <string name="paste_title_text">テキストからインポート</string>
+    <string name="paste_qr_ready">✓ QRをスキャンしました · %1$d文字の暗号化された封筒を受信しました。\n次に**バックアップパスワード**のみを入力してください。</string>
+    <string name="paste_intro">ページのテキストを貼り付けるか、「クリップボードから取得」をタップしてください。このテキストは暗号化されており、そのパスワードは次のフィールドで入力します。</string>
+    <string name="paste_label_envelope">暗号化された封筒</string>
+    <string name="paste_char_count">%1$d文字</string>
+    <string name="paste_btn_clipboard">クリップボードから取得</string>
+    <string name="paste_label_backup_password">バックアップパスワード</string>
+    <string name="paste_mode_merge">既存のものに追加</string>
+    <string name="paste_mode_replace">すべて置き換え</string>
+    <string name="paste_replace_warning">警告: 既存のすべてのアイテムが削除され、封筒の内容に置き換わります。</string>
+    <string name="paste_err_envelope_empty">暗号化された封筒のフィールドが空です — 「クリップボードから取得」で貼り付けてください。</string>
+    <string name="paste_err_password_required_qr">バックアップパスワードが必要です: コンピューターで封筒を暗号化したときに入力したものです。</string>
+    <string name="paste_err_password_missing">バックアップパスワードが入力されていません。</string>
+    <string name="paste_btn_importing">インポート中…</string>
+    <string name="paste_btn_import">インポート</string>
+    <string name="paste_btn_cancel">キャンセル</string>
+    <!-- qr -->
+    <string name="qr_status_aim">QRコードをファインダー内に収めてください</string>
+    <string name="qr_status_done">完了</string>
+    <string name="qr_status_received">%1$d/%2$d受信</string>
+    <string name="qr_status_frames_mismatch">画像が一致しません。最初からやり直してください</string>
+    <string name="qr_permission_rationale">カメラの権限が必要です。画像が端末の外に出ることは決してありません: デコーダーはネットワーク権限を持たないアプリ内で動作します。</string>
+    <string name="qr_grant_in_settings">設定で許可</string>
+    <string name="qr_grant_permission">権限を許可</string>
+    <string name="qr_camera_analysis">カメラ解析: %1$s · コードが画面の半分以上を占めるまで近づけてください</string>
+    <string name="qr_missing_frames">不足している画像: %1$s</string>
+    <string name="qr_cancel">キャンセル</string>
+    <!-- settings -->
+    <string name="settings_title">設定</string>
+    <string name="settings_back">戻る</string>
+    <string name="settings_appearance">外観</string>
+    <string name="settings_sort_moved">並べ替えはホーム画面に移動しました。タイトル横の⇅アイコンから選択でき、リストとSekuvoキーボードの両方に適用されます。\n現在の順序: %1$s</string>
+    <string name="settings_backup">バックアップ</string>
+    <string name="settings_backup_desc">バックアップファイルはAES-256で暗号化され、バックアップパスワードでのみ開くことができます。Drive、SDカードなど好きな場所に保存できます。端末を完全に消去しても、ファイルとパスワードがあればすべて復元できます。</string>
+    <string name="settings_backup_export">暗号化されたバックアップを作成</string>
+    <string name="settings_backup_restore">バックアップから復元</string>
+    <string name="settings_import_paste">テキストからインポート（貼り付け）</string>
+    <string name="settings_usage_log">使用履歴</string>
+    <string name="settings_usage_log_desc">どのアイテムのどのフィールドが、いつ、どこへ送られたか — クリップボード、コンピューター、またはキーボード経由。</string>
+    <string name="settings_usage_log_open">使用履歴を開く</string>
+    <string name="settings_security">セキュリティ</string>
+    <string name="settings_locking">ロック</string>
+    <string name="settings_locking_desc">画面が消えた瞬間に保管庫はロックされ、鍵はメモリから消去されます。画面がついている間は、パスワードや指紋を再度求められることはありません。\n\n「パスワードなしでキーボードから使う」に設定されたアイテムは、保管庫がロックされていても使用できます。この設定は各アイテムの画面からオン・オフを切り替えられます。</string>
+    <string name="settings_biometric_disable">生体認証ロック解除を無効にする</string>
+    <string name="settings_biometric_enable">生体認証ロック解除を有効にする</string>
+    <string name="settings_pin_heading">PIN（指紋のための第2の扉）</string>
+    <string name="settings_pin_legacy_warning">⚠ このPINは古いバージョンで設定されたもので、このバージョンとは互換性がありません。アイテムを開くことができず、PINを無効にすることもできません。マスターパスワード + PINで修復してください。</string>
+    <string name="settings_pin_on_desc">有効: 指紋が読み取られた後にPINが求められます。マスターパスワードでロックを解除する場合は求められません — そのパスワードはすでに強力な秘密だからです。</string>
+    <string name="settings_pin_off_desc">任意設定です。有効にすると指紋データがPINで暗号化され、ロック解除時に指紋の後にPINが求められます。デフォルト: 無効。\n順序が重要です: 先にPINを設定してから指紋を有効にしてください。</string>
+    <string name="settings_pin_repair">PINデータを修復</string>
+    <string name="settings_pin_turn_off">PINを無効にする</string>
+    <string name="settings_pin_set">PINを設定</string>
+    <string name="settings_reminder_heading">マスターパスワードのリマインダー</string>
+    <string name="settings_reminder_desc">指紋認証を使っている間、マスターパスワードは何か月も入力されず、忘れてしまいがちです — しかしバックアップを開くのもこのパスワードです。選択した間隔で1回、指紋の代わりにパスワードが求められます。デフォルト: なし。</string>
+    <string name="settings_reminder_never">なし</string>
+    <string name="settings_reminder_days">%1$d日</string>
+    <string name="settings_change_password">マスターパスワードを変更</string>
+    <string name="settings_autofill">自動入力</string>
+    <string name="settings_autofill_on_desc">有効。アプリやブラウザでログインフォームやカードフォームに触れると、Sekuvoのアイテムが入力候補として表示されます。保管庫がロックされている場合、先にロック解除画面が表示されます。ロックされている間、システムには何も渡されません。</string>
+    <string name="settings_autofill_off_desc">有効にすると、アプリやブラウザでログインフォームやカードフォームに触れた際に、Sekuvoのアイテムが直接入力候補として表示されます。新しく入力した内容をSekuvoに保存する提案も行われます。\n\n下のボタンでシステム設定が開きます。開くリストの名前は端末によって異なります（「優先サービス」「自動入力サービス」「パスワード、パスキー、自動入力」など）。そのリストからSekuvoを選択してください。</string>
+    <string name="settings_autofill_open">自動入力の設定を開く</string>
+    <string name="settings_autofill_enable">自動入力を有効にする</string>
+    <string name="settings_keyboard">Sekuvoキーボード</string>
+    <string name="settings_keyboard_desc">キーボード拡張機能を有効にすると、どのアプリでもキーボード切り替えからSekuvoキーボードを選択し、保存したデータをフィールドに直接入力できます。</string>
+    <string name="settings_keyboard_open">キーボードの設定を開く</string>
+    <string name="settings_export_pw_title">バックアップパスワードを設定</string>
+    <string name="settings_export_pw_desc">このパスワードがないと、バックアップファイルはまったく開けません。マスターパスワードとは異なるものにしてください。バックアップパスワードは最終的にコンピューターに入力されますが、マスターパスワードがコンピューターに触れることは決してありません。</string>
+    <string name="settings_biometric_pin_title">指紋をPINと連携</string>
+    <string name="settings_biometric_pin_desc">指紋データがPINで暗号化されます。ロック解除時には、まず指紋、次にこのPINが求められます。</string>
+    <string name="settings_label_pin">PIN</string>
+    <string name="settings_continue">続ける</string>
+    <string name="settings_cancel">キャンセル</string>
+    <string name="settings_label_password">パスワード</string>
+    <string name="settings_label_password_again">パスワード（再入力）</string>
+    <string name="settings_ok">OK</string>
+    <string name="settings_label_backup_password">バックアップパスワード</string>
+    <string name="settings_import_merge">既存のものに追加</string>
+    <string name="settings_import_replace">すべて置き換え</string>
+    <string name="settings_import_replace_warning">警告: 既存のすべてのアイテムが削除され、バックアップの内容に置き換わります。</string>
+    <string name="settings_import_pw_missing">バックアップパスワードが入力されていません。</string>
+    <string name="settings_import_confirm">復元</string>
+    <string name="settings_label_current_password">現在のパスワード</string>
+    <string name="settings_label_new_password">新しいパスワード</string>
+    <string name="settings_label_new_password_again">新しいパスワード（再入力）</string>
+    <string name="settings_change">変更</string>
+    <string name="settings_pin_disable_desc">PINを無効にすると、アイテムはマスターパスワードまたは指紋のみで開くようになります。PINを覚えておく必要はありません。マスターパスワードだけで十分です。この後、指紋を再度有効にする必要があります。</string>
+    <string name="settings_pin_set_desc">PINは4～12桁で設定してください。忘れた場合、マスターパスワードだけでは不十分です — バックアップパスワードと同様に、PINも安全な場所に保管してください。この後、指紋を再度有効にする必要があります。</string>
+    <string name="settings_label_master_password">マスターパスワード</string>
+    <string name="settings_label_current_pin">現在のPIN</string>
+    <string name="settings_label_pin_again">PIN（再入力）</string>
+    <string name="settings_repair">修復</string>
+    <string name="settings_turn_off">無効にする</string>
+    <string name="settings_set">設定</string>
+    <!-- transfer -->
+    <string name="transfer_title">コンピューターから転送 · ステップ%1$d/2</string>
+    <string name="transfer_step1_steps">1. コンピューターでaktar.htmlを開き、まだ日本語になっていなければ切り替え、「Backup password」フィールドにカーソルを置いてください。\n2. 下のボタンで両方のフィールドに一度にパスワードを入力できます（間にTabキーが入ります）。</string>
+    <string name="transfer_regenerate">新しいパスワードを生成</string>
+    <string name="transfer_password_note">生成された使い捨てパスワードです — 覚える必要はなく、ステップ2で自動的に使用されます。英字と数字: キーボードレイアウトの違いに影響されません。</string>
+    <string name="transfer_bt_write_both">💻 Bluetoothで両方のフィールドに入力</string>
+    <string name="transfer_step2_steps">コンピューターで: 内容を貼り付け →「暗号化して公開」→ 端末でQRをスキャン → ページの「コピー」。その後ここに戻って封筒を受け取ってください。パスワードはウィザードにすでに用意されているため、入力する必要はありません。</string>
+    <string name="transfer_envelope_label">暗号化された封筒</string>
+    <string name="transfer_char_count">%1$d文字</string>
+    <string name="transfer_scan_qr">QRをスキャン</string>
+    <string name="transfer_from_clipboard">クリップボードから取得</string>
+    <string name="transfer_merge">既存のものに追加</string>
+    <string name="transfer_replace_all">すべて置き換え</string>
+    <string name="transfer_replace_warning">警告: 既存のすべてのアイテムが削除され、封筒の内容に置き換わります。</string>
+    <string name="transfer_password_typed_next">パスワードを入力しました。続ける →</string>
+    <string name="transfer_envelope_empty">暗号化された封筒のフィールドが空です — コンピューターで公開し、QRをスキャンして「クリップボードから取得」をタップしてください。</string>
+    <string name="transfer_importing">インポート中…</string>
+    <string name="transfer_import">インポート</string>
+    <string name="transfer_back">← 戻る</string>
+    <string name="transfer_cancel">キャンセル</string>
+    <string name="transfer_bt_label">転送パスワード（両方のフィールドに、Tab付き）</string>
+    <!-- unlock -->
+    <string name="unlock_welcome_title">Sekuvoへようこそ</string>
+    <string name="unlock_slogan">あなたの安全な保管庫。</string>
+    <string name="unlock_locked_title">Sekuvoはロックされています</string>
+    <string name="unlock_setup_desc">マスターパスワードを設定してください。すべてのデータはこのパスワードから導出された鍵で暗号化されます。忘れると、データは永久にアクセスできなくなります。</string>
+    <string name="unlock_enter_desc">続けるにはマスターパスワードを入力してください。</string>
+    <string name="unlock_master_reminder">リマインダー: 今回は指紋の代わりにマスターパスワードを入力してください。マスターパスワードを忘れると、保管庫とバックアップの両方がロックされます。</string>
+    <string name="unlock_master_password_label">マスターパスワード</string>
+    <string name="unlock_password_label">パスワード</string>
+    <string name="unlock_password_again_label">パスワード（再入力）</string>
+    <string name="unlock_create_vault">保管庫を作成</string>
+    <string name="unlock_have_backup">バックアップがあります — 復元する</string>
+    <string name="unlock_restore_selected">設定後に復元 ✓（タップで取り消し）</string>
+    <string name="unlock_restore_hint">まずこの端末のマスターパスワードを設定してください。その直後にバックアップファイルを選択してパスワードを入力すると、すべての内容が復元されます。</string>
+    <string name="unlock_create_and_restore">作成して復元</string>
+    <string name="unlock_open_button">ロックを解除</string>
+    <string name="unlock_biometric_button">生体認証でロックを解除</string>
+    <string name="unlock_pin_title">第2の扉</string>
+    <string name="unlock_pin_desc">PINを入力してください。このコードがないとアイテムを復号できません — マスターパスワードだけでは不十分です。</string>
+    <string name="unlock_pin_label">PIN（%1$d～%2$d桁）</string>
+    <string name="unlock_pin_open">開く</string>
+    <string name="unlock_pin_cancel">キャンセル</string>
+    <string name="unlock_generator_title">パスワード生成ツール</string>
+    <string name="unlock_generator_refresh">更新</string>
+    <string name="unlock_generator_summary">長さ: %1$d • 強度: 約%2$dビット %3$s</string>
+    <string name="unlock_generator_very_strong">（非常に強力）</string>
+    <string name="unlock_generator_strong">（強力）</string>
+    <string name="unlock_generator_weak">（弱い）</string>
+    <string name="unlock_generator_avoid_ambiguous">紛らわしい文字を除外（l、1、O、0）</string>
+    <string name="unlock_generator_use">使用</string>
+    <string name="unlock_generator_copy">コピー</string>
+    <string name="unlock_generator_close">閉じる</string>
+    <!-- vm -->
+    <string name="vm_pin_repaired">PINデータを修復しました · 保管庫は今後マスターパスワードで開きます</string>
+    <string name="vm_pin_repair_failed">修復できませんでした: パスワードまたはPINが間違っています</string>
+    <string name="vm_master_password_too_short">マスターパスワードは8文字以上必要です</string>
+    <string name="vm_passwords_mismatch">パスワードが一致しません</string>
+    <string name="vm_wrong_password">パスワードが違います</string>
+    <string name="vm_legacy_pin_vault">この保管庫は古いPIN形式を使用しています。マスターパスワード + PINで修復する必要があります。</string>
+    <string name="vm_key_undecryptable">保管庫の鍵を復号できませんでした（データが破損している可能性があります）。</string>
+    <string name="vm_biometric_stale">指紋データがこのPINより古いため削除されました。マスターパスワードでロックを解除し、指紋を再度有効にしてください。</string>
+    <string name="vm_pin_biometric_off">PINの入力ミスが多すぎます。指紋によるロック解除は無効になりました。マスターパスワードでロックを解除してください。</string>
+    <string name="vm_pin_wrong">PINが違います</string>
+    <string name="vm_key_unexpected_size">保管庫の鍵のサイズが想定と異なります。マスターパスワードでのロック解除をお試しください。</string>
+    <string name="vm_pin_enable_failed">PINを有効にできませんでした: パスワードが違うか、PINが無効です（4～12桁）</string>
+    <string name="vm_pin_enabled">PINを有効にしました · 指紋を再度有効にしてください</string>
+    <string name="vm_pin_disable_failed">PINを無効にできませんでした: マスターパスワードが違います</string>
+    <string name="vm_pin_disabled">PINを無効にしました · 指紋を再度有効にしてください</string>
+    <string name="vm_new_password_too_short">新しいパスワードは8文字以上必要です</string>
+    <string name="vm_master_password_changed">マスターパスワードを変更しました</string>
+    <string name="vm_current_password_wrong">現在のパスワードが違います</string>
+    <string name="vm_quick_on">パスワードなしでキーボードから使用可能</string>
+    <string name="vm_quick_off">ロック解除までキーボードに表示されません</string>
+    <string name="vm_copied">%1$sをコピーしました（45秒後に消去されます）</string>
+    <string name="vm_backup_password_too_short">バックアップパスワードは8文字以上必要です</string>
+    <string name="vm_file_open_failed">ファイルを開けませんでした</string>
+    <string name="vm_backup_saved">バックアップを保存しました</string>
+    <string name="vm_backup_failed">バックアップに失敗しました: %1$s — 作成されたファイルを削除して、もう一度お試しください。</string>
+    <string name="vm_vault_locked_retry">保管庫がロックされました — マスターパスワードでロックを解除して、もう一度お試しください。</string>
+    <string name="vm_pasted_text_empty">貼り付けたテキストが空です</string>
+    <string name="vm_text_too_large">テキストが大きすぎます — Sekuvoの封筒ではあり得ません</string>
+    <string name="vm_pasted_is_link">これはリンクであり、封筒そのものではありません。端末のブラウザでリンクを開き、表示された**テキスト**をコピーしてください。</string>
+    <string name="vm_not_an_envelope">これは有効な暗号化されたSekuvoの封筒ではありません — コピーしたテキストが不完全であるか、別のものである可能性があります。ページの**すべての**テキストをコピーしてください。</string>
+    <string name="vm_envelope_empty">封筒は開きましたが、アイテムが含まれていません — 送信側でフィールドが空のままだった可能性があります。あなたの保管庫は影響を受けていません。</string>
+    <string name="vm_backup_password_wrong">バックアップパスワードが違います</string>
+    <string name="vm_invalid_envelope">無効な封筒です — テキストが不完全にコピーされた可能性があります</string>
+    <string name="vm_import_failed">インポートに失敗しました: %1$s</string>
+    <string name="vm_backup_empty">バックアップは開きましたが、アイテムが含まれていません。あなたの保管庫は影響を受けていません。</string>
+    <string name="vm_invalid_backup_file">無効なバックアップファイルです</string>
+    <string name="vm_restore_failed">復元に失敗しました: %1$s</string>
+    <string name="vm_biometric_enabled">指紋認証を有効にしました</string>
+    <string name="vm_biometric_enable_failed">指紋認証を有効にできませんでした</string>
+    <string name="vm_biometric_disabled">生体認証ロック解除を無効にしました</string>
+    <string name="vm_usage_log_cleared">使用履歴を削除しました</string>
+    <string name="bt_sdp_name">Sekuvoキーボード</string>
+    <string name="bt_sdp_description">Sekuvoの安全なキー入力転送</string>
+
+    <!-- 日本語のCLDR複数形カテゴリは "other" のみ。 -->
+    <plurals name="vm_import_added">
+        <item quantity="other">%1$d件のアイテムを追加しました · クリップボードを消去しました</item>
+    </plurals>
+    <plurals name="vm_restored">
+        <item quantity="other">%1$d件のアイテムを復元しました</item>
+    </plurals>
+    <plurals name="vm_backup_saved_incomplete">
+        <item quantity="other">バックアップを保存しましたが、%1$d件のアイテムを読み取れず省略されました（破損している可能性があります）。このバックアップは不完全です。</item>
+    </plurals>
+    <plurals name="log_pending_note">
+        <item quantity="other">保管庫がロックされている間に%1$d件のイベントが発生し、まだ履歴に反映されていません。保管庫のロックを解除するとリストに表示されます。</item>
+    </plurals>
+    <plurals name="log_more_events">
+        <item quantity="other">…他%1$d件のイベント（リストには最初の200件が表示されます）。</item>
+    </plurals>
+    <plurals name="bt_countdown">
+        <item quantity="other">%1$d秒後に入力が始まります — コンピューターの正しいフィールドにカーソルを置いてください！</item>
+    </plurals>
+    <plurals name="vm_pin_wrong_wait">
+        <item quantity="other">PINが違います。%1$d秒お待ちください。</item>
+    </plurals>
+    <plurals name="vm_pin_locked_wait">
+        <item quantity="other">PINの入力ミスが多すぎます。%1$d秒後にもう一度お試しください。</item>
+    </plurals>
+    <string name="bt_layout_uk">英国（UK）</string>
+    <string name="bt_layout_de">ドイツ語（QWERTZ）</string>
+    <string name="bt_layout_fr">フランス語（AZERTY）</string>
+    <string name="bt_layout_es">スペイン語</string>
+    <string name="bt_layout_it">イタリア語</string>
+    <string name="bt_layout_tr_f">トルコ語 F</string>
+    <string name="bt_layout_pl">ポーランド語（プログラマー配列）</string>
+    <string name="bt_layout_pt">ポルトガル語（ポルトガル）</string>
+    <string name="bt_layout_se">スウェーデン語 / フィンランド語</string>
+    <string name="bt_layout_br">ブラジル（ABNT2）</string>
+    <string name="bt_layout_ch">スイスドイツ語（QWERTZ）</string>
+    <string name="bt_layout_nl">オランダ語</string>
+    <string name="bt_layout_cz">チェコ語（QWERTZ）</string>
+    <string name="bt_layout_hu">ハンガリー語（QWERTZ）</string>
+    <string name="bt_layout_no">ノルウェー語</string>
+    <string name="bt_layout_be">ベルギー語（AZERTY）</string>
+    <string name="bt_layout_dv">Dvorak（米国）</string>
+    <string name="bt_layout_ck">Colemak</string>
+    <string name="bt_layout_bepo">フランス語（BÉPO）</string>
+    <!-- Uygulama dili ve klavye düzeni seçimi -->
+    <string name="settings_language">言語</string>
+    <string name="settings_language_desc">アプリの言語を選択してください。これはSekuvoにのみ適用され、端末全体には影響しません。</string>
+    <string name="settings_lang_system">システムの言語</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_lang_es">Español</string>
+    <string name="settings_lang_hi">हिन्दी</string>
+    <string name="settings_lang_ar">العربية</string>
+    <string name="settings_lang_zh">简体中文</string>
+    <string name="settings_lang_fr">Français</string>
+    <string name="settings_lang_bn">বাংলা</string>
+    <string name="settings_lang_pt">Português</string>
+    <string name="settings_lang_ru">Русский</string>
+    <string name="settings_lang_ur">اردو</string>
+    <string name="settings_lang_id">Bahasa Indonesia</string>
+    <string name="settings_lang_de">Deutsch</string>
+    <string name="settings_lang_ja">日本語</string>
+    <string name="settings_layouts">コンピューターのキーボードレイアウト</string>
+    <string name="settings_layouts_summary">%2$d件中%1$d件のレイアウトが有効</string>
+    <string name="settings_expand">表示</string>
+    <string name="settings_collapse">非表示</string>
+    <string name="settings_layouts_desc">実際に使用しているレイアウトを選択してください。コンピューターに秘密情報を入力する際は、チェックしたものだけが表示され、それ以外は邪魔になりません。</string>
+    <string name="settings_layouts_min">少なくとも1つのレイアウトは常に有効です。</string>
+
+    <!-- Bilgi sayfaları: Hakkında / Gizlilik / Rehber -->
+    <string name="info_about_title">このアプリについて</string>
+    <string name="info_privacy_title">プライバシーポリシー</string>
+    <string name="info_guide_title">ガイド</string>
+    <string name="info_about_version">バージョン</string>
+    <string name="info_about_package">パッケージ</string>
+    <string name="info_about_license">ライセンス</string>
+    <string name="info_about_developer">開発者</string>
+    <string name="info_about_website">sekuvo.comを開く</string>
+    <string name="info_about_source">GitHubのソースコード</string>
+    <string name="info_about_contact">contact@sekuvo.com</string>
+    <string name="info_about_what_title">このアプリについて</string>
+    <string name="info_about_what_body">パスワード、カード、メモのための完全にオフラインの保管庫です。インターネット権限を要求しないため、技術的にあなたのデータをどこにも送信できません — アカウントもクラウドも同期も分析もありません。すべてはマスターパスワードから導出された鍵でAES-256-GCM暗号化されます。</string>
+
+    <string name="privacy_s1_title">概要</string>
+    <string name="privacy_s1_body">Sekuvoはいかなるデータも収集、送信、共有しません。これはインターネット権限を要求しないオフラインのパスワード保管庫であり、技術的にあなたのデータをどこにも送信できません。</string>
+    <string name="privacy_s2_title">データの保存場所</string>
+    <string name="privacy_s2_body">タイトル、ユーザー名、パスワード、メモ、使用履歴は、マスターパスワードから導出された鍵で暗号化され、この端末上に保存されます。アプリがこれらをサーバーにアップロード、同期、バックアップすることはありません。</string>
+    <string name="privacy_s3_title">権限とその目的</string>
+    <string name="privacy_s3_body">カメラ — あなたが選んでスキャンするQRコードの読み取りにのみ使用され、端末上で処理されます。\n生体認証 — Androidの生体認証システムを通じて、あなたの端末上で保管庫のロックを解除するためにのみ使用されます。Sekuvoがあなたの指紋や顔を見たり保存したりすることはありません。\nBluetooth — 近くのコンピューターに秘密情報を入力するようSekuvoに明示的に依頼したときにのみ使用されます。送信されるのはあなたが選んだ文字だけで、ペアリングした端末に直接送られます。</string>
+    <string name="privacy_s4_title">バックアップと転送</string>
+    <string name="privacy_s4_body">これらはあなたが開始したときにのみ行われ、あなたが設定したパスワードで保護された暗号化ファイルまたはQRコードを生成し、あなたが指定した場所にのみ保存または表示されます。アプリが自発的にどこかへ送信することはありません。</string>
+    <string name="privacy_s5_title">子供について</string>
+    <string name="privacy_s5_body">Sekuvoは子供を含め、誰からもデータを収集しません。</string>
+    <string name="privacy_s6_title">お問い合わせと全文</string>
+    <string name="privacy_s6_body">ご質問: contact@sekuvo.com\nこのポリシーの正式版はsekuvo.com/privacy/で公開されており、相違がある場合はそちらが優先されます。</string>
+
+    <string name="guide_s1_title">初回起動</string>
+    <string name="guide_s1_body">マスターパスワードを設定します。保存するすべての秘密情報はこのパスワードから導出された鍵で暗号化されるため、唯一復元できないものです — 続ける前に安全な場所に書き留めてください。\n他の端末から移行しますか？ ようこそ画面で「バックアップがあります — 復元する」をタップしてください。それでも先にこの端末のマスターパスワードを設定し、その後ファイル選択画面が自動的に開きます。</string>
+    <string name="guide_s2_title">保存できるもの</string>
+    <string name="guide_s2_body">アカウント/パスワード、日常（氏名、電話番号、メール、住所）、カード、セキュアメモ — スクリプト、鍵、復旧コード、設定ファイル用のサブタイプ付き。アカウントと日常のアイテムは、無制限のカスタムフィールドも受け付け、組み込みフィールドとまったく同様に暗号化されます。</string>
+    <string name="guide_s3_title">自動入力</string>
+    <string name="guide_s3_body">設定 → 自動入力を有効にする → システムのリストからSekuvoを選択してください。このリストの名前は端末によって異なり、SamsungとAndroid 14以降では「パスワード、パスキー、自動入力 → 優先サービス」、素のAndroidでは「自動入力サービス」となります。\nその後、どのアプリでもログインフォームやカードフィールドに触れると、対応するアイテムが表示されます。保管庫がロックされている間、システムには一切何も渡されません。</string>
+    <string name="guide_s4_title">Sekuvoキーボード</string>
+    <string name="guide_s4_body">設定 → キーボードを有効にする、その後必要なときにキーボード切り替えから「Sekuvoキーボード」を選択してください。保存された値を任意のフィールドに直接入力し、検索と最近使用したアイテムが上部に表示されます。ロック中は、クイックアクセスに設定されたアイテムのみ表示されます。</string>
+    <string name="guide_s5_title">Bluetoothでコンピューターに入力</string>
+    <string name="guide_s5_body">アイテムを開き、入力したいフィールドの横にある💻アイコンをタップし、この画面を開いたままにしてください — 端末はこの画面が開いている間だけキーボードとして認識されます。コンピューターで端末を新しいBluetooth機器として追加し、コードを確認してください。端末に戻り、コンピューターを選択し、コンピューター側のキーボードレイアウトを選択し、目的のフィールドをクリックして「入力」をタップしてください。\n接続されているのに何も入力されない場合？ コンピューターが以前にあなたの端末を普通の電話としてペアリングしていたため、キーボードサービスが有効になっていないことがよくある原因です。両側でペアリングを解除し、💻画面を開いて、コンピューター側から始めて再度ペアリングしてください。Windowsではその後、デバイスマネージャー → ヒューマンインターフェースデバイスに「Bluetooth HID」機器が表示されるはずです。macOSでは、キーボード設定アシスタントが開いた場合は閉じてください。\n速度テストを診断に使ってください: 何も入力されない場合はペアリングの問題、文字が乱れる場合はレイアウトの問題、入力が途切れる場合は速度の問題です。</string>
+    <string name="guide_s6_title">ロックの仕組み</string>
+    <string name="guide_s6_body">保管庫が開かれている画面が消えた瞬間にロックされます — 折りたたみ式端末を閉じることも含まれます。画面が点いたままアプリを終了してもロックされません: アプリ、キーボード、自動入力は1つのセッションを共有しています。</string>
+    <string name="guide_s7_title">バックアップ</string>
+    <string name="guide_s7_body">システムバックアップは意図的に無効化されているため、保管庫が端末から出る方法は1つだけです: 設定 → 暗号化されたバックアップを作成。マスターパスワードとは異なるバックアップパスワードを使用してください。生成される.vaultbakファイルとこのパスワードがあれば、工場出荷時リセット後でも、どの端末でもすべてを復元できます。</string>
+    <string name="guide_s8_title">コンピューターから秘密情報を持ち込む</string>
+    <string name="guide_s8_body">➕ボタンは「QRでインポート」と「テキストからインポート」を提供します。⇄ウィザードは両方を1つの流れで行います: 使い捨ての転送パスワードを生成し、Bluetoothでコンピューターに入力し、QRのスキャンまたはクリップボードから封筒を受け取って、同じパスワードで復号します。\nコンピューター側のツールはウェブサイトではなくダウンロードファイルです: プロジェクトのReleasesページからaktar.htmlを取得し、SHA-256を確認して、自分のディスクから開いてください。このサイトがあなたに秘密情報を尋ねることは決してありません。</string>
+    <string name="settings_info_section">ヘルプと情報</string>
+    <string name="edit_email_invalid">アドレスを確認してください — @とexample.comのようなドメインが必要です</string>
+    <string name="edit_expiry_invalid">月と年をMMYY形式で入力してください（月は01～12）</string>
+    <string name="edit_iban_invalid">このIBANのチェックデジットが一致しません — 桁の入力ミスの可能性があります</string>
+    <string name="edit_iban_confirm_title">このIBANは入力ミスの可能性があります</string>
+    <string name="edit_iban_confirm_text">このIBANのチェックデジットが一致しないため、1桁間違っている可能性が高いです。それでも保存できますが、入力ミスだった場合、振込が失敗するまで気づかないことになります。</string>
+    <string name="edit_iban_confirm_save">それでも保存</string>
+    <string name="edit_iban_confirm_fix">戻って修正</string>
+</resources>

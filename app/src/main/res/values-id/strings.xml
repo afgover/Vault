@@ -492,6 +492,7 @@
     <string name="settings_lang_ur">اردو</string>
     <string name="settings_lang_id">Bahasa Indonesia</string>
     <string name="settings_lang_de">Deutsch</string>
+    <string name="settings_lang_ja">日本語</string>
     <string name="settings_layouts">Tata letak keyboard komputer</string>
     <string name="settings_layouts_summary">%1$d dari %2$d tata letak aktif</string>
     <string name="settings_expand">Tampilkan</string>

@@ -498,6 +498,7 @@
     <string name="settings_lang_ur">اردو</string>
     <string name="settings_lang_id">Bahasa Indonesia</string>
     <string name="settings_lang_de">Deutsch</string>
+    <string name="settings_lang_ja">日本語</string>
     <string name="settings_layouts">कंप्यूटर कीबोर्ड लेआउट</string>
     <string name="settings_layouts_summary">%2$d में से %1$d लेआउट चालू</string>
     <string name="settings_expand">दिखाएँ</string>
