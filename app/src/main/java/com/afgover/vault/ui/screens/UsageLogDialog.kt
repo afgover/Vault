@@ -3,17 +3,25 @@ package com.afgover.vault.ui.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.afgover.vault.R
 import com.afgover.vault.data.UsageEvent
 import com.afgover.vault.ui.VaultViewModel
@@ -36,7 +46,12 @@ import androidx.compose.ui.res.stringResource
  *
  * Hedefe göre süzme, "bir bilgisayar ele geçti, oraya ne gitti" sorusunun
  * cevabıdır — günlüğün asıl varlık sebebi bu (vault_takip SEC-023).
+ *
+ * Eskiden ayarların üstünde bir AlertDialog'du; uzun listede iç içe iki
+ * kaydırma yüzeyi okumayı zorlaştırıyordu. Artık tam ekran bir pencere:
+ * kendi üst çubuğu var, temizleme onayı ayrı küçük bir diyalog.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
     var events by remember { mutableStateOf<List<UsageEvent>>(emptyList()) }
@@ -60,11 +75,38 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
     // Silinmiş kaydın etiketi: buildString içinde stringResource çağırmamak için dışarı alındı.
     val deletedLabel = stringResource(R.string.log_deleted_entry)
 
-    AlertDialog(
+    Dialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.log_title)) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.log_title)) },
+                    navigationIcon = {
+                        IconButton(onClick = onDismiss) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.log_close)
+                            )
+                        }
+                    },
+                    actions = {
+                        TextButton(onClick = { confirmClear = true }) {
+                            Text(stringResource(R.string.log_clear))
+                        }
+                    }
+                )
+            }
+        ) { padding ->
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
                 Text(
                     stringResource(R.string.log_scope_note),
                     style = MaterialTheme.typography.bodySmall,
@@ -140,7 +182,8 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                                 ev.fieldLabel?.let { append(" (").append(it).append(")") }
                                 ev.target?.let { append(" → ").append(it) }
                             },
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(bottom = 2.dp)
                         )
                     }
                     if (shown.size > 200) {
@@ -151,35 +194,26 @@ fun UsageLogDialog(viewModel: VaultViewModel, onDismiss: () -> Unit) {
                         )
                     }
                 }
-
-                if (confirmClear) {
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        stringResource(R.string.log_clear_confirm),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Row {
-                        TextButton(onClick = {
-                            viewModel.clearUsageLog { tick++ }
-                            confirmClear = false
-                        }) { Text(stringResource(R.string.log_clear_yes)) }
-                        TextButton(onClick = { confirmClear = false }) {
-                            Text(stringResource(R.string.log_cancel))
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.log_close)) }
-        },
-        dismissButton = {
-            if (!confirmClear) {
-                TextButton(onClick = { confirmClear = true }) {
-                    Text(stringResource(R.string.log_clear))
-                }
+                Spacer(Modifier.height(16.dp))
             }
         }
-    )
+    }
+
+    if (confirmClear) {
+        AlertDialog(
+            onDismissRequest = { confirmClear = false },
+            text = { Text(stringResource(R.string.log_clear_confirm)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.clearUsageLog { tick++ }
+                    confirmClear = false
+                }) { Text(stringResource(R.string.log_clear_yes)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmClear = false }) {
+                    Text(stringResource(R.string.log_cancel))
+                }
+            }
+        )
+    }
 }

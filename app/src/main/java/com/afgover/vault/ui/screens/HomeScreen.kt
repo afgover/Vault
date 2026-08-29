@@ -2,14 +2,14 @@ package com.afgover.vault.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -136,7 +136,7 @@ fun TypeBadge(type: EntryType, kind: NoteKind = NoteKind.GENEL, size: Int = 42) 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: VaultViewModel,
@@ -326,14 +326,17 @@ fun HomeScreen(
                 shape = RoundedCornerShape(28.dp),
                 modifier = Modifier.fillMaxWidth()
             )
-            // Satır yatay kaydırılıyordu ve dördüncü tür çipi ("Secure note")
-            // ekran kenarında "Secu" diye kesiliyordu — kaydırılabildiğine dair
-            // hiçbir işaret yokken. Süzgeç çipleri Material'da zaten sarılır;
-            // sarınca hem tür çipleri hem etiketler tam okunur (tur bulgusu).
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
+            // Süzgeçler iki SABİT satır: üstte türler, altta etiketler
+            // (kullanıcı kararı — serbest sarmalı FlowRow uzun etiket
+            // listesinde ekranı kaplıyordu). Satırlar sarmaz, yatay kayar;
+            // uzun çip kenarda kesik görünür ve kesik görüntü kayabildiğinin
+            // işaretidir. Satır arası boşluk bilinçli olarak sıkı.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 EntryType.entries.forEach { t ->
                     FilterChip(
@@ -342,6 +345,14 @@ fun HomeScreen(
                         label = { Text(t.label()) }
                     )
                 }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 tags.forEach { tag ->
                     TagChip(
                         tag = tag,
