@@ -484,6 +484,7 @@
     <string name="settings_lang_hi">हिन्दी</string>
     <string name="settings_lang_ar">العربية</string>
     <string name="settings_lang_zh">简体中文</string>
+    <string name="settings_lang_fr">Français</string>
     <string name="settings_layouts">电脑键盘布局</string>
     <string name="settings_layouts_summary">已开启 %1$d / %2$d 种布局</string>
     <string name="settings_expand">展开</string>

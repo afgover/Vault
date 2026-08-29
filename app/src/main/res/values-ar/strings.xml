@@ -496,6 +496,7 @@
     <string name="settings_lang_hi">हिन्दी</string>
     <string name="settings_lang_ar">العربية</string>
     <string name="settings_lang_zh">简体中文</string>
+    <string name="settings_lang_fr">Français</string>
     <string name="settings_layouts">تخطيطات لوحة مفاتيح الحاسوب</string>
     <string name="settings_layouts_summary">%1$d من %2$d تخطيطًا مفعَّلة</string>
     <string name="settings_expand">عرض</string>
