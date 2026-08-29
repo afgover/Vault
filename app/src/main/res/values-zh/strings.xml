@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand name: not translated. -->
+    <string name="app_name" translatable="false">Sekuvo</string>
+    <string name="ime_label">Sekuvo 键盘</string>
+    <string name="autofill_label" translatable="false">Sekuvo</string>
+
+    <!-- Built-in field labels. These are DISPLAY text only: what gets stored
+         in the usage log and the clipboard label is the stable key, never
+         this string (otherwise the log would change language mid-history). -->
+    <string name="field_full_name">姓名</string>
+    <string name="field_username">用户名</string>
+    <string name="field_password">密码</string>
+    <string name="field_url">网站 / 应用</string>
+    <string name="field_phone">电话</string>
+    <string name="field_email">邮箱</string>
+    <string name="field_address">地址</string>
+    <string name="field_cardholder">持卡人</string>
+    <string name="field_card_number">卡号</string>
+    <string name="field_expiry">有效期</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">备注</string>
+
+    <!-- Entry types -->
+    <string name="type_login">账号 / 密码</string>
+    <string name="type_everyday">日常信息</string>
+    <string name="type_card">银行卡</string>
+    <string name="type_note">安全笔记</string>
+
+    <!-- Note subtypes -->
+    <string name="note_kind_general">普通笔记</string>
+    <string name="note_kind_script">脚本 / 命令 (.sh)</string>
+    <string name="note_kind_key">密钥 / 证书 (.pem)</string>
+    <string name="note_kind_fingerprint">指纹 / 信任锚点</string>
+    <string name="note_kind_recovery">恢复代码</string>
+    <string name="note_kind_config">配置文件 (.env, json)</string>
+
+    <!-- Sort options -->
+    <string name="sort_title_asc">标题 (A→Z)</string>
+    <string name="sort_title_desc">标题 (Z→A)</string>
+    <string name="sort_updated_desc">最近更新</string>
+    <string name="sort_created_desc">最近添加</string>
+    <string name="sort_type">按类型</string>
+    <string name="sort_manual">自定义顺序（拖动）</string>
+
+    <!-- Usage log event kinds -->
+    <string name="usage_created">已创建</string>
+    <string name="usage_updated">已修改</string>
+    <string name="usage_copied">已复制到剪贴板</string>
+    <string name="usage_bt_typed">已输入到电脑</string>
+    <string name="usage_keyboard_typed">已从键盘输入</string>
+    <string name="usage_quick_on">已开启快速访问</string>
+    <string name="usage_quick_off">已关闭快速访问</string>
+
+    <!-- Bluetooth keyboard: layouts and speeds -->
+    <string name="bt_layout_us">美式（英语）</string>
+    <string name="bt_layout_tr">土耳其语 Q</string>
+    <string name="bt_speed_safe">安全</string>
+    <string name="bt_speed_fast">快速</string>
+    <string name="bt_speed_turbo">极速</string>
+
+    <!-- Bluetooth keyboard: errors reported from a context-free manager -->
+    <string name="bt_err_off">蓝牙未开启。请先打开蓝牙。</string>
+    <string name="bt_err_unsupported">此手机不支持蓝牙键盘（HID）配置文件。</string>
+    <string name="bt_err_register">HID 注册失败 — 手机可能不支持此功能。</string>
+    <string name="bt_err_connect">无法建立连接。对方设备的蓝牙是否已开启？</string>
+    <string name="bt_err_no_link">没有连接 — 请重新选择设备。</string>
+    <string name="bt_err_queue">蓝牙发送队列停止响应；输入在第 %1$d 个字符处中断。请选择更慢的速度。</string>
+
+    <!-- Entry too large -->
+    <string name="entry_too_large">“%1$s”太大：%2$d KB（上限 %3$d KB）。请拆分较长的内容，或将其保存为电脑上的文件。</string>
+    <string name="ime_write_field">输入%1$s</string>
+
+    <!-- backup -->
+    <string name="backup_autofill_form_unreadable">无法读取表单</string>
+    <string name="backup_autofill_locked_save">密码库已锁定。请先解锁 Sekuvo 再保存。</string>
+    <string name="backup_autofill_nothing_to_save">未找到可保存的信息</string>
+    <string name="backup_autofill_save_failed">保存失败：%1$s</string>
+    <string name="backup_autofill_unlock_to_fill">解锁以填充</string>
+    <!-- bt -->
+    <string name="bt_duration_seconds">%1$d 秒</string>
+    <string name="bt_duration_minutes">%1$d 分 %2$d 秒</string>
+    <string name="bt_unsupported_title">不支持</string>
+    <string name="bt_unsupported_body">蓝牙键盘功能需要 Android 9 或更高版本。</string>
+    <string name="bt_ok">确定</string>
+    <string name="bt_stopped_summary">已停止：已输入 %1$d / %2$d 个字符。电脑上的文本不完整 — 请删除后重新开始。</string>
+    <string name="bt_aborted_summary">输入被中断：%1$d / %2$d 个字符。电脑上的文本不完整 — 请删除、选择更慢的速度后重试。</string>
+    <string name="bt_speed_result">%1$d 个字符，%2$s（%3$d 字符/秒）</string>
+    <string name="bt_unknown_device">未知设备</string>
+    <string name="bt_untyped_warning">此键盘布局无法输入这些字符：%1$s — 你可以尝试其他布局。</string>
+    <string name="bt_done_summary">✓ 已输入 %1$d 个字符 — %2$s，%3$d 字符/秒。请在电脑上核对字符数。</string>
+    <string name="bt_title">输入到电脑：%1$s</string>
+    <string name="bt_permission_required">需要蓝牙权限。没有它此功能无法使用。</string>
+    <string name="bt_preparing">正在准备蓝牙键盘…</string>
+    <string name="bt_pick_computer">选择你的电脑（必须已通过蓝牙与手机配对）：</string>
+    <string name="bt_no_bonded_devices">没有已配对的设备。请先在手机的蓝牙设置中与电脑配对，然后重试。</string>
+    <string name="bt_connecting">正在连接 %1$s…</string>
+    <string name="bt_connected">✓ 已连接 %1$s</string>
+    <string name="bt_layout_heading">你电脑的键盘布局（不是手机的）：</string>
+    <string name="bt_layout_warning">按键代码由电脑解释 — 如果选错布局，@ \" ? 等字符会被悄悄替换成别的字符。</string>
+    <string name="bt_selected_layout">已选布局：%1$s</string>
+    <string name="bt_sensitive_chars">此文本包含对布局敏感的字符：%1$s — 建议发送前先输入测试。</string>
+    <string name="bt_test_done">✓ 测试已输入 — 再试一次</string>
+    <string name="bt_test_first">🧪 先输入测试（推荐）</string>
+    <string name="bt_test_expected">电脑上必须显示得和这里完全一致：\n%1$s\n如果不同，请在上方选择另一种布局并重复测试。</string>
+    <string name="bt_speed_heading">输入速度：</string>
+    <string name="bt_speed_desc">按键逐个发送。如果速度超过连接的承受能力，输入会停止（不会丢失字符）— 用速度测试来确定哪个速度可行。</string>
+    <string name="bt_estimate">%1$d 个字符 ≈ %2$s</string>
+    <string name="bt_speed_test_button">⏱ 速度测试（%1$d 个字符）</string>
+    <string name="bt_speed_result_detail">%1$s\n电脑上必须显示 10 组以空格分隔的内容，每组都恰好是 %2$s — 只要有一组不同，就选择更慢一档的速度并重复测试。</string>
+    <string name="bt_typing_progress">正在输入…%1$d / %2$d 个字符</string>
+    <string name="bt_remaining">~剩余 %1$s — 完成前请勿移动电脑上的光标。</string>
+    <string name="bt_before_start">将光标放在电脑上的目标字段中，然后按下按钮。3 秒后开始输入。</string>
+    <string name="bt_countdown_short">%1$d…</string>
+    <string name="bt_type">输入</string>
+    <string name="bt_stop">停止</string>
+    <string name="bt_close">关闭</string>
+    <!-- detail -->
+    <string name="detail_back">返回</string>
+    <string name="detail_edit">编辑</string>
+    <string name="detail_quick_title">在键盘中免密码使用</string>
+    <string name="detail_quick_on">即使密码库锁定时也会显示在 Sekuvo 键盘中；其保护强度仅相当于手机的锁屏。</string>
+    <string name="detail_quick_off">仅在密码库解锁时可用。</string>
+    <string name="detail_dates">添加于：%1$s · 更新于：%2$s</string>
+    <string name="detail_password_changed">密码上次修改：%1$s</string>
+    <string name="detail_usage_title">最近使用记录</string>
+    <string name="detail_usage_desc">此条目在应用内的去向。通过读屏、拍照或自动填充获取的值不会显示在这里 — 该记录只知道应用本身做了什么。</string>
+    <string name="detail_usage_empty">暂无使用记录。</string>
+    <string name="detail_show_less">收起</string>
+    <string name="detail_show_all">显示全部（%1$d）</string>
+    <string name="detail_hide">隐藏</string>
+    <string name="detail_show">显示</string>
+    <string name="detail_copy">复制</string>
+    <string name="detail_type_to_pc">输入到电脑</string>
+    <string name="detail_show_fingerprint">显示 SHA-256 指纹</string>
+    <string name="detail_fingerprint_len">SHA-256 指纹 · %1$d 个字符</string>
+    <string name="detail_fingerprint_len_short">SHA-256 指纹 · %1$d 个字符 · 较短的值</string>
+    <string name="detail_fingerprint_warning">较短值的摘要可能被暴力破解还原 — 请勿分享此指纹。</string>
+    <string name="detail_fingerprint_verify">在电脑上：shasum -a 256 文件\n（如果是手动粘贴的，可能缺少末尾换行符：printf \'%1$s\' \"$(cat 文件)\" | shasum -a 256）</string>
+    <string name="detail_copy_fingerprint">复制指纹</string>
+    <!-- edit -->
+    <string name="edit_title_new">新建%1$s</string>
+    <string name="edit_title_edit">编辑</string>
+    <string name="edit_back">返回</string>
+    <string name="edit_delete">删除</string>
+    <string name="edit_field_title">标题</string>
+    <string name="edit_field_username">用户名</string>
+    <string name="edit_generate_password">生成密码</string>
+    <string name="edit_field_card_number">卡号</string>
+    <string name="edit_field_expiry">有效期（MM/YY）</string>
+    <string name="edit_field_iban">IBAN（可选）</string>
+    <string name="edit_note_kind">笔记类型</string>
+    <string name="edit_custom_fields">额外字段</string>
+    <string name="edit_field_name">字段名称</string>
+    <string name="edit_remove_field">移除字段</string>
+    <string name="edit_field_value">值</string>
+    <string name="edit_add_field">+ 添加字段</string>
+    <string name="edit_field_notes">备注</string>
+    <string name="edit_quick_title">在键盘中免密码使用</string>
+    <string name="edit_quick_desc">开启后，即使密码库锁定，此条目也会显示在 Sekuvo 键盘中。此时它仅受手机锁屏保护；对于密码等敏感数据请保持关闭。</string>
+    <string name="edit_tags">标签</string>
+    <string name="edit_new_tag">+ 新建</string>
+    <string name="edit_save">保存</string>
+    <string name="edit_discard_title">更改未保存</string>
+    <string name="edit_discard_text">你即将离开而不保存已输入的内容，确定吗？</string>
+    <string name="edit_discard_confirm">不保存离开</string>
+    <string name="edit_discard_cancel">返回编辑</string>
+    <string name="edit_delete_title">删除条目</string>
+    <string name="edit_delete_text">“%1$s”将被永久删除，确定吗？</string>
+    <string name="edit_cancel">取消</string>
+    <!-- home -->
+    <string name="home_sort_cd">排序：%1$s</string>
+    <string name="home_selected">已选择</string>
+    <string name="home_transfer_cd">从电脑传输</string>
+    <string name="home_generator_cd">密码生成器</string>
+    <string name="home_lock_cd">锁定</string>
+    <string name="home_settings_cd">设置</string>
+    <string name="home_import_qr">通过二维码导入</string>
+    <string name="home_import_text">从文本导入</string>
+    <string name="home_add_cd">添加</string>
+    <string name="home_search_hint">搜索条目</string>
+    <string name="home_manage_tags_cd">管理标签</string>
+    <string name="home_manual_hint">自定义顺序：长按行上的 ⠿ 手柄并拖动。</string>
+    <string name="home_empty_vault">你的密码库已就绪 — 点击右下角的 + 添加第一个条目。</string>
+    <string name="home_empty_filter">没有符合这些筛选条件的条目。</string>
+    <string name="home_drag_cd">拖动</string>
+    <string name="home_tag_new">新建标签</string>
+    <string name="home_tag_edit">编辑标签</string>
+    <string name="home_tag_name">名称</string>
+    <string name="home_selected_color">已选颜色</string>
+    <string name="home_save">保存</string>
+    <string name="home_cancel">取消</string>
+    <string name="home_tags_title">标签</string>
+    <string name="home_tags_empty">暂无标签，可在下方添加。</string>
+    <string name="home_edit_cd">编辑</string>
+    <string name="home_delete">删除</string>
+    <string name="home_tag_add_new">+ 新建标签</string>
+    <string name="home_close">关闭</string>
+    <string name="home_tag_delete_title">删除标签</string>
+    <string name="home_tag_delete_msg">“%1$s”将被删除，并从带有该标签的条目中移除。条目本身不会被删除。</string>
+    <!-- ime -->
+    <string name="ime_switch_keyboard">ABC</string>
+    <string name="ime_locked_quick_only">密码库已锁定 — 仅显示快速访问条目。</string>
+    <string name="ime_unlock_all">🔓 解锁（查看所有条目）</string>
+    <string name="ime_no_quick_entries">没有标记为快速访问的条目。</string>
+    <string name="ime_no_entries">没有条目。</string>
+    <string name="ime_no_match">没有与“%1$s”匹配的条目。</string>
+    <string name="ime_back_to_list">← %1$s</string>
+    <string name="ime_search_hint">搜索…</string>
+    <!-- log -->
+    <string name="log_title">使用记录</string>
+    <string name="log_scope_note">该记录只能看到应用本身的操作：通过读屏、拍照或手动输入获取的值不会留下痕迹。自动填充时你选择了哪个条目也无法记录，因为 Android 不会将此信息告知应用。此记录可在密码库解锁时删除 — 它不是防篡改记录。</string>
+    <string name="log_filter_by_target">按目标筛选：</string>
+    <string name="log_filter_all">全部</string>
+    <string name="log_empty">记录为空。</string>
+    <string name="log_empty_for_target">没有条目发送到过此目标。</string>
+    <string name="log_deleted_entry">（已删除的条目）</string>
+    <string name="log_entries_to_target">发送到“%1$s”的条目：%2$s</string>
+    <string name="log_clear_confirm">删除整个记录？此操作无法撤销；条目本身不受影响。</string>
+    <string name="log_clear_yes">是，删除</string>
+    <string name="log_cancel">取消</string>
+    <string name="log_close">关闭</string>
+    <string name="log_clear">删除记录</string>
+    <!-- main -->
+    <string name="main_biometric_needs_pin">保存指纹记录需要你的 Sekuvo PIN</string>
+    <string name="main_biometric_enable_failed">无法启用指纹：%1$s</string>
+    <string name="main_biometric_enroll_title">启用生物识别解锁</string>
+    <string name="main_cancel">取消</string>
+    <string name="main_biometric_offer_title">用指纹解锁</string>
+    <string name="main_biometric_offer_body">你可以用指纹代替每次打开密码库时输入主密码。主密码不会消失：需要时它始终有效，也是打开备份文件所需的密码 — 请不要忘记它。</string>
+    <string name="main_enable">启用</string>
+    <string name="main_password_for_now">这次用密码</string>
+    <string name="main_biometric_invalidated">指纹解锁已失效（例如添加了新指纹）。请用密码解锁。</string>
+    <string name="main_biometric_decrypt_failed">指纹验证成功，但密钥无法解密。请用密码解锁。</string>
+    <string name="main_unlock_title">解锁 Sekuvo</string>
+    <string name="main_use_password">使用密码</string>
+    <string name="main_hide">隐藏</string>
+    <string name="main_show">显示</string>
+    <!-- paste -->
+    <string name="paste_title_qr">通过二维码导入</string>
+    <string name="paste_title_text">从文本导入</string>
+    <string name="paste_qr_ready">✓ 已扫描二维码 · 已收到 %1$d 个字符的加密信封。\n现在只需输入**备份密码**。</string>
+    <string name="paste_intro">粘贴页面上的文本，或点击“从剪贴板获取”。文本已加密；你将在下一字段输入其密码。</string>
+    <string name="paste_label_envelope">加密信封</string>
+    <string name="paste_char_count">%1$d 个字符</string>
+    <string name="paste_btn_clipboard">从剪贴板获取</string>
+    <string name="paste_label_backup_password">备份密码</string>
+    <string name="paste_mode_merge">添加到现有条目</string>
+    <string name="paste_mode_replace">替换全部</string>
+    <string name="paste_replace_warning">警告：所有现有条目将被删除，并替换为信封中的条目。</string>
+    <string name="paste_err_envelope_empty">加密信封字段为空 — 请用“从剪贴板获取”粘贴。</string>
+    <string name="paste_err_password_required_qr">需要备份密码：即你在电脑上加密信封时设置的密码。</string>
+    <string name="paste_err_password_missing">未输入备份密码。</string>
+    <string name="paste_btn_importing">正在导入…</string>
+    <string name="paste_btn_import">导入</string>
+    <string name="paste_btn_cancel">取消</string>
+    <!-- qr -->
+    <string name="qr_status_aim">将二维码对准取景框</string>
+    <string name="qr_status_done">完成</string>
+    <string name="qr_status_received">已收到 %1$d/%2$d</string>
+    <string name="qr_status_frames_mismatch">帧不匹配，请重新开始</string>
+    <string name="qr_permission_rationale">需要相机权限。图像不会离开设备：解码器就在应用内部，且应用没有网络权限。</string>
+    <string name="qr_grant_in_settings">在设置中授权</string>
+    <string name="qr_grant_permission">授予权限</string>
+    <string name="qr_camera_analysis">相机分析：%1$s · 请将二维码靠近，使其占屏幕的一半以上</string>
+    <string name="qr_missing_frames">缺失的帧：%1$s</string>
+    <string name="qr_cancel">取消</string>
+    <!-- settings -->
+    <string name="settings_title">设置</string>
+    <string name="settings_back">返回</string>
+    <string name="settings_appearance">外观</string>
+    <string name="settings_sort_moved">排序功能已移至主屏幕：可通过标题旁的 ⇅ 图标选择，同时应用于列表和 Sekuvo 键盘。\n当前排序：%1$s</string>
+    <string name="settings_backup">备份</string>
+    <string name="settings_backup_desc">备份文件使用 AES-256 加密，仅能用备份密码打开。你可以将其保存在任何地方 — 网盘、SD 卡等；即使手机被清空，文件加上密码也能恢复一切。</string>
+    <string name="settings_backup_export">创建加密备份</string>
+    <string name="settings_backup_restore">从备份恢复</string>
+    <string name="settings_import_paste">从文本导入（粘贴）</string>
+    <string name="settings_usage_log">使用记录</string>
+    <string name="settings_usage_log_desc">哪个条目的哪个字段、何时、发送到了哪里 — 剪贴板、电脑，或通过键盘输入。</string>
+    <string name="settings_usage_log_open">打开使用记录</string>
+    <string name="settings_security">安全</string>
+    <string name="settings_locking">锁定</string>
+    <string name="settings_locking_desc">屏幕熄灭的瞬间密码库即锁定；密钥从内存中清除。只要屏幕保持点亮，就不会再次要求密码或指纹。\n\n标记为“在键盘中免密码使用”的条目在密码库锁定时也可使用；你可以在每个条目自己的页面开启或关闭此标记。</string>
+    <string name="settings_biometric_disable">关闭生物识别解锁</string>
+    <string name="settings_biometric_enable">启用生物识别解锁</string>
+    <string name="settings_pin_heading">PIN（指纹的第二道门）</string>
+    <string name="settings_pin_legacy_warning">⚠ 此 PIN 是在旧版本中设置的，与当前版本不兼容：条目无法打开，PIN 也无法关闭。请用主密码 + PIN 修复。</string>
+    <string name="settings_pin_on_desc">开启：读取指纹后会要求输入 PIN。用主密码解锁时不会要求 — 该密码本身已是强密钥。</string>
+    <string name="settings_pin_off_desc">可选。开启后，指纹记录会用 PIN 加密，解锁时在指纹之后要求输入 PIN。默认：关闭。\n顺序很重要：先设置 PIN，再启用指纹。</string>
+    <string name="settings_pin_repair">修复 PIN 记录</string>
+    <string name="settings_pin_turn_off">关闭 PIN</string>
+    <string name="settings_pin_set">设置 PIN</string>
+    <string name="settings_reminder_heading">主密码提醒</string>
+    <string name="settings_reminder_desc">使用指纹时，主密码会数月不被输入而被遗忘 — 但它仍是打开备份所需的密码。按你选择的间隔，会有一次要求输入密码而非指纹。默认：从不。</string>
+    <string name="settings_reminder_never">从不</string>
+    <string name="settings_reminder_days">%1$d 天</string>
+    <string name="settings_change_password">更改主密码</string>
+    <string name="settings_autofill">自动填充</string>
+    <string name="settings_autofill_on_desc">已开启。在应用和浏览器中点击登录或银行卡表单时，你的 Sekuvo 条目会作为填充选项出现。若密码库已锁定，会先显示解锁界面；锁定期间不会向系统提供任何值。</string>
+    <string name="settings_autofill_off_desc">开启后，在应用和浏览器中点击登录或银行卡表单时，会直接提供你的 Sekuvo 条目作为填充选项。也会提示将新输入的信息保存到 Sekuvo。\n\n下方按钮会打开系统设置。不同设备中该列表名称不同（“首选服务”“自动填充服务”，或“密码、通行密钥和自动填充”）；从中选择 Sekuvo 即可。</string>
+    <string name="settings_autofill_open">打开自动填充设置</string>
+    <string name="settings_autofill_enable">启用自动填充</string>
+    <string name="settings_keyboard">Sekuvo 键盘</string>
+    <string name="settings_keyboard_desc">如果启用键盘附加组件，你可以在任何应用的键盘切换器中选择 Sekuvo 键盘，并将已保存的信息直接输入到字段中。</string>
+    <string name="settings_keyboard_open">打开键盘设置</string>
+    <string name="settings_export_pw_title">设置备份密码</string>
+    <string name="settings_export_pw_desc">没有此密码就无法打开备份文件。请让它与主密码不同：备份密码会输入到电脑上，主密码永远不会接触电脑。</string>
+    <string name="settings_biometric_pin_title">将指纹与 PIN 绑定</string>
+    <string name="settings_biometric_pin_desc">指纹记录将用此 PIN 加密：解锁时会先要求指纹，再要求此 PIN。</string>
+    <string name="settings_label_pin">PIN</string>
+    <string name="settings_continue">继续</string>
+    <string name="settings_cancel">取消</string>
+    <string name="settings_label_password">密码</string>
+    <string name="settings_label_password_again">密码（再次输入）</string>
+    <string name="settings_ok">确定</string>
+    <string name="settings_label_backup_password">备份密码</string>
+    <string name="settings_import_merge">添加到现有条目</string>
+    <string name="settings_import_replace">替换全部</string>
+    <string name="settings_import_replace_warning">警告：所有现有条目将被删除，并替换为备份中的条目。</string>
+    <string name="settings_import_pw_missing">未输入备份密码。</string>
+    <string name="settings_import_confirm">恢复</string>
+    <string name="settings_label_current_password">当前密码</string>
+    <string name="settings_label_new_password">新密码</string>
+    <string name="settings_label_new_password_again">新密码（再次输入）</string>
+    <string name="settings_change">更改</string>
+    <string name="settings_pin_disable_desc">关闭 PIN 后，条目仅凭主密码或指纹即可打开。你无需记住 PIN：主密码就足够。之后需要重新启用指纹。</string>
+    <string name="settings_pin_set_desc">PIN 必须为 4-12 位数字。若忘记，仅凭主密码是不够的 — 请把 PIN 存放在安全的地方，就像对待备份密码一样。之后需要重新启用指纹。</string>
+    <string name="settings_label_master_password">主密码</string>
+    <string name="settings_label_current_pin">当前 PIN</string>
+    <string name="settings_label_pin_again">PIN（再次输入）</string>
+    <string name="settings_repair">修复</string>
+    <string name="settings_turn_off">关闭</string>
+    <string name="settings_set">设置</string>
+    <!-- transfer -->
+    <string name="transfer_title">从电脑传输 · 第 %1$d/2 步</string>
+    <string name="transfer_step1_steps">1. 在电脑上打开 aktar.html，如果不是中文界面请切换为中文，并将光标放在“备份密码”字段中。\n2. 使用下方按钮将密码同时输入到两个字段（中间会自动插入一个 Tab）。</string>
+    <string name="transfer_regenerate">生成新密码</string>
+    <string name="transfer_password_note">一个生成的一次性传输密码 — 你无需记住它，第 2 步会自动使用它。字母加数字：不受键盘布局差异影响。</string>
+    <string name="transfer_bt_write_both">💻 通过蓝牙同时输入到两个字段</string>
+    <string name="transfer_step2_steps">在电脑上：粘贴内容 →“加密并发布” → 用手机扫描二维码 → 页面上的“📋 复制”。然后回到这里接收信封。密码已在向导中备好 — 你不需要再次输入。</string>
+    <string name="transfer_envelope_label">加密信封</string>
+    <string name="transfer_char_count">%1$d 个字符</string>
+    <string name="transfer_scan_qr">扫描二维码</string>
+    <string name="transfer_from_clipboard">从剪贴板获取</string>
+    <string name="transfer_merge">添加到现有条目</string>
+    <string name="transfer_replace_all">替换全部</string>
+    <string name="transfer_replace_warning">警告：所有现有条目将被删除，并替换为信封中的条目。</string>
+    <string name="transfer_password_typed_next">密码已输入，继续 →</string>
+    <string name="transfer_envelope_empty">加密信封字段为空 — 请先在电脑上发布，扫描二维码，然后点击“从剪贴板获取”。</string>
+    <string name="transfer_importing">正在导入…</string>
+    <string name="transfer_import">导入</string>
+    <string name="transfer_back">← 返回</string>
+    <string name="transfer_cancel">取消</string>
+    <string name="transfer_bt_label">传输密码（同时输入两个字段，中间用 Tab）</string>
+    <!-- unlock -->
+    <string name="unlock_welcome_title">欢迎使用 Sekuvo</string>
+    <string name="unlock_slogan">你的安全密码库。</string>
+    <string name="unlock_locked_title">Sekuvo 已锁定</string>
+    <string name="unlock_setup_desc">设置一个主密码。你的所有数据都用由此密码派生的密钥加密。如果忘记它，数据将永久无法访问。</string>
+    <string name="unlock_enter_desc">输入主密码以继续。</string>
+    <string name="unlock_master_reminder">提醒：这次请输入主密码，而不是用指纹。忘记主密码会同时锁定密码库和所有备份。</string>
+    <string name="unlock_master_password_label">主密码</string>
+    <string name="unlock_password_label">密码</string>
+    <string name="unlock_password_again_label">密码（再次输入）</string>
+    <string name="unlock_create_vault">创建密码库</string>
+    <string name="unlock_have_backup">我有备份 — 恢复它</string>
+    <string name="unlock_restore_selected">设置完成后恢复 ✓（点击可取消）</string>
+    <string name="unlock_restore_hint">请先为此设备设置主密码。之后会立即让你选择备份文件并输入其备份密码；备份中的一切都将恢复。</string>
+    <string name="unlock_create_and_restore">创建并恢复</string>
+    <string name="unlock_open_button">解锁</string>
+    <string name="unlock_biometric_button">使用生物识别解锁</string>
+    <string name="unlock_pin_title">第二道门</string>
+    <string name="unlock_pin_desc">输入你的 PIN。没有此代码，条目无法解密 — 仅凭主密码是不够的。</string>
+    <string name="unlock_pin_label">PIN（%1$d-%2$d 位数字）</string>
+    <string name="unlock_pin_open">打开</string>
+    <string name="unlock_pin_cancel">取消</string>
+    <string name="unlock_generator_title">密码生成器</string>
+    <string name="unlock_generator_refresh">刷新</string>
+    <string name="unlock_generator_summary">长度：%1$d • 强度：~%2$d 位 %3$s</string>
+    <string name="unlock_generator_very_strong">（非常强）</string>
+    <string name="unlock_generator_strong">（强）</string>
+    <string name="unlock_generator_weak">（弱）</string>
+    <string name="unlock_generator_avoid_ambiguous">去除易混淆字符（l、1、O、0）</string>
+    <string name="unlock_generator_use">使用</string>
+    <string name="unlock_generator_copy">复制</string>
+    <string name="unlock_generator_close">关闭</string>
+    <!-- vm -->
+    <string name="vm_pin_repaired">PIN 记录已修复 · 现在密码库可用主密码打开</string>
+    <string name="vm_pin_repair_failed">无法修复：密码或 PIN 错误</string>
+    <string name="vm_master_password_too_short">主密码必须至少为 8 个字符</string>
+    <string name="vm_passwords_mismatch">两次密码不一致</string>
+    <string name="vm_wrong_password">密码错误</string>
+    <string name="vm_legacy_pin_vault">此密码库使用旧版 PIN 格式，需要用主密码 + PIN 修复。</string>
+    <string name="vm_key_undecryptable">无法解密密码库密钥（记录可能已损坏）。</string>
+    <string name="vm_biometric_stale">指纹记录早于此 PIN，已被删除。请用主密码解锁并重新启用指纹。</string>
+    <string name="vm_pin_biometric_off">PIN 输错次数过多，指纹解锁已关闭；请用主密码解锁。</string>
+    <string name="vm_pin_wrong">PIN 错误</string>
+    <string name="vm_key_unexpected_size">密码库密钥的大小异常；请尝试用主密码解锁。</string>
+    <string name="vm_pin_enable_failed">无法启用 PIN：密码错误，或 PIN 无效（4-12 位数字）</string>
+    <string name="vm_pin_enabled">PIN 已启用 · 请重新启用指纹</string>
+    <string name="vm_pin_disable_failed">无法关闭 PIN：主密码错误</string>
+    <string name="vm_pin_disabled">PIN 已关闭 · 请重新启用指纹</string>
+    <string name="vm_new_password_too_short">新密码必须至少为 8 个字符</string>
+    <string name="vm_master_password_changed">主密码已更改</string>
+    <string name="vm_current_password_wrong">当前密码错误</string>
+    <string name="vm_quick_on">可在键盘中免密码使用</string>
+    <string name="vm_quick_off">解锁前在键盘中隐藏</string>
+    <string name="vm_copied">已复制 %1$s（45 秒后自动清除）</string>
+    <string name="vm_backup_password_too_short">备份密码必须至少为 8 个字符</string>
+    <string name="vm_file_open_failed">无法打开文件</string>
+    <string name="vm_backup_saved">备份已保存</string>
+    <string name="vm_backup_failed">备份失败：%1$s — 请删除已创建的文件后重试。</string>
+    <string name="vm_vault_locked_retry">密码库已锁定 — 请用主密码解锁后重试。</string>
+    <string name="vm_pasted_text_empty">粘贴的文本为空</string>
+    <string name="vm_text_too_large">文本过大 — 这不可能是 Sekuvo 信封</string>
+    <string name="vm_pasted_is_link">这是一个链接，不是信封本身。请在手机浏览器中打开该链接，并复制其显示的文本。</string>
+    <string name="vm_not_an_envelope">这不是有效的 Sekuvo 加密信封 — 复制的文本可能不完整，或是其他内容。请复制页面上的全部文本。</string>
+    <string name="vm_envelope_empty">信封已打开但不含任何条目 — 可能发送方把字段留空了。你的密码库未受影响。</string>
+    <string name="vm_backup_password_wrong">备份密码错误</string>
+    <string name="vm_invalid_envelope">信封无效 — 文本可能复制不完整</string>
+    <string name="vm_import_failed">导入失败：%1$s</string>
+    <string name="vm_backup_empty">备份已打开但不含任何条目。你的密码库未受影响。</string>
+    <string name="vm_invalid_backup_file">备份文件无效</string>
+    <string name="vm_restore_failed">恢复失败：%1$s</string>
+    <string name="vm_biometric_enabled">指纹已启用</string>
+    <string name="vm_biometric_enable_failed">无法启用指纹</string>
+    <string name="vm_biometric_disabled">生物识别解锁已关闭</string>
+    <string name="vm_usage_log_cleared">使用记录已删除</string>
+    <string name="bt_sdp_name">Sekuvo 键盘</string>
+    <string name="bt_sdp_description">Sekuvo 安全按键传输</string>
+
+    <!-- 中文只有一种复数形式（other）。 -->
+    <plurals name="vm_import_added">
+        <item quantity="other">已添加 %1$d 个条目 · 剪贴板已清除</item>
+    </plurals>
+    <plurals name="vm_restored">
+        <item quantity="other">已恢复 %1$d 个条目</item>
+    </plurals>
+    <plurals name="vm_backup_saved_incomplete">
+        <item quantity="other">备份已保存，但有 %1$d 个条目无法读取而被略过（可能已损坏）。此备份不完整。</item>
+    </plurals>
+    <plurals name="log_pending_note">
+        <item quantity="other">有 %1$d 个事件发生在密码库锁定期间，尚未移入记录；密码库解锁后会显示在列表中。</item>
+    </plurals>
+    <plurals name="log_more_events">
+        <item quantity="other">…还有 %1$d 个事件（列表中仅显示前 200 个）。</item>
+    </plurals>
+    <plurals name="bt_countdown">
+        <item quantity="other">%1$d 秒后开始输入 — 请将光标放在电脑上正确的字段中！</item>
+    </plurals>
+    <plurals name="vm_pin_wrong_wait">
+        <item quantity="other">PIN 错误。请等待 %1$d 秒。</item>
+    </plurals>
+    <plurals name="vm_pin_locked_wait">
+        <item quantity="other">PIN 输错次数过多。请在 %1$d 秒后重试。</item>
+    </plurals>
+    <string name="bt_layout_uk">英式（UK）</string>
+    <string name="bt_layout_de">德语（QWERTZ）</string>
+    <string name="bt_layout_fr">法语（AZERTY）</string>
+    <string name="bt_layout_es">西班牙语</string>
+    <string name="bt_layout_it">意大利语</string>
+    <string name="bt_layout_tr_f">土耳其语 F</string>
+    <string name="bt_layout_pl">波兰语（程序员）</string>
+    <string name="bt_layout_pt">葡萄牙语（葡萄牙）</string>
+    <string name="bt_layout_se">瑞典语 / 芬兰语</string>
+    <string name="bt_layout_br">巴西式（ABNT2）</string>
+    <string name="bt_layout_ch">瑞士德语（QWERTZ）</string>
+    <string name="bt_layout_nl">荷兰语</string>
+    <string name="bt_layout_cz">捷克语（QWERTZ）</string>
+    <string name="bt_layout_hu">匈牙利语（QWERTZ）</string>
+    <string name="bt_layout_no">挪威语</string>
+    <string name="bt_layout_be">比利时（AZERTY）</string>
+    <string name="bt_layout_dv">Dvorak（美式）</string>
+    <string name="bt_layout_ck">Colemak</string>
+    <string name="bt_layout_bepo">法语（BÉPO）</string>
+    <!-- 应用语言与键盘布局选择 -->
+    <string name="settings_language">语言</string>
+    <string name="settings_language_desc">选择应用语言，仅对 Sekuvo 生效，不影响手机的其他部分。</string>
+    <string name="settings_lang_system">系统语言</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_lang_es">Español</string>
+    <string name="settings_lang_hi">हिन्दी</string>
+    <string name="settings_lang_ar">العربية</string>
+    <string name="settings_lang_zh">简体中文</string>
+    <string name="settings_layouts">电脑键盘布局</string>
+    <string name="settings_layouts_summary">已开启 %1$d / %2$d 种布局</string>
+    <string name="settings_expand">展开</string>
+    <string name="settings_collapse">收起</string>
+    <string name="settings_layouts_desc">选择你实际使用的布局。只有勾选的布局会出现在向电脑输入密码时的选项中 — 其余的不会打扰你。</string>
+    <string name="settings_layouts_min">至少保留一种布局开启。</string>
+
+    <!-- 信息页面：关于 / 隐私 / 指南 -->
+    <string name="info_about_title">关于</string>
+    <string name="info_privacy_title">隐私政策</string>
+    <string name="info_guide_title">使用指南</string>
+    <string name="info_about_version">版本</string>
+    <string name="info_about_package">包名</string>
+    <string name="info_about_license">许可证</string>
+    <string name="info_about_developer">开发者</string>
+    <string name="info_about_website">打开 sekuvo.com</string>
+    <string name="info_about_source">GitHub 上的源代码</string>
+    <string name="info_about_contact">contact@sekuvo.com</string>
+    <string name="info_about_what_title">这是一款什么样的应用</string>
+    <string name="info_about_what_body">一款完全离线的密码、银行卡与笔记密码库。它不请求互联网权限，因此在技术上无法将你的数据发送到任何地方 — 无账户、无云端、无同步、无数据分析。所有内容都用由主密码派生的密钥以 AES-256-GCM 加密。</string>
+
+    <string name="privacy_s1_title">概要</string>
+    <string name="privacy_s1_body">Sekuvo 不收集、不传输、也不分享任何数据。它是一款离线密码库，不请求互联网权限，因此在技术上无法将你的数据发送到任何地方。</string>
+    <string name="privacy_s2_title">你的数据存放在哪里</string>
+    <string name="privacy_s2_body">标题、用户名、密码、笔记和使用记录都留在此设备上，并用由主密码派生的密钥加密。应用不会将任何内容上传、同步或备份到任何服务器。</string>
+    <string name="privacy_s3_title">权限及其用途</string>
+    <string name="privacy_s3_body">相机 — 仅用于扫描你选择扫描的二维码，处理过程在设备本地完成。\n生物识别 — 仅用于通过 Android 生物识别系统解锁密码库。Sekuvo 从不查看或存储你的指纹或面部数据。\n蓝牙 — 仅在你要求 Sekuvo 向附近电脑输入密码时使用。只会发送你选择的字符，且只发给你配对过的设备。</string>
+    <string name="privacy_s4_title">备份与传输</string>
+    <string name="privacy_s4_body">这些操作仅在你主动发起时才会发生。它们会生成一个由你设置的密码保护的加密文件或二维码，并只保存或显示在你指定的位置。应用绝不会自行将其发送到任何地方。</string>
+    <string name="privacy_s5_title">儿童</string>
+    <string name="privacy_s5_body">Sekuvo 不收集任何人（包括儿童）的数据。</string>
+    <string name="privacy_s6_title">联系方式与完整文本</string>
+    <string name="privacy_s6_body">问题咨询：contact@sekuvo.com\n本政策的权威版本发布于 sekuvo.com/privacy/，如有差异以该版本为准。</string>
+
+    <string name="guide_s1_title">首次运行</string>
+    <string name="guide_s1_body">你会设置一个主密码。所有内容都用由此密码派生的密钥加密，因此它是唯一无法找回的东西 — 请将它记在安全的地方。\n从其他手机迁移？在欢迎界面点击“我有备份 — 恢复它”：你仍需为此设备设置主密码，之后文件选择器会自动打开。</string>
+    <string name="guide_s2_title">可以保存什么</string>
+    <string name="guide_s2_body">账号/密码、日常信息（姓名、电话、邮箱、地址）、银行卡，以及安全笔记 — 笔记还分脚本、密钥、恢复代码和配置文件等子类型。账号和日常信息条目还支持无限量的自定义字段，加密方式与内置字段完全相同。</string>
+    <string name="guide_s3_title">自动填充</string>
+    <string name="guide_s3_body">设置 → 启用自动填充 → 在系统列表中选择 Sekuvo。该列表在三星和 Android 14+ 上叫“密码、通行密钥和自动填充 → 首选服务”，在原生 Android 上叫“自动填充服务”。\n之后，点击登录或银行卡字段就会显示你的条目。密码库锁定时，系统不会获得任何数据。</string>
+    <string name="guide_s4_title">Sekuvo 键盘</string>
+    <string name="guide_s4_body">设置 → 启用键盘，需要时在键盘切换器中选择“Sekuvo 键盘”。它会将已保存的值直接输入到任意字段，支持搜索，最近使用的排在最前。锁定时只显示你标记为快速访问的条目。</string>
+    <string name="guide_s5_title">通过蓝牙输入到电脑</string>
+    <string name="guide_s5_body">打开条目，点击字段旁的 💻 图标，并保持该屏幕开启 — 只有在此期间手机才会宣告自己是一个键盘。在电脑上，将手机添加为新的蓝牙设备并确认配对码。回到手机，选择你的电脑、选择电脑的键盘布局、点击目标字段，然后点击“输入”。\n显示已连接但什么都没输入？通常是电脑之前把手机当作普通手机配对过，因此从未为它启用键盘服务。请在双方都移除配对，打开 💻 屏幕，从电脑端重新开始配对。在 Windows 上，之后设备管理器 → 人体学输入设备中应会出现“蓝牙 HID”设备。在 macOS 上，如果弹出键盘设置助理，请将其关闭。\n可用速度测试作诊断：完全无输入是配对问题，字符错乱是布局问题，中途中断是速度问题。</string>
+    <string name="guide_s6_title">锁定</string>
+    <string name="guide_s6_body">屏幕熄灭的瞬间密码库即锁定 — 折叠屏手机合上也算。屏幕保持点亮时离开应用不会锁定它：应用、键盘和自动填充共享同一个会话。</string>
+    <string name="guide_s7_title">备份</string>
+    <string name="guide_s7_body">系统备份在设计上被禁用，因此你的密码库离开手机只有一条路径：设置 → 创建加密备份。请使用与主密码不同的备份密码。生成的 .vaultbak 文件加上这个密码，可以在任何手机上恢复一切，即使经过恢复出厂设置也一样。</string>
+    <string name="guide_s8_title">从电脑带回密文</string>
+    <string name="guide_s8_body">➕ 按钮提供“通过二维码导入”和“从文本导入”。⇄ 向导会一次完成两件事：生成一个一次性传输密码，通过蓝牙将其输入到电脑，然后通过扫描二维码或从剪贴板取回信封 — 并用同一个密码解密它。\n电脑端工具是一个下载文件，而不是一个网站：请从项目的 Releases 页面获取 aktar.html，核对其 SHA-256，然后从你自己的硬盘打开它。此网站绝不会向你索要密文。</string>
+    <string name="settings_info_section">帮助与信息</string>
+    <string name="edit_email_invalid">请检查该地址 — 需要包含 @ 和类似 example.com 的域名</string>
+    <string name="edit_expiry_invalid">请按 MMYY 格式输入月份和年份（月份 01–12）</string>
+    <string name="edit_iban_invalid">此 IBAN 的校验位不匹配 — 可能有一位数字输错了</string>
+    <string name="edit_iban_confirm_title">此 IBAN 似乎输错了</string>
+    <string name="edit_iban_confirm_text">此 IBAN 的校验位不匹配，因此可能有一位数字是错的。你仍可以保存它 — 但如果确实是笔误，要等到转账失败才会发现。</string>
+    <string name="edit_iban_confirm_save">仍然保存</string>
+    <string name="edit_iban_confirm_fix">返回修正</string>
+</resources>
