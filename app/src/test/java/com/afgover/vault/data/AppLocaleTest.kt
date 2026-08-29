@@ -22,7 +22,7 @@ class AppLocaleTest {
     /** Tanınmayan etiket kullanıcıyı kilitlemez, sistem diline düşer. */
     @Test
     fun `bilinmeyen etiket sistem diline duser`() {
-        assertEquals(AppLocale.Option.SYSTEM, AppLocale.Option.of("de"))
+        assertEquals(AppLocale.Option.SYSTEM, AppLocale.Option.of("xx"))
         assertEquals(AppLocale.Option.SYSTEM, AppLocale.Option.of("bozuk"))
     }
 

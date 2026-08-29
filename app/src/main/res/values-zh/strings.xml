@@ -490,6 +490,7 @@
     <string name="settings_lang_ru">Русский</string>
     <string name="settings_lang_ur">اردو</string>
     <string name="settings_lang_id">Bahasa Indonesia</string>
+    <string name="settings_lang_de">Deutsch</string>
     <string name="settings_layouts">电脑键盘布局</string>
     <string name="settings_layouts_summary">已开启 %1$d / %2$d 种布局</string>
     <string name="settings_expand">展开</string>
