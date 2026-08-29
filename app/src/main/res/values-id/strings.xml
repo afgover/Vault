@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand name: not translated. -->
+    <string name="app_name" translatable="false">Sekuvo</string>
+    <string name="ime_label">Keyboard Sekuvo</string>
+    <string name="autofill_label" translatable="false">Sekuvo</string>
+
+    <!-- Built-in field labels. These are DISPLAY text only: what gets stored
+         in the usage log and the clipboard label is the stable key, never
+         this string (otherwise the log would change language mid-history). -->
+    <string name="field_full_name">Nama lengkap</string>
+    <string name="field_username">Nama pengguna</string>
+    <string name="field_password">Kata sandi</string>
+    <string name="field_url">Situs / aplikasi</string>
+    <string name="field_phone">Telepon</string>
+    <string name="field_email">Email</string>
+    <string name="field_address">Alamat</string>
+    <string name="field_cardholder">Pemegang kartu</string>
+    <string name="field_card_number">Nomor kartu</string>
+    <string name="field_expiry">Masa berlaku</string>
+    <string name="field_cvv">CVV</string>
+    <string name="field_iban">IBAN</string>
+    <string name="field_notes">Catatan</string>
+
+    <!-- Entry types -->
+    <string name="type_login">Akun / Kata sandi</string>
+    <string name="type_everyday">Sehari-hari</string>
+    <string name="type_card">Kartu</string>
+    <string name="type_note">Catatan aman</string>
+
+    <!-- Note subtypes -->
+    <string name="note_kind_general">Catatan umum</string>
+    <string name="note_kind_script">Skrip / perintah (.sh)</string>
+    <string name="note_kind_key">Kunci / sertifikat (.pem)</string>
+    <string name="note_kind_fingerprint">Sidik jari / jangkar kepercayaan</string>
+    <string name="note_kind_recovery">Kode pemulihan</string>
+    <string name="note_kind_config">Konfigurasi (.env, json)</string>
+
+    <!-- Sort options -->
+    <string name="sort_title_asc">Judul (A→Z)</string>
+    <string name="sort_title_desc">Judul (Z→A)</string>
+    <string name="sort_updated_desc">Baru diperbarui</string>
+    <string name="sort_created_desc">Baru ditambahkan</string>
+    <string name="sort_type">Berdasarkan jenis</string>
+    <string name="sort_manual">Urutan sendiri (seret)</string>
+
+    <!-- Usage log event kinds -->
+    <string name="usage_created">Dibuat</string>
+    <string name="usage_updated">Diubah</string>
+    <string name="usage_copied">Disalin ke papan klip</string>
+    <string name="usage_bt_typed">Diketik di komputer</string>
+    <string name="usage_keyboard_typed">Diketik dari keyboard</string>
+    <string name="usage_quick_on">Akses cepat aktif</string>
+    <string name="usage_quick_off">Akses cepat nonaktif</string>
+
+    <!-- Bluetooth keyboard: layouts and speeds -->
+    <string name="bt_layout_us">Amerika (Inggris)</string>
+    <string name="bt_layout_tr">Turki Q</string>
+    <string name="bt_speed_safe">Aman</string>
+    <string name="bt_speed_fast">Cepat</string>
+    <string name="bt_speed_turbo">Sangat cepat</string>
+
+    <!-- Bluetooth keyboard: errors reported from a context-free manager -->
+    <string name="bt_err_off">Bluetooth mati. Aktifkan Bluetooth dulu.</string>
+    <string name="bt_err_unsupported">Ponsel ini tidak mendukung fitur keyboard Bluetooth (HID).</string>
+    <string name="bt_err_register">Gagal mendaftarkan HID — mungkin ponsel tidak mendukungnya.</string>
+    <string name="bt_err_connect">Tidak bisa memulai koneksi. Apakah Bluetooth perangkat lain aktif?</string>
+    <string name="bt_err_no_link">Tidak ada koneksi — pilih perangkat lagi.</string>
+    <string name="bt_err_queue">Antrean pengiriman Bluetooth berhenti merespons; pengetikan berhenti di karakter %1$d. Pilih kecepatan yang lebih rendah.</string>
+
+    <!-- Entry too large -->
+    <string name="entry_too_large">"%1$s" terlalu besar: %2$d KB (batas %3$d KB). Pisahkan teks panjang, atau simpan sebagai file di komputer.</string>
+    <string name="ime_write_field">Ketik %1$s</string>
+
+    <!-- backup -->
+    <string name="backup_autofill_form_unreadable">Formulir tidak bisa dibaca</string>
+    <string name="backup_autofill_locked_save">Brankas terkunci. Buka Sekuvo dulu untuk menyimpan.</string>
+    <string name="backup_autofill_nothing_to_save">Tidak ada informasi yang ditemukan untuk disimpan</string>
+    <string name="backup_autofill_save_failed">Gagal menyimpan: %1$s</string>
+    <string name="backup_autofill_unlock_to_fill">Buka kunci untuk mengisi</string>
+    <!-- bt -->
+    <string name="bt_duration_seconds">%1$d dtk</string>
+    <string name="bt_duration_minutes">%1$d mnt %2$d dtk</string>
+    <string name="bt_unsupported_title">Tidak didukung</string>
+    <string name="bt_unsupported_body">Fitur keyboard Bluetooth memerlukan Android 9 atau lebih baru.</string>
+    <string name="bt_ok">OK</string>
+    <string name="bt_stopped_summary">Berhenti: %1$d / %2$d karakter diketik. Teks di komputer TIDAK LENGKAP — hapus dan mulai lagi.</string>
+    <string name="bt_aborted_summary">Pengetikan terputus: %1$d / %2$d karakter. Teks di komputer TIDAK LENGKAP — hapus, pilih kecepatan lebih rendah, dan coba lagi.</string>
+    <string name="bt_speed_result">%1$d karakter, %2$s (%3$d karakter/dtk)</string>
+    <string name="bt_unknown_device">perangkat tidak dikenal</string>
+    <string name="bt_untyped_warning">Karakter ini tidak bisa diketik dengan tata letak ini: %1$s — coba tata letak lain.</string>
+    <string name="bt_done_summary">✓ %1$d karakter diketik — %2$s, %3$d karakter/dtk. Periksa jumlah karakter di komputer.</string>
+    <string name="bt_title">Mengetik di komputer: %1$s</string>
+    <string name="bt_permission_required">Izin Bluetooth diperlukan. Fitur ini tidak bisa berfungsi tanpanya.</string>
+    <string name="bt_preparing">Menyiapkan keyboard Bluetooth…</string>
+    <string name="bt_pick_computer">Pilih komputermu (harus sudah dipasangkan dengan ponsel melalui Bluetooth):</string>
+    <string name="bt_no_bonded_devices">Tidak ada perangkat yang dipasangkan. Pasangkan komputermu dari pengaturan Bluetooth ponsel, lalu coba lagi.</string>
+    <string name="bt_connecting">Menghubungkan ke %1$s…</string>
+    <string name="bt_connected">✓ %1$s terhubung</string>
+    <string name="bt_layout_heading">Tata letak keyboard KOMPUTERMU (bukan ponsel):</string>
+    <string name="bt_layout_warning">Komputer yang menafsirkan kode tombol — memilih tata letak yang salah mengubah karakter seperti @ \" ? menjadi karakter lain tanpa disadari.</string>
+    <string name="bt_selected_layout">Tata letak terpilih: %1$s</string>
+    <string name="bt_sensitive_chars">Teks ini berisi karakter yang sensitif terhadap tata letak: %1$s — disarankan mengetik tes sebelum mengirim.</string>
+    <string name="bt_test_done">✓ Tes berhasil diketik — coba lagi</string>
+    <string name="bt_test_first">🧪 Ketik tes dulu (disarankan)</string>
+    <string name="bt_test_expected">Komputer harus menampilkan PERSIS ini:\n%1$s\nJika berbeda, pilih tata letak lain di atas dan ulangi tes.</string>
+    <string name="bt_speed_heading">Kecepatan mengetik:</string>
+    <string name="bt_speed_desc">Tombol dikirim satu per satu. Jika kecepatan melebihi kemampuan koneksi, pengetikan berhenti (tidak ada karakter yang hilang) — gunakan tes kecepatan untuk mengetahui mana yang berfungsi.</string>
+    <string name="bt_estimate">%1$d karakter ≈ %2$s</string>
+    <string name="bt_speed_test_button">⏱ Tes kecepatan (%1$d karakter)</string>
+    <string name="bt_speed_result_detail">%1$s\nKomputer harus menampilkan 10 kelompok yang dipisahkan spasi, masing-masing persis %2$s — jika hanya satu yang berbeda, pilih kecepatan lebih rendah berikutnya dan ulangi tes.</string>
+    <string name="bt_typing_progress">Mengetik… %1$d / %2$d karakter</string>
+    <string name="bt_remaining">~%1$s tersisa — jangan pindahkan kursor di komputer sampai selesai.</string>
+    <string name="bt_before_start">Letakkan kursor di kolom tujuan di komputer, lalu tekan tombol. Pengetikan dimulai 3 detik kemudian.</string>
+    <string name="bt_countdown_short">%1$d…</string>
+    <string name="bt_type">Ketik</string>
+    <string name="bt_stop">Berhenti</string>
+    <string name="bt_close">Tutup</string>
+    <!-- detail -->
+    <string name="detail_back">Kembali</string>
+    <string name="detail_edit">Ubah</string>
+    <string name="detail_quick_title">Gunakan di keyboard tanpa kata sandi</string>
+    <string name="detail_quick_on">Muncul di Keyboard Sekuvo bahkan saat brankas terkunci; perlindungannya hanya sekuat kunci layar ponselmu.</string>
+    <string name="detail_quick_off">Hanya tersedia saat brankas tidak terkunci.</string>
+    <string name="detail_dates">Ditambahkan: %1$s · Diubah: %2$s</string>
+    <string name="detail_password_changed">Kata sandi terakhir diubah: %1$s</string>
+    <string name="detail_usage_title">Penggunaan terbaru</string>
+    <string name="detail_usage_desc">Ke mana entri ini pernah dikirim dari dalam aplikasi. Nilai yang dibaca dari layar, difoto, atau dipilih lewat isi otomatis TIDAK MUNCUL di sini — log hanya tahu apa yang dilakukan aplikasi itu sendiri.</string>
+    <string name="detail_usage_empty">Belum ada penggunaan.</string>
+    <string name="detail_show_less">Tampilkan lebih sedikit</string>
+    <string name="detail_show_all">Tampilkan semua (%1$d)</string>
+    <string name="detail_hide">Sembunyikan</string>
+    <string name="detail_show">Tampilkan</string>
+    <string name="detail_copy">Salin</string>
+    <string name="detail_type_to_pc">Ketik di komputer</string>
+    <string name="detail_show_fingerprint">Tampilkan sidik jari SHA-256</string>
+    <string name="detail_fingerprint_len">Sidik jari SHA-256 · %1$d karakter</string>
+    <string name="detail_fingerprint_len_short">Sidik jari SHA-256 · %1$d karakter · nilai pendek</string>
+    <string name="detail_fingerprint_warning">Hash dari nilai pendek bisa dibalik dengan brute force — jangan bagikan sidik jari ini.</string>
+    <string name="detail_fingerprint_verify">Di komputer: shasum -a 256 file\n(jika ditempel manual, baris baru terakhir mungkin hilang: printf \'%1$s\' \"$(cat file)\" | shasum -a 256)</string>
+    <string name="detail_copy_fingerprint">Salin sidik jari</string>
+    <!-- edit -->
+    <string name="edit_title_new">Baru: %1$s</string>
+    <string name="edit_title_edit">Ubah</string>
+    <string name="edit_back">Kembali</string>
+    <string name="edit_delete">Hapus</string>
+    <string name="edit_field_title">Judul</string>
+    <string name="edit_field_username">Nama pengguna</string>
+    <string name="edit_generate_password">Buat kata sandi</string>
+    <string name="edit_field_card_number">Nomor kartu</string>
+    <string name="edit_field_expiry">Masa berlaku (BB/TT)</string>
+    <string name="edit_field_iban">IBAN (opsional)</string>
+    <string name="edit_note_kind">Jenis catatan</string>
+    <string name="edit_custom_fields">Kolom tambahan</string>
+    <string name="edit_field_name">Nama kolom</string>
+    <string name="edit_remove_field">Hapus kolom</string>
+    <string name="edit_field_value">Nilai</string>
+    <string name="edit_add_field">+ Tambah kolom</string>
+    <string name="edit_field_notes">Catatan</string>
+    <string name="edit_quick_title">Gunakan di keyboard tanpa kata sandi</string>
+    <string name="edit_quick_desc">Jika diaktifkan, entri ini muncul di Keyboard Sekuvo bahkan saat brankas terkunci. Saat itu perlindungannya hanya sekuat kunci layar ponselmu; biarkan nonaktif untuk data sensitif seperti kata sandi.</string>
+    <string name="edit_tags">Label</string>
+    <string name="edit_new_tag">+ Baru</string>
+    <string name="edit_save">Simpan</string>
+    <string name="edit_discard_title">Perubahan belum disimpan</string>
+    <string name="edit_discard_text">Kamu akan keluar tanpa menyimpan apa yang sudah dimasukkan. Yakin?</string>
+    <string name="edit_discard_confirm">Keluar tanpa menyimpan</string>
+    <string name="edit_discard_cancel">Kembali mengedit</string>
+    <string name="edit_delete_title">Hapus entri</string>
+    <string name="edit_delete_text">"%1$s" akan dihapus secara permanen. Yakin?</string>
+    <string name="edit_cancel">Batal</string>
+    <!-- home -->
+    <string name="home_sort_cd">Urutan: %1$s</string>
+    <string name="home_selected">Terpilih</string>
+    <string name="home_transfer_cd">Ambil dari komputer</string>
+    <string name="home_generator_cd">Pembuat kata sandi</string>
+    <string name="home_lock_cd">Kunci</string>
+    <string name="home_settings_cd">Pengaturan</string>
+    <string name="home_import_qr">Impor lewat QR</string>
+    <string name="home_import_text">Impor dari teks</string>
+    <string name="home_add_cd">Tambah</string>
+    <string name="home_search_hint">Cari entri</string>
+    <string name="home_manage_tags_cd">Kelola label</string>
+    <string name="home_manual_hint">Urutan sendiri: tahan pegangan ⠿ pada baris dan seret.</string>
+    <string name="home_empty_vault">Brankasmu siap — tambahkan entri pertama dengan tombol + di kanan bawah.</string>
+    <string name="home_empty_filter">Tidak ada entri yang cocok dengan filter ini.</string>
+    <string name="home_drag_cd">Seret</string>
+    <string name="home_tag_new">Label baru</string>
+    <string name="home_tag_edit">Ubah label</string>
+    <string name="home_tag_name">Nama</string>
+    <string name="home_selected_color">Warna terpilih</string>
+    <string name="home_save">Simpan</string>
+    <string name="home_cancel">Batal</string>
+    <string name="home_tags_title">Label</string>
+    <string name="home_tags_empty">Belum ada label. Kamu bisa menambahkannya di bawah.</string>
+    <string name="home_edit_cd">Ubah</string>
+    <string name="home_delete">Hapus</string>
+    <string name="home_tag_add_new">+ Label baru</string>
+    <string name="home_close">Tutup</string>
+    <string name="home_tag_delete_title">Hapus label</string>
+    <string name="home_tag_delete_msg">"%1$s" akan dihapus dan dilepas dari semua entri yang memilikinya. Entri itu sendiri tidak dihapus.</string>
+    <!-- ime -->
+    <string name="ime_switch_keyboard">ABC</string>
+    <string name="ime_locked_quick_only">Brankas terkunci — hanya entri akses cepat.</string>
+    <string name="ime_unlock_all">🔓 Buka kunci (untuk semua entri)</string>
+    <string name="ime_no_quick_entries">Tidak ada entri yang ditandai untuk akses cepat.</string>
+    <string name="ime_no_entries">Tidak ada entri.</string>
+    <string name="ime_no_match">Tidak ada entri yang cocok dengan "%1$s".</string>
+    <string name="ime_back_to_list">← %1$s</string>
+    <string name="ime_search_hint">Cari…</string>
+    <!-- log -->
+    <string name="log_title">Log penggunaan</string>
+    <string name="log_scope_note">Log hanya melihat apa yang dilakukan aplikasi itu sendiri: nilai yang dibaca dari layar, difoto, atau diketik manual tidak meninggalkan jejak. Entri yang kamu pilih saat isi otomatis juga tidak bisa dicatat, karena Android tidak memberitahukannya ke aplikasi. Log ini bisa dihapus saat brankas tidak terkunci — ini bukan catatan yang kebal terhadap perubahan.</string>
+    <string name="log_filter_by_target">Filter berdasarkan tujuan:</string>
+    <string name="log_filter_all">Semua</string>
+    <string name="log_empty">Log kosong.</string>
+    <string name="log_empty_for_target">Tidak ada entri yang dikirim ke tujuan ini.</string>
+    <string name="log_deleted_entry">(entri dihapus)</string>
+    <string name="log_entries_to_target">Entri yang dikirim ke "%1$s": %2$s</string>
+    <string name="log_clear_confirm">Hapus seluruh log? Ini tidak bisa dibatalkan; entri itu sendiri tidak terpengaruh.</string>
+    <string name="log_clear_yes">Ya, hapus</string>
+    <string name="log_cancel">Batal</string>
+    <string name="log_close">Tutup</string>
+    <string name="log_clear">Hapus log</string>
+    <!-- main -->
+    <string name="main_biometric_needs_pin">PIN Sekuvo diperlukan untuk menyimpan data sidik jari</string>
+    <string name="main_biometric_enable_failed">Gagal mengaktifkan sidik jari: %1$s</string>
+    <string name="main_biometric_enroll_title">Aktifkan buka kunci biometrik</string>
+    <string name="main_cancel">Batal</string>
+    <string name="main_biometric_offer_title">Buka kunci dengan sidik jari</string>
+    <string name="main_biometric_offer_body">Alih-alih mengetik kata sandi utama setiap kali membuka brankas, kamu bisa menggunakan sidik jari. Kata sandi utama tidak hilang: selalu berfungsi saat dibutuhkan, dan itu juga yang membuka cadanganmu — jangan sampai lupa.</string>
+    <string name="main_enable">Aktifkan</string>
+    <string name="main_password_for_now">Kata sandi untuk kali ini</string>
+    <string name="main_biometric_invalidated">Buka kunci sidik jari sudah tidak valid (misalnya sidik jari baru ditambahkan). Buka kunci dengan kata sandi.</string>
+    <string name="main_biometric_decrypt_failed">Sidik jari terverifikasi, tapi kunci gagal didekripsi. Buka kunci dengan kata sandi.</string>
+    <string name="main_unlock_title">Buka kunci Sekuvo</string>
+    <string name="main_use_password">Gunakan kata sandi</string>
+    <string name="main_hide">Sembunyikan</string>
+    <string name="main_show">Tampilkan</string>
+    <!-- paste -->
+    <string name="paste_title_qr">Impor lewat QR</string>
+    <string name="paste_title_text">Impor dari teks</string>
+    <string name="paste_qr_ready">✓ QR dipindai · amplop terenkripsi %1$d karakter diterima.\nSekarang masukkan hanya **kata sandi cadangan**.</string>
+    <string name="paste_intro">Tempel teks dari halaman atau ketuk "Ambil dari papan klip". Teks ini terenkripsi; kamu akan memasukkan kata sandinya di kolom berikutnya.</string>
+    <string name="paste_label_envelope">Amplop terenkripsi</string>
+    <string name="paste_char_count">%1$d karakter</string>
+    <string name="paste_btn_clipboard">Ambil dari papan klip</string>
+    <string name="paste_label_backup_password">Kata sandi cadangan</string>
+    <string name="paste_mode_merge">Tambahkan ke yang sudah ada</string>
+    <string name="paste_mode_replace">Ganti semua</string>
+    <string name="paste_replace_warning">Peringatan: semua entri yang ada akan dihapus dan digantikan oleh entri dari amplop.</string>
+    <string name="paste_err_envelope_empty">Kolom amplop terenkripsi kosong — tempel dengan "Ambil dari papan klip".</string>
+    <string name="paste_err_password_required_qr">Kata sandi cadangan diperlukan: kata sandi yang kamu masukkan saat mengenkripsi amplop di komputer.</string>
+    <string name="paste_err_password_missing">Kata sandi cadangan belum dimasukkan.</string>
+    <string name="paste_btn_importing">Mengimpor…</string>
+    <string name="paste_btn_import">Impor</string>
+    <string name="paste_btn_cancel">Batal</string>
+    <!-- qr -->
+    <string name="qr_status_aim">Arahkan kode QR ke dalam bingkai</string>
+    <string name="qr_status_done">Selesai</string>
+    <string name="qr_status_received">%1$d/%2$d diterima</string>
+    <string name="qr_status_frames_mismatch">Bingkai tidak cocok, mulai lagi</string>
+    <string name="qr_permission_rationale">Izin kamera diperlukan. Gambar tidak pernah keluar dari perangkat: dekoder ada di dalam aplikasi, yang tidak memiliki izin jaringan.</string>
+    <string name="qr_grant_in_settings">Beri izin di pengaturan</string>
+    <string name="qr_grant_permission">Beri izin</string>
+    <string name="qr_camera_analysis">Analisis kamera: %1$s · dekatkan kode hingga mengisi setidaknya setengah layar</string>
+    <string name="qr_missing_frames">Bingkai yang hilang: %1$s</string>
+    <string name="qr_cancel">Batal</string>
+    <!-- settings -->
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_back">Kembali</string>
+    <string name="settings_appearance">Tampilan</string>
+    <string name="settings_sort_moved">Pengurutan sudah dipindahkan ke layar utama: pilih dari ikon ⇅ di samping judul, dan berlaku baik di daftar maupun di Keyboard Sekuvo.\nUrutan saat ini: %1$s</string>
+    <string name="settings_backup">Cadangan</string>
+    <string name="settings_backup_desc">File cadangan dienkripsi dengan AES-256 dan hanya bisa dibuka dengan kata sandi cadangan. Kamu bisa menyimpannya di mana saja — Drive, kartu SD, dll.; bahkan jika ponsel dihapus total, file dan kata sandi bersama-sama memulihkan semuanya.</string>
+    <string name="settings_backup_export">Buat cadangan terenkripsi</string>
+    <string name="settings_backup_restore">Pulihkan dari cadangan</string>
+    <string name="settings_import_paste">Impor dari teks (tempel)</string>
+    <string name="settings_usage_log">Log penggunaan</string>
+    <string name="settings_usage_log_desc">Kolom mana dari entri mana yang pergi ke mana, dan kapan — ke papan klip, ke komputer, atau lewat keyboard.</string>
+    <string name="settings_usage_log_open">Buka log penggunaan</string>
+    <string name="settings_security">Keamanan</string>
+    <string name="settings_locking">Penguncian</string>
+    <string name="settings_locking_desc">Brankas terkunci saat layar mati; kunci dihapus dari memori. Selama layar tetap menyala, kamu tidak akan diminta kata sandi atau sidik jari lagi.\n\nEntri yang ditandai "Gunakan di keyboard tanpa kata sandi" juga bisa digunakan saat brankas terkunci; kamu bisa mengaktifkan atau menonaktifkan tanda ini dari layar setiap entri.</string>
+    <string name="settings_biometric_disable">Nonaktifkan buka kunci biometrik</string>
+    <string name="settings_biometric_enable">Aktifkan buka kunci biometrik</string>
+    <string name="settings_pin_heading">PIN (pintu kedua untuk sidik jari)</string>
+    <string name="settings_pin_legacy_warning">⚠ PIN ini disiapkan di versi lama dan tidak kompatibel dengan versi ini: entri tidak bisa dibuka, dan PIN tidak bisa dinonaktifkan. Perbaiki dengan kata sandi utama + PIN.</string>
+    <string name="settings_pin_on_desc">Aktif: setelah sidik jarimu terbaca, PIN diminta. Tidak diminta saat membuka kunci dengan kata sandi utama — kata sandi itu sudah menjadi rahasia yang kuat.</string>
+    <string name="settings_pin_off_desc">Opsional. Jika diaktifkan, data sidik jari dienkripsi dengan PIN, yang diminta setelah sidik jari saat membuka kunci. Bawaan: nonaktif.\nUrutan penting: siapkan PIN dulu, baru aktifkan sidik jari.</string>
+    <string name="settings_pin_repair">Perbaiki data PIN</string>
+    <string name="settings_pin_turn_off">Nonaktifkan PIN</string>
+    <string name="settings_pin_set">Siapkan PIN</string>
+    <string name="settings_reminder_heading">Pengingat kata sandi utama</string>
+    <string name="settings_reminder_desc">Selama kamu menggunakan sidik jari, kata sandi utama tidak diketik selama berbulan-bulan dan akhirnya terlupakan — padahal itu juga yang membuka cadanganmu. Sekali dalam jangka waktu pilihanmu, kata sandi diminta alih-alih sidik jari. Bawaan: tidak pernah.</string>
+    <string name="settings_reminder_never">Tidak pernah</string>
+    <string name="settings_reminder_days">%1$d hari</string>
+    <string name="settings_change_password">Ubah kata sandi utama</string>
+    <string name="settings_autofill">Isi otomatis</string>
+    <string name="settings_autofill_on_desc">Aktif. Saat menyentuh formulir masuk atau kartu di aplikasi dan browser, entri Sekuvo-mu muncul sebagai pilihan pengisian. Jika brankas terkunci, layar buka kunci muncul dulu; tidak ada nilai yang diberikan ke sistem selama terkunci.</string>
+    <string name="settings_autofill_off_desc">Jika diaktifkan, menyentuh formulir masuk atau kartu di aplikasi dan browser akan langsung menawarkan entri Sekuvo-mu sebagai pilihan pengisian. Ini juga menawarkan untuk menyimpan detail yang baru dimasukkan ke Sekuvo.\n\nTombol di bawah membuka pengaturan sistem. Nama daftar yang terbuka berbeda-beda tergantung perangkat ("Layanan pilihan", "Layanan isi otomatis", atau "Kata sandi, kunci sandi &amp; isi otomatis"); pilih saja Sekuvo dari daftar itu.</string>
+    <string name="settings_autofill_open">Buka pengaturan isi otomatis</string>
+    <string name="settings_autofill_enable">Aktifkan isi otomatis</string>
+    <string name="settings_keyboard">Keyboard Sekuvo</string>
+    <string name="settings_keyboard_desc">Jika kamu mengaktifkan tambahan keyboard, kamu bisa memilih Keyboard Sekuvo dari pemilih keyboard di aplikasi mana pun dan mengetik data tersimpanmu langsung ke kolom.</string>
+    <string name="settings_keyboard_open">Buka pengaturan keyboard</string>
+    <string name="settings_export_pw_title">Atur kata sandi cadangan</string>
+    <string name="settings_export_pw_desc">Tanpa kata sandi ini, file cadangan SAMA SEKALI tidak bisa dibuka. Buat berbeda dari kata sandi utamamu: kata sandi cadangan pada akhirnya diketik di komputer, sedangkan kata sandi utama tidak pernah menyentuh komputer.</string>
+    <string name="settings_biometric_pin_title">Kaitkan sidik jari dengan PIN</string>
+    <string name="settings_biometric_pin_desc">Data sidik jari akan dienkripsi dengan PIN: saat membuka kunci, sidik jari diminta dulu, lalu PIN ini.</string>
+    <string name="settings_label_pin">PIN</string>
+    <string name="settings_continue">Lanjutkan</string>
+    <string name="settings_cancel">Batal</string>
+    <string name="settings_label_password">Kata sandi</string>
+    <string name="settings_label_password_again">Kata sandi (lagi)</string>
+    <string name="settings_ok">OK</string>
+    <string name="settings_label_backup_password">Kata sandi cadangan</string>
+    <string name="settings_import_merge">Tambahkan ke yang sudah ada</string>
+    <string name="settings_import_replace">Ganti semua</string>
+    <string name="settings_import_replace_warning">Peringatan: semua entri yang ada akan dihapus dan digantikan oleh entri dari cadangan.</string>
+    <string name="settings_import_pw_missing">Kata sandi cadangan belum dimasukkan.</string>
+    <string name="settings_import_confirm">Pulihkan</string>
+    <string name="settings_label_current_password">Kata sandi saat ini</string>
+    <string name="settings_label_new_password">Kata sandi baru</string>
+    <string name="settings_label_new_password_again">Kata sandi baru (lagi)</string>
+    <string name="settings_change">Ubah</string>
+    <string name="settings_pin_disable_desc">Setelah PIN dinonaktifkan, entri hanya bisa dibuka dengan kata sandi utama atau sidik jari. Kamu tidak perlu mengingat PIN: kata sandi utama sudah cukup. Aktifkan lagi sidik jari setelah ini.</string>
+    <string name="settings_pin_set_desc">PIN harus 4 hingga 12 digit. Jika kamu melupakannya, kata sandi utama SAJA tidak cukup — simpan PIN di tempat aman, seperti kata sandi cadangan. Kamu harus mengaktifkan lagi sidik jari setelah ini.</string>
+    <string name="settings_label_master_password">Kata sandi utama</string>
+    <string name="settings_label_current_pin">PIN saat ini</string>
+    <string name="settings_label_pin_again">PIN (lagi)</string>
+    <string name="settings_repair">Perbaiki</string>
+    <string name="settings_turn_off">Nonaktifkan</string>
+    <string name="settings_set">Atur</string>
+    <!-- transfer -->
+    <string name="transfer_title">Ambil dari komputer · langkah %1$d/2</string>
+    <string name="transfer_step1_steps">1. Di komputer, buka aktar.html, ganti ke bahasa Indonesia jika belum, dan letakkan kursor di kolom "Backup password".\n2. Gunakan tombol di bawah untuk mengetik kata sandi ke kedua kolom sekaligus (dipisahkan oleh Tab).</string>
+    <string name="transfer_regenerate">Buat kata sandi baru</string>
+    <string name="transfer_password_note">Kata sandi sekali pakai yang dibuat otomatis — kamu tidak perlu mengingatnya, langkah 2 akan menggunakannya secara otomatis. Huruf dan angka: tidak terpengaruh oleh perbedaan tata letak keyboard.</string>
+    <string name="transfer_bt_write_both">💻 Ketik ke kedua kolom lewat Bluetooth</string>
+    <string name="transfer_step2_steps">Di komputer: tempel isinya → "Enkripsi &amp; publikasikan" → pindai QR dengan ponselmu → "Salin" di halaman. Lalu kembali ke sini dan ambil amplopnya. Kata sandi sudah siap di wizard — kamu tidak perlu memasukkannya.</string>
+    <string name="transfer_envelope_label">Amplop terenkripsi</string>
+    <string name="transfer_char_count">%1$d karakter</string>
+    <string name="transfer_scan_qr">Pindai QR</string>
+    <string name="transfer_from_clipboard">Ambil dari papan klip</string>
+    <string name="transfer_merge">Tambahkan ke yang sudah ada</string>
+    <string name="transfer_replace_all">Ganti semua</string>
+    <string name="transfer_replace_warning">Peringatan: semua entri yang ada akan dihapus dan digantikan oleh entri dari amplop.</string>
+    <string name="transfer_password_typed_next">Kata sandi diketik, lanjutkan →</string>
+    <string name="transfer_envelope_empty">Kolom amplop terenkripsi kosong — publikasikan di komputer, pindai QR, dan ketuk "Ambil dari papan klip".</string>
+    <string name="transfer_importing">Mengimpor…</string>
+    <string name="transfer_import">Impor</string>
+    <string name="transfer_back">← Kembali</string>
+    <string name="transfer_cancel">Batal</string>
+    <string name="transfer_bt_label">Kata sandi transfer (ke kedua kolom, dengan Tab)</string>
+    <!-- unlock -->
+    <string name="unlock_welcome_title">Selamat datang di Sekuvo</string>
+    <string name="unlock_slogan">Brankas amanmu.</string>
+    <string name="unlock_locked_title">Sekuvo terkunci</string>
+    <string name="unlock_setup_desc">Atur kata sandi utama. Semua datamu dienkripsi dengan kunci yang diturunkan darinya. Jika kamu melupakannya, datamu menjadi TIDAK BISA DIAKSES selamanya.</string>
+    <string name="unlock_enter_desc">Masukkan kata sandi utamamu untuk melanjutkan.</string>
+    <string name="unlock_master_reminder">Pengingat: ketik kata sandi utamamu kali ini, bukan sidik jari. Kata sandi utama yang terlupakan mengunci brankas maupun cadangan.</string>
+    <string name="unlock_master_password_label">Kata sandi utama</string>
+    <string name="unlock_password_label">Kata sandi</string>
+    <string name="unlock_password_again_label">Kata sandi (lagi)</string>
+    <string name="unlock_create_vault">Buat brankas</string>
+    <string name="unlock_have_backup">Saya punya cadangan — pulihkan</string>
+    <string name="unlock_restore_selected">Pemulihan setelah penyiapan ✓ (ketuk untuk membatalkan)</string>
+    <string name="unlock_restore_hint">Atur dulu kata sandi utama untuk perangkat ini. Setelah itu, kamu akan memilih file cadangan dan memasukkan kata sandinya; seluruh isinya akan kembali.</string>
+    <string name="unlock_create_and_restore">Buat dan pulihkan</string>
+    <string name="unlock_open_button">Buka kunci</string>
+    <string name="unlock_biometric_button">Buka kunci dengan biometrik</string>
+    <string name="unlock_pin_title">Pintu kedua</string>
+    <string name="unlock_pin_desc">Masukkan PIN-mu. Tanpa kode ini entri tidak bisa didekripsi — kata sandi utama saja tidak cukup.</string>
+    <string name="unlock_pin_label">PIN (%1$d-%2$d digit)</string>
+    <string name="unlock_pin_open">Buka</string>
+    <string name="unlock_pin_cancel">Batal</string>
+    <string name="unlock_generator_title">Pembuat kata sandi</string>
+    <string name="unlock_generator_refresh">Segarkan</string>
+    <string name="unlock_generator_summary">Panjang: %1$d • Kekuatan: ~%2$d bit %3$s</string>
+    <string name="unlock_generator_very_strong">(sangat kuat)</string>
+    <string name="unlock_generator_strong">(kuat)</string>
+    <string name="unlock_generator_weak">(lemah)</string>
+    <string name="unlock_generator_avoid_ambiguous">Hapus karakter yang mirip (l, 1, O, 0)</string>
+    <string name="unlock_generator_use">Gunakan</string>
+    <string name="unlock_generator_copy">Salin</string>
+    <string name="unlock_generator_close">Tutup</string>
+    <!-- vm -->
+    <string name="vm_pin_repaired">Data PIN diperbaiki · brankas sekarang terbuka dengan kata sandi utamamu</string>
+    <string name="vm_pin_repair_failed">Gagal memperbaiki: kata sandi atau PIN salah</string>
+    <string name="vm_master_password_too_short">Kata sandi utama harus terdiri dari minimal 8 karakter</string>
+    <string name="vm_passwords_mismatch">Kata sandi tidak cocok</string>
+    <string name="vm_wrong_password">Kata sandi salah</string>
+    <string name="vm_legacy_pin_vault">Brankas ini menggunakan format PIN lama. Perlu diperbaiki dengan kata sandi utama + PIN.</string>
+    <string name="vm_key_undecryptable">Kunci brankas gagal didekripsi (data mungkin rusak).</string>
+    <string name="vm_biometric_stale">Data sidik jari lebih lama dari PIN ini; sudah dihapus. Buka kunci dengan kata sandi utamamu dan aktifkan lagi sidik jari.</string>
+    <string name="vm_pin_biometric_off">Terlalu banyak PIN salah. Buka kunci sidik jari dinonaktifkan; buka kunci dengan kata sandi utamamu.</string>
+    <string name="vm_pin_wrong">PIN salah</string>
+    <string name="vm_key_unexpected_size">Kunci brankas berukuran tidak wajar; coba buka kunci dengan kata sandi utamamu.</string>
+    <string name="vm_pin_enable_failed">Gagal mengaktifkan PIN: kata sandi salah, atau PIN tidak valid (4-12 digit)</string>
+    <string name="vm_pin_enabled">PIN diaktifkan · aktifkan lagi sidik jari</string>
+    <string name="vm_pin_disable_failed">Gagal menonaktifkan PIN: kata sandi utama salah</string>
+    <string name="vm_pin_disabled">PIN dinonaktifkan · aktifkan lagi sidik jari</string>
+    <string name="vm_new_password_too_short">Kata sandi baru harus terdiri dari minimal 8 karakter</string>
+    <string name="vm_master_password_changed">Kata sandi utama diubah</string>
+    <string name="vm_current_password_wrong">Kata sandi saat ini salah</string>
+    <string name="vm_quick_on">Bisa digunakan di keyboard tanpa kata sandi</string>
+    <string name="vm_quick_off">Disembunyikan di keyboard sampai brankas dibuka</string>
+    <string name="vm_copied">%1$s disalin (akan dihapus dalam 45 detik)</string>
+    <string name="vm_backup_password_too_short">Kata sandi cadangan harus terdiri dari minimal 8 karakter</string>
+    <string name="vm_file_open_failed">File tidak bisa dibuka</string>
+    <string name="vm_backup_saved">Cadangan disimpan</string>
+    <string name="vm_backup_failed">Pencadangan gagal: %1$s — hapus file yang dibuat dan coba lagi.</string>
+    <string name="vm_vault_locked_retry">Brankas terkunci — buka kunci dengan kata sandi utamamu dan coba lagi.</string>
+    <string name="vm_pasted_text_empty">Teks yang ditempel kosong</string>
+    <string name="vm_text_too_large">Teks terlalu besar — ini tidak mungkin amplop Sekuvo</string>
+    <string name="vm_pasted_is_link">Ini tautan, bukan amplopnya sendiri. Buka tautan di browser ponsel dan salin **teks** yang ditampilkannya.</string>
+    <string name="vm_not_an_envelope">Ini bukan amplop terenkripsi Sekuvo yang valid — teks yang disalin mungkin tidak lengkap, atau ini sesuatu yang lain. Salin SELURUH teks di halaman.</string>
+    <string name="vm_envelope_empty">Amplop terbuka tapi tidak berisi entri — mungkin kolom dibiarkan kosong di sisi pengirim. Brankasmu tidak terpengaruh.</string>
+    <string name="vm_backup_password_wrong">Kata sandi cadangan salah</string>
+    <string name="vm_invalid_envelope">Amplop tidak valid — teks mungkin tersalin tidak lengkap</string>
+    <string name="vm_import_failed">Impor gagal: %1$s</string>
+    <string name="vm_backup_empty">Cadangan terbuka tapi tidak berisi entri. Brankasmu tidak terpengaruh.</string>
+    <string name="vm_invalid_backup_file">File cadangan tidak valid</string>
+    <string name="vm_restore_failed">Pemulihan gagal: %1$s</string>
+    <string name="vm_biometric_enabled">Sidik jari diaktifkan</string>
+    <string name="vm_biometric_enable_failed">Gagal mengaktifkan sidik jari</string>
+    <string name="vm_biometric_disabled">Buka kunci biometrik dinonaktifkan</string>
+    <string name="vm_usage_log_cleared">Log penggunaan dihapus</string>
+    <string name="bt_sdp_name">Keyboard Sekuvo</string>
+    <string name="bt_sdp_description">Transmisi ketukan tombol Sekuvo yang aman</string>
+
+    <!-- Bahasa Indonesia hanya punya satu kategori jamak CLDR ("other"),
+         jadi setiap <plurals> di sini berisi satu item saja. -->
+    <plurals name="vm_import_added">
+        <item quantity="other">%1$d entri ditambahkan · papan klip dibersihkan</item>
+    </plurals>
+    <plurals name="vm_restored">
+        <item quantity="other">%1$d entri dipulihkan</item>
+    </plurals>
+    <plurals name="vm_backup_saved_incomplete">
+        <item quantity="other">Cadangan disimpan, tapi %1$d entri gagal dibaca dan dilewati (mungkin rusak). Cadangan ini tidak lengkap.</item>
+    </plurals>
+    <plurals name="log_pending_note">
+        <item quantity="other">%1$d peristiwa terjadi saat brankas terkunci dan belum dipindahkan ke log; akan muncul di daftar setelah brankas dibuka.</item>
+    </plurals>
+    <plurals name="log_more_events">
+        <item quantity="other">…dan %1$d peristiwa lainnya (200 pertama ditampilkan di daftar).</item>
+    </plurals>
+    <plurals name="bt_countdown">
+        <item quantity="other">Pengetikan dimulai dalam %1$d detik — letakkan kursor di kolom yang benar di komputer!</item>
+    </plurals>
+    <plurals name="vm_pin_wrong_wait">
+        <item quantity="other">PIN salah. Kamu harus menunggu %1$d detik.</item>
+    </plurals>
+    <plurals name="vm_pin_locked_wait">
+        <item quantity="other">Terlalu banyak PIN salah. Coba lagi dalam %1$d detik.</item>
+    </plurals>
+    <string name="bt_layout_uk">Inggris (UK)</string>
+    <string name="bt_layout_de">Jerman (QWERTZ)</string>
+    <string name="bt_layout_fr">Prancis (AZERTY)</string>
+    <string name="bt_layout_es">Spanyol</string>
+    <string name="bt_layout_it">Italia</string>
+    <string name="bt_layout_tr_f">Turki F</string>
+    <string name="bt_layout_pl">Polandia (Programmer)</string>
+    <string name="bt_layout_pt">Portugis (Portugal)</string>
+    <string name="bt_layout_se">Swedia / Finlandia</string>
+    <string name="bt_layout_br">Brasil (ABNT2)</string>
+    <string name="bt_layout_ch">Swiss Jerman (QWERTZ)</string>
+    <string name="bt_layout_nl">Belanda</string>
+    <string name="bt_layout_cz">Ceko (QWERTZ)</string>
+    <string name="bt_layout_hu">Hungaria (QWERTZ)</string>
+    <string name="bt_layout_no">Norwegia</string>
+    <string name="bt_layout_be">Belgia (AZERTY)</string>
+    <string name="bt_layout_dv">Dvorak (AS)</string>
+    <string name="bt_layout_ck">Colemak</string>
+    <string name="bt_layout_bepo">Prancis (BÉPO)</string>
+    <!-- Uygulama dili ve klavye düzeni seçimi -->
+    <string name="settings_language">Bahasa</string>
+    <string name="settings_language_desc">Pilih bahasa aplikasi. Ini hanya berlaku untuk Sekuvo, bukan seluruh ponsel.</string>
+    <string name="settings_lang_system">Bahasa sistem</string>
+    <string name="settings_lang_tr">Türkçe</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_lang_es">Español</string>
+    <string name="settings_lang_hi">हिन्दी</string>
+    <string name="settings_lang_ar">العربية</string>
+    <string name="settings_lang_zh">简体中文</string>
+    <string name="settings_lang_fr">Français</string>
+    <string name="settings_lang_bn">বাংলা</string>
+    <string name="settings_lang_pt">Português</string>
+    <string name="settings_lang_ru">Русский</string>
+    <string name="settings_lang_ur">اردو</string>
+    <string name="settings_lang_id">Bahasa Indonesia</string>
+    <string name="settings_layouts">Tata letak keyboard komputer</string>
+    <string name="settings_layouts_summary">%1$d dari %2$d tata letak aktif</string>
+    <string name="settings_expand">Tampilkan</string>
+    <string name="settings_collapse">Sembunyikan</string>
+    <string name="settings_layouts_desc">Pilih tata letak yang benar-benar kamu gunakan. Hanya yang dicentang yang muncul saat mengetik rahasia di komputer — sisanya tidak menghalangi.</string>
+    <string name="settings_layouts_min">Setidaknya satu tata letak tetap aktif.</string>
+
+    <!-- Bilgi sayfaları: Hakkında / Gizlilik / Rehber -->
+    <string name="info_about_title">Tentang aplikasi</string>
+    <string name="info_privacy_title">Kebijakan privasi</string>
+    <string name="info_guide_title">Panduan</string>
+    <string name="info_about_version">Versi</string>
+    <string name="info_about_package">Paket</string>
+    <string name="info_about_license">Lisensi</string>
+    <string name="info_about_developer">Pengembang</string>
+    <string name="info_about_website">Buka sekuvo.com</string>
+    <string name="info_about_source">Kode sumber di GitHub</string>
+    <string name="info_about_contact">contact@sekuvo.com</string>
+    <string name="info_about_what_title">Apa aplikasi ini</string>
+    <string name="info_about_what_body">Brankas sepenuhnya offline untuk kata sandi, kartu, dan catatan. Aplikasi ini tidak meminta izin internet, sehingga secara teknis tidak bisa mengirim datamu ke mana pun — tidak ada akun, tidak ada cloud, tidak ada sinkronisasi, tidak ada analitik. Semuanya dienkripsi dengan AES-256-GCM di bawah kunci yang diturunkan dari kata sandi utamamu.</string>
+
+    <string name="privacy_s1_title">Ringkasan</string>
+    <string name="privacy_s1_body">Sekuvo tidak mengumpulkan, mengirim, atau membagikan data apa pun. Ini adalah brankas kata sandi offline yang tidak meminta izin internet, sehingga secara teknis tidak bisa mengirim datamu ke mana pun.</string>
+    <string name="privacy_s2_title">Di mana datamu berada</string>
+    <string name="privacy_s2_body">Judul, nama pengguna, kata sandi, catatan, dan riwayat penggunaan tetap ada di perangkat ini, dienkripsi dengan kunci yang diturunkan dari kata sandi utamamu. Aplikasi tidak mengunggah, menyinkronkan, atau mencadangkan apa pun ke server mana pun.</string>
+    <string name="privacy_s3_title">Izin dan alasannya</string>
+    <string name="privacy_s3_body">Kamera — hanya untuk memindai kode QR yang kamu pilih untuk dipindai, diproses di perangkat.\nBiometrik — hanya untuk membuka brankas di perangkatmu, melalui sistem biometrik Android. Sekuvo tidak pernah melihat atau menyimpan sidik jari atau wajahmu.\nBluetooth — hanya digunakan saat kamu meminta Sekuvo mengetik rahasia di komputer terdekat. Hanya karakter yang kamu pilih yang dikirim, langsung ke perangkat yang dipasangkan.</string>
+    <string name="privacy_s4_title">Cadangan dan transfer</string>
+    <string name="privacy_s4_body">Ini hanya terjadi saat kamu memulainya, menghasilkan file terenkripsi atau kode QR yang dilindungi kata sandi yang kamu tentukan, dan hanya disimpan atau ditampilkan sesuai arahanmu. Aplikasi tidak pernah mengirimnya ke mana pun atas inisiatifnya sendiri.</string>
+    <string name="privacy_s5_title">Anak-anak</string>
+    <string name="privacy_s5_body">Sekuvo tidak mengumpulkan data dari siapa pun, termasuk anak-anak.</string>
+    <string name="privacy_s6_title">Kontak dan teks lengkap</string>
+    <string name="privacy_s6_body">Pertanyaan: contact@sekuvo.com\nVersi resmi kebijakan ini dipublikasikan di sekuvo.com/privacy/ dan berlaku jika ada perbedaan.</string>
+
+    <string name="guide_s1_title">Menjalankan pertama kali</string>
+    <string name="guide_s1_body">Kamu mengatur kata sandi utama. Setiap rahasia yang kamu simpan dienkripsi dengan kunci yang diturunkan darinya, sehingga itu satu-satunya hal yang tidak bisa dipulihkan Sekuvo untukmu — tulis di tempat yang aman sebelum melanjutkan.\nBerpindah dari ponsel lain? Ketuk "Saya punya cadangan — pulihkan" di layar sambutan: kamu tetap mengatur kata sandi utama untuk perangkat ini dulu, lalu pemilih file terbuka sendiri dan entrimu kembali.</string>
+    <string name="guide_s2_title">Apa yang bisa kamu simpan</string>
+    <string name="guide_s2_body">Akun/Kata sandi, Sehari-hari (nama, telepon, email, alamat), Kartu, dan Catatan aman — dengan subjenis untuk skrip, kunci, kode pemulihan, dan file konfigurasi. Entri Akun dan Sehari-hari juga menerima kolom kustom tanpa batas, dienkripsi persis seperti kolom bawaan.</string>
+    <string name="guide_s3_title">Isi otomatis</string>
+    <string name="guide_s3_body">Pengaturan → Aktifkan isi otomatis → pilih Sekuvo dari daftar sistem. Daftar ini disebut "Kata sandi, kunci sandi &amp; isi otomatis → Layanan pilihan" di Samsung dan Android 14+, dan "Layanan isi otomatis" di Android murni.\nSetelah itu, menyentuh kolom nama pengguna, kata sandi, atau kartu di aplikasi mana pun menampilkan entri yang cocok. Saat brankas terkunci, sistem sama sekali tidak menerima apa pun.</string>
+    <string name="guide_s4_title">Keyboard Sekuvo</string>
+    <string name="guide_s4_body">Pengaturan → Aktifkan keyboard, lalu pilih "Keyboard Sekuvo" dari pemilih keyboard saat dibutuhkan. Ini mengetik nilai tersimpan langsung ke kolom mana pun, dengan pencarian dan entri terbaru di atas. Saat terkunci, hanya menampilkan entri yang ditandai untuk akses cepat.</string>
+    <string name="guide_s5_title">Mengetik di komputer lewat Bluetooth</string>
+    <string name="guide_s5_body">Buka entri, ketuk ikon 💻 di samping kolom yang ingin diketik, dan JAGA LAYAR INI TETAP TERBUKA — ponsel hanya mengumumkan dirinya sebagai keyboard selagi layar ini terbuka. Di komputer, tambahkan ponsel sebagai perangkat Bluetooth baru dan konfirmasi kodenya. Kembali ke ponsel, pilih komputermu, pilih tata letak keyboard KOMPUTER, klik di kolom tujuan, dan ketuk Ketik.\nTerhubung tapi tidak ada yang diketik? Biasanya penyebabnya adalah komputer pernah memasangkan ponselmu sebagai ponsel biasa sebelumnya, sehingga tidak pernah mengaktifkan layanan keyboard untuknya. Hapus pemasangan dari KEDUA sisi, buka layar 💻, dan pasangkan lagi mulai dari komputer. Di Windows, perangkat "Bluetooth HID" seharusnya muncul di Device Manager → Human Interface Devices. Di macOS, tutup Keyboard Setup Assistant jika terbuka.\nGunakan tes kecepatan sebagai diagnosis: tidak ada yang diketik berarti masalah pemasangan, karakter kacau berarti tata letak, pengetikan terputus berarti kecepatan.</string>
+    <string name="guide_s6_title">Cara kerja kunci</string>
+    <string name="guide_s6_body">Brankas terkunci begitu layar tempatnya terbuka mati — menutup ponsel lipat juga termasuk. Keluar dari aplikasi dengan layar tetap menyala tidak menguncinya: aplikasi, keyboard, dan isi otomatis berbagi satu sesi.</string>
+    <string name="guide_s7_title">Cadangan</string>
+    <string name="guide_s7_body">Pencadangan sistem sengaja dinonaktifkan, sehingga brankasmu hanya bisa keluar dari ponsel lewat satu cara: Pengaturan → Buat cadangan terenkripsi. Gunakan kata sandi cadangan yang berbeda dari kata sandi utamamu. File .vaultbak yang dihasilkan, bersama kata sandi itu, memulihkan semuanya di ponsel mana pun, bahkan setelah reset pabrik.</string>
+    <string name="guide_s8_title">Membawa rahasia dari komputer</string>
+    <string name="guide_s8_body">Tombol ➕ menawarkan "Impor lewat QR" dan "Impor dari teks". Wizard ⇄ melakukan keduanya dalam satu alur: membuat kata sandi transfer sekali pakai, mengetiknya di komputer lewat Bluetooth, lalu mengambil kembali amplopnya baik dengan memindai QR maupun dari papan klip — mendekripsinya dengan kata sandi yang sama.\nAlat di sisi komputer adalah file unduhan, bukan situs web: ambil aktar.html dari halaman Releases proyek, periksa SHA-256-nya, dan buka dari diskmu sendiri. Situs ini tidak pernah meminta rahasia darimu.</string>
+    <string name="settings_info_section">Bantuan dan informasi</string>
+    <string name="edit_email_invalid">Periksa alamatnya — harus ada @ dan domain seperti example.com</string>
+    <string name="edit_expiry_invalid">Masukkan bulan dan tahun dalam format BBTT (bulan 01–12)</string>
+    <string name="edit_iban_invalid">Digit pemeriksa IBAN ini tidak cocok — kemungkinan ada digit yang salah ketik</string>
+    <string name="edit_iban_confirm_title">Sepertinya IBAN ini salah ketik</string>
+    <string name="edit_iban_confirm_text">Digit pemeriksa IBAN ini tidak cocok, yang berarti kemungkinan ada satu digit yang salah. Kamu tetap bisa menyimpannya — tapi jika ini kesalahan ketik, kamu baru menyadarinya saat transfer gagal.</string>
+    <string name="edit_iban_confirm_save">Tetap simpan</string>
+    <string name="edit_iban_confirm_fix">Kembali dan perbaiki</string>
+</resources>

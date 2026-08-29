@@ -36,7 +36,8 @@ object AppLocale {
         BENGALI("bn", R.string.settings_lang_bn),
         PORTUGUESE("pt", R.string.settings_lang_pt),
         RUSSIAN("ru", R.string.settings_lang_ru),
-        URDU("ur", R.string.settings_lang_ur);
+        URDU("ur", R.string.settings_lang_ur),
+        INDONESIAN("id", R.string.settings_lang_id);
 
         companion object {
             fun of(tag: String?): Option =

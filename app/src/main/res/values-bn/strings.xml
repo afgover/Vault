@@ -496,6 +496,7 @@
     <string name="settings_lang_pt">Português</string>
     <string name="settings_lang_ru">Русский</string>
     <string name="settings_lang_ur">اردو</string>
+    <string name="settings_lang_id">Bahasa Indonesia</string>
     <string name="settings_layouts">কম্পিউটার কীবোর্ড লেআউট</string>
     <string name="settings_layouts_summary">%2$dটির মধ্যে %1$dটি লেআউট চালু</string>
     <string name="settings_expand">দেখান</string>

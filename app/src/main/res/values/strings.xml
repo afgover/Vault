@@ -505,6 +505,7 @@
     <string name="settings_lang_pt">Português</string>
     <string name="settings_lang_ru">Русский</string>
     <string name="settings_lang_ur">اردو</string>
+    <string name="settings_lang_id">Bahasa Indonesia</string>
     <string name="settings_layouts">Computer keyboard layouts</string>
     <string name="settings_layouts_summary">%1$d of %2$d layouts on</string>
     <string name="settings_expand">Show</string>

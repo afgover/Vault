@@ -496,6 +496,7 @@
     <string name="settings_lang_pt">Português</string>
     <string name="settings_lang_ru">Русский</string>
     <string name="settings_lang_ur">اردو</string>
+    <string name="settings_lang_id">Bahasa Indonesia</string>
     <string name="settings_layouts">کمپیوٹر کی بورڈ لے آؤٹس</string>
     <string name="settings_layouts_summary">%2$d میں سے %1$d لے آؤٹ فعال</string>
     <string name="settings_expand">دکھائیں</string>
