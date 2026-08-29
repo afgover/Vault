@@ -509,6 +509,7 @@
     <string name="settings_lang_de">Deutsch</string>
     <string name="settings_lang_ja">日本語</string>
     <string name="settings_lang_pcm">Naija</string>
+    <string name="settings_lang_vi">Tiếng Việt</string>
     <string name="settings_layouts">Computer keyboard layouts</string>
     <string name="settings_layouts_summary">%1$d of %2$d layouts on</string>
     <string name="settings_expand">Show</string>

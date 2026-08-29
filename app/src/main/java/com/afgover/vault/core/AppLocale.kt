@@ -40,7 +40,8 @@ object AppLocale {
         INDONESIAN("id", R.string.settings_lang_id),
         GERMAN("de", R.string.settings_lang_de),
         JAPANESE("ja", R.string.settings_lang_ja),
-        NIGERIAN_PIDGIN("pcm", R.string.settings_lang_pcm);
+        NIGERIAN_PIDGIN("pcm", R.string.settings_lang_pcm),
+        VIETNAMESE("vi", R.string.settings_lang_vi);
 
         companion object {
             fun of(tag: String?): Option =
