@@ -495,6 +495,7 @@
     <string name="settings_lang_bn">বাংলা</string>
     <string name="settings_lang_pt">Português</string>
     <string name="settings_lang_ru">Русский</string>
+    <string name="settings_lang_ur">اردو</string>
     <string name="settings_layouts">Dispositions de clavier d\'ordinateur</string>
     <string name="settings_layouts_summary">%1$d sur %2$d dispositions activées</string>
     <string name="settings_expand">Afficher</string>

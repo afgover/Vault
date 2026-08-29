@@ -488,6 +488,7 @@
     <string name="settings_lang_bn">বাংলা</string>
     <string name="settings_lang_pt">Português</string>
     <string name="settings_lang_ru">Русский</string>
+    <string name="settings_lang_ur">اردو</string>
     <string name="settings_layouts">电脑键盘布局</string>
     <string name="settings_layouts_summary">已开启 %1$d / %2$d 种布局</string>
     <string name="settings_expand">展开</string>
