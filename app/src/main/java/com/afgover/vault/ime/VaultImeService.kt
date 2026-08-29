@@ -67,6 +67,16 @@ class VaultImeService : InputMethodService() {
 
     private var uygulananDil: String? = null
 
+    /**
+     * Görünüm kurulurken geçerli olan gece/gündüz kipi. Renkler artık temayı
+     * izliyor (values-night); kip servis ayaktayken değişirse kurulu görünüm
+     * eski paletle kalırdı — dil değişimindeki bayatlama sorununun aynısı.
+     */
+    private var uygulananGece: Int? = null
+
+    private fun geceKipi(): Int =
+        resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+
     private lateinit var root: LinearLayout
     private lateinit var content: LinearLayout
     private lateinit var searchRow: LinearLayout
@@ -91,6 +101,7 @@ class VaultImeService : InputMethodService() {
 
     override fun onCreateInputView(): View {
         uygulananDil = AppLocale.currentTag(this)
+        uygulananGece = geceKipi()
         // Klavye penceresi kasa içeriğini gösterebiliyor; ekran görüntüsü ve
         // ekran kaydına kapat (uygulama ekranlarındaki FLAG_SECURE ile aynı).
         window?.window?.setFlags(
@@ -109,7 +120,7 @@ class VaultImeService : InputMethodService() {
             gravity = Gravity.CENTER_VERTICAL
         }
         header.addView(TextView(this).apply {
-            text = "🔐 Vault"
+            text = "🔐 Sekuvo"
             setTextColor(color(R.color.ime_accent))
             setTypeface(null, Typeface.BOLD)
             textSize = 16f
@@ -164,12 +175,17 @@ class VaultImeService : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
-        // Dil değiştiyse görünümdeki metinler bayattır: baştan kur.
+        // Dil değiştiyse görünümdeki metinler, tema değiştiyse renkler
+        // bayattır: baştan kur.
         val simdikiDil = AppLocale.currentTag(this)
-        if (uygulananDil != null && uygulananDil != simdikiDil) {
+        val simdikiGece = geceKipi()
+        if ((uygulananDil != null && uygulananDil != simdikiDil) ||
+            (uygulananGece != null && uygulananGece != simdikiGece)
+        ) {
             setInputView(onCreateInputView())
         }
         uygulananDil = simdikiDil
+        uygulananGece = simdikiGece
         selected = null
         searching = false
         query = ""

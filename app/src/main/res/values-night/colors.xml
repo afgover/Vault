@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Klavyenin gece paleti = uygulamanın koyu teması (Theme.kt DarkColors):
+         sıcak kömür zemin, kart yüzeyi, pirinç vurgu. -->
+    <color name="ime_background">#211D18</color>
+    <color name="ime_surface">#332D26</color>
+    <color name="ime_text">#EDE3D3</color>
+    <color name="ime_accent">#F0C87A</color>
+</resources>

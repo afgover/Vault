@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#16130F</color>
-    <color name="ime_background">#1A1B2E</color>
-    <color name="ime_surface">#2A2C45</color>
-    <color name="ime_text">#EAEAF2</color>
-    <color name="ime_accent">#8B9EFF</color>
+    <!-- Klavye, uygulama temasının ışık paletiyle aynı kimliği taşır:
+         sıcak kâğıt zemin, beyaz yüzey, pirinç vurgu (Theme.kt LightColors).
+         Gece karşılıkları values-night/colors.xml'de. -->
+    <color name="ime_background">#F5EFE4</color>
+    <color name="ime_surface">#FFFFFF</color>
+    <color name="ime_text">#221D13</color>
+    <color name="ime_accent">#856520</color>
 </resources>
