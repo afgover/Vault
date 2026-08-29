@@ -492,6 +492,7 @@
     <string name="settings_lang_id">Bahasa Indonesia</string>
     <string name="settings_lang_de">Deutsch</string>
     <string name="settings_lang_ja">日本語</string>
+    <string name="settings_lang_pcm">Naija</string>
     <string name="settings_layouts">コンピューターのキーボードレイアウト</string>
     <string name="settings_layouts_summary">%2$d件中%1$d件のレイアウトが有効</string>
     <string name="settings_expand">表示</string>

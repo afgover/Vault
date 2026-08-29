@@ -515,6 +515,7 @@
     <string name="settings_lang_id">Bahasa Indonesia</string>
     <string name="settings_lang_de">Deutsch</string>
     <string name="settings_lang_ja">日本語</string>
+    <string name="settings_lang_pcm">Naija</string>
     <string name="settings_layouts">Раскладки клавиатуры компьютера</string>
     <string name="settings_layouts_summary">Включено %1$d из %2$d раскладок</string>
     <string name="settings_expand">Показать</string>
